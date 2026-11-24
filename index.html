@@ -1,0 +1,2522 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Route Branch Planner</title>
+<style>
+:root{
+  color-scheme: light;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --page:#f9f9f7; --surface:#fcfcfb; --surface2:#f1f0ec; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,.10); --night:rgba(42,120,214,.055);
+  --accent:#2a78d6; --accent-ink:#ffffff; --good:#006300; --bad:#d03b3b;
+  --warn-bg:#fdf3e1; --warn-ink:#6b4200; --note-bg:#eef4fc; --note-ink:#1c4f8f;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6; --s8:#e34948; --s9:#a9a79f;
+  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 20px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --page:#0d0d0d; --surface:#1a1a19; --surface2:#242422; --ink:#f0efec; --ink2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10); --night:rgba(57,135,229,.08);
+    --accent:#3987e5; --accent-ink:#ffffff; --good:#0ca30c; --bad:#e66767;
+    --warn-bg:#3a2e14; --warn-ink:#f3c766; --note-bg:#16263b; --note-ink:#a9c9f2;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#0ca30c; --s7:#9085e9; --s8:#e66767; --s9:#6b6a64;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --page:#0d0d0d; --surface:#1a1a19; --surface2:#242422; --ink:#f0efec; --ink2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10); --night:rgba(57,135,229,.08);
+  --accent:#3987e5; --accent-ink:#ffffff; --good:#0ca30c; --bad:#e66767;
+  --warn-bg:#3a2e14; --warn-ink:#f3c766; --note-bg:#16263b; --note-ink:#a9c9f2;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#0ca30c; --s7:#9085e9; --s8:#e66767; --s9:#6b6a64;
+  --shadow: none;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--page);color:var(--ink);font:14px/1.45 var(--font);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1500px;margin:0 auto;padding:20px 16px 56px}
+header.top h1{font-size:22px;line-height:1.2;margin:0 0 4px;letter-spacing:-.01em}
+header.top p{margin:0;color:var(--ink2);max-width:70ch}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin:16px 0 12px;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.tb-group{display:inline-flex;align-items:center;gap:6px}
+.tb-sep{width:1px;align-self:stretch;background:var(--border);margin:0 2px}
+.spacer{flex:1}
+.btn{appearance:none;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:6px 11px;font:inherit;font-size:13px;line-height:1.3;cursor:pointer;white-space:nowrap}
+.btn:hover:not(:disabled){background:var(--surface2)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.primary:hover:not(:disabled){background:var(--accent);filter:brightness(1.08)}
+.btn.danger{color:var(--bad)}
+.btn.small{padding:3px 9px;font-size:12px}
+.segc{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.segc button{border:0;background:var(--surface);color:var(--ink2);padding:6px 11px;font:inherit;font-size:13px;cursor:pointer}
+.segc button + button{border-left:1px solid var(--border)}
+.segc button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.tb-label{font-size:13px;color:var(--ink2);white-space:nowrap}
+input,select,textarea{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--axis);border-radius:7px;padding:6px 8px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:54px}
+input[type=range]{padding:0;border:0;width:120px;accent-color:var(--accent);background:transparent}
+#budget{width:90px}
+.cursel{width:auto !important;padding:5px 6px}
+.topbar .toolbar{gap:6px 6px;padding:6px}
+.topbar .toolbar .btn{padding:5px 9px}
+.topbar .tb-sep{margin:0}
+.topbar .tb-group{gap:5px}
+#zoom{width:100px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.btn:focus-visible,.segc button:focus-visible,.star:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:12px;align-items:start}
+@media (max-width:1000px){.main{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);min-width:0}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;padding:12px 16px 10px}
+.card-head h2{font-size:15px;margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend svg{display:block}
+.notice{margin:0 16px 10px;padding:9px 12px;border-radius:9px;background:var(--note-bg);color:var(--note-ink);font-size:13px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.notice .btn{background:transparent;color:inherit;border-color:currentColor}
+.graph-scroll{overflow-x:auto;overflow-y:hidden;position:relative;border-top:1px solid var(--border);-webkit-overflow-scrolling:touch}
+#graph{display:block;user-select:none;-webkit-user-select:none}
+.empty{padding:48px 16px;text-align:center;color:var(--ink2)}
+.empty p{margin:0 0 12px}
+.now{border-top:1px solid var(--border);padding:10px 16px 12px;min-height:48px;font-size:13px}
+.now .hint,.hint{margin:0;color:var(--muted);font-size:13px}
+.now-head{margin-bottom:6px}
+.now-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:4px 18px}
+.now-list li{display:flex;gap:8px;align-items:baseline;min-width:0}
+.now-list .txt{min-width:0}
+.now-list .who{color:var(--muted);margin-left:4px}
+.key{display:inline-block;width:14px;height:3px;border-radius:2px;background:var(--c);flex:none;transform:translateY(-3px)}
+.key-dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--c);flex:none}
+.muted{color:var(--muted)}
+
+/* graph */
+#graph text{font-family:var(--font)}
+#graph .hit{fill:transparent}
+#graph .night{fill:var(--night)}
+#graph .twilight{fill:var(--twilight)}
+#graph .tod{stroke:none}
+#graph .tod.night{fill:var(--tod-night)}
+#graph .tod.dawn{fill:var(--tod-dawn)}
+#graph .tod.day{fill:var(--tod-day)}
+#graph .tod.dusk{fill:var(--tod-dusk)}
+#graph .todlbl{font-size:10.5px;font-weight:600;text-anchor:middle;pointer-events:none}
+#graph .todlbl.night{fill:var(--tod-night-ink)}
+#graph .todlbl.dawn,#graph .todlbl.day,#graph .todlbl.dusk{fill:var(--tod-ink)}
+#graph .daypill{fill:var(--surface);stroke:var(--axis);stroke-width:1}
+#graph .tick.noon{stroke:var(--axis);stroke-dasharray:2 3}
+#graph .star{fill:var(--star)}
+#graph .sunpath{fill:none;stroke:var(--sunpath);stroke-width:1.25;stroke-dasharray:2 3}
+#graph .skyico{font-size:13px;text-anchor:middle}
+#graph .skyframe{fill:none;stroke:var(--border);stroke-width:1}
+#graph .midnight{stroke:var(--axis);stroke-width:1.25}
+#graph .midnight{stroke:var(--axis);stroke-width:1}
+#graph .tick{stroke:var(--grid);stroke-width:1}
+#graph .axisline{stroke:var(--axis);stroke-width:1}
+#graph .sep{stroke:var(--grid);stroke-width:1;stroke-dasharray:2 4}
+#graph .daylbl{font-size:12px;font-weight:700;fill:var(--ink)}
+#graph .hrlbl{font-size:10.5px;font-weight:600;fill:var(--ink2);text-anchor:middle}
+#graph .edge{cursor:pointer}
+#graph .seg{fill:none;stroke:var(--c);stroke-width:4;stroke-linecap:round}
+#graph .seg.est{opacity:.45}
+#graph .edge:hover .seg{stroke-width:6}
+#graph .elbow{fill:none;stroke:var(--c);stroke-width:2.5;opacity:.85}
+#graph .dwell{stroke:var(--c);stroke-width:2;opacity:.38}
+#graph .seghit{stroke:transparent;stroke-width:18}
+#graph .node{cursor:pointer;outline:none}
+#graph .nhit{fill:transparent}
+#graph .node .dot{fill:var(--surface);stroke:var(--c);stroke-width:3}
+#graph .node.root .dot,#graph .node.leaf .dot{fill:var(--c);stroke:var(--surface);stroke-width:2}
+#graph .node:hover .dot,#graph .node:focus-visible .dot{stroke-width:4}
+#graph .node:focus-visible .nhit{stroke:var(--accent);stroke-width:2;fill:none}
+#graph .ring{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-dasharray:3 3}
+#graph .warnDot{fill:var(--bad)}
+#graph .warnTxt{font-size:9px;font-weight:700;fill:#fff;text-anchor:middle}
+#graph .halo{paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round;stroke-opacity:.92}
+#graph .pl{font-size:12px;font-weight:600;fill:var(--ink);text-anchor:middle}
+#graph .tl{font-size:11px;font-weight:600;fill:var(--ink);text-anchor:middle}
+#graph .tm{cursor:pointer}
+#graph .tmlead{stroke:var(--c);stroke-width:1;opacity:.6}
+#graph .durtag{cursor:pointer}
+#graph .durtag rect{fill:var(--c);opacity:.16}
+#graph .durtag:hover rect{opacity:.28}
+#graph .durtxt{font-size:10.5px;font-weight:600;fill:var(--ink);text-anchor:middle;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round}
+#graph .costtag{cursor:pointer}
+#graph .costtag rect{fill:var(--surface);stroke:var(--c);stroke-width:1.5}
+#graph .costtxt{font-size:11px;font-weight:700;fill:var(--ink);text-anchor:middle}
+#graph .sun circle{fill:var(--sun)}
+#graph .sun line{stroke:var(--sun);stroke-width:1.5;stroke-linecap:round}
+#graph .halfsun{fill:var(--sun);opacity:.9}
+#graph .moon{fill:var(--moon)}
+.btn.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+#graph .ll{font-size:11px;font-weight:600;fill:var(--ink2);text-anchor:middle}
+#graph .modeico{cursor:pointer}
+#graph .modeico circle{fill:var(--surface);stroke:var(--c);stroke-width:2}
+#graph .modeico .ico{font-size:12.5px;text-anchor:middle;pointer-events:none}
+#graph .modeico:hover circle{stroke-width:3}
+#graph .dl{font-size:11px;fill:var(--ink2);text-anchor:middle}
+#graph .rl{font-size:13px;font-weight:600;fill:var(--ink)}
+#graph .rl .rlab{fill:var(--muted);font-weight:700}
+#graph .badge{cursor:pointer;outline:none}
+#graph .badge rect{fill:var(--surface);stroke:var(--c);stroke-width:1.5}
+#graph .badge:hover rect,#graph .badge:focus-visible rect{fill:var(--surface2)}
+#graph .badge.picked rect{stroke-width:3}
+#graph .badge.add rect{stroke-dasharray:4 3}
+#graph .badge .bt{font-size:12px;font-weight:600;fill:var(--ink)}
+#graph .badge.add .bt{fill:var(--ink2);font-weight:500}
+#graph .dim{opacity:.13}
+#graph .scrub{pointer-events:none}
+#graph .scrubline{stroke:var(--ink);stroke-width:1;stroke-dasharray:3 3;opacity:.7}
+#graph .scrubline.pinned{stroke-dasharray:none;opacity:.9}
+#graph .scrubpill{fill:var(--ink)}
+#graph .scrubtxt{font-size:11px;font-weight:600;fill:var(--surface);text-anchor:middle}
+#graph .mark{stroke:var(--surface);stroke-width:2.5}
+#graph .mark.move{fill:var(--c)}
+#graph .mark.wait{fill:var(--surface);stroke:var(--c);stroke-width:3}
+#graph .mark.buf{fill:var(--c);opacity:.65}
+#graph .bufband{stroke:var(--c);stroke-width:12;opacity:.2;stroke-linecap:round}
+#graph .bufline{stroke:var(--c);stroke-width:2.5;stroke-dasharray:2 3;stroke-linecap:round}
+/* places view: one row per place, every plan that visits it runs through it */
+#graph path.seghit{fill:none}
+#graph.places .seg{stroke-width:3.5}
+#graph .rowband{fill:var(--surface2);opacity:.55}
+#graph .rowline{stroke:var(--axis);stroke-width:1;stroke-dasharray:1 5}
+#graph .nimgring{fill:none;stroke:var(--axis);stroke-width:1}
+#graph .rowlbl{font-size:13px;font-weight:600;fill:var(--ink)}
+#graph .rowsub{font-size:11px;fill:var(--muted)}
+#graph .station{fill:var(--surface);stroke:var(--ink);stroke-width:1.75}
+#graph .node.mini .dot{fill:var(--c);stroke:var(--surface);stroke-width:1.5}
+#graph .leader{stroke:var(--c);stroke-width:1.25;opacity:.7;fill:none}
+
+/* inspector */
+.side{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;padding:14px 16px 16px}
+@media (max-width:1000px){.side{position:static;max-height:none}}
+.insp-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}
+.insp-head .key-dot{margin-top:5px}
+.insp-head h2{font-size:15px;margin:0}
+.insp-head .crumb{margin:2px 0 0;font-size:12px;color:var(--muted);word-break:break-word}
+.insp-head > div{flex:1;min-width:0}
+.icon-btn{border:0;background:transparent;color:var(--muted);font-size:20px;line-height:1;cursor:pointer;padding:0 4px;border-radius:6px}
+.icon-btn:hover{color:var(--ink);background:var(--surface2)}
+.sect{border-top:1px solid var(--border);padding-top:10px;margin-top:12px}
+.sect h3{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 0 8px}
+.fld{display:block;margin-bottom:9px}
+.fld > span{display:block;font-size:12px;color:var(--ink2);margin-bottom:3px}
+.fld small{display:block;font-size:11.5px;color:var(--muted);margin-top:3px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:0 8px}
+.live{font-size:12.5px;color:var(--ink2);margin:-2px 0 10px}
+.chiprow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{border:1px solid var(--border);background:var(--surface);color:var(--ink2);border-radius:999px;padding:4px 10px;font:inherit;font-size:12.5px;cursor:pointer}
+.chip:hover{background:var(--surface2)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bufnum{width:84px !important}
+.linkbtn{border:0;background:none;padding:0;font:inherit;font-size:inherit;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.warnbox{background:var(--warn-bg);color:var(--warn-ink);border-radius:8px;padding:7px 10px;font-size:12.5px;margin:8px 0}
+.warnbox p{margin:0}
+.actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.actions .btn{flex:0 0 auto}
+.help h2{font-size:15px;margin:0 0 8px}
+.help ol{padding-left:18px;margin:0 0 12px}
+.help li{margin-bottom:6px;color:var(--ink2)}
+.help li b{color:var(--ink)}
+.help .lg{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;font-size:12.5px;color:var(--ink2)}
+
+/* plans */
+.plans-card{margin-top:12px}
+.plans-card .card-head label{font-size:13px;color:var(--ink2);display:inline-flex;gap:6px;align-items:center}
+.plans-card .card-head select{width:auto}
+.table-scroll{overflow-x:auto}
+table.plans{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+table.plans th{font-size:12px;font-weight:600;color:var(--muted);text-align:left;padding:6px 10px;border-bottom:1px solid var(--axis);white-space:nowrap}
+table.plans td{padding:8px 10px;border-bottom:1px solid var(--grid);vertical-align:top}
+table.plans tbody tr{cursor:pointer}
+table.plans tbody tr:hover{background:var(--surface2)}
+table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 3px 0 0 var(--accent)}
+.pname{display:inline-flex;align-items:baseline;gap:8px;font-weight:600;white-space:nowrap}
+td.route{color:var(--ink2);min-width:200px}
+.nowrap{white-space:nowrap}
+.star{border:0;background:transparent;font-size:18px;line-height:1;cursor:pointer;color:var(--muted);padding:0 2px}
+.star[aria-pressed="true"]{color:var(--ink)}
+.costcell{min-width:190px}
+.costline{display:flex;justify-content:space-between;gap:10px;white-space:nowrap}
+.st{font-size:12px}
+.st.good{color:var(--good)}
+.st.bad{color:var(--bad)}
+.bar{position:relative;height:6px;background:var(--surface2);border-radius:3px;margin-top:6px}
+.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--c);border-radius:3px}
+.bar b{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink)}
+#planEmpty{padding:6px 16px 16px}
+#detail{padding:14px 16px 16px;border-top:1px solid var(--border)}
+.detail-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start;margin-bottom:8px}
+.detail-head h3{margin:0;font-size:15px;display:flex;align-items:baseline;gap:8px}
+.detail-head p{margin:2px 0 0;color:var(--ink2);font-size:13px}
+.detail-head .btns{display:flex;gap:6px}
+table.legs{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+table.legs th{font-size:12px;font-weight:600;color:var(--muted);text-align:left;padding:5px 8px;border-bottom:1px solid var(--axis);white-space:nowrap}
+table.legs td{padding:6px 8px;border-bottom:1px solid var(--grid);vertical-align:top}
+table.legs td.num,table.legs th.num{text-align:right;white-space:nowrap}
+table.legs tr.stay td{color:var(--ink2)}
+table.legs tr.total td{font-weight:700;border-bottom:0;border-top:1px solid var(--axis)}
+.summary{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:10px;font-size:13px;color:var(--ink2)}
+.summary b{color:var(--ink)}
+
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:9px 12px 9px 16px;border-radius:10px;font-size:13px;display:flex;gap:12px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:10;max-width:calc(100vw - 32px)}
+.toast .btn{background:transparent;color:var(--surface);border-color:currentColor}
+[hidden]{display:none !important}
+@media (max-width:640px){
+  .tb-sep{display:none}
+  input[type=range]{width:90px}
+  .row2{grid-template-columns:1fr}
+}
+/* ---------- nodes + legs ---------- */
+#graph .rowhead{cursor:pointer;outline:none}
+#graph .rowhit{fill:transparent}
+#graph .rowhead:hover .rowhit,#graph .rowhead:focus-visible .rowhit{fill:var(--surface2)}
+#graph .rowhead.sel .rowhit{fill:var(--surface2);stroke:var(--accent);stroke-width:1.5}
+#graph .pt{cursor:pointer}
+#graph .pt .dot{fill:var(--c);stroke:var(--surface);stroke-width:2}
+#graph .station{cursor:pointer}
+#graph .edge.sel .seg,#graph .edge.chosen .seg{stroke-width:6}
+#graph .edge.pend .seg{stroke-dasharray:6 5;opacity:.75}
+.planbar .pend-note{flex-basis:100%;color:var(--warn-ink);background:var(--warn-bg);border-radius:6px;padding:5px 8px;font-size:12.5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#graph .wait{cursor:pointer}
+#graph .wait .dwell{stroke-width:3;opacity:.5}
+#graph .wait .waithit{stroke:transparent;stroke-width:16}
+#graph .wait:hover .dwell,#graph .wait.sel .dwell{stroke-width:5;opacity:.8}
+#graph .dl{cursor:pointer}
+.leglist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.legbtn{display:flex;gap:8px;align-items:baseline;width:100%;text-align:left;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:6px 8px;font:inherit;font-size:12.5px;cursor:pointer}
+.legbtn:hover{background:var(--surface2)}
+.nimg{margin:0 0 8px}
+.nimg img{display:block;width:100%;aspect-ratio:1/1;height:auto;object-fit:cover;border-radius:12px;border:1px solid var(--border);background:var(--surface2)}
+.nimg-btns{display:flex;gap:6px;margin-top:8px}
+.nimg-add{display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;margin:0 0 8px;border:1.5px dashed var(--axis);border-radius:12px;background:var(--surface2);color:var(--ink2);font:inherit;font-size:12.5px;cursor:pointer;padding:16px;text-align:center}
+.nimg-link{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;margin:0 0 4px}
+.nimg-msg{font-size:12px;color:var(--ink2);margin:0 0 12px;min-height:1em}
+.nimg-msg.bad{color:var(--bad)}
+.nimg-add b{color:var(--ink);font-size:13px}
+.nimg-add:hover,.nimg-add.over,.nimg.over img{border-color:var(--accent)}
+.newnode{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;margin:-2px 0 10px}
+#builder{padding:6px 16px 16px;border-bottom:1px solid var(--border)}
+.bhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.bhead h3{margin:0;font-size:15px}
+.bname{max-width:520px}
+.bname .fld{margin-bottom:4px}
+.bform{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;gap:0 10px;align-items:start}
+.bgo{padding-top:19px}
+@media (max-width:900px){.bform{grid-template-columns:1fr 1fr}.bgo{padding-top:0}}
+.bform select{text-overflow:ellipsis}
+.bsec{margin-top:14px}
+.bsec > h4{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 0 6px}
+.bsec > p{margin:0 0 8px;color:var(--ink2);font-size:13px}
+.tag{display:inline-block;font-size:11px;font-weight:600;border-radius:999px;padding:1px 8px;white-space:nowrap;border:1px solid var(--border);color:var(--ink2)}
+.tag.in{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.tag.out{opacity:.55}
+table.legs tr.out td{color:var(--muted)}
+table.legs tr.wait td{color:var(--muted);font-style:italic}
+table.legs tr{cursor:default}
+.ask{background:var(--note-bg);color:var(--note-ink);border-radius:10px;padding:10px 12px;margin-top:10px}
+.ask > p{margin:0 0 8px;font-weight:600}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.opt{text-align:left;border:1px solid var(--border);border-left:4px solid var(--c);background:var(--surface);color:var(--ink);border-radius:8px;padding:8px 10px;font:inherit;font-size:13px;cursor:pointer}
+.opt:hover,.opt:focus-visible{background:var(--surface2)}
+.opt small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.steps li{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:13px}
+.exrow{display:grid;grid-template-columns:minmax(0,1fr) 130px auto;gap:6px;margin-bottom:6px}
+.ovin{width:110px !important}
+.btotal{margin-top:10px;font-size:13.5px}
+.brow{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;align-items:center}
+.plans-card .card-head .tb-group{gap:10px}
+
+/* ---------- full-screen layout: 75% graph, 25% side panel, plans in a bottom drawer ---------- */
+html,body{height:100%}
+body{overflow:hidden}
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh;padding:10px 12px 0;gap:10px}
+.topbar{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap}
+.topbar h1{font-size:17px;line-height:1.2;margin:0 4px 0 2px;white-space:nowrap;letter-spacing:-.01em}
+.topbar .toolbar{flex:1;margin:0;min-width:0}
+.main{flex:1;min-height:0;display:flex;gap:12px;align-items:stretch;padding-bottom:44px;position:relative}
+.graph-card{flex:3 1 0;min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.graph-card .graph-scroll{flex:1;min-height:0;overflow:auto}
+.side{flex:1 1 0;min-width:0;position:static;max-height:none;overflow:auto}
+.main.side-hidden .side{display:none}
+.sidetab{position:absolute;right:0;top:12px;writing-mode:vertical-rl;border:1px solid var(--border);border-right:0;background:var(--surface);color:var(--ink);border-radius:10px 0 0 10px;padding:12px 6px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;box-shadow:var(--shadow);z-index:3}
+.sidetab:hover{background:var(--surface2)}
+.main:not(.side-hidden) .sidetab{display:none}
+.main.side-hidden .graph-card{margin-right:30px}
+.side-head{display:flex;justify-content:flex-end;margin:-6px -8px 4px 0}
+.side-head .btn{font-size:12px;padding:3px 8px}
+@media (max-width:900px){
+  .main{padding-bottom:44px}
+  .side{position:absolute;right:0;top:0;bottom:44px;width:min(380px,92vw);z-index:4;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+}
+.viewtabs{display:flex;gap:6px;padding:0 16px 10px;overflow-x:auto;flex:none;scrollbar-width:thin}
+.vtab{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;border:1px solid var(--border);background:var(--surface);color:var(--ink2);border-radius:999px;padding:4px 12px;font:inherit;font-size:12.5px;cursor:pointer}
+.vtab:hover{background:var(--surface2)}
+.vtab[aria-selected="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.vtab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.planbar{margin:0 16px 10px;padding:8px 12px;border-radius:9px;border:1px solid var(--border);border-left:4px solid var(--c);background:var(--surface2);display:flex;gap:6px 14px;align-items:center;flex-wrap:wrap;font-size:13px}
+.planbar .pb-name{font-weight:700;font-size:14px}
+.planbar .pb-route{color:var(--ink2)}
+.planbar .btns{display:flex;gap:6px;margin-left:auto}
+.rename{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rename input{width:min(280px,60vw)}
+.rename .err{flex-basis:100%;color:var(--bad);font-size:12px;margin:0}
+.fielderr{color:var(--bad);font-size:12px;margin:-4px 0 8px}
+.drawer{position:fixed;left:12px;right:12px;bottom:0;z-index:6;display:flex;flex-direction:column;align-items:center;pointer-events:none}
+.drawer > *{pointer-events:auto}
+.drawer-tab{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-bottom:0;background:var(--surface);color:var(--ink);border-radius:12px 12px 0 0;padding:8px 18px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 -4px 14px rgba(0,0,0,.08)}
+.drawer-tab:hover{background:var(--surface2)}
+.drawer-tab .cnt{font-weight:500;color:var(--muted)}
+.drawer-body{width:100%;height:0;overflow:hidden;border-width:0;border-radius:14px 14px 0 0;margin:0;transition:height .25s ease;box-shadow:0 -10px 30px rgba(0,0,0,.18)}
+.drawer.open .drawer-body{height:min(64vh,720px);overflow:auto;border-width:1px}
+.drawer-body .card-head{position:sticky;top:0;background:var(--surface);z-index:1;border-bottom:1px solid var(--border)}
+@media (prefers-reduced-motion:reduce){.drawer-body{transition:none}}
+.side .plan-panel h2{font-size:15px;margin:0}
+.plan-panel .pp-route{margin:4px 0 10px;color:var(--ink2);font-size:13px}
+.plan-panel ol{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.plan-panel li{font-size:13px;border-left:3px solid var(--c);padding:2px 0 2px 8px}
+.plan-panel li.w{border-left-color:transparent;color:var(--muted);font-style:italic}
+.plan-panel .tot{display:flex;justify-content:space-between;font-weight:700;border-top:1px solid var(--axis);margin-top:10px;padding-top:8px}
+.plan-panel .exl{display:flex;justify-content:space-between;font-size:13px;color:var(--ink2)}
+/* time-of-day colours, for light and dark */
+:root{--sun:#ffc93c;--moon:#f4efd6;--sky-n:#1f2f63;--sky-d:#f6a06e;--sky-y:#a9d6f7;--sky-k:#ec7b57;--sky-a-n:.17;--sky-a-d:.16;--sky-a-y:.10;--sky-a-k:.16;--star:#fff;--sunpath:rgba(255,255,255,.85);--night:rgba(42,82,160,.075);--twilight:rgba(230,140,80,.07);--tod-night:#34456b;--tod-night-ink:#eef2fb;--tod-dawn:#f5c79a;--tod-day:#f8e3a0;--tod-dusk:#f0a985;--tod-ink:#3a2a08}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--sky-n:#0a1230;--sky-d:#b4552c;--sky-y:#3d6fa6;--sky-k:#a3402a;--sky-a-n:.55;--sky-a-d:.26;--sky-a-y:.16;--sky-a-k:.26;--star:#eef2ff;--sunpath:rgba(255,236,190,.6);--night:rgba(90,130,230,.10);--twilight:rgba(220,130,80,.08);--tod-night:#22304f;--tod-night-ink:#d3dcf2;--tod-dawn:#7d5130;--tod-day:#7a6524;--tod-dusk:#7f432d;--tod-ink:#fbefd6}}
+:root[data-theme="dark"]{--sky-n:#0a1230;--sky-d:#b4552c;--sky-y:#3d6fa6;--sky-k:#a3402a;--sky-a-n:.55;--sky-a-d:.26;--sky-a-y:.16;--sky-a-k:.26;--star:#eef2ff;--sunpath:rgba(255,236,190,.6);--night:rgba(90,130,230,.10);--twilight:rgba(220,130,80,.08);--tod-night:#22304f;--tod-night-ink:#d3dcf2;--tod-dawn:#7d5130;--tod-day:#7a6524;--tod-dusk:#7f432d;--tod-ink:#fbefd6}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+  <h1 title="Add places as nodes, join them with legs, then build and save named plans.">Route Branch Planner</h1>
+  <div class="toolbar" role="toolbar" aria-label="Planner tools">
+    <button id="addNode" class="btn primary" type="button">+ Node</button>
+    <button id="addLeg" class="btn" type="button">+ Leg</button>
+    <button id="makePlan" class="btn" type="button">Make a plan</button>
+    <span class="tb-sep"></span>
+    <span class="tb-group"><span class="tb-label">Zoom</span><input id="zoom" type="range" min="3" max="60" step="1" aria-label="Zoom timeline"></span>
+    <button id="fit" class="btn" type="button" title="Fit the whole timeline on screen">Fit</button>
+    <button id="costBtn" class="btn" type="button" aria-pressed="false" title="Show the cost of each leg on the timeline">Costs: off</button>
+    <span class="tb-sep"></span>
+    <label class="tb-group"><span class="tb-label" title="Budget per head; leave empty for none">Budget</span><input id="budget" type="number" min="0" step="10" inputmode="numeric" placeholder="none"></label>
+    <select id="currency" class="cursel" aria-label="Currency" title="Currency"></select>
+    <span class="spacer"></span>
+    <button id="undo" class="btn" type="button" title="Undo (Ctrl+Z)">Undo</button>
+    <button id="export" class="btn" type="button" title="Save everything as a JSON file">Export</button>
+    <button id="importBtn" class="btn" type="button" title="Load from a JSON file">Import</button>
+    <input id="importFile" type="file" accept="application/json,.json" hidden>
+    <button id="example" class="btn" type="button">Example</button>
+    <button id="clear" class="btn" type="button">Clear</button>
+    <span class="tb-sep"></span>
+    <button id="sideBtn" class="btn" type="button" aria-pressed="true" aria-controls="side" title="Show or hide the edit panel">Panel</button>
+    <button id="themeBtn" class="btn" type="button" title="Switch between light and dark">Dark</button>
+  </div>
+  </header>
+
+  <div class="main" id="main">
+    <section class="card graph-card" aria-label="Nodes and legs">
+      <div class="card-head"><h2 id="graphTitle">Nodes and legs</h2><div class="legend" id="legend"></div></div>
+      <div class="viewtabs" id="viewTabs" role="tablist" aria-label="View"></div>
+      <div class="planbar" id="planBar" hidden></div>
+      <div class="notice" id="exampleNote" hidden>
+        <span>Example: a made-up weekend trip with three ways to travel. Places, times and costs are invented.</span>
+        <button class="btn small" type="button" id="exampleClear">Clear and start my own</button>
+        <button class="btn small" type="button" id="exampleHide">Keep it</button>
+      </div>
+      <div class="notice" id="noTimeHint" hidden></div>
+      <div id="graphScroll" class="graph-scroll">
+        <svg id="graph" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Nodes and legs"></svg>
+        <div id="emptyGraph" class="empty" hidden>
+          <p>No nodes yet. Add the places you might pass through: home, airports, stations, cities.</p>
+          <button class="btn primary" type="button" id="emptyAdd">+ Add a node</button>
+          <button class="btn" type="button" id="emptyExample">Load an example</button>
+        </div>
+      </div>
+      <div id="now" class="now" aria-live="polite"></div>
+    </section>
+    <aside class="card side" id="side" aria-label="Edit panel">
+      <div class="side-head"><button class="btn" type="button" id="sideHide" title="Hide this panel">Hide ▶</button></div>
+      <div id="inspector"></div>
+    </aside>
+    <button class="sidetab" id="sideOpen" type="button" title="Show the edit panel">◀ Panel</button>
+  </div>
+
+  <section class="drawer" id="drawer" aria-label="Plans">
+  <button class="drawer-tab" id="drawerTab" type="button" aria-expanded="false" aria-controls="drawerBody"><span id="drawerArrow">▲</span> Plans <span class="cnt" id="planCount"></span></button>
+  <div class="card plans-card drawer-body" id="drawerBody">
+    <div class="card-head">
+      <h2>Plans</h2>
+      <div class="tb-group">
+        <label>Sort
+          <select id="sort">
+            <option value="made">As saved</option>
+            <option value="cost">Cheapest first</option>
+            <option value="start">Leaves earliest</option>
+            <option value="end">Arrives earliest</option>
+            <option value="dur">Shortest door to door</option>
+          </select>
+        </label>
+        <button id="makePlan2" class="btn primary small" type="button">+ Make a plan</button>
+        <button id="drawerClose" class="btn small" type="button" title="Hide plans">Hide ▼</button>
+      </div>
+    </div>
+    <div id="builder" hidden></div>
+    <div class="table-scroll">
+      <table class="plans" id="plansTable">
+        <thead><tr><th><span class="muted" title="Pick">★</span></th><th>Plan</th><th>Route</th><th>Leaves</th><th>Arrives</th><th>Door to door</th><th>Cost per head</th></tr></thead>
+        <tbody id="plansBody"></tbody>
+      </table>
+    </div>
+    <p id="planEmpty" class="hint" hidden>No saved plans yet. Choose “Make a plan”, pick where it starts and ends, and choose the way at each split.</p>
+    <div id="detail"></div>
+  </div>
+  </section>
+</div>
+<div id="toast" class="toast" role="status" hidden></div>
+<datalist id="placeList"></datalist>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- constants ---------- */
+const $ = s => document.querySelector(s);
+const SVGNS = 'http://www.w3.org/2000/svg';
+const MIN = 60e3, H = 3600e3;
+const STORE = 'route-branch-planner.v1';
+const MODES = [
+  ['flight', 'Flight', 'var(--s1)'],
+  ['train', 'Train', 'var(--s7)'],
+  ['bus', 'Bus', 'var(--s2)'],
+  ['cab', 'Cab / van', 'var(--s3)'],
+  ['ferry', 'Ferry', 'var(--s5)'],
+  ['other', 'Other', 'var(--s9)'],
+];
+const MODE = Object.fromEntries(MODES.map(([k, label, color]) => [k, { label, color, tag: label }]));
+const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+const F = { place: `600 12px ${FONT}`, small: `11px ${FONT}`, time: `600 11px ${FONT}`, dur: `600 10.5px ${FONT}`, cost: `700 11px ${FONT}`, root: `600 13px ${FONT}`, badge: `600 12px ${FONT}` };
+const LAY = { top: 62, rowH: 96, right: 260 };
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const BUFS = [0, 15, 30, 60, 120, 180];
+const SORTS = ['made', 'cost', 'start', 'end', 'dur'];
+const LEGF = { from: '', to: '', mode: 'flight', info: '', cost: '', dep: '', arr: '', buf: '' };
+
+/* ---------- state ---------- */
+let S = null;                       // saved: nodes, legs, plans
+let T = {};                         // computed per leg: dep, arrSched, arr, buf, timed, ok, warn
+let PL = [], PLBY = {}, LEGPLANS = {}, hasTime = false;
+let sel = null;                     // { k: 'node' | 'leg', id }
+let focusPlan = null, hoverPlan = null, hoverLeg = null, scrubT = null, pinned = false;
+let geo = null, gScrub = null, focusNext = null, pendingSnap = null;
+let bldSnap = null;
+let B = null;                       // the plan being made (not saved until "Save plan")
+let viewPlan = null;                // plan view mode: only this plan's nodes and legs
+let renaming = null;                // { id, where } while a plan name is being edited
+const UIKEY = 'route-branch-planner.ui';
+let UI = { side: true, drawer: false, theme: null, costs: false };
+try { Object.assign(UI, JSON.parse(localStorage.getItem(UIKEY) || '{}')); } catch (e) { /* ignore */ }
+function saveUI() { try { localStorage.setItem(UIKEY, JSON.stringify(UI)); } catch (e) { /* ignore */ } }
+const undoStack = [];
+
+/* ---------- small helpers ---------- */
+const mctx = document.createElement('canvas').getContext('2d');
+function tw(s, font) { mctx.font = font; return mctx.measureText(s).width; }
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(SVGNS, tag);
+  if (attrs) for (const k in attrs) if (attrs[k] != null) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function txt(parent, x, y, s, cls, extra) {
+  const t = el('text', Object.assign({ x, y, class: cls }, extra || {}), parent);
+  t.textContent = s;
+  return t;
+}
+function h(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  if (props) for (const k in props) {
+    const v = props[k];
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k === 'dataset') Object.assign(e.dataset, v);
+    else if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids) {
+    if (c == null || c === false) continue;
+    e.append(c.nodeType ? c : document.createTextNode(String(c)));
+  }
+  return e;
+}
+function num(v) { if (v === '' || v == null) return null; const x = Number(v); return isFinite(x) ? x : null; }
+function ts(v) { if (!v) return null; const t = new Date(v).getTime(); return isNaN(t) ? null : t; }
+function pad(n) { return String(n).padStart(2, '0'); }
+function toLocal(t) {
+  if (t == null || t === '') return '';
+  const d = new Date(t);
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function hm(t) {
+  const d = new Date(t); let hr = d.getHours(); const m = d.getMinutes();
+  const ap = hr < 12 ? 'AM' : 'PM'; hr = hr % 12 || 12;
+  return m ? `${hr}:${pad(m)} ${ap}` : `${hr} ${ap}`;
+}
+function dayLbl(t) { const d = new Date(t); return `${DAYS[d.getDay()]} ${d.getDate()} ${MONS[d.getMonth()]}`; }
+function fmtDT(t) { return t == null ? '—' : `${dayLbl(t)}, ${hm(t)}`; }
+function shortDT(t) { return t == null ? '' : `${DAYS[new Date(t).getDay()]} ${hm(t)}`; }
+function fmtDur(ms) {
+  if (ms == null || isNaN(ms)) return '—';
+  const neg = ms < 0; const m = Math.round(Math.abs(ms) / MIN);
+  const d = Math.floor(m / 1440), hr = Math.floor((m % 1440) / 60), mm = m % 60;
+  const s = d ? `${d}d${hr ? ' ' + hr + 'h' : ''}` : hr ? `${hr}h${mm ? ' ' + mm + 'm' : ''}` : `${mm}m`;
+  return (neg ? '−' : '') + s;
+}
+const CURRENCIES = ['USD', 'EUR', 'GBP', 'INR', 'JPY', 'CNY', 'AUD', 'CAD', 'CHF', 'SGD', 'AED', 'HKD', 'NZD', 'SEK', 'NOK', 'DKK', 'ZAR', 'BRL', 'MXN', 'KRW', 'THB', 'MYR', 'IDR', 'PHP', 'SAR', 'TRY', 'PLN'];
+const REGION_CURRENCY = { US: 'USD', GB: 'GBP', IN: 'INR', JP: 'JPY', CN: 'CNY', AU: 'AUD', CA: 'CAD', CH: 'CHF', SG: 'SGD', AE: 'AED', HK: 'HKD', NZ: 'NZD', SE: 'SEK', NO: 'NOK', DK: 'DKK', ZA: 'ZAR', BR: 'BRL', MX: 'MXN', KR: 'KRW', TH: 'THB', MY: 'MYR', ID: 'IDR', PH: 'PHP', SA: 'SAR', TR: 'TRY', PL: 'PLN',
+  DE: 'EUR', FR: 'EUR', ES: 'EUR', IT: 'EUR', NL: 'EUR', BE: 'EUR', AT: 'EUR', IE: 'EUR', PT: 'EUR', FI: 'EUR', GR: 'EUR', LU: 'EUR', SK: 'EUR', SI: 'EUR', EE: 'EUR', LV: 'EUR', LT: 'EUR', HR: 'EUR', MT: 'EUR', CY: 'EUR' };
+function guessCurrency() {
+  const langs = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en-US']);
+  for (const l of langs) { const r = (String(l).split('-')[1] || '').toUpperCase(); if (REGION_CURRENCY[r]) return REGION_CURRENCY[r]; }
+  return 'USD';
+}
+const moneyFmt = {};
+function money(n) {
+  const c = (S && CURRENCIES.includes(S.currency)) ? S.currency : 'USD';
+  const f = moneyFmt[c] || (moneyFmt[c] = new Intl.NumberFormat(undefined, { style: 'currency', currency: c, maximumFractionDigits: 0, minimumFractionDigits: 0 }));
+  return f.format(Math.round(+n || 0));
+}
+function curSym() { try { const p = new Intl.NumberFormat(undefined, { style: 'currency', currency: S.currency || 'USD', currencyDisplay: 'narrowSymbol' }).formatToParts(0).find(x => x.type === 'currency'); return p ? p.value : S.currency; } catch (e) { return S.currency; } }
+function floorHour(t) { const d = new Date(t); d.setMinutes(0, 0, 0); return d.getTime(); }
+function roundTo(t, step) { return Math.round(t / step) * step; }
+function normName(s) { return String(s || '').trim().toLowerCase().replace(/\s+/g, ' '); }
+function nodeName(id) { const n = S.nodes[id]; return n ? (n.name.trim() || 'Unnamed node') : '?'; }
+function planColor(p) { return p && Number.isInteger(p.cslot) && p.cslot >= 0 && p.cslot < 8 ? `var(--s${p.cslot + 1})` : 'var(--s9)'; }
+// Legs are coloured by how you travel; plans keep their own colour for tabs, badges and waits.
+function legColor(id) { const l = S.legs[id]; return (l && MODE[l.mode] ? MODE[l.mode] : MODE.other).color; }
+function legLabel(id) { const l = S.legs[id]; return `${nodeName(l.from)} → ${nodeName(l.to)}`; }
+function byDep(a, b) { return (T[a] && T[a].dep != null ? T[a].dep : Infinity) - (T[b] && T[b].dep != null ? T[b].dep : Infinity); }
+function legsFrom(id) { return Object.keys(S.legs).filter(l => S.legs[l].from === id).sort(byDep); }
+function legsTo(id) { return Object.keys(S.legs).filter(l => S.legs[l].to === id).sort(byDep); }
+function legCostIn(p, id) { return S.legs[id].cost; } // a leg has one fare, shared by every plan that uses it
+// Legs with the same two nodes, transport and times are the same trip, so they always share one fare.
+function legKey(l) { return [l.from, l.to, l.mode, l.dep, l.arr].join('|'); }
+function twinsOf(id) {
+  const l = S.legs[id];
+  if (!l || !l.from || !l.to || !l.dep || !l.arr) return [];
+  const k = legKey(l);
+  return Object.keys(S.legs).filter(x => x !== id && legKey(S.legs[x]) === k);
+}
+function adoptTwinFare(id) {
+  const tw_ = twinsOf(id).find(x => S.legs[x].cost !== '');
+  if (tw_ && S.legs[id].cost !== S.legs[tw_].cost) {
+    S.legs[id].cost = S.legs[tw_].cost;
+    const f = $('#inspector [data-f=cost]'); if (f) f.value = S.legs[id].cost;
+    toast(`Same trip as another leg, so it uses the same fare: ${money(S.legs[id].cost)}`);
+  }
+}
+function setFare(id, v) { if (!S.legs[id]) return; S.legs[id].cost = v; twinsOf(id).forEach(x => { S.legs[x].cost = v; }); }
+// A generic, meaningful name for a wait, from how long it is and whether it runs through the night.
+function defaultWaitLabel(ms, from, to) {
+  const hrs = ms / H, a = new Date(from), b = new Date(to);
+  const nights = from != null && to != null && (a.toDateString() !== b.toDateString() || a.getHours() < 5);
+  if (hrs >= 20) return 'Stay';
+  if (nights && hrs >= 5) return 'Overnight stop';
+  if (hrs < 3) return 'Transfer';
+  return 'Waiting time';
+}
+function waitInfo(p, legId) {
+  const legs = p.legs.filter(id => S.legs[id]), i = legs.indexOf(legId); if (i < 1) return null;
+  const prev = legs[i - 1];
+  const a = T[prev].arr, d = T[legId].dep, node = S.legs[legId].from;
+  const ms = a != null && d != null ? d - a : null;
+  const auto = defaultWaitLabel(ms || 0, a, d), custom = (p.waits && p.waits[legId]) || '';
+  return { plan: p.id, leg: legId, node, from: a, to: d, ms, auto, custom, label: custom || auto };
+}
+function fld(label, input, hint) { return h('label', { class: 'fld' }, h('span', { text: label }), input, hint ? h('small', { text: hint }) : null); }
+
+/* ---------- state lifecycle ---------- */
+function blank() { return { v: 3, currency: guessCurrency(), budget: 0, pph: null, sort: 'made', nodes: {}, order: [], legs: {}, plans: {}, planOrder: [], picked: null, seq: 1, example: false }; }
+function uid(p) { let id; do { id = p + (S.seq++).toString(36) + Math.random().toString(36).slice(2, 5); } while (S.nodes[id] || S.legs[id] || S.plans[id]); return id; }
+function addNode(name) { const id = uid('n'); S.nodes[id] = { id, name: name || '', note: '' }; S.order.push(id); return id; }
+function findNode(name, except) { const k = normName(name); if (!k) return null; return S.order.find(id => id !== except && normName(S.nodes[id].name) === k) || null; }
+function nodeFor(name) { return findNode(name) || addNode(String(name).trim()); }
+function addLeg(props) { const id = uid('l'); S.legs[id] = Object.assign({ id }, LEGF, props); return id; }
+function assignSlots() {
+  const taken = new Set();
+  S.planOrder.forEach(id => { const p = S.plans[id]; if (Number.isInteger(p.cslot) && p.cslot >= 0 && p.cslot < 8 && !taken.has(p.cslot)) taken.add(p.cslot); else delete p.cslot; });
+  S.planOrder.forEach(id => {
+    const p = S.plans[id]; if (Number.isInteger(p.cslot)) return;
+    for (let i = 0; i < 8; i++) if (!taken.has(i)) { p.cslot = i; taken.add(i); return; }
+  });
+}
+// Rows follow the first time anything happens at each node; nodes with no timed legs go last.
+function sortRows() {
+  const first = {};
+  for (const id in S.legs) {
+    const l = S.legs[id], d = ts(l.dep), a = ts(l.arr);
+    if (l.from && d != null) first[l.from] = Math.min(first[l.from] ?? Infinity, d);
+    if (l.to && a != null) first[l.to] = Math.min(first[l.to] ?? Infinity, a);
+  }
+  const idx = new Map(S.order.map((id, i) => [id, i]));
+  S.order.sort((a, b) => ((first[a] ?? Infinity) - (first[b] ?? Infinity)) || (idx.get(a) - idx.get(b)));
+}
+function normalize(d) {
+  if (!d || typeof d !== 'object') return null;
+  if (Array.isArray(d.roots)) return migrateTree(d);
+  if (!d.nodes || !d.legs || typeof d.nodes !== 'object' || typeof d.legs !== 'object') return null;
+  const out = blank();
+  out.budget = num(d.budget) ?? 0;
+  out.currency = CURRENCIES.includes(d.currency) ? d.currency : (d.budget != null ? 'INR' : guessCurrency()); // saves made before currencies were added were in rupees
+  out.pph = num(d.pph);
+  out.sort = SORTS.includes(d.sort) ? d.sort : 'made';
+  out.example = !!d.example;
+  out.seq = Math.max(1, num(d.seq) || 1);
+  for (const id in d.nodes) {
+    const n = d.nodes[id]; if (!n || typeof n !== 'object') continue;
+    out.nodes[id] = { id, name: String(n.name ?? ''), note: String(n.note ?? '') };
+    if (typeof n.img === 'string' && (/^data:image\/(png|jpeg|webp|gif);base64,/.test(n.img) || /^https?:\/\/\S+$/i.test(n.img))) out.nodes[id].img = n.img;
+  }
+  out.order = (Array.isArray(d.order) ? d.order : []).map(String).filter((id, i, a) => out.nodes[id] && a.indexOf(id) === i);
+  for (const id in out.nodes) if (!out.order.includes(id)) out.order.push(id);
+  for (const id in d.legs) {
+    const l = d.legs[id]; if (!l || typeof l !== 'object') continue;
+    const o = { id };
+    for (const f in LEGF) {
+      let v = l[f];
+      if (f === 'cost' || f === 'buf') v = num(v) ?? '';
+      else v = v == null ? LEGF[f] : String(v);
+      o[f] = v;
+    }
+    if (!MODE[o.mode]) o.mode = 'other';
+    if (o.from && !out.nodes[o.from]) o.from = '';
+    if (o.to && !out.nodes[o.to]) o.to = '';
+    out.legs[id] = o;
+  }
+  const plans = d.plans && typeof d.plans === 'object' ? d.plans : {};
+  for (const id in plans) {
+    const p = plans[id]; if (!p || typeof p !== 'object') continue;
+    const o = {
+      id, name: String(p.name ?? 'Plan'),
+      legs: (Array.isArray(p.legs) ? p.legs : []).map(String),
+      extras: (Array.isArray(p.extras) ? p.extras : []).filter(x => x && typeof x === 'object').map(x => ({ label: String(x.label ?? ''), amount: num(x.amount) ?? '' })),
+      waits: {}, pending: [], start: String(p.start ?? ''), end: String(p.end ?? ''), startT: String(p.startT ?? ''), endT: String(p.endT ?? ''),
+    };
+    if (Array.isArray(p.pending)) o.pending = p.pending.map(String);
+    if (p.waits && typeof p.waits === 'object') for (const k in p.waits) { const v = String(p.waits[k] ?? '').trim(); if (v) o.waits[k] = v.slice(0, 60); }
+    if (Number.isInteger(p.cslot)) o.cslot = p.cslot;
+    out.plans[id] = o;
+  }
+  out.planOrder = (Array.isArray(d.planOrder) ? d.planOrder : []).map(String).filter((id, i, a) => out.plans[id] && a.indexOf(id) === i);
+  for (const id in out.plans) if (!out.planOrder.includes(id)) out.planOrder.push(id);
+  out.picked = typeof d.picked === 'string' && out.plans[d.picked] ? d.picked : null;
+  return out;
+}
+// Older saves were a tree of stops. Each place becomes one node, each stop-to-stop step a leg
+// (identical legs are merged), and each end of the tree becomes a saved plan.
+function migrateTree(d) {
+  const prev = S;
+  S = blank();
+  S.budget = num(d.budget) ?? 0; S.pph = num(d.pph); S.example = !!d.example;
+  if (!d.example) S.currency = 'INR';
+  const N = d.nodes && typeof d.nodes === 'object' ? d.nodes : {};
+  const legKey = new Map(), seen = new Set();
+  let k = 0;
+  const legOf = (from, to, src) => {
+    const o = { from, to, mode: MODE[src.mode] ? src.mode : 'other', info: String(src.info ?? ''), cost: num(src.cost) ?? '', dep: String(src.dep ?? ''), arr: String(src.arr ?? ''), buf: num(src.buf) ?? '' };
+    const key = JSON.stringify(o);
+    if (!legKey.has(key)) legKey.set(key, addLeg(o));
+    return legKey.get(key);
+  };
+  const rec = (id, nodeId, trail, extras, root) => {
+    const src = N[id]; if (!src || typeof src !== 'object' || seen.has(id)) return;
+    seen.add(id);
+    const ex = extras.slice(), stay = num(src.stay);
+    if (stay != null) ex.push({ label: `At ${nodeName(nodeId)}${src.note ? ': ' + src.note : ''}`, amount: stay });
+    const kids = (Array.isArray(src.kids) ? src.kids : []).map(String).filter(x => N[x]);
+    if (!kids.length) {
+      if (trail.length) {
+        k++;
+        const pid = uid('p');
+        S.plans[pid] = { id: pid, name: String(src.plan || '').trim() || `Plan ${k}`, legs: trail, extras: ex, waits: {}, pending: [], start: root.nodeId, end: nodeId, startT: String(root.src.time || ''), endT: '' };
+        S.planOrder.push(pid);
+        if (d.picked === id) S.picked = pid;
+      }
+      return;
+    }
+    kids.forEach(kid => {
+      const ks = N[kid];
+      const to = nodeFor(String(ks.place || '').trim() || 'Unnamed stop');
+      rec(kid, to, trail.concat(legOf(nodeId, to, ks)), ex, root);
+    });
+  };
+  d.roots.forEach(r => {
+    const src = N[r]; if (!src) return;
+    const nid = nodeFor(String(src.place || '').trim() || 'Unnamed start');
+    rec(String(r), nid, [], [], { nodeId: nid, src });
+  });
+  assignSlots(); sortRows();
+  const out = S; S = prev;
+  return out;
+}
+let saveWarned = false;
+function save() {
+  try { localStorage.setItem(STORE, JSON.stringify(S)); saveWarned = false; }
+  catch (e) { if (!saveWarned) { saveWarned = true; toast('Could not save in this browser: storage is full. Remove some node images, or use Export to keep a copy.'); } }
+}
+function loadSaved() {
+  try { const raw = localStorage.getItem(STORE); if (raw) return normalize(JSON.parse(raw)); } catch (e) { /* ignore */ }
+  return null;
+}
+function checkpoint() { undoStack.push(JSON.stringify(S)); if (undoStack.length > 80) undoStack.shift(); }
+function undo() {
+  const s = undoStack.pop(); if (!s) return;
+  S = normalize(JSON.parse(s)) || blank();
+  if (B) { B.paths = null; B.chosen = []; B.auto = new Set(); }
+  renderAll();
+}
+
+/* ---------- example ---------- */
+function exampleState() {
+  // A made-up weekend: three ways from Home to Hill Town or Coast City, starting this coming Friday.
+  const fri = new Date(); fri.setHours(0, 0, 0, 0);
+  fri.setDate(fri.getDate() + ((5 - fri.getDay() + 7) % 7 || 7));
+  const at = (day, hhmm) => { const d = new Date(fri); d.setDate(d.getDate() + day); const [hh, mm] = hhmm.split(':').map(Number); d.setHours(hh, mm, 0, 0); return toLocal(d.getTime()); };
+  const d = { roots: [], nodes: {}, example: true, budget: 0 };
+  let i = 0;
+  const mkn = (p, o) => { const id = 'x' + (i++); d.nodes[id] = Object.assign({ kids: [] }, o); if (p) d.nodes[p].kids.push(id); else d.roots.push(id); return id; };
+  const stay = 'Hotel and food, 2 nights (estimate)';
+  const home = mkn(null, { place: 'Home' });
+  // by train
+  const st1 = mkn(home, { place: 'Central Station', mode: 'cab', info: 'Taxi', cost: 15, dep: at(0, '07:00'), arr: at(0, '07:40') });
+  const hill1 = mkn(st1, { place: 'Hill Town', mode: 'train', info: 'Morning express', cost: 45, dep: at(0, '08:30'), arr: at(0, '14:30'), buf: 30, stay: 160, note: stay });
+  const st2 = mkn(hill1, { place: 'Central Station', mode: 'train', info: 'Afternoon express', cost: 45, dep: at(2, '15:00'), arr: at(2, '21:00') });
+  mkn(st2, { place: 'Home', mode: 'cab', info: 'Taxi', cost: 15, dep: at(2, '21:30'), arr: at(2, '22:10'), plan: 'By train' });
+  // fly to the coast, bus up to the hills, train home
+  const ap1 = mkn(home, { place: 'City Airport', mode: 'cab', info: 'Taxi', cost: 20, dep: at(0, '06:00'), arr: at(0, '06:45') });
+  const coast1 = mkn(ap1, { place: 'Coast City', mode: 'flight', info: 'Morning flight', cost: 110, dep: at(0, '08:00'), arr: at(0, '09:30') });
+  const hill2 = mkn(coast1, { place: 'Hill Town', mode: 'bus', info: 'Coach', cost: 12, dep: at(0, '10:30'), arr: at(0, '14:00'), buf: 30, stay: 160, note: stay });
+  const st3 = mkn(hill2, { place: 'Central Station', mode: 'train', info: 'Afternoon express', cost: 45, dep: at(2, '15:00'), arr: at(2, '21:00') });
+  mkn(st3, { place: 'Home', mode: 'cab', info: 'Taxi', cost: 15, dep: at(2, '21:30'), arr: at(2, '22:10'), plan: 'Fly, then coach' });
+  // a weekend at the coast
+  const ap2 = mkn(home, { place: 'City Airport', mode: 'cab', info: 'Taxi', cost: 20, dep: at(0, '06:00'), arr: at(0, '06:45') });
+  const coast2 = mkn(ap2, { place: 'Coast City', mode: 'flight', info: 'Morning flight', cost: 110, dep: at(0, '08:00'), arr: at(0, '09:30'), stay: 200, note: stay });
+  const ap3 = mkn(coast2, { place: 'City Airport', mode: 'flight', info: 'Evening flight', cost: 105, dep: at(2, '18:00'), arr: at(2, '19:30') });
+  mkn(ap3, { place: 'Home', mode: 'cab', info: 'Taxi', cost: 20, dep: at(2, '20:00'), arr: at(2, '20:45'), plan: 'Coast weekend' });
+  const out = migrateTree(d);
+  out.currency = guessCurrency();
+  return out;
+}
+
+/* ---------- compute ---------- */
+function compute() {
+  T = {}; hasTime = false; LEGPLANS = {};
+  for (const id in S.legs) {
+    const l = S.legs[id];
+    let d = ts(l.dep), a = ts(l.arr);
+    const noDep = d == null, noArr = a == null;
+    if (d == null && a != null) d = a - 2 * H;
+    if (a == null && d != null) a = d + 2 * H;
+    const buf = Math.max(0, +l.buf || 0) * MIN, warn = [];
+    const ok = !!(l.from && l.to && l.from !== l.to && S.nodes[l.from] && S.nodes[l.to]);
+    if (!l.from || !l.to) warn.push('Pick both ends of this leg.');
+    else if (l.from === l.to) warn.push('This leg starts and ends at the same node.');
+    if (!noDep && !noArr && a < d) warn.push('It arrives before it leaves. Check the dates.');
+    T[id] = { dep: d, arrSched: a, buf, arr: a != null ? a + buf : null, noDep, noArr, timed: d != null, ok, warn };
+    if (ok && d != null) hasTime = true;
+  }
+  S.planOrder.forEach(pid => S.plans[pid].legs.forEach(l => {
+    if (!S.legs[l]) return;
+    const a = LEGPLANS[l] || (LEGPLANS[l] = []);
+    if (!a.includes(pid)) a.push(pid);
+  }));
+  PL = S.planOrder.map(id => planInfo(S.plans[id]));
+  PLBY = Object.fromEntries(PL.map(p => [p.id, p]));
+  if (S.picked && !S.plans[S.picked]) S.picked = null;
+  if (focusPlan && !S.plans[focusPlan]) focusPlan = null;
+  if (hoverPlan && !S.plans[hoverPlan]) hoverPlan = null;
+  if (hoverLeg && !S.legs[hoverLeg]) hoverLeg = null;
+  if (sel && !(sel.k === 'node' ? S.nodes[sel.id] : sel.k === 'wait' ? S.plans[sel.plan] && waitInfo(S.plans[sel.plan], sel.id) : S.legs[sel.id])) sel = null;
+  if (viewPlan && !S.plans[viewPlan]) viewPlan = null;
+  if (renaming && !S.plans[renaming.id]) renaming = null;
+}
+function planInfo(p) {
+  const legs = p.legs.filter(id => S.legs[id]);
+  const missing = p.legs.length - legs.length, issues = [];
+  if (missing) issues.push(`${missing} leg${missing > 1 ? 's were' : ' was'} deleted from this plan.`);
+  let legCost = 0, extra = 0, move = 0, wait = 0;
+  legs.forEach((id, i) => {
+    const l = S.legs[id], t = T[id], c = legCostIn(p, id);
+    if (c !== '') legCost += +c;
+    if (t.dep != null && t.arr != null) move += Math.max(0, t.arr - t.dep);
+    if (t.warn.length) issues.push(`${legLabel(id)}: ${t.warn[0]}`);
+    if (i > 0) {
+      const pid = legs[i - 1], pt = T[pid];
+      if (S.legs[pid].to !== l.from) issues.push(`${legLabel(pid)} does not connect to ${legLabel(id)}.`);
+      else if (pt.arr != null && t.dep != null) {
+        const w = t.dep - pt.arr;
+        if (w < -MIN) issues.push(`${legLabel(id)} leaves before you reach ${nodeName(l.from)}.`);
+        wait += Math.max(0, w);
+      }
+    }
+  });
+  p.extras.forEach(x => { if (x.amount !== '') extra += +x.amount; });
+  const start = legs.length ? T[legs[0]].dep : null, end = legs.length ? T[legs[legs.length - 1]].arr : null;
+  const nodes = legs.length ? [S.legs[legs[0]].from, ...legs.map(id => S.legs[id].to)] : [];
+  return {
+    id: p.id, p, name: p.name.trim() || 'Untitled plan', legs, nodes, legCost, extra, cost: legCost + extra,
+    start, end, dur: start != null && end != null ? end - start : null, move, wait, issues, warn: issues.length > 0,
+    route: nodes.map(nodeName).join(' → ') || '(no legs)', color: planColor(p),
+  };
+}
+
+/* ---------- finding routes for a plan ---------- */
+// Every chain of legs from start to end that fits the window, where each leg leaves after the
+// previous one arrives. Nothing is chosen here: the person picks at each split.
+function findRoutes(start, end, startT, endT, startLeg, endLeg, allow) {
+  const out = [], t0 = ts(startT), t1 = ts(endT);
+  let capped = false;
+  const outs = {};
+  for (const id in S.legs) if (T[id].ok && (!allow || allow.has(id))) (outs[S.legs[id].from] || (outs[S.legs[id].from] = [])).push(id);
+  for (const k in outs) outs[k].sort(byDep);
+  const used = new Set();
+  const rec = (node, trail, tArr) => {
+    if (out.length >= 400) { capped = true; return; }
+    if (trail.length && node === end) { if (!endLeg || trail[trail.length - 1] === endLeg) out.push(trail); return; }
+    if (trail.length >= 30) return;
+    for (const id of outs[node] || []) {
+      if (used.has(id)) continue;
+      const t = T[id];
+      if (!trail.length) { if (startLeg ? id !== startLeg : t0 != null && (t.dep == null || t.dep < t0)) continue; }
+      else if (tArr != null && t.dep != null && t.dep < tArr - MIN) continue;
+      if (t1 != null && t.arr != null && t.arr > t1) continue;
+      used.add(id);
+      rec(S.legs[id].to, trail.concat(id), t.arr != null ? t.arr : tArr);
+      used.delete(id);
+    }
+  };
+  if (start && end) rec(start, [], null);
+  return { paths: out, capped };
+}
+function builderRemaining() {
+  if (!B || !B.paths) return [];
+  const c = B.chosen;
+  return B.paths.filter(p => p.length >= c.length && c.every((id, i) => p[i] === id));
+}
+function builderDone() { const r = builderRemaining(); return r.length > 0 && r.every(p => p.length === B.chosen.length); }
+function builderOptions() {
+  const i = B.chosen.length, seen = [];
+  builderRemaining().forEach(p => { if (p[i] && !seen.includes(p[i])) seen.push(p[i]); });
+  return seen.sort(byDep);
+}
+// Take a leg automatically only when it is the one and only way on.
+function builderAdvance() {
+  for (let guard = 0; guard < 60 && !builderDone(); guard++) {
+    const o = builderOptions();
+    if (o.length !== 1) break;
+    B.auto.add(B.chosen.length);
+    B.chosen.push(o[0]);
+  }
+}
+
+/* ---------- status at a moment ---------- */
+function statusAt(pi, t) {
+  const L = pi.legs;
+  if (!L.length || T[L[0]].dep == null) return null;
+  const f = T[L[0]];
+  if (t < f.dep) return { kind: 'before', text: `At ${nodeName(S.legs[L[0]].from)}`, sub: `leaves ${shortDT(f.dep)}` };
+  for (let i = 0; i < L.length; i++) {
+    const id = L[i], c = T[id], l = S.legs[id], nx = L[i + 1];
+    if (c.dep == null || c.arr == null) return { kind: 'odd', text: 'Some legs have no times', sub: '' };
+    if (t >= c.dep && t < c.arr) {
+      const m = MODE[l.mode] || MODE.other;
+      if (c.buf && t >= c.arrSched) return { kind: 'buf', leg: id, text: `Buffer time, ${legLabel(id)}`, sub: `due ${shortDT(c.arrSched)}, latest ${shortDT(c.arr)}` };
+      return { kind: 'move', leg: id, text: `${m.tag}, ${legLabel(id)}`, sub: c.buf ? `arrives ${shortDT(c.arrSched)} (+${fmtDur(c.buf)} buffer)` : `arrives ${shortDT(c.arr)}` };
+    }
+    if (!nx) return t >= c.arr ? { kind: 'done', text: `Arrived at ${nodeName(l.to)}`, sub: shortDT(c.arr) } : null;
+    const nc = T[nx];
+    if (nc.dep != null && t >= c.arr && t < nc.dep) return { kind: 'wait', node: l.to, text: `At ${nodeName(l.to)}`, sub: `leaves ${shortDT(nc.dep)}` };
+  }
+  return { kind: 'odd', text: 'Times overlap here', sub: 'check the dates' };
+}
+
+/* ---------- graph ---------- */
+// One row per node. Every leg in or out of a node starts or ends on that node's row, so legs
+// meet there; legs at a node within a few pixels of each other share one station capsule.
+function renderGraph() {
+  const svg = $('#graph'), sc = $('#graphScroll');
+  svg.replaceChildren();
+  gScrub = null;
+  const has = S.order.length > 0;
+  $('#emptyGraph').hidden = has;
+  $('#exampleNote').hidden = !S.example || !!viewPlan;
+  const vp = viewPlan && PLBY[viewPlan];
+  const plist = vp ? [vp] : PL;
+  const vpPend = vp ? (vp.p.pending || []).filter(id => S.legs[id] && T[id].ok) : [];
+  const vpNodes = vp ? new Set([...vp.nodes, ...vpPend.flatMap(id => [S.legs[id].from, S.legs[id].to])]) : null;
+  const order = vp ? S.order.filter(id => vpNodes.has(id)) : S.order;
+  const legIds = (vp ? vp.legs.concat(vpPend) : Object.keys(S.legs)).filter(id => T[id].ok).sort(byDep);
+  const timeOn = legIds.some(id => T[id].timed);
+  const untimed = legIds.filter(id => !T[id].timed).length;
+  const nt = $('#noTimeHint');
+  nt.hidden = !(has && untimed);
+  nt.textContent = !hasTime ? 'Add leave and arrive times to your legs to draw them on the timeline.'
+    : `${untimed} leg${untimed > 1 ? 's have' : ' has'} no times yet, so ${untimed > 1 ? 'they are' : 'it is'} not drawn. Click a node to find its legs.`;
+  if (!has) { svg.style.display = 'none'; geo = null; return; }
+  svg.style.display = '';
+
+  let left = 150;
+  order.forEach(id => { left = Math.max(left, Math.min(300, tw(nodeName(id), F.root) + 52 + (S.nodes[id].img ? 34 : 0))); });
+  const rowY = {};
+  let y = LAY.top + 14;
+  const rows = order.map(id => { const r = { id, top: y, y: y + 50, bot: y + LAY.rowH }; y = r.bot; rowY[id] = r.y; return r; });
+  let X = null, tmin = 0, tmax = 0, pph = 0, width = left + 420;
+  if (timeOn) {
+    let lo = Infinity, hi = -Infinity;
+    for (const id of legIds) { const t = T[id]; for (const v of [t.dep, t.arr]) if (v != null) { if (v < lo) lo = v; if (v > hi) hi = v; } }
+    tmin = floorHour(lo) - H; tmax = floorHour(hi) + 2 * H;
+    pph = S.pph || 14;
+    X = t => left + (t - tmin) / H * pph;
+    width = Math.ceil(X(tmax) + LAY.right);
+  }
+  width = Math.max(width, sc.clientWidth || 0);
+  const height = Math.max(y + 16, (sc.clientHeight || 0) - 4);
+  svg.setAttribute('width', width); svg.setAttribute('height', height);
+  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  const legs = {};
+  geo = { time: timeOn, X, tmin, tmax, pph, left, width, height, rowY, legs };
+
+  const gBg = el('g', null, svg), gEdge = el('g', null, svg), gSt = el('g', null, svg), gDot = el('g', null, svg),
+        gLab = el('g', null, svg), gBadge = el('g', null, svg);
+  gScrub = el('g', { class: 'scrub' }, svg);
+  el('rect', { x: 0, y: 0, width, height, class: 'hit' }, gBg);
+  rows.forEach((r, i) => { if (i % 2 === 0) el('rect', { x: 0, y: r.top, width, height: r.bot - r.top, class: 'rowband' }, gBg); });
+  if (timeOn) drawTimeAxis(gBg);
+  const meets = {};
+  plist.forEach(pi => pi.nodes.forEach(n => { (meets[n] || (meets[n] = new Set())).add(pi.id); }));
+  rows.forEach(r => {
+    el('line', { x1: left - 14, x2: width, y1: r.y, y2: r.y, class: 'rowline' }, gBg);
+    const g = el('g', { class: 'rowhead' + (sel && sel.k === 'node' && sel.id === r.id ? ' sel' : ''), 'data-node': r.id, tabindex: '0', role: 'button', 'aria-label': `Node ${nodeName(r.id)}. Edit` }, gBg);
+    el('rect', { x: 6, y: r.y - 17, width: left - 24, height: 40, rx: 8, class: 'rowhit' }, g);
+    const im = S.nodes[r.id].img, lx = im ? 50 : 16;
+    if (im) {
+      const cp = el('clipPath', { id: `nimg-${r.id}` }, g);
+      el('circle', { cx: 30, cy: r.y + 4, r: 14 }, cp);
+      el('image', { href: im, x: 16, y: r.y - 10, width: 28, height: 28, preserveAspectRatio: 'xMidYMid slice', 'clip-path': `url(#nimg-${r.id})` }, g);
+      el('circle', { cx: 30, cy: r.y + 4, r: 14, class: 'nimgring' }, g);
+    }
+    txt(g, lx, r.y + 4, nodeName(r.id), 'rowlbl');
+    const nLegs = legsFrom(r.id).length + legsTo(r.id).length, np = meets[r.id] ? meets[r.id].size : 0;
+    txt(g, lx, r.y + 19, np > 1 ? `${np} plans meet here` : `${nLegs} leg${nLegs === 1 ? '' : 's'}`, 'rowsub');
+    el('title', null, g).textContent = `${nodeName(r.id)}: click to edit, add legs from or to here`;
+  });
+  if (!timeOn) { applyHighlight(); return; }
+
+  const boxes = [];
+  const free = (x0, y0, x1, y1) => !boxes.some(b => x0 < b[2] + 4 && x1 > b[0] - 4 && y0 < b[3] + 1 && y1 > b[1] - 1);
+  const label = (x, yy, s, cls, font, attrs) => {
+    const w = tw(s, font);
+    if (!free(x - w / 2, yy - 11, x + w / 2, yy + 3)) return false;
+    boxes.push([x - w / 2, yy - 11, x + w / 2, yy + 3]);
+    txt(gLab, x, yy, s, cls + ' halo', attrs || null);
+    return true;
+  };
+  const curve = (x0, y0, x1, y1) => {
+    if (Math.abs(y1 - y0) < .5) return `M${x0} ${y0} L${x1} ${y1}`;
+    const k = Math.max(0, (x1 - x0) / 2);
+    return `M${x0} ${y0} C${x0 + k} ${y0} ${x1 - k} ${y1} ${x1} ${y1}`;
+  };
+
+  const legJobs = [], dwellJobs = [];
+  for (const id of legIds) {
+    const t = T[id]; if (!t.timed) continue;
+    const l = S.legs[id], yd = rowY[l.from], yk = rowY[l.to];
+    const s0 = X(t.dep), xS = X(t.arrSched), xA = X(t.arr);
+    const g = el('g', { class: 'edge' + (sel && sel.k === 'leg' && sel.id === id ? ' sel' : '') + (vpPend.includes(id) ? ' pend' : ''), 'data-leg': id }, gEdge);
+    g.style.setProperty('--c', legColor(id));
+    const m = MODE[l.mode] || MODE.other, d = curve(s0, yd, xS, yk);
+    if (t.buf) el('line', { x1: xS, y1: yk, x2: xA, y2: yk, class: 'bufband' }, g);
+    el('path', { d, class: 'seg' + (t.noDep || t.noArr ? ' est' : '') }, g);
+    if (t.buf) el('line', { x1: xS, y1: yk, x2: xA, y2: yk, class: 'bufline' }, g);
+    const hit = el('path', { d, class: 'seghit' }, g);
+    el('title', null, hit).textContent = legTitle(id);
+    legs[id] = { s0, yd, xS, yk, xA };
+    legJobs.push({ id, x: (s0 + xS) / 2, y: (yd + yk) / 2, mode: m.label, c: m.color, cost: l.cost });
+  }
+  // waiting at a node, for each saved plan
+  plist.forEach(pi => {
+    for (let i = 1; i < pi.legs.length; i++) {
+      const a = pi.legs[i - 1], b = pi.legs[i], ta = T[a], tb = T[b];
+      if (!ta.timed || !tb.timed || S.legs[a].to !== S.legs[b].from) continue;
+      const x0 = X(ta.arr), x1 = X(tb.dep);
+      if (x1 <= x0 + 1) continue;
+      const yy = rowY[S.legs[b].from];
+      const g = el('g', { class: 'wait' + (sel && sel.k === 'wait' && sel.id === b && sel.plan === pi.id ? ' sel' : ''), 'data-plan': pi.id, 'data-leg': b, 'data-wait': b }, gEdge);
+      g.style.setProperty('--c', pi.color);
+      el('line', { x1: x0, x2: x1, y1: yy, y2: yy, class: 'dwell' }, g);
+      const wi = waitInfo(pi.p, b);
+      el('line', { x1: x0, x2: x1, y1: yy, y2: yy, class: 'waithit' }, g);
+      el('title', null, g).textContent = `${wi.label} at ${nodeName(S.legs[b].from)}, ${fmtDur(wi.ms)} (${pi.name}). Click to rename this wait.`;
+      dwellJobs.push({ x0, x1, y: yy, ms: tb.dep - ta.arr, plan: pi.id, leg: b, lab: wi.label });
+    }
+  });
+
+  // leg ends on each node row, grouped into stations
+  const pts = {};
+  for (const id of legIds) {
+    const t = T[id]; if (!t.timed) continue;
+    const l = S.legs[id];
+    (pts[l.from] || (pts[l.from] = [])).push({ x: X(t.dep), leg: id, t: t.dep });
+    (pts[l.to] || (pts[l.to] = [])).push({ x: X(t.arr), leg: id, t: t.arrSched, arr: true });
+  }
+  rows.forEach(r => {
+    const ps = (pts[r.id] || []).sort((a, b) => a.x - b.x), cl = [];
+    ps.forEach(q => {
+      const last = cl[cl.length - 1];
+      if (last && q.x - last.x1 < 18) { last.items.push(q); last.x1 = q.x; } else cl.push({ x0: q.x, x1: q.x, items: [q] });
+    });
+    r.cl = cl;
+    cl.forEach(k => {
+      const nl = new Set(k.items.map(q => q.leg)).size;
+      k.station = nl > 1;
+      if (k.station) {
+        const st = el('rect', { x: k.x0 - 11, y: r.y - 11, width: k.x1 - k.x0 + 22, height: 22, rx: 11, class: 'station', 'data-node': r.id }, gSt);
+        el('title', null, st).textContent = `${nodeName(r.id)}: ${nl} legs meet here. Click to edit the node.`;
+        boxes.push([k.x0 - 11, r.y - 11, k.x1 + 11, r.y + 11]);
+      } else boxes.push([k.x0 - 8, r.y - 8, k.x1 + 8, r.y + 8]);
+      k.items.forEach(q => {
+        const g = el('g', { class: 'pt', 'data-leg': q.leg }, gDot);
+        g.style.setProperty('--c', legColor(q.leg));
+        el('circle', { cx: q.x, cy: r.y, r: k.station ? 4.5 : 5.5, class: 'dot' }, g);
+        el('title', null, g).textContent = legTitle(q.leg);
+        if (q.arr && T[q.leg].warn.length) {
+          el('circle', { cx: q.x + 9, cy: r.y - 9, r: 6.5, class: 'warnDot' }, g);
+          txt(g, q.x + 9, r.y - 5.8, '!', 'warnTxt');
+        }
+      });
+    });
+  });
+
+  // the start and end time of every leg, always shown: arrivals above the row line, departures below
+  rows.forEach(r => r.cl.forEach(k => k.items.forEach(q => {
+    const t = T[q.leg];
+    const s = q.arr ? hm(t.arrSched) + (t.buf ? ` +${fmtDur(t.buf)}` : '') : hm(t.dep);
+    const w = tw(s, F.time), levels = q.arr ? [-15, -27, -39] : [22, 34, 46];
+    let pos = null;
+    for (const dy of levels) {
+      for (const x of [q.x, q.x - w / 2 - 5, q.x + w / 2 + 5]) {
+        const yy = r.y + dy;
+        if (free(x - w / 2, yy - 10, x + w / 2, yy + 2)) { pos = [x, yy]; break; }
+      }
+      if (pos) break;
+    }
+    if (!pos) pos = [q.x, r.y + levels[levels.length - 1]]; // never drop a time, even when crowded
+    boxes.push([pos[0] - w / 2, pos[1] - 10, pos[0] + w / 2, pos[1] + 2]);
+    const g = el('g', { class: 'tm', 'data-leg': q.leg }, gLab);
+    g.style.setProperty('--c', legColor(q.leg));
+    if (Math.abs(pos[1] - r.y) > 24 || pos[0] !== q.x) el('line', { x1: q.x, y1: r.y + (q.arr ? -5 : 5), x2: pos[0], y2: pos[1] + (q.arr ? 3 : -10), class: 'tmlead' }, g);
+    txt(g, pos[0], pos[1], s, 'tl halo');
+    el('title', null, g).textContent = `${q.arr ? 'Arrives at' : 'Leaves'} ${nodeName(r.id)}: ${fmtDT(q.arr ? t.arrSched : t.dep)}\n${legTitle(q.leg)}`;
+  })));
+
+  // travel time of every leg, at the middle of its line (waiting time is shown on the row, as before)
+  for (const j of legJobs) {
+    const t = T[j.id];
+    if (t.dep == null || t.arrSched == null) continue;
+    const s = fmtDur(t.arrSched - t.dep), w = tw(s, F.dur) + 12;
+    let pos = null;
+    for (const dy of [0, -13, 13, -26, 26]) {
+      for (const dx of [0, -(w / 2 + 8), w / 2 + 8]) {
+        const x = j.x + dx, yy = j.y + dy;
+        if (free(x - w / 2, yy - 8, x + w / 2, yy + 8)) { pos = [x, yy]; break; }
+      }
+      if (pos) break;
+    }
+    if (!pos) pos = [j.x, j.y]; // never drop a travel time
+    boxes.push([pos[0] - w / 2, pos[1] - 8, pos[0] + w / 2, pos[1] + 8]);
+    const g = el('g', { class: 'durtag', 'data-leg': j.id }, gLab);
+    g.style.setProperty('--c', j.c);
+    el('rect', { x: pos[0] - w / 2, y: pos[1] - 8, width: w, height: 16, rx: 8 }, g);
+    txt(g, pos[0], pos[1] + 3.8, s, 'durtxt');
+    el('title', null, g).textContent = `Travel time ${s}${t.buf ? ` + ${fmtDur(t.buf)} buffer` : ''}\n${legTitle(j.id)}`;
+  }
+
+  // plan badges at the end of each saved plan
+  plist.forEach(pi => {
+    if (!pi.legs.length) return;
+    const last = pi.legs[pi.legs.length - 1], t = T[last];
+    if (!t.timed) return;
+    const node = S.legs[last].to, x = X(t.arr), yy = rowY[node];
+    const r = rows.find(q => q.id === node), k = r.cl.find(c => x >= c.x0 - .5 && x <= c.x1 + .5);
+    const s = `${S.picked === pi.id ? '★ ' : ''}${pi.name}${UI.costs ? ' · ' + money(pi.cost) : ''}`;
+    const w = tw(s, F.badge) + 22, bx = (k ? k.x1 : x) + 20;
+    let dy = 0;
+    for (const o of [0, 28, -28, 56, -56, 84, -84, 112]) if (free(bx, yy + o - 12, bx + w, yy + o + 12)) { dy = o; break; }
+    boxes.push([bx, yy + dy - 12, bx + w, yy + dy + 12]);
+    const g = el('g', { class: 'badge' + (S.picked === pi.id ? ' picked' : ''), 'data-plan': pi.id, tabindex: '0', role: 'button' }, gBadge);
+    g.style.setProperty('--c', pi.color);
+    if (dy) el('path', { d: `M${x + 6} ${yy} C${bx - 6} ${yy} ${bx - 10} ${yy + dy} ${bx} ${yy + dy}`, class: 'leader' }, g);
+    el('rect', { x: bx, y: yy + dy - 12, width: w, height: 24, rx: 12 }, g);
+    txt(g, bx + 11, yy + dy + 4.5, s, 'bt');
+    el('title', null, g).textContent = `${pi.name}: ${pi.route} · ${money(pi.cost)}. Click to show this plan.`;
+  });
+
+  // fare of each leg, only when "Costs" is switched on
+  if (UI.costs) for (const j of legJobs) {
+    if (j.cost === '') continue;
+    const s = money(j.cost), w = tw(s, F.cost) + 12;
+    let pos = null;
+    for (const dy of [0, -14, 14, -28, 28]) { const yy = j.y + dy; if (free(j.x - w / 2, yy - 9, j.x + w / 2, yy + 9)) { pos = yy; break; } }
+    if (pos == null) pos = j.y;
+    boxes.push([j.x - w / 2, pos - 9, j.x + w / 2, pos + 9]);
+    const g = el('g', { class: 'costtag', 'data-leg': j.id }, gLab);
+    g.style.setProperty('--c', j.c);
+    el('rect', { x: j.x - w / 2, y: pos - 9, width: w, height: 18, rx: 9 }, g);
+    txt(g, j.x, pos + 4, s, 'costtxt');
+    el('title', null, g).textContent = legTitle(j.id);
+  }
+
+  // node names near their stations, where there is room
+  rows.forEach(r => r.cl.forEach(k => {
+    const xm = (k.x0 + k.x1) / 2, nl = new Set(k.items.map(q => q.leg)).size;
+    const name = nl > 1 ? `${nodeName(r.id)} · ${nl}` : nodeName(r.id), at = { 'data-node': r.id };
+    for (const dy of [-15, -27, -39]) if (label(xm, r.y + dy, name, 'pl', F.place, at)) break;
+  }));
+  for (const j of dwellJobs) {
+    const room = j.x1 - j.x0 - 10, at = { 'data-plan': j.plan, 'data-wait': j.leg };
+    for (const s of [`${j.lab} · ${fmtDur(j.ms)}`, fmtDur(j.ms)]) {
+      if (room >= tw(s, F.small) && label((j.x0 + j.x1) / 2, j.y + 22, s, 'dl', F.small, at)) break;
+    }
+  }
+  drawScrub();
+  applyHighlight();
+}
+function curveY(L, x) {
+  if (Math.abs(L.yk - L.yd) < .5 || L.xS - L.s0 < 1) return x >= L.xS ? L.yk : L.yd;
+  const u = Math.min(1, Math.max(0, (x - L.s0) / (L.xS - L.s0)));
+  let a = 0, b = 1;
+  for (let i = 0; i < 24; i++) { const t = (a + b) / 2; if (1.5 * t * (1 - t) + t * t * t < u) a = t; else b = t; }
+  const t = (a + b) / 2;
+  return L.yd + (L.yk - L.yd) * (3 * t * t - 2 * t * t * t);
+}
+// Sky colours through a day, as [hour, key]; the timeline background and the strip above it
+// both fade between these, so night, sunrise, day and sunset blend instead of hard blocks.
+const SKY = [[0, 'n'], [4.5, 'n'], [6, 'd'], [7.5, 'y'], [16.5, 'y'], [18, 'k'], [19.5, 'n'], [24, 'n']];
+function rng(seed) { let x = (seed * 2654435761) >>> 0 || 1; return () => { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; return ((x >>> 0) % 10000) / 10000; }; }
+function drawTimeAxis(g) {
+  const { X, tmin, tmax, pph, height } = geo;
+  const svg = $('#graph'), defs = el('defs', null, svg);
+  const yA = LAY.top + 8, sy = 27, sh = 24, x0 = X(tmin), x1 = X(tmax);
+  const clip = el('clipPath', { id: 'skyclip' }, defs);
+  el('rect', { x: x0, y: sy, width: x1 - x0, height: sh, rx: 8 }, clip);
+  const sky = el('g', { 'clip-path': 'url(#skyclip)' }, g);
+  const d0 = new Date(tmin); d0.setHours(0, 0, 0, 0);
+  let i = 0;
+  for (let day = d0.getTime(); day < tmax; i++) {
+    const nd = new Date(day); nd.setDate(nd.getDate() + 1);
+    const next = nd.getTime();
+    for (const body of [false, true]) {
+      const lg = el('linearGradient', { id: `sky${body ? 'b' : ''}${i}`, gradientUnits: 'userSpaceOnUse', x1: X(day), x2: X(next), y1: 0, y2: 0 }, defs);
+      SKY.forEach(([hr, k]) => el('stop', { offset: (hr / 24).toFixed(4), style: `stop-color:var(--sky-${k});stop-opacity:${body ? `var(--sky-a-${k})` : 1}` }, lg));
+    }
+    const a = Math.max(tmin, day), b = Math.min(tmax, next);
+    if (b > a) {
+      el('rect', { x: X(a), y: yA, width: X(b) - X(a), height: height - yA, fill: `url(#skyb${i})` }, g);
+      el('rect', { x: X(day), y: sy, width: X(next) - X(day), height: sh, fill: `url(#sky${i})` }, sky);
+      // stars in the night sky
+      const r = rng(day / H);
+      for (const [h0, h1] of [[0, 4.6], [19.4, 24]]) {
+        const n = Math.round((h1 - h0) * pph / 9);
+        for (let k = 0; k < n; k++) {
+          const t = day + (h0 + r() * (h1 - h0)) * H;
+          el('circle', { cx: X(t), cy: sy + 3 + r() * (sh - 6), r: .6 + r() * .8, class: 'star', style: `opacity:${(.45 + r() * .55).toFixed(2)}` }, sky);
+        }
+      }
+      // the sun's path from sunrise to sunset
+      const xr = X(day + 6 * H), xs = X(day + 18 * H), xn = X(day + 12 * H);
+      el('path', { d: `M${xr} ${sy + sh - 2} Q${xn} ${sy - sh * .55} ${xs} ${sy + sh - 2}`, class: 'sunpath' }, sky);
+      const tip = (e, t) => { el('title', null, e).textContent = t; return e; };
+      const xm = X(day + 12 * H);
+      if (day + 12 * H >= tmin && day + 12 * H <= tmax) {
+        const sun = el('g', { class: 'sun' }, sky);
+        for (let k = 0; k < 8; k++) { const an = k * Math.PI / 4; el('line', { x1: xm + Math.cos(an) * 6.5, y1: sy + 9 + Math.sin(an) * 6.5, x2: xm + Math.cos(an) * 9, y2: sy + 9 + Math.sin(an) * 9 }, sun); }
+        el('circle', { cx: xm, cy: sy + 9, r: 4.6 }, sun);
+        tip(sun, 'Midday');
+      }
+      if (6 * pph >= 30) for (const [hr, name] of [[6, 'Sunrise, about 6 AM'], [18, 'Sunset, about 6 PM']]) {
+        const t = day + hr * H; if (t < tmin || t > tmax) continue;
+        const x = X(t), by = sy + sh - 1;
+        tip(el('path', { d: `M${x - 6} ${by} A6 6 0 0 1 ${x + 6} ${by} Z`, class: 'halfsun' }, sky), name);
+      }
+      if (day >= tmin && day <= tmax) {
+        const x = X(day), cy = sy + 12;
+        tip(el('path', { d: `M${x + 1.5} ${cy - 6} A6 6 0 1 0 ${x + 1.5} ${cy + 6} A4.6 4.6 0 1 1 ${x + 1.5} ${cy - 6} Z`, class: 'moon' }, sky), 'Midnight');
+      }
+    }
+    day = next;
+  }
+  el('rect', { x: x0, y: sy, width: x1 - x0, height: sh, rx: 8, class: 'skyframe' }, g);
+  el('line', { x1: x0, x2: x1, y1: yA, y2: yA, class: 'axisline' }, g);
+  const step = pph >= 40 ? 1 : pph >= 20 ? 3 : pph >= 9 ? 6 : 12;
+  const dayPill = (x, t) => {
+    const s = dayLbl(t), w = tw(s, `600 12px ${FONT}`) + 14;
+    el('rect', { x, y: 3, width: w, height: 20, rx: 10, class: 'daypill' }, g);
+    txt(g, x + 7, 17, s, 'daylbl');
+  };
+  let firstMid = null;
+  for (let t = tmin; t <= tmax; t += H) {
+    const dt = new Date(t), hr = dt.getHours(), x = X(t);
+    if (dt.getMinutes() !== 0) continue;
+    if (hr === 0) {
+      if (firstMid == null) firstMid = x;
+      el('line', { x1: x, x2: x, y1: sy + sh, y2: height, class: 'midnight' }, g);
+      dayPill(x + 4, t);
+    } else if (hr % step === 0) {
+      el('line', { x1: x, x2: x, y1: yA, y2: height, class: 'tick' + (hr === 12 ? ' noon' : '') }, g);
+      if (pph * step >= 34) txt(g, x, yA - 5, hm(t), 'hrlbl halo');
+    }
+  }
+  if (firstMid == null || firstMid - X(tmin) > 110) dayPill(X(tmin) + 4, tmin);
+}
+function drawScrub() {
+  if (!gScrub) return;
+  gScrub.replaceChildren();
+  if (!geo || !geo.time || scrubT == null) return;
+  const x = geo.X(scrubT);
+  el('line', { x1: x, x2: x, y1: LAY.top + 8, y2: geo.height, class: 'scrubline' + (pinned ? ' pinned' : '') }, gScrub);
+  const s = fmtDT(scrubT), w = tw(s, `600 11px ${FONT}`) + 16;
+  const px = Math.min(Math.max(x, w / 2 + 2), geo.width - w / 2 - 2);
+  el('rect', { x: px - w / 2, y: 26, width: w, height: 20, rx: 10, class: 'scrubpill' }, gScrub);
+  txt(gScrub, px, 40, s, 'scrubtxt');
+  const seen = new Set();
+  for (const pi of (viewPlan && PLBY[viewPlan] ? [PLBY[viewPlan]] : PL)) {
+    const st = statusAt(pi, scrubT);
+    if (!st || !['move', 'buf', 'wait'].includes(st.kind)) continue;
+    const key = (st.leg || st.node) + st.kind;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    let cy;
+    if (st.kind === 'wait') { cy = geo.rowY[st.node]; if (cy == null) continue; }
+    else { const L = geo.legs[st.leg]; if (!L) continue; cy = st.kind === 'buf' ? L.yk : curveY(L, x); }
+    const m = el('circle', { cx: x, cy, r: st.kind === 'wait' ? 5.5 : 6.5, class: 'mark ' + st.kind }, gScrub);
+    m.style.setProperty('--c', pi.color);
+  }
+}
+function applyHighlight() {
+  const svg = $('#graph');
+  let legSet = null, planId = null, chosen = null;
+  if (B && B.paths) {
+    legSet = new Set(); builderRemaining().forEach(p => p.forEach(id => legSet.add(id)));
+    chosen = new Set(B.chosen);
+    if (hoverLeg) legSet = new Set([hoverLeg, ...B.chosen]);
+  } else if (hoverLeg) legSet = new Set([hoverLeg]);
+  else {
+    planId = hoverPlan || focusPlan;
+    if (planId && PLBY[planId]) legSet = new Set([...PLBY[planId].legs, ...(S.plans[planId].pending || [])]); else planId = null;
+  }
+  svg.querySelectorAll('[data-leg],[data-plan]').forEach(e => {
+    const dim = !legSet ? false : e.dataset.plan ? e.dataset.plan !== planId : !legSet.has(e.dataset.leg);
+    e.classList.toggle('dim', dim);
+    if (e.classList.contains('edge')) e.classList.toggle('chosen', !!chosen && chosen.has(e.dataset.leg));
+  });
+}
+function legTitle(id) {
+  const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
+  const lines = [legLabel(id), `${m.tag}${l.info ? ': ' + l.info : ''}`];
+  lines.push(`${t.noDep ? 'leave time not set' : fmtDT(t.dep)} → ${t.noArr ? 'arrive time not set' : fmtDT(t.arrSched)}${!t.noDep && !t.noArr ? ` (${fmtDur(t.arrSched - t.dep)})` : ''}`);
+  if (t.buf) lines.push(`+${fmtDur(t.buf)} buffer, latest arrival ${fmtDT(t.arr)}`);
+  if (l.cost !== '') lines.push(`${money(l.cost)} per head`);
+  const ps = LEGPLANS[id];
+  if (ps && ps.length) lines.push('In: ' + ps.map(p => S.plans[p].name).join(', '));
+  t.warn.forEach(w => lines.push('⚠ ' + w));
+  lines.push('Click to edit');
+  return lines.join('\n');
+}
+
+/* ---------- "where is everyone" bar ---------- */
+function renderNow() {
+  const box = $('#now');
+  box.replaceChildren();
+  if (!S.order.length) return;
+  if (!geo || !geo.time) { box.append(h('p', { class: 'hint', text: 'Add times to your legs to use the timeline.' })); return; }
+  if (!PL.some(p => p.legs.length)) { box.append(h('p', { class: 'hint', text: 'Save a plan, then move the pointer across the timeline to see where each plan is at that moment.' })); return; }
+  if (scrubT == null) { box.append(h('p', { class: 'hint', text: 'Move the pointer across the timeline to see where every saved plan is at that moment. Click to pin it.' })); return; }
+  box.append(h('div', { class: 'now-head' }, h('strong', { text: fmtDT(scrubT) }),
+    h('span', { class: 'muted', text: pinned ? '  ·  pinned, click the timeline to release' : '  ·  click to pin' })));
+  const ul = h('ul', { class: 'now-list' });
+  for (const pi of (viewPlan && PLBY[viewPlan] ? [PLBY[viewPlan]] : PL)) {
+    if (!pi.legs.length) continue;
+    const st = statusAt(pi, scrubT) || { text: '—', sub: '' };
+    ul.append(h('li', null, h('span', { class: 'key', style: `--c:${pi.color}` }),
+      h('span', { class: 'txt' }, h('strong', { text: st.text }), st.sub ? ` · ${st.sub}` : '', h('span', { class: 'who', text: `(${pi.name})` }))));
+  }
+  box.append(ul);
+}
+
+/* ---------- inspector ---------- */
+function renderInspector() {
+  const box = $('#inspector');
+  box.replaceChildren();
+  $('#placeList').replaceChildren(...S.order.map(id => h('option', { value: nodeName(id) })));
+  if (!sel) box.append(viewPlan && PLBY[viewPlan] ? planPanel(PLBY[viewPlan]) : helpPanel());
+  else if (sel.k === 'node') nodeInspector(box, S.nodes[sel.id]);
+  else if (sel.k === 'wait') waitInspector(box, S.plans[sel.plan], sel.id);
+  else legInspector(box, S.legs[sel.id]);
+  updateLive();
+  if (focusNext) { const f = $(focusNext); focusNext = null; if (f) { f.focus(); if (f.select) f.select(); } }
+}
+function inspHead(title, color) {
+  return h('div', { class: 'insp-head' },
+    h('span', { class: 'key-dot', style: `--c:${color}` }),
+    h('div', null, h('h2', { text: title }), h('p', { class: 'crumb', id: 'liveCrumb' })),
+    h('button', { class: 'icon-btn', type: 'button', title: 'Close', 'aria-label': 'Close', text: '×', onclick: () => { sel = null; renderInspector(); renderGraph(); } }));
+}
+function input(obj, f, type, extra) {
+  const i = h(type === 'textarea' ? 'textarea' : 'input', Object.assign({ 'data-f': f }, type === 'textarea' ? {} : { type }, extra || {}));
+  i.value = obj[f] ?? '';
+  return i;
+}
+function btn(label, fn, cls, title, disabled) { return h('button', { class: 'btn ' + (cls || ''), type: 'button', title, disabled: !!disabled, text: label, onclick: fn }); }
+function legList(title, ids, side) {
+  const s = h('div', { class: 'sect' }, h('h3', { text: `${title} (${ids.length})` }));
+  if (!ids.length) { s.append(h('p', { class: 'hint', text: 'None yet.' })); return s; }
+  const ul = h('ul', { class: 'leglist' });
+  ids.forEach(id => {
+    const l = S.legs[id], t = T[id];
+    ul.append(h('li', null, h('button', {
+      class: 'legbtn', type: 'button',
+      onclick: () => select({ k: 'leg', id }),
+      onmouseenter: () => { hoverLeg = id; applyHighlight(); },
+      onmouseleave: () => { hoverLeg = null; applyHighlight(); },
+    }, h('span', { class: 'key', style: `--c:${legColor(id)}` }),
+      h('span', null, h('b', { text: `${side === 'to' ? '→ ' : '← '}${l[side] ? nodeName(l[side]) : 'not set'}` }), ` · ${(MODE[l.mode] || MODE.other).tag}`, h('br'),
+        h('span', { class: 'muted', text: (t.timed ? `${shortDT(t.dep)} → ${shortDT(t.arrSched)}` : 'no times yet') + (l.cost !== '' ? ' · ' + money(l.cost) : '') })))));
+  });
+  s.append(ul);
+  return s;
+}
+function nodeInspector(box, n) {
+  box.append(inspHead(nodeName(n.id), 'var(--ink)'));
+  const pick = h('input', { type: 'file', accept: 'image/*', hidden: true, id: 'nodeImgFile' });
+  pick.addEventListener('change', () => { const f = pick.files && pick.files[0]; pick.value = ''; if (f) setNodeImage(n.id, f); });
+  const zone = n.img
+    ? h('div', { class: 'nimg' },
+        h('img', { src: n.img, alt: `Picture of ${nodeName(n.id)}` }),
+        h('div', { class: 'nimg-btns' },
+          btn('Change image', () => pick.click(), 'small'),
+          btn('Remove image', () => { checkpoint(); delete S.nodes[n.id].img; renderAll(); toast('Image removed', true); }, 'small danger')))
+    : h('button', { class: 'nimg-add', type: 'button', onclick: () => pick.click() },
+        h('b', { text: '+ Add an image' }), h('span', { text: 'A photo of the place. Click to choose a file, drop one here, or paste a link below.' }));
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+  zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('over'); const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) setNodeImage(n.id, f); });
+  const link = h('input', { type: 'url', id: 'imgUrl', placeholder: 'Or paste an image link: https://…', autocomplete: 'off', 'aria-label': 'Image link' });
+  const go = () => setNodeImageUrl(n.id, link.value);
+  link.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); go(); } });
+  box.append(pick, zone,
+    h('div', { class: 'nimg-link' }, link, btn('Load', go, 'small')),
+    h('p', { class: 'nimg-msg', id: 'imgMsg', text: n.img && /^https?:/i.test(n.img) ? 'This picture loads from its link each time, so it needs the internet.' : '' }));
+  box.append(fld('Name', input(n, 'name', 'text', { placeholder: 'e.g. City Airport', id: 'fName', autocomplete: 'off' }), 'One node per place. Every leg in or out of it meets here.'));
+  box.append(h('div', { id: 'liveDup' }));
+  box.append(fld('Note', input(n, 'note', 'textarea')));
+  box.append(legList(`Legs leaving ${nodeName(n.id)}`, legsFrom(n.id), 'to'));
+  box.append(legList(`Legs arriving at ${nodeName(n.id)}`, legsTo(n.id), 'from'));
+  const i = S.order.indexOf(n.id), cnt = legsFrom(n.id).length + legsTo(n.id).length;
+  box.append(h('div', { class: 'actions' },
+    btn('+ Leg from here', () => newLeg({ from: n.id }), 'primary', 'A leg that leaves this node'),
+    btn('+ Leg into here', () => newLeg({ to: n.id }), '', 'A leg that arrives at this node'),
+    btn('Make a plan from here', () => startBuilder(null, n.id), '', 'Start a plan at this node'),
+    S.order.length > 1 ? btn('Move up', () => moveRow(n.id, -1), '', 'Move this row up', i === 0) : null,
+    S.order.length > 1 ? btn('Move down', () => moveRow(n.id, 1), '', 'Move this row down', i === S.order.length - 1) : null,
+    btn(cnt ? `Delete node and ${cnt} leg${cnt > 1 ? 's' : ''}` : 'Delete node', () => delNode(n.id), 'danger')));
+}
+function waitInspector(box, p, legId) {
+  const w = waitInfo(p, legId), pi = PLBY[p.id];
+  box.append(inspHead('Waiting time', pi ? pi.color : 'var(--ink)'));
+  const i = h('input', { type: 'text', id: 'fWait', 'data-wait-label': legId, maxlength: '60', placeholder: w.auto, autocomplete: 'off' });
+  i.value = w.custom;
+  box.append(fld('Label', i, `Leave empty to use “${w.auto}”. The label shows on the timeline and in this plan’s itinerary.`));
+  box.append(h('div', { class: 'chips', style: 'margin:-2px 0 10px' }, ...['Transfer', 'Layover', 'Rest', 'Sightseeing', 'Hotel stay', 'Overnight stop'].map(t =>
+    h('button', { type: 'button', class: 'chip', text: t, onclick: () => setWaitLabel(p.id, legId, t) }))));
+  box.append(h('div', { class: 'sect' }, h('h3', { text: 'Details' }),
+    h('p', { class: 'live', text: `At ${nodeName(w.node)} · ${fmtDur(w.ms)}` }),
+    h('p', { class: 'live', text: `From ${fmtDT(w.from)} to ${fmtDT(w.to)}` }),
+    h('p', { class: 'live', text: `In plan “${p.name}”, before ${legLabel(legId)}` })));
+  box.append(h('div', { class: 'actions' },
+    h('button', { class: 'btn', type: 'button', id: 'waitReset', title: `Back to “${w.auto}”`, disabled: !w.custom, text: 'Use the default label', onclick: () => setWaitLabel(p.id, legId, '') }),
+    btn('Show this plan', () => { sel = null; setView(p.id); })));
+}
+function setWaitLabel(pid, legId, v) {
+  const p = S.plans[pid]; if (!p) return;
+  checkpoint();
+  v = String(v || '').trim().slice(0, 60);
+  if (v) p.waits[legId] = v; else delete p.waits[legId];
+  renderAll();
+}
+// Shrink the picture before keeping it, so it fits in browser storage with the rest of the plan.
+function shrinkImage(img) {
+  const max = 720, k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(img.naturalWidth * k)); c.height = Math.max(1, Math.round(img.naturalHeight * k));
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', .84); // throws if the image came from a site that does not allow copying
+}
+function storeNodeImage(id, src, msg) {
+  if (!S.nodes[id]) return;
+  checkpoint();
+  S.nodes[id].img = src;
+  renderAll();
+  const m = $('#imgMsg'); if (m && msg) { m.textContent = msg; m.classList.remove('bad'); }
+  toast(`Image added to ${nodeName(id)}`, true);
+}
+function imgMsg(text, bad) { const m = $('#imgMsg'); if (m) { m.textContent = text; m.classList.toggle('bad', !!bad); } }
+function setNodeImage(id, file) {
+  if (!/^image\//.test(file.type)) { toast('That file is not an image'); return; }
+  const url = URL.createObjectURL(file), img = new Image();
+  img.onload = () => { URL.revokeObjectURL(url); try { storeNodeImage(id, shrinkImage(img)); } catch (e) { toast('Could not read that image'); } };
+  img.onerror = () => { URL.revokeObjectURL(url); toast('Could not read that image'); };
+  img.src = url;
+}
+// From a link: keep a small copy when the site allows it, otherwise show the picture straight from the link.
+function setNodeImageUrl(id, raw) {
+  const url = String(raw || '').trim();
+  if (!/^https?:\/\/\S+$/i.test(url)) { imgMsg('Paste a full link that starts with https:// or http://', true); return; }
+  imgMsg('Loading the picture…');
+  const direct = () => {
+    const im = new Image();
+    im.onload = () => storeNodeImage(id, url, 'This picture loads from its link each time, so it needs the internet. To keep a copy, save the picture and choose the file instead.');
+    im.onerror = () => imgMsg('No picture could be loaded from that link. Check that it opens an image (it often ends in .jpg, .png or .webp).', true);
+    im.src = url;
+  };
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => { let data = null; try { data = shrinkImage(img); } catch (e) { /* site does not allow a copy */ } if (data) storeNodeImage(id, data, 'Saved a copy of the picture from the link.'); else direct(); };
+  img.onerror = direct;
+  img.src = url;
+}
+function nodeSelect(side, val) {
+  const s = h('select', { 'data-end': side, id: side === 'from' ? 'fFrom' : 'fTo' });
+  s.append(h('option', { value: '', text: 'Choose a node…' }));
+  S.order.forEach(id => s.append(h('option', { value: id, text: nodeName(id) })));
+  s.append(h('option', { value: '__new', text: '＋ New node…' }));
+  s.value = val || '';
+  return s;
+}
+function legInspector(box, l) {
+  box.append(inspHead('Leg', legColor(l.id)));
+  box.append(h('div', { class: 'row2' }, fld('From node', nodeSelect('from', l.from)), fld('To node', nodeSelect('to', l.to))));
+  box.append(h('div', { class: 'newnode', id: 'newNodeRow', hidden: true },
+    h('input', { type: 'text', id: 'newNodeName', placeholder: 'New node name', list: 'placeList', autocomplete: 'off', 'aria-label': 'New node name' }),
+    btn('Add', () => addNodeFromLeg(), 'primary small'),
+    btn('Cancel', () => { $('#newNodeRow').hidden = true; renderInspector(); }, 'small')));
+  const sel_ = h('select', { 'data-f': 'mode' });
+  MODES.forEach(([k, label]) => sel_.append(h('option', { value: k, text: label })));
+  sel_.value = l.mode;
+  box.append(h('div', { class: 'row2' },
+    fld('How', sel_),
+    fld(`Fare per head (${curSym()})`, input(l, 'cost', 'number', { min: '0', step: '1', inputmode: 'numeric', placeholder: 'e.g. 120' }))));
+  box.append(fld('Details', input(l, 'info', 'text', { placeholder: 'Airline, flight no., bus operator…' })));
+  box.append(fld('Leaves', input(l, 'dep', 'datetime-local')), fld('Arrives', input(l, 'arr', 'datetime-local')));
+  box.append(h('p', { class: 'live', id: 'liveDur' }));
+  const chips = h('div', { class: 'chips', role: 'group', 'aria-label': 'Buffer' });
+  BUFS.forEach(b => chips.append(h('button', {
+    type: 'button', class: 'chip', 'data-b': String(b), 'aria-pressed': String((+l.buf || 0) === b),
+    text: b ? '+' + fmtDur(b * MIN) : 'None', onclick: () => setBuf(l.id, b),
+  })));
+  box.append(h('div', { class: 'fld' },
+    h('span', { text: 'Buffer for traffic or delays' }),
+    h('div', { class: 'chiprow' }, chips, input(l, 'buf', 'number', { min: '0', step: '5', inputmode: 'numeric', placeholder: 'mins', class: 'bufnum', 'aria-label': 'Buffer in minutes', title: 'Or type your own, in minutes' })),
+    h('small', null, 'Moves the arrival later by this much. ',
+      h('button', { type: 'button', class: 'linkbtn', text: 'Use this on every bus and cab leg', onclick: () => applyBufRoad(+S.legs[l.id].buf || 0) }))));
+  const ps = LEGPLANS[l.id] || [];
+  const s = h('div', { class: 'sect' }, h('h3', { text: `In saved plans (${ps.length})` }));
+  if (ps.length) {
+    s.append(h('div', { class: 'chips' }, ...ps.map(pid => h('button', { type: 'button', class: 'chip', text: S.plans[pid].name, onclick: () => togglePlan(pid, true) }))));
+    s.append(h('p', { class: 'hint', style: 'margin-top:6px', text: 'Changing the fare updates every one of these plans.' }));
+  } else s.append(h('p', { class: 'hint', text: 'Not in any saved plan yet.' }));
+  box.append(s);
+  box.append(h('div', { id: 'liveTwin' }));
+  box.append(h('div', { id: 'liveWarn' }));
+  box.append(h('div', { class: 'actions' },
+    btn(l.to ? `+ Next leg from ${nodeName(l.to)}` : '+ Next leg', () => newLeg({ from: l.to, mode: l.mode, after: T[l.id] ? T[l.id].arr : null }), 'primary', 'A leg that leaves where this one arrives', !l.to),
+    btn('Return leg', () => newLeg({ from: l.to, to: l.from, mode: l.mode }), '', 'The same trip back the other way', !(l.from && l.to)),
+    btn('Alternative', () => newLeg({ from: l.from, to: l.to, mode: l.mode, dep: l.dep, arr: l.arr }), '', 'Another way between the same two nodes'),
+    btn('Delete leg', () => delLeg(l.id), 'danger')));
+}
+function updateLive() {
+  if (!sel) return;
+  if (sel.k === 'wait') { const cr = $('#liveCrumb'), p = S.plans[sel.plan], w = p && waitInfo(p, sel.id); if (cr && w) cr.textContent = `${w.label} at ${nodeName(w.node)} · ${fmtDur(w.ms)}`; const rb = $('#waitReset'); if (rb && w) rb.disabled = !w.custom; return; }
+  const cr = $('#liveCrumb');
+  if (sel.k === 'node') {
+    const n = S.nodes[sel.id]; if (!n) return;
+    const cnt = legsFrom(n.id).length + legsTo(n.id).length;
+    const np = PL.filter(p => p.nodes.includes(n.id)).length;
+    if (cr) cr.textContent = `Node · ${cnt} leg${cnt === 1 ? '' : 's'}${np ? ` · in ${np} saved plan${np > 1 ? 's' : ''}` : ''}`;
+    const hd = $('#inspector .insp-head h2'); if (hd) hd.textContent = nodeName(n.id);
+    const box = $('#liveDup');
+    if (box) {
+      box.replaceChildren();
+      const dup = findNode(n.name, n.id);
+      if (dup) box.append(h('div', { class: 'warnbox' },
+        h('p', { text: `Another node is already called ${nodeName(dup)}. Merge them so their legs meet at one node?` }),
+        h('p', { style: 'margin-top:6px' }, btn(`Merge into ${nodeName(dup)}`, () => mergeNode(n.id, dup), 'small'))));
+    }
+    return;
+  }
+  const l = S.legs[sel.id], t = T[sel.id]; if (!l || !t) return;
+  if (cr) cr.textContent = `${l.from ? nodeName(l.from) : '?'} → ${l.to ? nodeName(l.to) : '?'}`;
+  const kd = $('#inspector .insp-head .key-dot'); if (kd) kd.style.setProperty('--c', legColor(l.id));
+  const ms = $('#inspector select[data-f=mode]'); if (ms) ms.style.borderLeft = `6px solid ${legColor(l.id)}`;
+  const d = $('#liveDur');
+  if (d) {
+    if (t.noDep || t.noArr) d.textContent = 'Add both times to place this leg on the timeline.';
+    else {
+      let w = '';
+      const before = l.from ? legsTo(l.from).map(id => T[id].arr).filter(a => a != null && a <= t.dep) : [];
+      if (before.length) w = `  ·  ${fmtDur(t.dep - Math.max(...before))} after the latest arrival at ${nodeName(l.from)}`;
+      d.textContent = `Travel time ${fmtDur(t.arrSched - t.dep)}${t.buf ? ` + ${fmtDur(t.buf)} buffer` : ''}${w}`;
+    }
+  }
+  document.querySelectorAll('#inspector .chip[data-b]').forEach(b => b.setAttribute('aria-pressed', String((+l.buf || 0) === +b.dataset.b)));
+  const tb = $('#liveTwin');
+  if (tb) {
+    tb.replaceChildren();
+    const tws = twinsOf(l.id);
+    if (tws.length) {
+      const differ = tws.some(x => S.legs[x].cost !== l.cost);
+      tb.append(h('div', { class: differ ? 'warnbox' : 'live' },
+        h('p', { text: `${differ ? '⚠ ' : ''}${tws.length} other leg${tws.length > 1 ? 's are' : ' is'} the same trip (same nodes, transport and times)${differ ? ' but with a different fare.' : ', so they share this fare.'}` }),
+        differ ? h('p', { style: 'margin-top:6px' }, btn(`Use ${l.cost === '' ? 'no fare' : money(l.cost)} for all`, () => { checkpoint(); setFare(l.id, l.cost); renderAll(); }, 'small')) : null));
+    }
+  }
+  const w = $('#liveWarn');
+  if (w) { w.replaceChildren(); if (t.warn.length) w.append(h('div', { class: 'warnbox' }, ...t.warn.map(s => h('p', { text: '⚠ ' + s })))); }
+}
+function helpPanel() {
+  const lg = h('div', { class: 'lg' });
+  MODES.forEach(([k, label, color]) => lg.append(modeSwatch(color, 34), h('span', { text: label })));
+  lg.append(lineSwatch(), h('span', { text: 'Thin line: waiting at a node in a saved plan, with its label and how long. Click it to rename the wait.' }));
+  lg.append(durSwatch(), h('span', { text: 'Tag on a leg: its travel time' }));
+  lg.append(todSwatch(), h('span', { text: 'Sky above the timeline: night with stars and the moon, sunrise, day with the sun’s path, sunset. The same sky is shaded faintly behind the legs.' }));
+  lg.append(bufSwatch(), h('span', { text: 'Shaded end: buffer for traffic or delays' }));
+  return h('div', { class: 'help' },
+    h('h2', { text: 'How it works' }),
+    h('ol', null,
+      h('li', null, h('b', { text: 'Nodes' }), ' are places: home, a station, an airport, a city. Each node is one row, used by every leg and plan that passes through it.'),
+      h('li', null, h('b', { text: 'Legs' }), ' join two nodes, with how, when and the fare. When you add a leg, pick its ends from your nodes or create a new node.'),
+      h('li', null, 'Legs that touch the same node ', h('b', { text: 'meet on its row' }), '. Legs there at about the same time share one station.'),
+      h('li', null, h('b', { text: 'Make a plan' }), ': choose the start node and pick one of its departures, then the end node and one of its arrivals. Every leg that fits is listed, and wherever routes split you choose which way.'),
+      h('li', null, 'Name the plan and add its own other costs (stay, food), then save. Travel fares belong to the legs, so a fare is the same in every plan. Compare saved plans below and star the one you pick.')),
+    h('div', { class: 'sect' }, h('h3', { text: 'Transport colours' }), lg),
+    h('p', { class: 'hint', style: 'margin-top:12px', text: 'Your work saves automatically in this browser. Use Export to keep a copy or share it.' }));
+}
+function modeSwatch(color, w) {
+  const s = el('svg', { width: w, height: 10, viewBox: `0 0 ${w} 10`, 'aria-hidden': 'true' });
+  el('line', { x1: 3, y1: 5, x2: w - 3, y2: 5, 'stroke-width': 4, 'stroke-linecap': 'round', style: `stroke:${color}` }, s);
+  return s;
+}
+function bufSwatch() {
+  const s = el('svg', { width: 34, height: 12, viewBox: '0 0 34 12', 'aria-hidden': 'true' });
+  el('line', { x1: 3, y1: 6, x2: 12, y2: 6, stroke: 'currentColor', 'stroke-width': 3, 'stroke-linecap': 'round' }, s);
+  el('line', { x1: 14, y1: 6, x2: 31, y2: 6, stroke: 'currentColor', 'stroke-width': 10, opacity: .2, 'stroke-linecap': 'round' }, s);
+  el('line', { x1: 14, y1: 6, x2: 31, y2: 6, stroke: 'currentColor', 'stroke-width': 2, 'stroke-dasharray': '2 3', 'stroke-linecap': 'round' }, s);
+  return s;
+}
+function todSwatch() {
+  const s = el('svg', { width: 34, height: 12, viewBox: '0 0 34 12', 'aria-hidden': 'true' });
+  const lg = el('linearGradient', { id: 'todsw', x1: 0, x2: 1, y1: 0, y2: 0 }, el('defs', null, s));
+  SKY.forEach(([hr, k]) => el('stop', { offset: (hr / 24).toFixed(3), style: `stop-color:var(--sky-${k})` }, lg));
+  el('rect', { x: 1, y: 1, width: 32, height: 10, rx: 4, fill: 'url(#todsw)' }, s);
+  return s;
+}
+function durSwatch() {
+  const s = el('svg', { width: 34, height: 14, viewBox: '0 0 34 14', 'aria-hidden': 'true' });
+  el('line', { x1: 2, y1: 7, x2: 32, y2: 7, stroke: 'currentColor', 'stroke-width': 3, 'stroke-linecap': 'round' }, s);
+  el('rect', { x: 8, y: 1, width: 18, height: 12, rx: 6, style: 'fill:var(--surface);stroke:currentColor;stroke-width:1' }, s);
+  return s;
+}
+function lineSwatch() {
+  const s = el('svg', { width: 34, height: 10, viewBox: '0 0 34 10', 'aria-hidden': 'true' });
+  el('line', { x1: 3, y1: 5, x2: 31, y2: 5, stroke: 'currentColor', 'stroke-width': 2, opacity: .4 }, s);
+  return s;
+}
+function renderLegend() {
+  const box = $('#legend'); box.replaceChildren();
+  MODES.forEach(([k, label, color]) => box.append(h('span', null, modeSwatch(color, 22), label)));
+  box.append(h('span', null, lineSwatch(), 'waiting'));
+  box.append(h('span', null, bufSwatch(), 'buffer'));
+}
+
+/* ---------- plan maker ---------- */
+function startBuilder(planId, startNode) {
+  if (!S.order.length) { toast('Add some nodes and legs first'); return; }
+  if (planId && S.plans[planId]) {
+    const p = S.plans[planId], legs = p.legs.filter(id => S.legs[id]);
+    B = { start: p.start, end: p.end, startLeg: legs[0] || '', endLeg: legs[legs.length - 1] || '', startT: p.startT, endT: p.endT, paths: [legs], chosen: legs.slice(), auto: new Set(), name: p.name, extras: p.extras.map(x => Object.assign({}, x)), waits: Object.assign({}, p.waits), editing: p.id, capped: false };
+  } else {
+    B = { start: startNode || '', end: '', startLeg: '', endLeg: '', startT: '', endT: '', paths: null, chosen: [], auto: new Set(), name: '', extras: [], waits: {}, editing: null, capped: false };
+  }
+  focusPlan = null; hoverPlan = null;
+  renderBuilder(); renderPlans(); applyHighlight();
+  setDrawer(true);
+  $('#drawerBody').scrollTop = 0;
+  setTimeout(() => { const i = $('#bName'); if (i && !B.editing) i.focus(); }, 280);
+}
+function closeBuilder() { B = null; hoverLeg = null; renderBuilder(); applyHighlight(); }
+function checkBuilderName() {
+  const err = planNameError(B.name, B.editing), box = $('#bNameErr'), i = $('#bName');
+  if (box) { box.textContent = err || ''; box.hidden = !err; }
+  if (err) { toast(err); if (i) { i.focus(); i.scrollIntoView({ block: 'center' }); } return false; }
+  return true;
+}
+function runFind() {
+  if (!checkBuilderName()) return;
+  if (!B.start || !B.end) { toast('Choose both a start node and an end node'); return; }
+  const r = findRoutes(B.start, B.end, '', '', B.startLeg, B.endLeg);
+  B.paths = r.paths; B.capped = r.capped; B.chosen = []; B.auto = new Set();
+  builderAdvance();
+  renderBuilder(); applyHighlight();
+}
+function choose(id) { hoverLeg = null; B.chosen.push(id); builderAdvance(); renderBuilder(); applyHighlight(); }
+function stepBack() {
+  while (B.chosen.length) {
+    const i = B.chosen.length - 1, wasAuto = B.auto.has(i);
+    B.chosen.pop(); B.auto.delete(i);
+    if (!wasAuto) break;
+  }
+  hoverLeg = null; renderBuilder(); applyHighlight();
+}
+function legRowCells(id) {
+  const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
+  return [
+    h('td', { class: 'nowrap', text: t.noDep ? '—' : fmtDT(t.dep) }),
+    h('td', { class: 'nowrap', text: t.noArr ? '—' : fmtDT(t.arrSched) + (t.buf ? ` (+${fmtDur(t.buf)})` : '') }),
+    h('td', { text: legLabel(id) }),
+    h('td', { text: m.tag + (l.info ? ` · ${l.info}` : '') }),
+  ];
+}
+function hoverRow(tr, id) {
+  tr.addEventListener('mouseenter', () => { hoverLeg = id; applyHighlight(); });
+  tr.addEventListener('mouseleave', () => { hoverLeg = null; applyHighlight(); });
+}
+function renderBuilder() {
+  const box = $('#builder');
+  box.replaceChildren();
+  if (!B) { box.hidden = true; return; }
+  box.hidden = false;
+  const nodeSel = key => {
+    const s = h('select', { 'data-bf': key });
+    s.append(h('option', { value: '', text: 'Choose a node…' }));
+    S.order.forEach(id => s.append(h('option', { value: id, text: nodeName(id) })));
+    s.value = B[key] || '';
+    return s;
+  };
+  const legPick = (key, ids, arr) => {
+    const s = h('select', { 'data-bf': key });
+    s.append(h('option', { value: '', text: ids.length ? (arr ? 'Any arrival' : 'Any departure') : (arr ? 'No legs arrive here yet' : 'No legs leave here yet') }));
+    ids.forEach(id => {
+      const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
+      const when = arr ? (t.noArr ? 'no time' : fmtDT(t.arrSched)) : (t.noDep ? 'no time' : fmtDT(t.dep));
+      s.append(h('option', { value: id, text: `${when} · ${m.label} ${arr ? 'from' : 'to'} ${l[arr ? 'from' : 'to'] ? nodeName(l[arr ? 'from' : 'to']) : '?'}${l.cost !== '' ? ' · ' + money(l.cost) : ''}` }));
+    });
+    s.value = ids.includes(B[key]) ? B[key] : '';
+    s.disabled = !ids.length;
+    return s;
+  };
+  const sDep = B.startLeg && T[B.startLeg] ? T[B.startLeg].dep : null;
+  const outs = B.start ? legsFrom(B.start).filter(id => T[id].ok) : [];
+  const ins = B.end ? legsTo(B.end).filter(id => T[id].ok && (sDep == null || T[id].arr == null || T[id].arr > sDep)).sort((a, b) => (T[a].arr ?? Infinity) - (T[b].arr ?? Infinity)) : [];
+  box.append(h('div', { class: 'bhead' },
+    h('h3', { text: B.editing ? `Edit plan: ${S.plans[B.editing].name}` : 'Make a plan' }),
+    h('button', { class: 'icon-btn', type: 'button', title: 'Close', 'aria-label': 'Close plan maker', text: '×', onclick: closeBuilder })));
+  const nm = h('input', { type: 'text', 'data-pf': 'name', id: 'bName', placeholder: 'e.g. Weekend by train', maxlength: '80', required: true, 'aria-required': 'true' });
+  nm.value = B.name;
+  box.append(h('div', { class: 'bname' }, fld('Plan name (required)', nm), h('p', { class: 'fielderr', id: 'bNameErr', hidden: true })));
+  box.append(h('div', { class: 'bform' },
+    fld('Start node', nodeSel('start')), fld('Leaves at', legPick('startLeg', outs, false), B.start ? `${outs.length} departure${outs.length === 1 ? '' : 's'} from ${nodeName(B.start)}` : 'Pick a start node first'),
+    fld('End node', nodeSel('end')), fld('Arrives at', legPick('endLeg', ins, true), B.end ? `${ins.length} arrival${ins.length === 1 ? '' : 's'} at ${nodeName(B.end)}${sDep != null ? ' after you leave' : ''}` : 'Pick an end node first'),
+    h('div', { class: 'bgo' }, btn(B.paths ? 'Find again' : 'Find routes', runFind, 'primary'))));
+  if (!B.paths) {
+    box.append(h('p', { class: 'hint', text: 'Pick the start node and which departure you take, then the end node and which arrival you want. Every leg that fits between them is listed, and you choose the way wherever the routes split.' }));
+    return;
+  }
+  if (!B.paths.length) {
+    const outs = legsFrom(B.start).length, ins = legsTo(B.end).length;
+    box.append(h('div', { class: 'warnbox' },
+      h('p', { text: `No chain of legs goes from ${nodeName(B.start)} to ${nodeName(B.end)}${B.startLeg || B.endLeg ? ' using the departure and arrival you picked' : ''}.` }),
+      h('p', { style: 'margin-top:4px', text: `${outs} leg${outs === 1 ? ' leaves' : 's leave'} ${nodeName(B.start)} and ${ins} arrive${ins === 1 ? 's' : ''} at ${nodeName(B.end)}. Add the missing legs, or check that each leg leaves after the one before it arrives.` })));
+    return;
+  }
+  const rem = builderRemaining(), all = new Set(), live = new Set(), chosen = new Set(B.chosen);
+  B.paths.forEach(p => p.forEach(id => all.add(id)));
+  rem.forEach(p => p.forEach(id => live.add(id)));
+
+  // 1. everything that fits between start and end
+  if (!B.editing) {
+    const sec = h('div', { class: 'bsec' }, h('h4', { text: `Everything between ${nodeName(B.start)} and ${nodeName(B.end)}` }),
+      h('p', { text: `${B.paths.length}${B.capped ? '+' : ''} possible route${B.paths.length > 1 ? 's' : ''} using ${all.size} leg${all.size > 1 ? 's' : ''}. Nothing is picked for you: where routes split, you choose.` }));
+    const tbl = h('table', { class: 'legs' });
+    tbl.append(h('thead', null, h('tr', null, h('th', { text: '' }), ...['Leaves', 'Arrives', 'From → to', 'How'].map(s => h('th', { text: s })), h('th', { class: 'num', text: 'Fare' }))));
+    const tb = h('tbody');
+    [...all].sort(byDep).forEach(id => {
+      const st = chosen.has(id) ? ['in', 'in plan'] : live.has(id) ? ['', 'option'] : ['out', 'ruled out'];
+      const tr = h('tr', { class: st[0] === 'out' ? 'out' : '' }, h('td', null, h('span', { class: 'tag ' + st[0], text: st[1] })), ...legRowCells(id),
+        h('td', { class: 'num', text: S.legs[id].cost === '' ? '' : money(S.legs[id].cost) }));
+      hoverRow(tr, id);
+      tb.append(tr);
+    });
+    tbl.append(tb);
+    sec.append(h('div', { class: 'table-scroll' }, tbl));
+    box.append(sec);
+  }
+
+  // 2. the route so far, and the next question
+  const sec2 = h('div', { class: 'bsec' }, h('h4', { text: 'Your route' }));
+  const ol = h('ol', { class: 'steps' });
+  B.chosen.forEach((id, i) => {
+    const l = S.legs[id], t = T[id];
+    ol.append(h('li', null, h('span', { class: 'key', style: `--c:${legColor(id)}` }),
+      h('b', { text: legLabel(id) }), ` · ${(MODE[l.mode] || MODE.other).tag}${t.timed ? ` · ${shortDT(t.dep)} → ${shortDT(t.arrSched)}` : ''}`,
+      B.editing ? null : h('span', { class: 'tag', text: (i === 0 && B.startLeg === id) || (i === B.chosen.length - 1 && B.endLeg === id && builderDone()) ? 'you picked' : B.auto.has(i) ? 'only way' : 'your choice' })));
+  });
+  if (!B.chosen.length) ol.append(h('li', { class: 'muted', text: `Starting at ${nodeName(B.start)}.` }));
+  sec2.append(ol);
+  const done = builderDone();
+  if (!done) {
+    const at = B.chosen.length ? S.legs[B.chosen[B.chosen.length - 1]].to : B.start;
+    const lastT = B.chosen.length ? T[B.chosen[B.chosen.length - 1]].arr : ts(B.startT);
+    const opts = builderOptions(), i = B.chosen.length;
+    const ask = h('div', { class: 'ask' }, h('p', { text: `${B.chosen.length ? 'The routes split' : 'Routes leave'} at ${nodeName(at)}${lastT != null ? ` (you are there from ${shortDT(lastT)})` : ''}. Which leg should this plan take?` }));
+    const box2 = h('div', { class: 'opts' });
+    opts.forEach(id => {
+      const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
+      const n = rem.filter(p => p[i] === id).length;
+      const wait = lastT != null && t.dep != null ? t.dep - lastT : null;
+      const b = h('button', { class: 'opt', type: 'button', style: `--c:${legColor(id)}`, onclick: () => choose(id) },
+        h('b', { text: `${m.label} to ${nodeName(l.to)}` }), l.cost !== '' ? ` · ${money(l.cost)}` : '',
+        h('small', { text: t.timed ? `${fmtDT(t.dep)} → ${fmtDT(t.arrSched)}` : 'no times' }),
+        h('small', { text: [l.info, wait != null && wait > 0 ? `wait ${fmtDur(wait)} first` : null, n > 1 ? `${n} routes go on from here` : 'one route goes on from here'].filter(Boolean).join(' · ') }));
+      b.addEventListener('mouseenter', () => { hoverLeg = id; applyHighlight(); });
+      b.addEventListener('mouseleave', () => { hoverLeg = null; applyHighlight(); });
+      box2.append(b);
+    });
+    ask.append(box2);
+    sec2.append(ask);
+  }
+  const canBack = B.chosen.some((_, i) => !B.auto.has(i)) && !B.editing;
+  if (!done) {
+    sec2.append(h('div', { class: 'brow' }, canBack ? btn('Back one choice', stepBack, 'small') : null, btn('Cancel', closeBuilder, 'small')));
+    box.append(sec2);
+    return;
+  }
+  box.append(sec2);
+
+  // 3. name, prices and extra costs for this plan only
+  const sec3 = h('div', { class: 'bsec' }, h('h4', { text: `Costs for “${B.name.trim() || 'this plan'}”` }));
+  const tbl = h('table', { class: 'legs' });
+  tbl.append(h('thead', null, h('tr', null, ...['Leaves', 'Arrives', 'From → to', 'How'].map(s => h('th', { text: s })), h('th', { text: `Fare per head (${curSym()})` }))));
+  const tb = h('tbody');
+  B.chosen.forEach((id, i) => {
+    if (i > 0) {
+      const a = T[B.chosen[i - 1]].arr, d = T[id].dep;
+      if (a != null && d != null && d - a > MIN) {
+        const auto = defaultWaitLabel(d - a, a, d);
+        const wl = h('input', { type: 'text', 'data-wl': id, maxlength: '60', placeholder: auto, class: 'ovin', style: 'width:180px !important', 'aria-label': `Label for the wait at ${nodeName(S.legs[id].from)}` });
+        wl.value = B.waits[id] || '';
+        tb.append(h('tr', { class: 'wait' }, h('td', { colspan: '6' }, wl, `  at ${nodeName(S.legs[id].from)} · ${fmtDur(d - a)}`)));
+      }
+    }
+    const ov = h('input', { type: 'number', min: '0', step: '1', inputmode: 'numeric', class: 'ovin', 'data-fare': id, placeholder: curSym(), 'aria-label': `Fare of ${legLabel(id)}` });
+    ov.value = S.legs[id].cost;
+    const tr = h('tr', null, ...legRowCells(id), h('td', null, ov));
+    hoverRow(tr, id);
+    tb.append(tr);
+  });
+  tbl.append(tb);
+  sec3.append(h('div', { class: 'table-scroll' }, tbl));
+  sec3.append(h('p', { class: 'hint', style: 'margin:4px 0 10px', text: 'Each leg has one fare. Changing it here changes it in every plan that uses this leg, and on any other leg with the same nodes, transport and times.' }));
+  sec3.append(h('div', { class: 'fld' }, h('span', { text: `Other costs in this plan, per head (${curSym()})` })));
+  B.extras.forEach((x, i) => {
+    const lab = h('input', { type: 'text', 'data-ex': 'label', 'data-i': String(i), placeholder: 'e.g. Hotel, 2 nights', 'aria-label': 'Cost name' }); lab.value = x.label;
+    const amt = h('input', { type: 'number', min: '0', step: '1', inputmode: 'numeric', 'data-ex': 'amount', 'data-i': String(i), placeholder: curSym(), 'aria-label': 'Amount' }); amt.value = x.amount;
+    sec3.append(h('div', { class: 'exrow' }, lab, amt, h('button', { class: 'icon-btn', type: 'button', title: 'Remove', 'aria-label': 'Remove this cost', text: '×', onclick: () => { B.extras.splice(i, 1); renderBuilder(); } })));
+  });
+  const sugg = [];
+  for (let i = 1; i < B.chosen.length; i++) {
+    const a = T[B.chosen[i - 1]].arr, d = T[B.chosen[i]].dep, node = nodeName(S.legs[B.chosen[i]].from);
+    if (a != null && d != null && d - a >= 6 * H && !B.extras.some(x => x.label.includes(node))) sugg.push(node);
+  }
+  sec3.append(h('div', { class: 'chiprow' },
+    btn('+ Add a cost', () => { B.extras.push({ label: '', amount: '' }); renderBuilder(); const e = box.querySelectorAll('[data-ex=label]'); if (e.length) e[e.length - 1].focus(); }, 'small'),
+    ...[...new Set(sugg)].map(n => btn(`+ Stay at ${n}`, () => { B.extras.push({ label: `Stay at ${n}`, amount: '' }); renderBuilder(); const e = box.querySelectorAll('[data-ex=amount]'); if (e.length) e[e.length - 1].focus(); }, 'small'))));
+  sec3.append(h('p', { class: 'btotal', id: 'bTotal' }));
+  sec3.append(h('div', { class: 'brow' },
+    btn(B.editing ? 'Save changes' : 'Save plan', savePlan, 'primary'),
+    canBack ? btn('Back one choice', stepBack) : null,
+    B.editing ? btn('Change route', () => { B.paths = null; B.chosen = []; B.auto = new Set(); runFind(); }) : null,
+    btn('Cancel', closeBuilder)));
+  box.append(sec3);
+  updateBuilderTotal();
+}
+function builderCosts() {
+  let legs = 0, extra = 0;
+  B.chosen.forEach(id => { const c = S.legs[id].cost; if (c !== '') legs += +c; });
+  B.extras.forEach(x => { if (x.amount !== '') extra += +x.amount; });
+  return { legs, extra, total: legs + extra };
+}
+function updateBuilderTotal() {
+  const e = $('#bTotal'); if (!e || !B) return;
+  const c = builderCosts(), budget = +S.budget || 0;
+  e.replaceChildren(`Legs ${money(c.legs)} + other costs ${money(c.extra)} = `, h('b', { text: `${money(c.total)} per head` }),
+    budget > 0 ? h('span', { class: 'st ' + (c.total > budget ? 'bad' : 'good'), text: c.total > budget ? `  ✕ ${money(c.total - budget)} over budget` : '  ✓ In budget' }) : null);
+}
+function savePlan() {
+  if (!checkBuilderName()) return;
+  const name = B.name.trim();
+  checkpoint();
+  const data = {
+    name, legs: B.chosen.slice(), pending: [], waits: Object.fromEntries(Object.entries(B.waits).filter(([k, v]) => B.chosen.includes(k) && String(v).trim()).map(([k, v]) => [k, String(v).trim()])),
+    extras: B.extras.filter(x => x.label.trim() || x.amount !== '').map(x => ({ label: x.label.trim(), amount: x.amount })),
+    start: B.start, end: B.end,
+    startT: B.chosen.length && T[B.chosen[0]].dep != null ? toLocal(T[B.chosen[0]].dep) : '',
+    endT: B.chosen.length && T[B.chosen[B.chosen.length - 1]].arr != null ? toLocal(T[B.chosen[B.chosen.length - 1]].arr) : '',
+  };
+  let id = B.editing;
+  if (id && S.plans[id]) Object.assign(S.plans[id], data);
+  else { id = uid('p'); S.plans[id] = Object.assign({ id }, data); S.planOrder.push(id); }
+  assignSlots();
+  S.example = false;
+  const was = !!B.editing;
+  B = null; hoverLeg = null; focusPlan = id;
+  renderAll();
+  toast(was ? `Saved changes to “${name}”` : `Saved “${name}”`, true);
+}
+
+/* ---------- saved plans ---------- */
+function renderPlans() {
+  const tb = $('#plansBody'); tb.replaceChildren();
+  const plans = PL.slice();
+  $('#planEmpty').hidden = plans.length > 0 || !!B;
+  $('#plansTable').hidden = !plans.length;
+  const key = S.sort;
+  const val = p => key === 'cost' ? p.cost : key === 'start' ? p.start : key === 'end' ? p.end : key === 'dur' ? p.dur : null;
+  if (key !== 'made') plans.sort((a, b) => (val(a) ?? Infinity) - (val(b) ?? Infinity));
+  const budget = +S.budget || 0;
+  const max = Math.max(budget, 1, ...plans.map(p => p.cost));
+  for (const p of plans) {
+    const isPicked = S.picked === p.id;
+    const tr = h('tr', { class: (focusPlan === p.id ? 'focus ' : '') + (isPicked ? 'picked' : ''), dataset: { plan: p.id } });
+    const star = h('button', { class: 'star', type: 'button', 'aria-pressed': String(isPicked), title: isPicked ? 'Unpick' : 'Pick this plan', 'aria-label': isPicked ? 'Unpick plan' : 'Pick plan', text: isPicked ? '★' : '☆' });
+    star.addEventListener('click', e => { e.stopPropagation(); pick(p.id); });
+    const over = budget > 0 ? p.cost - budget : null;
+    const status = over == null ? null : over > 0
+      ? h('span', { class: 'st bad', text: `✕ ${money(over)} over` })
+      : h('span', { class: 'st good', text: '✓ In budget' });
+    tr.append(
+      h('td', null, star),
+      h('td', null, h('span', { class: 'pname' }, h('span', { class: 'key', style: `--c:${p.color}` }), p.name), p.warn ? h('div', { class: 'st bad', text: '⚠ check this plan' }) : null),
+      h('td', { class: 'route', text: p.route }),
+      h('td', { class: 'nowrap', text: fmtDT(p.start) }),
+      h('td', { class: 'nowrap', text: fmtDT(p.end) }),
+      h('td', { class: 'nowrap', text: fmtDur(p.dur) }),
+      h('td', { class: 'costcell' },
+        h('div', { class: 'costline' }, h('strong', { text: money(p.cost) }), status),
+        h('div', { class: 'bar', title: budget > 0 ? `Black tick = budget ${money(budget)}` : null },
+          h('i', { style: `width:${(p.cost / max * 100).toFixed(1)}%;--c:${p.color}` }),
+          budget > 0 ? h('b', { style: `left:${(budget / max * 100).toFixed(1)}%` }) : null)));
+    tr.addEventListener('mouseenter', () => { hoverPlan = p.id; applyHighlight(); });
+    tr.addEventListener('mouseleave', () => { hoverPlan = null; applyHighlight(); });
+    tr.addEventListener('click', () => togglePlan(p.id));
+    tb.append(tr);
+  }
+  renderDetail();
+}
+function renderDetail() {
+  const box = $('#detail'); box.replaceChildren();
+  const id = focusPlan || S.picked, p = id && PLBY[id];
+  if (!p) {
+    box.hidden = !PL.length;
+    box.append(h('p', { class: 'hint', text: 'Click a plan to see its full itinerary here.' }));
+    return;
+  }
+  box.hidden = false;
+  const isPicked = S.picked === p.id;
+  box.append(h('div', { class: 'detail-head' },
+    h('div', null, renaming && renaming.id === p.id && renaming.where === 'detail' ? nameEditor(p.id, 'detail')
+      : h('h3', null, h('span', { class: 'key', style: `--c:${p.color}` }), (isPicked ? '★ ' : '') + p.name), h('p', { text: p.route })),
+    h('div', { class: 'btns' },
+      btn('View', () => setView(p.id), 'small primary', 'Show only this plan on the timeline'),
+      btn('Rename', () => startRename(p.id, 'detail'), 'small'),
+      btn(isPicked ? 'Unpick' : '★ Pick this plan', () => pick(p.id), 'small'),
+      btn('Edit', () => startBuilder(p.id), 'small'),
+      btn('Copy as text', () => copyText(planText(p)), 'small'),
+      btn('Delete', () => delPlan(p.id), 'small danger'))));
+  if (p.issues.length) box.append(h('div', { class: 'warnbox' }, ...p.issues.map(s => h('p', { text: '⚠ ' + s }))));
+  const tbl = h('table', { class: 'legs' });
+  tbl.append(h('thead', null, h('tr', null, ...['Leaves', 'Arrives', 'From → to', 'How', 'Time'].map(s => h('th', { text: s })), h('th', { class: 'num', text: 'Cost' }))));
+  const tb = h('tbody');
+  p.legs.forEach((id, i) => {
+    const l = S.legs[id], t = T[id];
+    if (i > 0) {
+      const a = T[p.legs[i - 1]].arr;
+      if (a != null && t.dep != null && t.dep - a > MIN) {
+        const w = waitInfo(p.p, id);
+        tb.append(h('tr', { class: 'wait' }, h('td', { colspan: '6' }, `${w.label} at ${nodeName(l.from)} · ${fmtDur(w.ms)}  `,
+          h('button', { type: 'button', class: 'linkbtn', text: 'rename', onclick: () => select({ k: 'wait', id, plan: p.id }, '#fWait') }))));
+      }
+    }
+    const c = l.cost;
+    const tr = h('tr', null, ...legRowCells(id),
+      h('td', { class: 'nowrap', text: t.noDep || t.noArr ? '—' : fmtDur(t.arrSched - t.dep) + (t.buf ? ` + ${fmtDur(t.buf)}` : '') }),
+      h('td', { class: 'num', text: c === '' ? '' : money(c) }));
+    hoverRow(tr, id);
+    tb.append(tr);
+  });
+  p.p.extras.forEach(x => tb.append(h('tr', { class: 'stay' }, h('td', { colspan: '5', text: x.label || 'Other cost' }), h('td', { class: 'num', text: x.amount === '' ? '' : money(x.amount) }))));
+  tb.append(h('tr', { class: 'total' }, h('td', { colspan: '5', text: 'Total per head' }), h('td', { class: 'num', text: money(p.cost) })));
+  tbl.append(tb);
+  box.append(h('div', { class: 'table-scroll' }, tbl));
+  const budget = +S.budget || 0;
+  box.append(h('div', { class: 'summary' },
+    h('span', null, 'Door to door ', h('b', { text: fmtDur(p.dur) })),
+    h('span', null, 'Travelling ', h('b', { text: fmtDur(p.move) })),
+    h('span', null, 'Waiting ', h('b', { text: fmtDur(p.wait) })),
+    h('span', null, 'Legs ', h('b', { text: money(p.legCost) }), ' + other ', h('b', { text: money(p.extra) })),
+    budget > 0 ? h('span', null, p.cost > budget ? 'Over budget by ' : 'Under budget by ', h('b', { text: money(Math.abs(budget - p.cost)) })) : null,
+    null));
+}
+function planText(p) {
+  const out = [`${p.name}: ${money(p.cost)} per head`, p.route, ''];
+  p.legs.forEach(id => {
+    const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other, c = legCostIn(p.p, id), w = waitInfo(p.p, id);
+    if (w && w.ms > MIN) out.push(`${w.label} at ${nodeName(w.node)}: ${fmtDur(w.ms)}`);
+    out.push(`${t.noDep ? '?' : fmtDT(t.dep)} → ${t.noArr ? '?' : fmtDT(t.arrSched)}${t.buf ? ` (+${fmtDur(t.buf)} buffer)` : ''}: ${legLabel(id)}, ${m.tag}${l.info ? ' (' + l.info + ')' : ''}${c === '' ? '' : ', ' + money(c)}`);
+  });
+  p.p.extras.forEach(x => out.push(`${x.label || 'Other cost'}: ${x.amount === '' ? '—' : money(x.amount)}`));
+  out.push('', `Door to door: ${fmtDur(p.dur)}`);
+  return out.join('\n');
+}
+async function copyText(s) {
+  try { await navigator.clipboard.writeText(s); toast('Copied to clipboard'); }
+  catch (e) {
+    const ta = h('textarea', { style: 'position:fixed;left:-9999px' }); ta.value = s; document.body.append(ta); ta.select();
+    try { document.execCommand('copy'); toast('Copied to clipboard'); } catch (e2) { toast('Could not copy'); }
+    ta.remove();
+  }
+}
+function pick(id) { S.picked = S.picked === id ? null : id; save(); renderPlans(); renderGraph(); }
+function togglePlan(id, only) {
+  focusPlan = only ? id : focusPlan === id ? null : id;
+  renderPlans(); applyHighlight();
+  if (only) { setDrawer(true); $('#detail').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+}
+function delPlan(id) {
+  const p = S.plans[id]; if (!p) return;
+  checkpoint();
+  delete S.plans[id];
+  S.planOrder.splice(S.planOrder.indexOf(id), 1);
+  if (focusPlan === id) focusPlan = null;
+  renderAll();
+  toast(`Deleted plan “${p.name}”`, true);
+}
+
+/* ---------- edits ---------- */
+function select(s, focusSel) {
+  sel = s; focusNext = focusSel || null;
+  if (!UI.side) setSide(true);
+  renderInspector(); renderGraph();
+  if (window.innerWidth <= 1000) $('#inspector').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function newNode() {
+  checkpoint();
+  const id = addNode('');
+  S.example = false;
+  compute(); select({ k: 'node', id }, '#fName'); refreshRest();
+}
+function newLeg(props) {
+  if (!S.order.length) { toast('Add a node first'); newNode(); return; }
+  checkpoint();
+  const p = Object.assign({}, props);
+  if (!p.from && !p.to) p.from = sel ? (sel.k === 'node' ? sel.id : S.legs[sel.id].to) || '' : '';
+  if (p.dep == null && p.from) {
+    let base = p.after != null ? p.after : null;
+    // in a plan's view, follow that plan's own arrival at this node
+    const vpl = viewPlan && S.plans[viewPlan] ? S.plans[viewPlan].legs.filter(id => S.legs[id]) : [];
+    if (base == null) { const inPlan = vpl.find(id => S.legs[id].to === p.from && T[id].arr != null); if (inPlan) base = T[inPlan].arr; }
+    if (base == null) for (const id in S.legs) if (S.legs[id].to === p.from && T[id] && T[id].arr != null) base = Math.max(base ?? -Infinity, T[id].arr);
+    if (base != null) { const d = roundTo(base + H, 30 * MIN); p.dep = toLocal(d); p.arr = toLocal(d + 2 * H); }
+  }
+  delete p.after;
+  const id = addLeg(p);
+  compute(); adoptTwinFare(id);
+  if (viewPlan && S.plans[viewPlan]) { const vp_ = S.plans[viewPlan]; vp_.pending = (vp_.pending || []).concat(id); }
+  S.example = false;
+  compute();
+  select({ k: 'leg', id }, !p.from ? '#fFrom' : !p.to ? '#fTo' : null);
+  refreshRest();
+}
+function addNodeFromLeg() {
+  const row = $('#newNodeRow'), name = $('#newNodeName').value.trim(), side = row.dataset.side;
+  if (!name) { $('#newNodeName').focus(); return; }
+  const l = S.legs[sel.id]; if (!l) return;
+  checkpoint();
+  const existing = findNode(name);
+  l[side] = existing || addNode(name);
+  if (existing) toast(`Using the node you already have: ${nodeName(existing)}`);
+  renderAll();
+}
+function mergeNode(from, into) {
+  checkpoint();
+  for (const id in S.legs) { const l = S.legs[id]; if (l.from === from) l.from = into; if (l.to === from) l.to = into; }
+  for (const id in S.plans) { const p = S.plans[id]; if (p.start === from) p.start = into; if (p.end === from) p.end = into; }
+  delete S.nodes[from];
+  S.order.splice(S.order.indexOf(from), 1);
+  sel = { k: 'node', id: into };
+  renderAll();
+  toast(`Merged into ${nodeName(into)}`, true);
+}
+function setBuf(id, mins) {
+  const l = S.legs[id]; if (!l) return;
+  checkpoint();
+  l.buf = mins || '';
+  compute(); renderGraph(); renderInspector(); refreshRest();
+}
+function applyBufRoad(mins) {
+  const legs = Object.values(S.legs).filter(l => l.mode === 'bus' || l.mode === 'cab');
+  if (!legs.length) { toast('There are no bus or cab legs yet'); return; }
+  checkpoint();
+  legs.forEach(l => { l.buf = mins || ''; });
+  renderAll();
+  toast(mins ? `Set a ${fmtDur(mins * MIN)} buffer on ${legs.length} bus and cab legs` : `Removed the buffer from ${legs.length} bus and cab legs`, true);
+}
+function moveRow(id, dir) {
+  const i = S.order.indexOf(id), j = i + dir;
+  if (j < 0 || j >= S.order.length) return;
+  checkpoint();
+  [S.order[i], S.order[j]] = [S.order[j], S.order[i]];
+  renderAll();
+}
+function delNode(id) {
+  if (!S.nodes[id]) return;
+  checkpoint();
+  const name = nodeName(id);
+  const gone = Object.keys(S.legs).filter(l => S.legs[l].from === id || S.legs[l].to === id);
+  gone.forEach(l => delete S.legs[l]);
+  delete S.nodes[id];
+  S.order.splice(S.order.indexOf(id), 1);
+  sel = null;
+  renderAll();
+  toast(`Deleted ${name}${gone.length ? ` and ${gone.length} leg${gone.length > 1 ? 's' : ''}` : ''}`, true);
+}
+function delLeg(id) {
+  if (!S.legs[id]) return;
+  checkpoint();
+  const n = (LEGPLANS[id] || []).length, from = S.legs[id].from;
+  delete S.legs[id];
+  sel = from && S.nodes[from] ? { k: 'node', id: from } : null;
+  renderAll();
+  toast(n ? `Deleted the leg. ${n} saved plan${n > 1 ? 's' : ''} used it and now need${n > 1 ? '' : 's'} editing.` : 'Deleted the leg', true);
+}
+
+/* ---------- plan names, plan view, panels, theme ---------- */
+function planNameError(name, exceptId) {
+  const n = normName(name);
+  if (!n) return 'Give the plan a name.';
+  const dup = S.planOrder.find(id => id !== exceptId && normName(S.plans[id].name) === n);
+  return dup ? `Another plan is already called “${S.plans[dup].name}”. Pick a different name.` : null;
+}
+function startRename(id, where) { renaming = { id, where }; renderPlanSurfaces(); const i = document.querySelector('[data-rename]'); if (i) { i.focus(); i.select(); } }
+function renderPlanSurfaces() { renderViewTabs(); renderPlanBar(); renderDetail(); if (!sel) renderInspector(); }
+// Inline name editor: Save stays disabled while the name is empty or already used by another plan.
+function nameEditor(id) {
+  const i = h('input', { type: 'text', 'data-rename': id, maxlength: '80', 'aria-label': 'Plan name' });
+  i.value = S.plans[id].name;
+  const err = h('p', { class: 'err', hidden: true });
+  const ok = btn('Save', () => commit(), 'primary small');
+  const check = () => { const e = planNameError(i.value, id); err.textContent = e || ''; err.hidden = !e; ok.disabled = !!e; return !e; };
+  const commit = () => {
+    if (!check()) { i.focus(); return; }
+    const name = i.value.trim();
+    renaming = null;
+    if (name !== S.plans[id].name) { checkpoint(); S.plans[id].name = name; renderAll(); toast(`Renamed to “${name}”`, true); }
+    else renderPlanSurfaces();
+  };
+  i.addEventListener('input', check);
+  i.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); commit(); } else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); renaming = null; renderPlanSurfaces(); } });
+  return h('div', { class: 'rename' }, i, ok, btn('Cancel', () => { renaming = null; renderPlanSurfaces(); }, 'small'), err);
+}
+function setView(id) {
+  viewPlan = id && S.plans[id] ? id : null;
+  focusPlan = viewPlan; hoverPlan = null; hoverLeg = null; renaming = null;
+  if (viewPlan) sel = null;
+  scrubT = null; pinned = false;
+  $('#graphScroll').scrollLeft = 0;
+  renderViewTabs(); renderPlanBar(); renderGraph(); renderInspector(); renderPlans(); renderNow();
+}
+function renderViewTabs() {
+  const box = $('#viewTabs'); box.replaceChildren();
+  box.hidden = !PL.length;
+  $('#graphTitle').textContent = viewPlan && PLBY[viewPlan] ? 'Plan view' : 'Nodes and legs';
+  const tab = (id, label, color) => {
+    const b = h('button', { class: 'vtab', type: 'button', role: 'tab', 'aria-selected': String((viewPlan || null) === id),
+      title: id ? 'Show only this plan. Double-click to rename.' : 'Show every node and leg', onclick: () => setView(id) },
+      color ? h('span', { class: 'key', style: `--c:${color}` }) : null, label);
+    if (id) b.addEventListener('dblclick', () => { setView(id); startRename(id, 'bar'); });
+    return b;
+  };
+  box.append(tab(null, 'All nodes and legs'));
+  PL.forEach(p => box.append(tab(p.id, p.name, p.color)));
+}
+function renderPlanBar() {
+  const bar = $('#planBar'); bar.replaceChildren();
+  const p = viewPlan && PLBY[viewPlan];
+  bar.hidden = !p;
+  if (!p) return;
+  bar.style.setProperty('--c', p.color);
+  const budget = +S.budget || 0;
+  if (renaming && renaming.id === p.id && renaming.where === 'bar') bar.append(nameEditor(p.id));
+  else bar.append(h('span', { class: 'pb-name', text: (S.picked === p.id ? '★ ' : '') + p.name }));
+  const pend = (p.p.pending || []).filter(id => S.legs[id]);
+  if (pend.length) bar.append(h('div', { class: 'pend-note' },
+    `${pend.length} new leg${pend.length > 1 ? 's' : ''} (dashed) ${pend.length > 1 ? 'have' : 'has'} not joined this plan yet: ${pend.map(legLabel).join(', ')}. ${pend.length > 1 ? 'They join' : 'It joins'} as soon as the route connects through ${pend.length > 1 ? 'them' : 'it'}.`,
+    btn('Leave out of this plan', () => { checkpoint(); S.plans[p.id].pending = []; renderAll(); }, 'small')));
+  bar.append(h('span', { class: 'pb-route', text: p.route }),
+    h('span', null, h('b', { text: money(p.cost) }), ' per head', budget > 0 ? h('span', { class: 'st ' + (p.cost > budget ? 'bad' : 'good'), text: p.cost > budget ? `  ✕ ${money(p.cost - budget)} over` : '  ✓ In budget' }) : null),
+    h('span', { class: 'muted', text: `${fmtDT(p.start)} → ${fmtDT(p.end)} · ${fmtDur(p.dur)}` }),
+    h('span', { class: 'btns' },
+      btn('Rename', () => startRename(p.id, 'bar'), 'small'),
+      btn('Edit route and costs', () => startBuilder(p.id), 'small'),
+      btn('Details', () => togglePlan(p.id, true), 'small'),
+      btn('Exit plan view', () => setView(null), 'small')));
+}
+function planPanel(p) {
+  const box = h('div', { class: 'plan-panel' });
+  box.append(h('div', { class: 'insp-head' }, h('span', { class: 'key-dot', style: `--c:${p.color}` }),
+    h('div', null, h('h2', { text: p.name }), h('p', { class: 'crumb', text: 'Plan view: only this plan is drawn' }))));
+  box.append(h('p', { class: 'pp-route', text: p.route }));
+  if (p.issues.length) box.append(h('div', { class: 'warnbox' }, ...p.issues.map(s => h('p', { text: '⚠ ' + s }))));
+  const ol = h('ol');
+  p.legs.forEach((id, i) => {
+    const l = S.legs[id], t = T[id], c = legCostIn(p.p, id);
+    if (i > 0) { const a = T[p.legs[i - 1]].arr; if (a != null && t.dep != null && t.dep - a > MIN) { const w = waitInfo(p.p, id); ol.append(h('li', { class: 'w', title: 'Click to rename this wait', style: 'cursor:pointer', text: `${w.label} at ${nodeName(l.from)} · ${fmtDur(w.ms)}`, onclick: () => select({ k: 'wait', id, plan: p.id }, '#fWait') })); } }
+    const li = h('li', { style: `--c:${p.color}` }, h('b', { text: legLabel(id) }), h('br'),
+      h('span', { class: 'muted', text: `${(MODE[l.mode] || MODE.other).tag} · ${t.timed ? `${shortDT(t.dep)} → ${shortDT(t.arrSched)}` : 'no times'}${c === '' ? '' : ' · ' + money(c)}` }));
+    li.addEventListener('mouseenter', () => { hoverLeg = id; applyHighlight(); });
+    li.addEventListener('mouseleave', () => { hoverLeg = null; applyHighlight(); });
+    ol.append(li);
+  });
+  box.append(ol);
+  if (p.p.extras.length) box.append(h('div', { class: 'sect' }, h('h3', { text: 'Other costs' }), ...p.p.extras.map(x => h('div', { class: 'exl' }, h('span', { text: x.label || 'Other cost' }), h('span', { text: x.amount === '' ? '—' : money(x.amount) })))));
+  box.append(h('div', { class: 'tot' }, h('span', { text: 'Total per head' }), h('span', { text: money(p.cost) })));
+  box.append(h('div', { class: 'summary' }, h('span', null, 'Door to door ', h('b', { text: fmtDur(p.dur) })), h('span', null, 'Waiting ', h('b', { text: fmtDur(p.wait) }))));
+  box.append(h('div', { class: 'actions' },
+    btn('Edit route and costs', () => startBuilder(p.id), 'primary'),
+    btn('Copy as text', () => copyText(planText(p))),
+    btn('Exit plan view', () => setView(null))));
+  return box;
+}
+function setSide(open) {
+  UI.side = !!open; saveUI();
+  $('#main').classList.toggle('side-hidden', !UI.side);
+  $('#sideBtn').setAttribute('aria-pressed', String(UI.side));
+  renderGraph();
+}
+function setDrawer(open) {
+  UI.drawer = !!open; saveUI();
+  $('#drawer').classList.toggle('open', UI.drawer);
+  $('#drawerTab').setAttribute('aria-expanded', String(UI.drawer));
+  $('#drawerArrow').textContent = UI.drawer ? '▼' : '▲';
+}
+function syncCostBtn() {
+  const b = $('#costBtn');
+  b.setAttribute('aria-pressed', String(!!UI.costs));
+  b.classList.toggle('on', !!UI.costs);
+  b.textContent = UI.costs ? 'Costs: on' : 'Costs: off';
+}
+function effectiveTheme() {
+  const t = document.documentElement.dataset.theme;
+  if (t === 'light' || t === 'dark') return t;
+  return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+function applyTheme() {
+  if (UI.theme === 'light' || UI.theme === 'dark') document.documentElement.dataset.theme = UI.theme;
+  else delete document.documentElement.dataset.theme;
+  const dark = effectiveTheme() === 'dark';
+  $('#themeBtn').textContent = dark ? 'Light' : 'Dark';
+  $('#themeBtn').setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+}
+
+/* ---------- legs added inside a plan's view join that plan ---------- */
+// A new leg made while a plan is shown joins it as soon as it connects: from the plan's last
+// node (the route goes on), into its first node (the route starts earlier), or as part of a
+// detour that leaves the route and comes back to it (the detour replaces the legs it skips).
+function joinPending() {
+  const notes = [];
+  for (const pid of S.planOrder) {
+    const p = S.plans[pid];
+    if (!p.pending || !p.pending.length) continue;
+    p.pending = p.pending.filter(id => S.legs[id] && !p.legs.includes(id));
+    for (let guard = 0; guard < 20 && p.pending.length; guard++) {
+      const cur = p.legs.filter(id => S.legs[id]);
+      if (!cur.length) break;
+      const first = cur[0], last = cur[cur.length - 1];
+      const startNode = S.legs[first].from, endNode = S.legs[last].to;
+      const ready = p.pending.filter(id => T[id] && T[id].ok);
+      let done = null;
+      const pool = new Set([...cur, ...ready]);
+      const routes = findRoutes(startNode, endNode, '', '', null, null, pool).paths.filter(r => r.some(id => ready.includes(id)));
+      if (routes.length) {
+        const score = r => [r.filter(id => ready.includes(id)).length, r.filter(id => cur.includes(id)).length];
+        routes.sort((a, b) => { const A = score(a), Z = score(b); return (Z[0] - A[0]) || (Z[1] - A[1]); });
+        const best = routes[0], gone = cur.filter(id => !best.includes(id)), added = best.filter(id => !cur.includes(id));
+        p.legs = best;
+        done = `${added.map(legLabel).join(', ')} joined “${p.name}”${gone.length ? `, replacing ${gone.map(legLabel).join(', ')}` : ''}`;
+      } else {
+        for (const id of ready) {
+          const l = S.legs[id], t = T[id];
+          if (l.from === endNode && (t.dep == null || T[last].arr == null || t.dep >= T[last].arr - MIN)) { p.legs.push(id); p.end = l.to; done = `${legLabel(id)} added to the end of “${p.name}”`; break; }
+          if (l.to === startNode && (t.arr == null || T[first].dep == null || t.arr <= T[first].dep + MIN)) { p.legs.unshift(id); p.start = l.from; done = `${legLabel(id)} added to the start of “${p.name}”`; break; }
+        }
+      }
+      if (!done) break;
+      p.pending = p.pending.filter(id => !p.legs.includes(id));
+      notes.push(done);
+      compute();
+    }
+  }
+  if (notes.length) toast(notes.join('. ') + '.', true);
+}
+
+/* ---------- render orchestration ---------- */
+function syncToolbar() {
+  $('#zoom').value = S.pph || 14;
+  $('#zoom').disabled = !hasTime; $('#fit').disabled = !hasTime;
+  if (document.activeElement !== $('#budget')) $('#budget').value = S.budget || '';
+  $('#currency').value = S.currency;
+  $('#sort').value = S.sort;
+  $('#undo').disabled = !undoStack.length;
+}
+function refreshRest() { renderPlans(); renderNow(); syncToolbar(); $('#planCount').textContent = PL.length ? `(${PL.length})` : ''; save(); }
+function renderAll() { compute(); joinPending(); renderViewTabs(); renderPlanBar(); renderGraph(); renderInspector(); renderBuilder(); refreshRest(); }
+function refreshAfterEdit() { compute(); joinPending(); renderViewTabs(); renderPlanBar(); renderGraph(); renderPlans(); renderNow(); updateLive(); syncToolbar(); save(); }
+
+let toastTimer = null;
+function toast(msg, undoable) {
+  const t = $('#toast'); t.replaceChildren(h('span', { text: msg }));
+  if (undoable) t.append(h('button', { class: 'btn small', type: 'button', text: 'Undo', onclick: () => { undo(); t.hidden = true; } }));
+  t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 6000);
+}
+
+/* ---------- events ---------- */
+function tAt(e) {
+  const r = $('#graph').getBoundingClientRect();
+  const x = (e.clientX - r.left) * (geo.width / r.width);
+  const t = geo.tmin + (x - geo.left) / geo.pph * H;
+  return Math.min(geo.tmax, Math.max(geo.tmin, roundTo(t, 15 * MIN)));
+}
+function bind() {
+  const svg = $('#graph');
+  svg.addEventListener('pointermove', e => {
+    if (!geo || !geo.time || pinned || e.pointerType === 'touch') return;
+    const t = tAt(e);
+    if (t !== scrubT) { scrubT = t; drawScrub(); renderNow(); }
+  });
+  svg.addEventListener('pointerleave', () => { if (pinned || scrubT == null) return; scrubT = null; drawScrub(); renderNow(); });
+  svg.addEventListener('click', e => {
+    const wait = e.target.closest('[data-wait]');
+    if (wait) { select({ k: 'wait', id: wait.dataset.wait, plan: wait.dataset.plan }, '#fWait'); return; }
+    const badge = e.target.closest('.badge');
+    if (badge) { togglePlan(badge.dataset.plan); return; }
+    const node = e.target.closest('[data-node]');
+    if (node) { select({ k: 'node', id: node.dataset.node }); return; }
+    const leg = e.target.closest('[data-leg]');
+    if (leg) { select({ k: 'leg', id: leg.dataset.leg }); return; }
+    if (geo && geo.time) { scrubT = tAt(e); pinned = !pinned; drawScrub(); renderNow(); }
+    if (sel) { sel = null; renderInspector(); renderGraph(); }
+  });
+  svg.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const t = e.target.closest('.badge, .rowhead');
+    if (!t) return;
+    e.preventDefault();
+    if (t.dataset.plan) togglePlan(t.dataset.plan); else select({ k: 'node', id: t.dataset.node });
+  });
+
+  const insp = $('#inspector');
+  insp.addEventListener('focusin', e => { if (e.target.dataset && (e.target.dataset.f || e.target.dataset.waitLabel)) pendingSnap = JSON.stringify(S); });
+  insp.addEventListener('input', e => {
+    if (e.target.dataset && e.target.dataset.waitLabel && sel && sel.k === 'wait') {
+      const p = S.plans[sel.plan]; if (!p) return;
+      if (pendingSnap) { undoStack.push(pendingSnap); if (undoStack.length > 80) undoStack.shift(); pendingSnap = null; }
+      const v = e.target.value.trim().slice(0, 60);
+      if (v) p.waits[sel.id] = v; else delete p.waits[sel.id];
+      refreshAfterEdit();
+      return;
+    }
+    const f = e.target.dataset && e.target.dataset.f;
+    if (!f || !sel) return;
+    const obj = sel.k === 'node' ? S.nodes[sel.id] : S.legs[sel.id];
+    if (!obj) return;
+    if (pendingSnap) { undoStack.push(pendingSnap); if (undoStack.length > 80) undoStack.shift(); pendingSnap = null; }
+    let v = e.target.value;
+    if (f === 'cost' || f === 'buf') { const x = num(v); v = x == null ? '' : Math.max(0, x); }
+    if (sel.k === 'leg' && f === 'cost') setFare(sel.id, v);
+    else {
+      obj[f] = v;
+      if (sel.k === 'leg' && ['dep', 'arr', 'mode'].includes(f)) adoptTwinFare(sel.id);
+    }
+    refreshAfterEdit();
+  });
+  insp.addEventListener('change', e => {
+    const side = e.target.dataset && e.target.dataset.end;
+    if (!side || !sel || sel.k !== 'leg') return;
+    const v = e.target.value;
+    if (v === '__new') {
+      const row = $('#newNodeRow'); row.dataset.side = side; row.hidden = false;
+      $('#newNodeName').value = ''; $('#newNodeName').focus();
+      return;
+    }
+    checkpoint();
+    S.legs[sel.id][side] = v;
+    renderAll();
+  });
+  insp.addEventListener('keydown', e => { if (e.target.id === 'newNodeName' && e.key === 'Enter') { e.preventDefault(); addNodeFromLeg(); } });
+
+  const bld = $('#builder');
+  bld.addEventListener('change', e => {
+    const k = e.target.dataset && e.target.dataset.bf;
+    if (!k || !B) return;
+    B[k] = e.target.value;
+    if (k === 'start') B.startLeg = '';
+    if (k === 'end') B.endLeg = '';
+    if ((k === 'start' || k === 'startLeg') && B.endLeg && B.startLeg && T[B.endLeg] && T[B.startLeg] && T[B.endLeg].arr != null && T[B.startLeg].dep != null && T[B.endLeg].arr <= T[B.startLeg].dep) B.endLeg = '';
+    if (B.paths) { B.paths = null; B.chosen = []; B.auto = new Set(); if (B.editing) toast('Press “Find routes” to choose the route again'); }
+    renderBuilder(); applyHighlight();
+  });
+  bld.addEventListener('focusin', e => { if (e.target.dataset && e.target.dataset.fare) bldSnap = JSON.stringify(S); });
+  bld.addEventListener('input', e => {
+    if (!B) return;
+    const d = e.target.dataset || {};
+    if (d.pf === 'name') {
+      B.name = e.target.value;
+      const err = B.name.trim() ? planNameError(B.name, B.editing) : null, box = $('#bNameErr');
+      if (box) { box.textContent = err || ''; box.hidden = !err; }
+    }
+    else if (d.wl) { const v = e.target.value; if (v.trim()) B.waits[d.wl] = v; else delete B.waits[d.wl]; return; }
+    else if (d.fare) {
+      if (bldSnap) { undoStack.push(bldSnap); if (undoStack.length > 80) undoStack.shift(); bldSnap = null; }
+      const x = num(e.target.value); setFare(d.fare, x == null ? '' : Math.max(0, x));
+      compute(); renderGraph(); renderPlans(); renderPlanBar(); if (sel) updateLive(); syncToolbar(); save();
+    }
+    else if (d.ex) { const x = B.extras[+d.i]; if (!x) return; x[d.ex] = d.ex === 'amount' ? (num(e.target.value) ?? '') : e.target.value; }
+    else return;
+    updateBuilderTotal();
+  });
+
+  $('#costBtn').addEventListener('click', () => { UI.costs = !UI.costs; saveUI(); syncCostBtn(); renderGraph(); });
+  $('#sideBtn').addEventListener('click', () => setSide(!UI.side));
+  $('#sideHide').addEventListener('click', () => setSide(false));
+  $('#sideOpen').addEventListener('click', () => setSide(true));
+  $('#drawerTab').addEventListener('click', () => setDrawer(!UI.drawer));
+  $('#drawerClose').addEventListener('click', () => setDrawer(false));
+  $('#themeBtn').addEventListener('click', () => { UI.theme = effectiveTheme() === 'dark' ? 'light' : 'dark'; saveUI(); applyTheme(); });
+  if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+  $('#addNode').addEventListener('click', newNode);
+  $('#emptyAdd').addEventListener('click', newNode);
+  $('#emptyExample').addEventListener('click', () => $('#example').click());
+  $('#addLeg').addEventListener('click', () => newLeg({}));
+  $('#makePlan').addEventListener('click', () => startBuilder());
+  $('#makePlan2').addEventListener('click', () => startBuilder());
+  $('#zoom').addEventListener('input', e => {
+    const sc = $('#graphScroll');
+    const cx = sc.scrollLeft + sc.clientWidth / 2;
+    const tC = geo && geo.time ? geo.tmin + (cx - geo.left) / geo.pph * H : null;
+    S.pph = +e.target.value;
+    renderGraph();
+    if (tC != null && geo && geo.time) sc.scrollLeft = geo.X(tC) - sc.clientWidth / 2;
+    save();
+  });
+  $('#fit').addEventListener('click', () => {
+    if (!geo || !geo.time) return;
+    const sc = $('#graphScroll');
+    const hours = (geo.tmax - geo.tmin) / H;
+    S.pph = Math.max(3, Math.min(60, Math.floor((sc.clientWidth - geo.left - LAY.right) / hours)));
+    renderGraph(); syncToolbar(); save();
+    sc.scrollLeft = 0;
+  });
+  $('#currency').replaceChildren(...CURRENCIES.map(c => h('option', { value: c, text: c })));
+  $('#currency').addEventListener('change', e => { checkpoint(); S.currency = e.target.value; renderAll(); });
+  $('#budget').addEventListener('input', e => { S.budget = num(e.target.value) ?? 0; renderPlans(); updateBuilderTotal(); save(); });
+  $('#sort').addEventListener('change', e => { S.sort = e.target.value; renderPlans(); save(); });
+  $('#undo').addEventListener('click', undo);
+  $('#export').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
+    const a = h('a', { href: URL.createObjectURL(blob), download: 'route-plans.json' });
+    document.body.append(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  });
+  $('#importBtn').addEventListener('click', () => $('#importFile').click());
+  $('#importFile').addEventListener('change', async e => {
+    const file = e.target.files && e.target.files[0]; e.target.value = '';
+    if (!file) return;
+    try {
+      const d = normalize(JSON.parse(await file.text()));
+      if (!d) throw new Error('bad');
+      checkpoint(); S = d; sel = null; focusPlan = null; B = null; renderAll();
+      toast(`Loaded ${file.name}`, true);
+    } catch (err) { toast('That file is not a planner export'); }
+  });
+  $('#example').addEventListener('click', () => {
+    checkpoint();
+    const keep = { budget: S.budget, currency: S.currency };
+    S = exampleState(); Object.assign(S, keep);
+    sel = null; focusPlan = null; B = null; renderAll();
+    toast('Example loaded', true);
+  });
+  const clearAll = () => {
+    checkpoint();
+    const keep = { budget: S.budget, pph: S.pph, currency: S.currency };
+    S = blank(); Object.assign(S, keep);
+    sel = null; focusPlan = null; B = null; scrubT = null; pinned = false;
+    renderAll();
+    toast('Cleared', true);
+  };
+  $('#clear').addEventListener('click', clearAll);
+  $('#exampleClear').addEventListener('click', clearAll);
+  $('#exampleHide').addEventListener('click', () => { S.example = false; save(); renderGraph(); });
+
+  document.addEventListener('keydown', e => {
+    const inField = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && !inField) { e.preventDefault(); undo(); }
+    else if (e.key === 'Escape' && !inField && sel) { sel = null; renderInspector(); renderGraph(); }
+    else if (e.key === 'Escape' && !inField && UI.drawer) setDrawer(false);
+    else if (e.key === 'Delete' && !inField && sel && sel.k !== 'wait') { if (sel.k === 'node') delNode(sel.id); else delLeg(sel.id); }
+  });
+  window.addEventListener('resize', () => { clearTimeout(bind._rt); bind._rt = setTimeout(renderGraph, 150); });
+}
+
+/* ---------- start ---------- */
+S = loadSaved() || blank();
+applyTheme();
+syncCostBtn();
+$('#main').classList.toggle('side-hidden', !UI.side);
+$('#sideBtn').setAttribute('aria-pressed', String(UI.side));
+setDrawer(UI.drawer);
+renderLegend();
+bind();
+renderAll();
+})();
+</script>
+</body>
+</html>
