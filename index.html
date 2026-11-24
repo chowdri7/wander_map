@@ -1652,7 +1652,7 @@ const MODE = Object.fromEntries(MODES.map(([k, label, color]) => [k, { label, co
 const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
 const SERIF = '"Iowan Old Style", Charter, "Bitstream Charter", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Noto Serif", "DejaVu Serif", serif';
 const F = { place: `600 12px ${FONT}`, small: `11px ${FONT}`, time: `600 11px ${FONT}`, dur: `600 10.5px ${FONT}`, cost: `700 11px ${FONT}`, root: `600 14px ${SERIF}`, badge: `600 12px ${FONT}` };
-const LAY = { top: 68, rowH: 96, right: 260 };
+const LAY = { top: 68, rowH: 96, right: 260, sky: 48 };   // sky: room for the sun and moon above the first place
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const BUFS = [0, 15, 30, 60, 120, 180];
@@ -2221,7 +2221,7 @@ function renderGraph() {
   let left = phone ? 104 : 150;
   order.forEach(id => { left = Math.max(left, Math.min(phone ? 150 : 300, tw(nodeName(id), F.root) + 52 + (S.nodes[id].img ? 34 : 0))); });
   const rowY = {};
-  let y = LAY.top + 14;
+  let y = LAY.top + 14 + (timeOn ? LAY.sky : 0);
   const rows = order.map(id => { const r = { id, top: y, y: y + 50, bot: y + LAY.rowH }; y = r.bot; rowY[id] = r.y; return r; });
   let X = null, tmin = 0, tmax = 0, pph = 0, width = left + 420;
   if (timeOn) {
@@ -2553,7 +2553,7 @@ function drawTimeAxis(g) {
       // the sun high over the middle of the day, the counterpart of the night's stars
       { const tn = day + 12 * H;
         if (pph >= 5 && tn >= tmin && tn <= tmax) {
-          const cx = X(tn), cy = yA + 30, sn = el('g', { class: 'daysun' }, bodyArt);
+          const cx = X(tn), cy = yA + 25, sn = el('g', { class: 'daysun' }, bodyArt);
           el('circle', { cx, cy, r: 30 * k, fill: 'url(#sunglow)', class: 'dshalo' }, sn);
           const rays = el('g', { class: 'dsrays' }, sn);
           for (let q = 0; q < 12; q++) { const an = q * Math.PI / 6, r1 = 14.5 * k, r2 = (q % 2 ? 18 : 20.5) * k; el('line', { x1: cx + Math.cos(an) * r1, y1: cy + Math.sin(an) * r1, x2: cx + Math.cos(an) * r2, y2: cy + Math.sin(an) * r2 }, rays); }
@@ -2561,7 +2561,7 @@ function drawTimeAxis(g) {
         } }
       // the moon high over the middle of the night, with one small cloud passing it
       if (pph >= 5 && day >= tmin && day <= tmax) {
-        const cx = X(day), cy = yA + 30, R = 11.5 * k, mn = el('g', { class: 'nightmoon' }, bodyArt);
+        const cx = X(day), cy = yA + 25, R = 11.5 * k, mn = el('g', { class: 'nightmoon' }, bodyArt);
         el('circle', { cx, cy, r: 32 * k, fill: 'url(#bmoonglow)', class: 'nmglow mglow' }, mn);
         // only the crescent: the disc, with an offset circle masked out of it
         const mk = el('mask', { id: `mmask${i}`, maskUnits: 'userSpaceOnUse', x: cx - R - 4, y: cy - R - 4, width: 2 * R + 8, height: 2 * R + 8 }, defs);
