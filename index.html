@@ -629,18 +629,79 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 [data-ico="sun"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%224%22/%3E%3Cpath d=%22M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4%22/%3E%3C/svg%3E")}
 [data-ico="list"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M9 6h11M9 12h11M9 18h11%22/%3E%3Ccircle cx=%224.5%22 cy=%226%22 r=%221.2%22/%3E%3Ccircle cx=%224.5%22 cy=%2212%22 r=%221.2%22/%3E%3Ccircle cx=%224.5%22 cy=%2218%22 r=%221.2%22/%3E%3C/svg%3E")}
 
+/* ---------- docked workspace: timeline, plans panel and details panel joined edge to edge ---------- */
+[data-ico="collapse"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223%22 y=%224%22 width=%2218%22 height=%2216%22 rx=%222.5%22/%3E%3Cpath d=%22M15 4v16M8.5 10l2 2-2 2%22/%3E%3C/svg%3E")}
+.app{--gut:0px;padding:0;gap:0}
+.topbar{margin:0;padding:8px 16px}
+.main{gap:0;padding-bottom:0}
+.maincol{flex:3 1 0;min-width:0;min-height:0;display:flex;flex-direction:column;background:var(--surface)}
+.graph-card{flex:1 1 auto;min-height:0;border:0;border-radius:0;box-shadow:none;margin:0 !important}
+.graph-card .card-head{padding:14px 20px 8px}
+.viewtabs{padding:0 20px}
+.planbar{margin:4px 20px 12px}
+
+/* plans: a docked panel at the bottom of the main column */
+.dock{flex:none;display:flex;flex-direction:column;position:relative;border-top:1px solid var(--border);background:var(--surface)}
+.dock-split{position:absolute;left:0;right:0;top:-4px;height:8px;cursor:row-resize;z-index:2;outline:none}
+.dock-split::after{content:"";position:absolute;left:50%;top:2px;width:36px;height:4px;margin-left:-18px;border-radius:2px;background:var(--axis);opacity:0;transition:opacity .15s,background .15s}
+.dock.open .dock-split:hover::after,.dock.open .dock-split:focus-visible::after,.dock.resizing .dock-split::after{opacity:1;background:var(--accent)}
+.dock:not(.open) .dock-split{display:none}
+.dock-bar{height:44px;display:flex;align-items:center;gap:10px;padding:0 14px 0 10px;flex:none}
+.dock-toggle{display:inline-flex;align-items:center;gap:9px;height:32px;padding:0 10px 0 6px;border:0;border-radius:var(--r);background:none;color:var(--ink);cursor:pointer;font:inherit}
+.dock-toggle:hover{background:var(--surface2)}
+.dock-toggle:focus-visible{outline:none;box-shadow:0 0 0 2px var(--surface),0 0 0 4px color-mix(in srgb,var(--accent) 55%,transparent)}
+.dock-toggle .chev{width:16px;height:16px;background:var(--ink2);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M6 15l6-6 6 6%22/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M6 15l6-6 6 6%22/%3E%3C/svg%3E") center/contain no-repeat;transition:transform .2s}
+.dock.open .dock-toggle .chev{transform:rotate(180deg)}
+.dock-title{font-family:var(--serif);font-size:16px;font-weight:600}
+.dock-toggle .cnt{min-width:22px;height:20px;padding:0 7px;border-radius:999px;background:var(--surface2);border:1px solid var(--border);color:var(--ink2);font-size:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center}
+.dock-toggle .cnt:empty{display:none}
+.dock-sort{display:inline-flex;align-items:center;gap:8px}
+.dock-sort span{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.dock-sort select{width:auto;height:30px}
+.dock-body{height:0;overflow:hidden;border-top:1px solid transparent;transition:height .22s ease}
+.dock.open .dock-body{height:var(--dock-h,42vh);overflow:auto;border-top-color:var(--border)}
+.dock.resizing .dock-body{transition:none}
+.dock-body #planEmpty{padding:16px 20px}
+.dock-body #detail{padding:16px 20px 20px}
+.dock-body .table-scroll{padding:0 8px}
+.dock-body #builder{padding:14px 20px 20px}
+@media (prefers-reduced-motion:reduce){.dock-body,.dock-toggle .chev{transition:none}}
+
+/* details: a docked panel on the right with its own header */
+.side{flex:1 1 0;min-width:300px;max-width:460px;border:0;border-left:1px solid var(--border);border-radius:0;box-shadow:none;background:var(--surface);padding:0;display:flex;flex-direction:column;overflow:hidden}
+.side-head{position:static;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0;height:44px;padding:0 10px 0 20px;border-bottom:1px solid var(--border);flex:none}
+.side-title{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.side-head .btn.icon{width:32px;height:32px;background:none;border-color:transparent;color:var(--ink2)}
+.side-head .btn.icon:hover{background:var(--surface2);border-color:var(--border);color:var(--ink)}
+#inspector{flex:1;min-height:0;overflow:auto;padding:18px 20px 24px}
+.rail{display:none;flex:none;width:44px;flex-direction:column;align-items:center;gap:12px;padding:12px 0;border:0;border-left:1px solid var(--border);background:var(--surface);color:var(--ink2);cursor:pointer;font:600 11px var(--font);letter-spacing:.09em;text-transform:uppercase}
+.rail span{writing-mode:vertical-rl;color:var(--muted)}
+.rail:hover{background:var(--surface2);color:var(--ink)}
+.rail:hover span{color:var(--ink2)}
+.rail:focus-visible{outline:none;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent) 55%,transparent)}
+.main.side-hidden .rail{display:flex}
+.main.side-hidden .side{display:none}
+.main.side-hidden .graph-card{margin-right:0}
+@media (max-width:900px){
+  .side{position:absolute;right:0;top:0;bottom:0;width:min(380px,92vw);max-width:none;z-index:6;box-shadow:var(--shadow-lg)}
+}
+
 /* ---------- view-only on phones: just the timeline and Import ---------- */
 .phone-empty,.vo-note{display:none}
 .viewonly .toolbar > *:not(#importBtn){display:none !important}
 .viewonly #importBtn{display:inline-flex !important;width:auto !important;font-size:13px !important;padding:0 14px !important;gap:7px !important}
 .viewonly #importBtn{background:var(--accent) !important;border-color:var(--accent) !important;color:var(--accent-ink) !important;font-weight:600}
-.viewonly #planBar,.viewonly #side,.viewonly .sidetab,.viewonly #drawer,.viewonly #exampleNote{display:none !important}
+.viewonly #planBar,.viewonly .rail,.viewonly .dock,.viewonly #side,.viewonly .sidetab,.viewonly #drawer,.viewonly #exampleNote{display:none !important}
 .viewonly .guide{display:none}
 .viewonly .phone-empty{display:block;max-width:420px;margin:0 auto;text-align:center}
 .viewonly .phone-empty h3{margin:0 0 8px;font-size:18px;color:var(--ink)}
 .viewonly .phone-empty .btn{margin:6px 0 12px;padding:9px 18px;font-size:15px}
 .viewonly .vo-note{display:inline;font-size:12px;color:var(--muted)}
 .viewonly .main{padding-bottom:14px}
+.viewonly .maincol{display:block;background:none}
+.viewonly .graph-card{border:1px solid var(--border);border-radius:var(--r-lg)}
+.viewonly .app{padding:0 var(--gut);gap:10px}
+.viewonly .topbar{margin:0 calc(-1 * var(--gut));padding:8px calc(var(--gut) + 4px)}
 .viewonly .topbar .toolbar{background:none;border:0;box-shadow:none;padding:0}
 .viewonly .topbar{align-items:center}
 .viewonly .topbar h1{margin:0}
@@ -742,6 +803,7 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
   </header>
 
   <div class="main" id="main">
+    <div class="maincol">
     <section class="card graph-card" aria-label="Places and legs">
       <div class="card-head"><h2 id="graphTitle">Places and legs</h2><span class="vo-note">View only · edit on a computer</span><div class="legend" id="legend"></div></div>
       <div class="viewtabs" id="viewTabs" role="tablist" aria-label="View"></div>
@@ -788,20 +850,12 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
       </div>
       <div id="now" class="now" aria-live="polite"></div>
     </section>
-    <aside class="card side" id="side" aria-label="Edit panel">
-      <div class="side-head"><button class="btn" type="button" id="sideHide" title="Hide this panel"><span class="desk-only">Hide ▶</span><span class="phone-only">Close</span></button></div>
-      <div id="inspector"></div>
-    </aside>
-    <button class="sidetab" id="sideOpen" type="button" title="Show the edit panel">◀ Panel</button>
-  </div>
-
-  <section class="drawer" id="drawer" aria-label="Plans">
-  <button class="drawer-tab" id="drawerTab" data-ico="list" type="button" aria-expanded="false" aria-controls="drawerBody"><span id="drawerArrow">▲</span> Plans <span class="cnt" id="planCount"></span></button>
-  <div class="card plans-card drawer-body" id="drawerBody">
-    <div class="card-head">
-      <h2>Plans</h2>
-      <div class="tb-group">
-        <label>Sort
+    <section class="dock" id="drawer" aria-label="Plans">
+      <div class="dock-split" id="dockSplit" role="separator" aria-orientation="horizontal" aria-label="Resize the plans panel" tabindex="0" title="Drag to resize"></div>
+      <div class="dock-bar">
+        <button class="dock-toggle" id="drawerTab" type="button" aria-expanded="false" aria-controls="drawerBody" title="Show or hide plans"><span class="chev" id="drawerArrow" aria-hidden="true"></span><span class="dock-title">Plans</span><span class="cnt" id="planCount"></span></button>
+        <span class="spacer"></span>
+        <label class="dock-sort"><span>Sort</span>
           <select id="sort">
             <option value="made">As saved</option>
             <option value="cost">Cheapest first</option>
@@ -810,21 +864,28 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
             <option value="dur">Shortest door to door</option>
           </select>
         </label>
-        <button id="makePlan2" class="btn primary small" type="button">+ Make a plan</button>
-        <button id="drawerClose" class="btn small" type="button" title="Hide plans">Hide ▼</button>
+        <button id="makePlan2" class="btn small primary" type="button" data-ico="plan">Make a plan</button>
+        <button id="drawerClose" type="button" hidden>Hide plans</button>
       </div>
+      <div class="dock-body" id="drawerBody">
+        <div id="builder" hidden></div>
+        <div class="table-scroll">
+          <table class="plans" id="plansTable">
+            <thead><tr><th><span class="muted" title="Pick">★</span></th><th>Plan</th><th>Route</th><th>Leaves</th><th>Arrives</th><th>Door to door</th><th>Cost per head</th></tr></thead>
+            <tbody id="plansBody"></tbody>
+          </table>
+        </div>
+        <p id="planEmpty" class="hint" hidden>No saved plans yet. Choose “Make a plan”, pick where it starts and ends, and choose the way at each split.</p>
+        <div id="detail"></div>
+      </div>
+    </section>
     </div>
-    <div id="builder" hidden></div>
-    <div class="table-scroll">
-      <table class="plans" id="plansTable">
-        <thead><tr><th><span class="muted" title="Pick">★</span></th><th>Plan</th><th>Route</th><th>Leaves</th><th>Arrives</th><th>Door to door</th><th>Cost per head</th></tr></thead>
-        <tbody id="plansBody"></tbody>
-      </table>
-    </div>
-    <p id="planEmpty" class="hint" hidden>No saved plans yet. Choose “Make a plan”, pick where it starts and ends, and choose the way at each split.</p>
-    <div id="detail"></div>
+    <aside class="side" id="side" aria-label="Details panel">
+      <div class="side-head"><span class="side-title">Details</span><button class="btn icon" type="button" id="sideHide" data-ico="collapse" title="Hide the details panel" aria-label="Hide the details panel"><span class="desk-only">Hide</span><span class="phone-only">Close</span></button></div>
+      <div id="inspector"></div>
+    </aside>
+    <button class="rail" id="sideOpen" type="button" data-ico="side" title="Show the details panel" aria-label="Show the details panel"><span>Details</span></button>
   </div>
-  </section>
 </div>
 <div id="toast" class="toast" role="status" hidden></div>
 <datalist id="placeList"></datalist>
@@ -2025,7 +2086,7 @@ function startBuilder(planId, startNode) {
   renderBuilder(); renderPlans(); applyHighlight();
   setDrawer(true);
   $('#drawerBody').scrollTop = 0;
-  setTimeout(() => { const i = $('#bName'); if (i && !B.editing) i.focus(); }, 280);
+  setTimeout(() => { const i = $('#bName'); if (i && B && !B.editing) i.focus({ preventScroll: true }); $('#drawerBody').scrollTop = 0; }, 260);
 }
 function closeBuilder() { B = null; hoverLeg = null; renderBuilder(); applyHighlight(); }
 function checkBuilderName() {
@@ -2593,11 +2654,17 @@ function setSide(open) {
   $('#sideBtn').setAttribute('aria-pressed', String(sideOpen));
   renderGraph();
 }
+function setDockH(px) {
+  const col = $('.maincol'); if (!col) return;
+  const max = Math.max(220, col.clientHeight - 200);
+  UI.dockH = Math.round(Math.max(170, Math.min(max, px)));
+  $('#drawer').style.setProperty('--dock-h', UI.dockH + 'px');
+}
 function setDrawer(open) {
   UI.drawer = !!open; saveUI();
   $('#drawer').classList.toggle('open', UI.drawer);
   $('#drawerTab').setAttribute('aria-expanded', String(UI.drawer));
-  $('#drawerArrow').textContent = UI.drawer ? '▼' : '▲';
+  setTimeout(renderGraph, 230); // the timeline gets more or less room
 }
 function syncCostBtn() {
   const b = $('#costBtn');
@@ -2805,6 +2872,28 @@ function bind() {
   $('#sideOpen').addEventListener('click', () => setSide(true));
   $('#drawerTab').addEventListener('click', () => setDrawer(!UI.drawer));
   $('#drawerClose').addEventListener('click', () => setDrawer(false));
+  // drag the top edge of the plans panel (or use the arrow keys on it) to resize it
+  const split = $('#dockSplit');
+  split.addEventListener('pointerdown', e => {
+    if (!UI.drawer) return;
+    e.preventDefault();
+    try { split.setPointerCapture(e.pointerId); } catch (err) { /* pointer already gone */ }
+    $('#drawer').classList.add('resizing');
+    const move = ev => setDockH($('.maincol').getBoundingClientRect().bottom - ev.clientY);
+    const up = () => { split.removeEventListener('pointermove', move); split.removeEventListener('pointerup', up); $('#drawer').classList.remove('resizing'); saveUI(); renderGraph(); };
+    split.addEventListener('pointermove', move);
+    split.addEventListener('pointerup', up);
+  });
+  split.addEventListener('keydown', e => {
+    if (!UI.drawer || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
+    e.preventDefault();
+    setDockH(($('#drawerBody').getBoundingClientRect().height || 320) + (e.key === 'ArrowUp' ? 32 : -32));
+    saveUI(); renderGraph();
+  });
+  if (window.ResizeObserver) {
+    let lastH = 0;
+    new ResizeObserver(() => { if (viewOnly) return; const hh = $('#graphScroll').clientHeight; if (Math.abs(hh - lastH) > 2) { lastH = hh; clearTimeout(bind._ro); bind._ro = setTimeout(renderGraph, 60); } }).observe($('#graphScroll'));
+  }
   $('#themeBtn').addEventListener('click', () => { UI.theme = effectiveTheme() === 'dark' ? 'light' : 'dark'; saveUI(); applyTheme(); });
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
   $('#addNode').addEventListener('click', newNode);
@@ -2887,6 +2976,7 @@ syncCostBtn();
 sideOpen = window.matchMedia && matchMedia('(max-width: 900px)').matches ? false : UI.side;
 $('#main').classList.toggle('side-hidden', !sideOpen);
 $('#sideBtn').setAttribute('aria-pressed', String(sideOpen));
+if (UI.dockH) $('#drawer').style.setProperty('--dock-h', UI.dockH + 'px');
 setDrawer(UI.drawer);
 renderLegend();
 bind();
