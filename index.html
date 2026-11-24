@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Route Branch Planner</title>
+<title>Wander Map</title>
 <style>
 :root{
   color-scheme: light;
@@ -397,7 +397,7 @@ body{overflow:hidden}
 <body>
 <div class="app">
   <header class="topbar">
-  <h1 title="Add places as nodes, join them with legs, then build and save named plans.">Route Branch Planner</h1>
+  <h1 title="Add places as nodes, join them with legs, then build and save named plans.">Wander Map</h1>
   <div class="toolbar" role="toolbar" aria-label="Planner tools">
     <button id="addNode" class="btn primary" type="button">+ Node</button>
     <button id="addLeg" class="btn" type="button">+ Leg</button>
@@ -492,7 +492,7 @@ body{overflow:hidden}
 const $ = s => document.querySelector(s);
 const SVGNS = 'http://www.w3.org/2000/svg';
 const MIN = 60e3, H = 3600e3;
-const STORE = 'route-branch-planner.v1';
+const STORE = 'wander-map.v1', OLD_STORE = 'route-branch-planner.v1'; // older copies saved under the old name
 const MODES = [
   ['flight', 'Flight', 'var(--s1)'],
   ['train', 'Train', 'var(--s7)'],
@@ -522,9 +522,9 @@ let bldSnap = null;
 let B = null;                       // the plan being made (not saved until "Save plan")
 let viewPlan = null;                // plan view mode: only this plan's nodes and legs
 let renaming = null;                // { id, where } while a plan name is being edited
-const UIKEY = 'route-branch-planner.ui';
+const UIKEY = 'wander-map.ui', OLD_UIKEY = 'route-branch-planner.ui';
 let UI = { side: true, drawer: false, theme: null, costs: false };
-try { Object.assign(UI, JSON.parse(localStorage.getItem(UIKEY) || '{}')); } catch (e) { /* ignore */ }
+try { Object.assign(UI, JSON.parse(localStorage.getItem(UIKEY) || localStorage.getItem(OLD_UIKEY) || '{}')); } catch (e) { /* ignore */ }
 function saveUI() { try { localStorage.setItem(UIKEY, JSON.stringify(UI)); } catch (e) { /* ignore */ } }
 const undoStack = [];
 
@@ -775,7 +775,7 @@ function save() {
   catch (e) { if (!saveWarned) { saveWarned = true; toast('Could not save in this browser: storage is full. Remove some node images, or use Export to keep a copy.'); } }
 }
 function loadSaved() {
-  try { const raw = localStorage.getItem(STORE); if (raw) return normalize(JSON.parse(raw)); } catch (e) { /* ignore */ }
+  try { const raw = localStorage.getItem(STORE) || localStorage.getItem(OLD_STORE); if (raw) return normalize(JSON.parse(raw)); } catch (e) { /* ignore */ }
   return null;
 }
 function checkpoint() { undoStack.push(JSON.stringify(S)); if (undoStack.length > 80) undoStack.shift(); }
@@ -2462,7 +2462,7 @@ function bind() {
   $('#undo').addEventListener('click', undo);
   $('#export').addEventListener('click', () => {
     const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
-    const a = h('a', { href: URL.createObjectURL(blob), download: 'route-plans.json' });
+    const a = h('a', { href: URL.createObjectURL(blob), download: 'wander-map-plans.json' });
     document.body.append(a); a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   });
