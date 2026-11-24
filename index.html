@@ -111,11 +111,6 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-
 @media (max-width:760px){.gsteps{grid-template-columns:1fr}}
 .now{border-top:1px solid var(--border);padding:10px 16px 12px;min-height:48px;font-size:13px}
 .now .hint,.hint{margin:0;color:var(--muted);font-size:13px}
-.now-head{margin-bottom:6px}
-.now-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:4px 18px}
-.now-list li{display:flex;gap:8px;align-items:baseline;min-width:0}
-.now-list .txt{min-width:0}
-.now-list .who{color:var(--muted);margin-left:4px}
 .key{display:inline-block;width:14px;height:3px;border-radius:2px;background:var(--c);flex:none;transform:translateY(-3px)}
 .key-dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--c);flex:none}
 .muted{color:var(--muted)}
@@ -392,9 +387,6 @@ body{overflow:hidden}
 .planbar .pb-name{font-weight:700;font-size:14px}
 .planbar .pb-route{color:var(--ink2)}
 .planbar .btns{display:flex;gap:6px;margin-left:auto}
-.rename{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.rename input{width:min(280px,60vw)}
-.rename .err{flex-basis:100%;color:var(--bad);font-size:12px;margin:0}
 .fielderr{color:var(--bad);font-size:12px;margin:-4px 0 8px}
 .drawer{position:fixed;left:12px;right:12px;bottom:0;z-index:6;display:flex;flex-direction:column;align-items:center;pointer-events:none}
 .drawer > *{pointer-events:auto}
@@ -518,8 +510,6 @@ input::placeholder,textarea::placeholder{color:var(--muted)}
 .notice{border-radius:var(--r);padding:10px 12px;margin:0 18px 10px;font-size:13px;border:1px solid var(--border)}
 .graph-scroll{border-top:1px solid var(--border)}
 .now{border-top:1px solid var(--border);padding:10px 18px 12px;color:var(--ink2);font-size:13px;height:58px;min-height:0;overflow:auto;flex:none;box-sizing:border-box} /* one fixed height, so changing its text can never move the timeline under a resting pointer */
-.now .now-head{margin-bottom:2px}
-.now-list{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
 
 /* plan tabs: text tabs with an underline */
 .viewtabs{padding:0 18px;gap:20px;margin-bottom:6px}
@@ -675,6 +665,14 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 /* details panel action bar */
 .side-foot{flex:none;display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--border);background:var(--surface)}
 .side-foot[hidden]{display:none}
+/* a narrow details panel keeps every footer button inside it: the main label shortens with an
+   ellipsis and Delete becomes its icon (its tooltip still says what it deletes) */
+.side-foot{container-type:inline-size}
+.side-foot > .btn.primary{min-width:0;flex:0 1 auto}
+.side-foot .btn .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.side-foot > *{flex-shrink:0}
+.side-foot > .btn.primary,.side-foot > .spacer{flex-shrink:1}
+@container (max-width:330px){.side-foot > .btn.danger{width:32px;padding:0;font-size:0;gap:0}}
 .side-foot .spacer,.brow .spacer{flex:1}
 .side-foot .btn.danger{border-color:transparent;background:none}
 .side-foot .btn.danger:hover:not(:disabled){border-color:color-mix(in srgb,var(--bad) 28%,transparent)}
@@ -700,7 +698,37 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 .viewonly .toast{bottom:20px}
 .viewonly .ctools{display:none !important}
 
+/* hover card beside the timeline pointer */
+.scrubtip{position:absolute;z-index:5;min-width:220px;max-width:320px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-lg);padding:10px 12px;pointer-events:none;font-size:12.5px;line-height:1.4}
+.scrubtip[hidden]{display:none}
+.scrubtip .st-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+.scrubtip .st-head b{font-family:var(--serif);font-size:14px;font-weight:600;color:var(--ink)}
+.scrubtip .st-pin{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.scrubtip .st-row{display:flex;gap:9px;align-items:flex-start}
+.scrubtip .st-row + .st-row{margin-top:8px}
+.scrubtip .key-dot{width:8px;height:8px;margin-top:5px;flex:none}
+.scrubtip .st-plan{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.scrubtip .st-text{color:var(--ink);font-weight:600}
+.scrubtip .st-sub{color:var(--ink2)}
+/* the plan name is its own rename control */
+.name-btn{display:inline-flex;align-items:center;gap:6px;border:0;background:none;padding:2px 6px;margin:-2px -6px;border-radius:6px;font:inherit;color:inherit;cursor:text;text-align:left;max-width:100%}
+.name-btn:hover{background:var(--surface2)}
+.name-btn:focus-visible{outline:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 55%,transparent)}
+.name-btn .name-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.name-btn .pen{display:inline-flex;color:var(--muted);opacity:0;transition:opacity .15s}
+.name-btn .pen::before{width:13px;height:13px}
+.name-btn:hover .pen,.name-btn:focus-visible .pen{opacity:1}
+.planbar .name-btn{font-family:var(--serif);font-size:16px;font-weight:600}
+.detail-head h3 .name-btn{font-size:inherit;font-weight:inherit;font-family:inherit}
+.rename{position:relative;display:inline-flex;align-items:center;vertical-align:middle}
+.name-input{height:28px;margin:-2px 0;font:600 16px var(--serif);color:var(--ink);padding:0 8px;width:150px;min-width:0;max-width:min(420px,70vw)}
+.name-input.bad{border-color:var(--bad);box-shadow:0 0 0 3px color-mix(in srgb,var(--bad) 14%,transparent)}
+.rename .err{position:absolute;left:0;top:calc(100% + 6px);z-index:6;margin:0;white-space:nowrap;font:500 12px/1.4 var(--font);letter-spacing:0;color:var(--bad);background:var(--surface);border:1px solid color-mix(in srgb,var(--bad) 35%,var(--border));border-radius:6px;padding:4px 8px;box-shadow:var(--shadow)}
+.rename .err[hidden]{display:none}
+.btn.small.icon{width:28px}
+
 /* icons */
+[data-ico="edit"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z%22/%3E%3Cpath d=%22M14.5 7.5l3 3%22/%3E%3C/svg%3E")}
 [data-ico="file"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z%22/%3E%3Cpath d=%22M14 3v5h5M9 13h6M9 17h4%22/%3E%3C/svg%3E")}
 [data-ico="dots"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%225%22 cy=%2212%22 r=%221%22/%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%221%22/%3E%3Ccircle cx=%2219%22 cy=%2212%22 r=%221%22/%3E%3C/svg%3E")}
 [data-ico="key"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223.5%22 y=%224%22 width=%227%22 height=%227%22 rx=%221.5%22/%3E%3Crect x=%2213.5%22 y=%224%22 width=%227%22 height=%227%22 rx=%221.5%22/%3E%3Crect x=%223.5%22 y=%2213%22 width=%227%22 height=%227%22 rx=%221.5%22/%3E%3Cpath d=%22M14 16.5h6.5%22/%3E%3C/svg%3E")}
@@ -856,7 +884,6 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
   #builder{padding:6px 12px 14px}
   .bform{grid-template-columns:1fr}
   .exrow{grid-template-columns:minmax(0,1fr) 100px auto}
-  .now-list{grid-template-columns:1fr}
   .now{padding:8px 12px 10px}
   .actions .btn{flex:1 1 auto}
   .nimg-link{grid-template-columns:1fr}
@@ -920,6 +947,7 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
       </div>
       <div class="notice" id="noTimeHint" hidden></div>
       <div id="graphScroll" class="graph-scroll">
+        <div id="scrubTip" class="scrubtip" hidden></div>
         <svg id="graph" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Places and legs"></svg>
         <div id="mlist" class="mlist" aria-label="Itinerary"></div>
         <div id="emptyGraph" class="empty" hidden>
@@ -1035,6 +1063,7 @@ let focusPlan = null, hoverPlan = null, hoverLeg = null, scrubT = null, pinned =
 let geo = null, gScrub = null, focusNext = null, pendingSnap = null;
 let bldSnap = null;
 let B = null;                       // the plan being made (not saved until "Save plan")
+let scrubY = null;                  // pointer height in the timeline, for the hover card
 let viewPlan = null;                // plan view mode: only this plan's nodes and legs
 let renaming = null;                // { id, where } while a plan name is being edited
 const UIKEY = 'wander-map.ui', OLD_UIKEY = 'route-branch-planner.ui';
@@ -1589,7 +1618,7 @@ function renderGraph() {
       el('line', { x1: x0, x2: x1, y1: yy, y2: yy, class: 'dwell' }, g);
       const wi = waitInfo(pi.p, b);
       el('line', { x1: x0, x2: x1, y1: yy, y2: yy, class: 'waithit' }, g);
-      el('title', null, g).textContent = `${wi.label} at ${nodeName(S.legs[b].from)}, ${fmtDur(wi.ms)} (${pi.name}). Click to rename this wait.`;
+      el('title', null, g).textContent = `${wi.label} at ${nodeName(S.legs[b].from)}, ${fmtDur(wi.ms)} (${pi.name})${wi.custom ? '' : '. Click to rename this wait.'}`;
       dwellJobs.push({ x0, x1, y: yy, ms: tb.dep - ta.arr, plan: pi.id, leg: b, lab: wi.label });
     }
   });
@@ -1920,17 +1949,32 @@ function renderNow() {
   if (!S.order.length) return;
   if (!geo || !geo.time) { box.append(h('p', { class: 'hint', text: 'Add times to your legs to use the timeline.' })); return; }
   if (!PL.some(p => p.legs.length)) { box.append(h('p', { class: 'hint', text: 'Save a plan, then move the pointer across the timeline to see where each plan is at that moment.' })); return; }
-  if (scrubT == null) { box.append(h('p', { class: 'hint', text: TOUCH ? 'Tap the timeline to see where every saved plan is at that moment. Tap again to release.' : 'Move the pointer across the timeline to see where every saved plan is at that moment. Click to pin it.' })); return; }
-  box.append(h('div', { class: 'now-head' }, h('strong', { text: fmtDT(scrubT) }),
-    h('span', { class: 'muted', text: pinned ? (TOUCH ? '  ·  tap the timeline to release' : '  ·  pinned, click the timeline to release') : '  ·  click to pin' })));
-  const ul = h('ul', { class: 'now-list' });
-  for (const pi of (viewPlan && PLBY[viewPlan] ? [PLBY[viewPlan]] : PL)) {
-    if (!pi.legs.length) continue;
-    const st = statusAt(pi, scrubT) || { text: '—', sub: '' };
-    ul.append(h('li', null, h('span', { class: 'key', style: `--c:${pi.color}` }),
-      h('span', { class: 'txt' }, h('strong', { text: st.text }), st.sub ? ` · ${st.sub}` : '', h('span', { class: 'who', text: `(${pi.name})` }))));
-  }
-  box.append(ul);
+  if (scrubT == null) { renderTip(); box.append(h('p', { class: 'hint', text: TOUCH ? 'Tap the timeline to see where every saved plan is at that moment. Tap again to release.' : 'Move the pointer across the timeline to see where every saved plan is at that moment. Click to pin it.' })); return; }
+  box.append(h('p', { class: 'hint' }, h('strong', { text: fmtDT(scrubT), style: 'color:var(--ink)' }),
+    pinned ? (TOUCH ? '  ·  pinned here, tap the timeline to release' : '  ·  pinned here, click the timeline to release') : '  ·  click to pin this moment'));
+  renderTip();
+}
+// The card beside the pointer: where every plan is at the moment under the line. It floats over
+// the timeline (it never changes the layout) and always stays inside the visible area.
+function renderTip() {
+  const tip = $('#scrubTip'); if (!tip) return;
+  const plans = viewOnly || scrubT == null || !geo || !geo.time ? [] : (viewPlan && PLBY[viewPlan] ? [PLBY[viewPlan]] : PL).filter(p => p.legs.length);
+  if (!plans.length) { tip.hidden = true; return; }
+  tip.replaceChildren(h('div', { class: 'st-head' }, h('b', { text: fmtDT(scrubT) }), pinned ? h('span', { class: 'st-pin', text: 'Pinned' }) : null),
+    ...plans.map(pi => {
+      const st = statusAt(pi, scrubT) || { text: 'Not travelling', sub: '' };
+      return h('div', { class: 'st-row' }, h('span', { class: 'key-dot', style: `--c:${pi.color}` }),
+        h('div', { class: 'st-body' }, h('div', { class: 'st-plan', text: pi.name }), h('div', { class: 'st-text', text: st.text }), st.sub ? h('div', { class: 'st-sub', text: st.sub }) : null));
+    }));
+  tip.hidden = false;
+  const sc = $('#graphScroll'), x = geo.X(scrubT), w = tip.offsetWidth, hh = tip.offsetHeight;
+  let left = x + 16;
+  if (left + w > sc.scrollLeft + sc.clientWidth - 10) left = x - 16 - w;
+  left = Math.max(sc.scrollLeft + 10, left);
+  let top = (scrubY != null ? scrubY : sc.scrollTop + LAY.top + 40) + 16;
+  top = Math.max(sc.scrollTop + LAY.top + 14, Math.min(sc.scrollTop + sc.clientHeight - hh - 10, top));
+  tip.style.left = Math.round(left) + 'px';
+  tip.style.top = Math.round(top) + 'px';
 }
 
 /* ---------- inspector ---------- */
@@ -1954,8 +1998,21 @@ function menuEl(label, items, opt) {
     if (it === '-') { pop.append(h('hr')); return; }
     pop.append(h('button', { type: 'button', role: 'menuitem', id: it.id || null, class: it.danger ? 'danger' : null, disabled: !!it.disabled, title: it.title || null, 'data-ico': it.ico || 'dot', onclick: it.run }, it.label, it.sub ? h('small', { text: it.sub }) : null));
   });
-  const trigger = h('button', { type: 'button', class: 'btn' + (opt.small ? ' small' : ''), 'data-menu-btn': true, 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'data-ico': opt.ico || 'dots', title: opt.title || label }, label);
+  const trigger = h('button', { type: 'button', class: 'btn' + (opt.small ? ' small' : '') + (opt.iconOnly ? ' icon' : ''), 'aria-label': opt.iconOnly ? label : null, 'data-menu-btn': true, 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'data-ico': opt.ico || 'dots', title: opt.title || label }, label);
   return h('div', { class: 'menu' }, trigger, pop);
+}
+// An open menu floats above the page (position: fixed) on whichever side of its button has room,
+// so no panel edge or window edge can cut it off. Scrolling or resizing closes it.
+function placeMenu(m) {
+  const pop = m.querySelector('.menu-pop'), t = m.querySelector('[data-menu-btn]').getBoundingClientRect(), gap = 6, pad = 8;
+  Object.assign(pop.style, { position: 'fixed', top: '0px', left: '0px', right: 'auto', bottom: 'auto', maxHeight: `${innerHeight - 2 * pad}px`, overflowY: 'auto' });
+  const w = pop.offsetWidth, ht = pop.offsetHeight;
+  const below = innerHeight - t.bottom - gap - pad, above = t.top - gap - pad;
+  const up = pop.classList.contains('up') ? !(above < ht && below > above) : (below < ht && above > below);
+  const top = Math.max(pad, Math.min(innerHeight - pad - ht, up ? t.top - gap - ht : t.bottom + gap));
+  const left = Math.max(pad, Math.min(innerWidth - pad - w, pop.classList.contains('right') ? t.right - w : t.left));
+  pop.style.top = Math.round(top) + 'px';
+  pop.style.left = Math.round(left) + 'px';
 }
 function closeMenus(except) {
   document.querySelectorAll('.menu.open').forEach(m => {
@@ -1972,28 +2029,31 @@ function setFoot(primary, more, danger) {
   const items = (more || []).filter(Boolean);
   if (!primary && !items.length && !danger) { f.hidden = true; return; }
   f.hidden = false;
-  if (primary) f.append(primary);
-  if (items.length) f.append(menuEl('More', items, { up: true, right: true }));
+  if (primary) { primary.replaceChildren(h('span', { class: 'lbl', text: primary.textContent })); f.append(primary); }
+  if (items.length) f.append(menuEl('More actions', items, { up: true, right: true, iconOnly: true }));
   f.append(h('span', { class: 'spacer' }));
   if (danger) f.append(danger);
 }
 function icoBtn(label, fn, cls, ico, title, disabled) { const b = btn(label, fn, cls, title, disabled); b.dataset.ico = ico; return b; }
 // One set of plan actions, the same wherever a plan is shown.
 function planActions(p, where) {
-  const isPicked = S.picked === p.id;
   const items = [
     where === 'bar' ? { label: 'Open itinerary', sub: 'Every leg, wait and cost', ico: 'list', run: () => togglePlan(p.id, true) }
                     : { label: 'Show on the timeline', sub: 'Only this plan', ico: 'eye', run: () => setView(p.id) },
-    { label: isPicked ? 'Unpick this plan' : 'Pick this plan', sub: isPicked ? 'Remove the star' : 'Star it as your choice', ico: 'star', run: () => pick(p.id) },
+    { label: 'Rename', sub: 'Or click the plan name', ico: 'edit', run: () => startRename(p.id, where) },
     { label: 'Copy as text', sub: 'To paste into a message', ico: 'copy', run: () => copyText(planText(p)) },
     '-',
     { label: 'Delete plan', ico: 'trash', danger: true, run: () => delPlan(p.id) },
   ];
   return h('div', { class: 'btns' },
-    icoBtn('Edit route and costs', () => startBuilder(p.id), 'small primary', 'plan'),
-    btn('Rename', () => startRename(p.id, where), 'small'),
-    menuEl('More', items, { small: true, right: true }),
+    icoBtn('Edit', () => startBuilder(p.id), 'small primary', 'plan', 'Edit this plan’s route and costs'),
+    menuEl('More actions', items, { small: true, right: true, iconOnly: true }),
     where === 'bar' ? h('button', { class: 'btn small icon', type: 'button', 'data-ico': 'close', title: 'Exit plan view', 'aria-label': 'Exit plan view', onclick: () => setView(null) }, 'Exit') : null);
+}
+// The plan's name doubles as its rename control: click it (or press Enter on it) to edit in place.
+function nameTitle(p, where, cls) {
+  return h('button', { type: 'button', class: 'name-btn' + (cls ? ' ' + cls : ''), title: 'Click to rename', 'aria-label': `${p.name}. Click to rename`, onclick: () => startRename(p.id, where) },
+    h('span', { class: 'name-txt', text: (S.picked === p.id ? '★ ' : '') + p.name }), h('span', { class: 'pen', 'data-ico': 'edit', 'aria-hidden': 'true' }));
 }
 function inspHead(title, color) {
   return h('div', { class: 'insp-head' },
@@ -2571,10 +2631,9 @@ function renderDetail() {
     return;
   }
   box.hidden = false;
-  const isPicked = S.picked === p.id;
   box.append(h('div', { class: 'detail-head' },
-    h('div', null, renaming && renaming.id === p.id && renaming.where === 'detail' ? nameEditor(p.id, 'detail')
-      : h('h3', null, h('span', { class: 'key', style: `--c:${p.color}` }), (isPicked ? '★ ' : '') + p.name), h('p', { text: p.route })),
+    h('div', null, h('h3', null, h('span', { class: 'key', style: `--c:${p.color}` }),
+      renaming && renaming.id === p.id && renaming.where === 'detail' ? nameEditor(p.id) : nameTitle(p, 'detail')), h('p', { text: p.route })),
     planActions(p, 'detail')));
   if (p.issues.length) box.append(h('div', { class: 'warnbox' }, ...p.issues.map(s => h('p', { text: '⚠ ' + s }))));
   const tbl = h('table', { class: 'legs' });
@@ -2756,23 +2815,46 @@ function planNameError(name, exceptId) {
 function startRename(id, where) {
   if (viewOnly) return; renaming = { id, where }; renderPlanSurfaces(); const i = document.querySelector('[data-rename]'); if (i) { i.focus(); i.select(); } }
 function renderPlanSurfaces() { renderViewTabs(); renderPlanBar(); renderDetail(); if (!sel) renderInspector(); }
-// Inline name editor: Save stays disabled while the name is empty or already used by another plan.
+const FIT = document.createElement('canvas').getContext('2d');
+// Rename in place. Enter or clicking away saves; Esc cancels. A name that is empty or already used
+// by another plan is never saved: Enter shows why, clicking away keeps the old name and says why.
 function nameEditor(id) {
-  const i = h('input', { type: 'text', 'data-rename': id, maxlength: '80', 'aria-label': 'Plan name' });
-  i.value = S.plans[id].name;
-  const err = h('p', { class: 'err', hidden: true });
-  const ok = btn('Save', () => commit(), 'primary small');
-  const check = () => { const e = planNameError(i.value, id); err.textContent = e || ''; err.hidden = !e; ok.disabled = !!e; return !e; };
-  const commit = () => {
-    if (!check()) { i.focus(); return; }
+  const p = S.plans[id];
+  const i = h('input', { type: 'text', class: 'name-input', 'data-rename': id, maxlength: '80', 'aria-label': 'Plan name', spellcheck: 'false' });
+  i.value = p.name;
+  // Size the box to the name (measured in its own font), so the bar around it does not move.
+  const fit = () => {
+    if (!i.isConnected) return;
+    const cs = getComputedStyle(i);
+    FIT.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    i.style.width = Math.round(Math.min(Math.max(FIT.measureText(i.value).width + 40, 150), 420)) + 'px';
+  };
+  i.addEventListener('focus', fit, { once: true });
+  requestAnimationFrame(fit);
+  const err = h('p', { class: 'err', role: 'alert', hidden: true });
+  let done = false;
+  const check = () => { const e = planNameError(i.value, id); err.textContent = e || ''; err.hidden = !e; i.classList.toggle('bad', !!e); return !e; };
+  const finish = save => {
+    if (done) return true;
+    if (save && !check()) return false;
+    done = true;
     const name = i.value.trim();
     renaming = null;
-    if (name !== S.plans[id].name) { checkpoint(); S.plans[id].name = name; renderAll(); toast(`Renamed to “${name}”`, true); }
+    if (save && name !== p.name) { checkpoint(); S.plans[id].name = name; renderAll(); toast(`Renamed to “${name}”`, true); }
     else renderPlanSurfaces();
+    return true;
   };
-  i.addEventListener('input', check);
-  i.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); commit(); } else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); renaming = null; renderPlanSurfaces(); } });
-  return h('div', { class: 'rename' }, i, ok, btn('Cancel', () => { renaming = null; renderPlanSurfaces(); }, 'small'), err);
+  i.addEventListener('input', () => { fit(); check(); });
+  i.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); finish(true); }
+    else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); finish(false); }
+  });
+  i.addEventListener('blur', () => {
+    if (done) return;
+    const why = planNameError(i.value, id);
+    if (!finish(true)) { finish(false); if (why) toast(`Name not changed. ${why}`); }
+  });
+  return h('div', { class: 'rename' }, i, err);
 }
 function setView(id) {
   viewPlan = id && S.plans[id] ? id : null;
@@ -2805,7 +2887,7 @@ function renderPlanBar() {
   bar.style.setProperty('--c', p.color);
   const budget = +S.budget || 0;
   if (renaming && renaming.id === p.id && renaming.where === 'bar') bar.append(nameEditor(p.id));
-  else bar.append(h('span', { class: 'pb-name', text: (S.picked === p.id ? '★ ' : '') + p.name }));
+  else bar.append(nameTitle(p, 'bar', 'pb-name'));
   const pend = (p.p.pending || []).filter(id => S.legs[id]);
   if (pend.length) bar.append(h('div', { class: 'pend-note' },
     `${pend.length} new leg${pend.length > 1 ? 's' : ''} (dashed) ${pend.length > 1 ? 'have' : 'has'} not joined this plan yet: ${pend.map(legLabel).join(', ')}. ${pend.length > 1 ? 'They join' : 'It joins'} as soon as the route connects through ${pend.length > 1 ? 'them' : 'it'}.`,
@@ -2824,7 +2906,7 @@ function planPanel(p) {
   const ol = h('ol');
   p.legs.forEach((id, i) => {
     const l = S.legs[id], t = T[id], c = legCostIn(p.p, id);
-    if (i > 0) { const a = T[p.legs[i - 1]].arr; if (a != null && t.dep != null && t.dep - a > MIN) { const w = waitInfo(p.p, id); ol.append(h('li', { class: 'w', title: 'Click to rename this wait', style: 'cursor:pointer', text: `${w.label} at ${nodeName(l.from)} · ${fmtDur(w.ms)}`, onclick: () => select({ k: 'wait', id, plan: p.id }, '#fWait') })); } }
+    if (i > 0) { const a = T[p.legs[i - 1]].arr; if (a != null && t.dep != null && t.dep - a > MIN) { const w = waitInfo(p.p, id); ol.append(h('li', { class: 'w', title: w.custom ? null : 'Click to rename this wait', style: 'cursor:pointer', text: `${w.label} at ${nodeName(l.from)} · ${fmtDur(w.ms)}`, onclick: () => select({ k: 'wait', id, plan: p.id }, '#fWait') })); } }
     const li = h('li', { style: `--c:${p.color}` }, h('b', { text: legLabel(id) }), h('br'),
       h('span', { class: 'muted', text: `${(MODE[l.mode] || MODE.other).tag} · ${t.timed ? `${shortDT(t.dep)} → ${shortDT(t.arrSched)}` : 'no times'}${c === '' ? '' : ' · ' + money(c)}` }));
     li.addEventListener('mouseenter', () => { hoverLeg = id; applyHighlight(); });
@@ -2949,17 +3031,20 @@ function tAt(e) {
 }
 function bind() {
   const svg = $('#graph');
+  const trackY = e => { const sc = $('#graphScroll'); scrubY = e.clientY - sc.getBoundingClientRect().top + sc.scrollTop; };
   svg.addEventListener('pointermove', e => {
     if (!geo || !geo.time || pinned || e.pointerType === 'touch') return;
-    const t = tAt(e);
+    const t = tAt(e), y0 = scrubY;
+    trackY(e);
     if (t !== scrubT) { scrubT = t; drawScrub(); renderNow(); }
+    else if (Math.abs((y0 || 0) - scrubY) > 2) renderTip();
   });
   svg.addEventListener('pointerleave', () => { if (pinned || scrubT == null) return; scrubT = null; drawScrub(); renderNow(); });
   svg.addEventListener('click', e => {
     if (viewOnly) {
       const b = e.target.closest('.badge');
       if (b) { setView(b.dataset.plan); return; }
-      if (geo && geo.time) { scrubT = tAt(e); pinned = !pinned; drawScrub(); renderNow(); }
+      if (geo && geo.time) { trackY(e); scrubT = tAt(e); pinned = !pinned; drawScrub(); renderNow(); }
       return;
     }
     const wait = e.target.closest('[data-wait]');
@@ -2970,7 +3055,7 @@ function bind() {
     if (node) { select({ k: 'node', id: node.dataset.node }); return; }
     const leg = e.target.closest('[data-leg]');
     if (leg) { select({ k: 'leg', id: leg.dataset.leg }); return; }
-    if (geo && geo.time) { scrubT = tAt(e); pinned = !pinned; drawScrub(); renderNow(); }
+    if (geo && geo.time) { trackY(e); scrubT = tAt(e); pinned = !pinned; drawScrub(); renderNow(); }
     if (sel) { sel = null; renderInspector(); renderGraph(); }
   });
   svg.addEventListener('keydown', e => {
@@ -2988,11 +3073,17 @@ function bind() {
       closeMenus(m);
       m.classList.toggle('open', open);
       m.querySelector('.menu-pop').hidden = !open;
+      if (open) placeMenu(m);
       t.setAttribute('aria-expanded', String(open));
       return;
     }
     if (!e.target.closest('.menu-pop') || e.target.closest('[role=menuitem]')) closeMenus();
   });
+  addEventListener('resize', () => closeMenus());
+  document.addEventListener('scroll', e => {
+    if (!document.querySelector('.menu.open') || (e.target instanceof Element && e.target.closest('.menu-pop'))) return;
+    closeMenus();
+  }, true);
   const insp = $('#inspector');
   insp.addEventListener('focusin', e => { if (e.target.dataset && (e.target.dataset.f || e.target.dataset.waitLabel)) pendingSnap = JSON.stringify(S); });
   insp.addEventListener('input', e => {
