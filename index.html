@@ -1383,6 +1383,38 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 .fab .menu-pop{min-width:270px}
 .building #createGroup,.viewonly #createGroup,.viewonly .fabdock{display:none !important}
 @media (prefers-reduced-motion:reduce){.fabbtn,.fabbtn::before{transition:none}}
+/* the budget's arrows: a neat pair on the field's right edge, in place of the browser's own */
+#budget{-moz-appearance:textfield;appearance:textfield}
+#budget::-webkit-outer-spin-button,#budget::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.inpre .stepper{flex:none;align-self:stretch;display:flex;flex-direction:column;width:28px;border-left:1px solid var(--border)}
+.inpre .stp{flex:1 1 0;min-height:0;display:flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:0;background:none;color:var(--muted);cursor:pointer}
+.inpre .stp + .stp{border-top:1px solid var(--border)}
+.inpre .stp::before{content:"";width:5px;height:5px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(1.5px) rotate(-135deg)}
+.inpre .stp.down::before{transform:translateY(-1.5px) rotate(45deg)}
+.inpre .stp:hover{background:var(--surface2);color:var(--ink)}
+.inpre .stp:active{background:var(--accent-soft);color:var(--accent)}
+.inpre .stp:disabled{opacity:.4;cursor:default;background:none}
+.inpre input{padding-right:8px}
+/* the itinerary keeps a readable width, so each leg's time, length and fare stay close together;
+   on a wide panel its totals sit beside it and stay in view while you scroll */
+#drawerBody{container:dockb/inline-size}
+.dock-body #detail{max-width:800px}
+@container dockb (min-width:1100px){
+  .dock-body #detail{max-width:1060px;display:grid;grid-template-columns:minmax(0,1fr) 250px;grid-auto-flow:row dense;column-gap:24px;align-items:start}
+  #detail .detail-head,#detail .warnbox,#detail > .hint{grid-column:1/-1}
+  #detail .it-wrap{grid-column:1;min-width:0}
+  #detail .it-stats{grid-column:2;grid-template-columns:1fr !important;margin:0;position:sticky;top:12px}
+}
+/* the plans panel: a bigger grip to take hold of, and no text selected while dragging */
+.dock-split,.dock:not(.open) .dock-split{top:-5px;width:76px;height:18px;margin-left:-38px;background:transparent !important;border-radius:0;box-shadow:none !important;touch-action:none}
+.dock-split::after{display:block;content:"";position:absolute;left:16px;right:16px;top:8px;width:auto;height:5px;margin:0;border-radius:3px;background:var(--axis);opacity:1;transition:background .15s}
+.dock-split:hover::after,.dock-split:focus-visible::after,.dock.resizing .dock-split::after,.dock:has(.dock-bar:hover) .dock-split::after{background:var(--accent)}
+.dock-split:focus-visible::after{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
+.dock-bar{user-select:none;-webkit-user-select:none}
+body.dock-dragging{user-select:none;-webkit-user-select:none}
+body.dock-dragging,body.dock-dragging *{cursor:ns-resize !important}
+/* New steps aside when the timeline is too short to hold it */
+.graph-card.cramped .fabdock{display:none}
 </style>
 </head>
 <body>
@@ -1548,7 +1580,7 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
           <div class="set-row"><div class="set-lab"><b>Currency</b><small>Used for every fare and cost</small></div>
             <div class="set-ctl"><select id="currency" aria-label="Currency"></select></div></div>
           <div class="set-row"><div class="set-lab"><b>Budget per head</b><small>Plans show what is left of it. Leave it empty for none.</small></div>
-            <div class="set-ctl"><div class="inpre"><span id="setCur" aria-hidden="true">₹</span><input id="budget" type="number" min="0" step="10" inputmode="numeric" placeholder="None" aria-label="Budget per head"></div></div></div>
+            <div class="set-ctl"><div class="inpre"><span id="setCur" aria-hidden="true">₹</span><input id="budget" type="number" min="0" step="any" inputmode="numeric" placeholder="None" aria-label="Budget per head"><span class="stepper" aria-hidden="true"><button type="button" class="stp up" data-d="1" tabindex="-1"></button><button type="button" class="stp down" data-d="-1" tabindex="-1"></button></span></div></div></div>
         </div>
       </section>
       <section class="set-sect" aria-labelledby="setD">
@@ -1937,8 +1969,9 @@ function migrateTree(d) {
   return out;
 }
 let saveWarned = false;
+let quietSave = false;              // true while showing a copy another tab just saved: no need to write it back
 function save() {
-  if (TOUR) return; // the sample trip is never saved
+  if (TOUR || quietSave) return; // the sample trip is never saved
   try { localStorage.setItem(STORE, JSON.stringify(S)); saveWarned = false; }
   catch (e) { if (!saveWarned) { saveWarned = true; toast('Could not save in this browser: storage is full. Remove some place images, or use Export to keep a copy.'); } }
 }
@@ -2945,13 +2978,12 @@ function planActions(p, where) {
   const items = [
     where === 'bar' ? { label: 'Open itinerary', sub: 'Every leg, wait and cost', ico: 'list', run: () => togglePlan(p.id, true) }
                     : { label: 'Show on the timeline', sub: 'Only this plan', ico: 'eye', run: () => setView(p.id) },
-    { label: 'Rename', sub: 'Or click the plan name', ico: 'edit', run: () => startRename(p.id, where) },
     { label: 'Copy as text', sub: 'To paste into a message', ico: 'copy', run: () => copyText(planText(p)) },
     '-',
     { label: 'Delete plan', ico: 'trash', danger: true, run: () => delPlan(p.id) },
   ];
   return h('div', { class: 'btns' },
-    icoBtn('Edit', () => startBuilder(p.id), 'small primary', 'plan', 'Edit this plan’s route and costs'),
+    (b => { b.setAttribute('aria-label', 'Edit route and costs'); return b; })(icoBtn('Edit', () => startBuilder(p.id), 'small primary icon', 'edit', 'Edit route and costs')),
     menuEl('More actions', items, { small: true, right: true, iconOnly: true }),
     exit);
 }
@@ -4313,6 +4345,7 @@ function syncSettings() {
   $('#setPin').checked = pinOn();
   const ed = canEdit() && !TOUR;
   $('#currency').disabled = $('#budget').disabled = !ed;
+  document.querySelectorAll('.inpre .stp').forEach(b => { b.disabled = !ed; });
   $('#menuImport').disabled = $('#clear').disabled = !ed;
   $('#export').disabled = !!TOUR;
   let kb = 0; try { kb = Math.max(1, Math.round(((localStorage.getItem(STORE) || '').length * 2) / 1024)); } catch (e) { /* storage unavailable */ }
@@ -4557,31 +4590,41 @@ function bind() {
   $('#drawerClose').addEventListener('click', () => setDrawer(false));
   // drag the top edge of the plans panel (or use the arrow keys on it) to resize it
   const split = $('#dockSplit'), dockBar = $('.dock-bar'), dock = $('#drawer'), dockBody = $('#drawerBody');
-  dockBar.addEventListener('pointerdown', e => {
+  // The grip and the bar both drag: the height follows the pointer once per frame, the size limit is
+  // worked out once, the page does not select text on the way, and the timeline redraws when you let go.
+  const dockDrag = e => {
     delete dockBar.dataset.dragged;
     if (e.button !== 0 || e.target.closest('input, select, label, .dock-field, .dock-sort, .cursel, button:not(#drawerTab)')) return;
-    const y0 = e.clientY, h0 = UI.drawer ? dockBody.getBoundingClientRect().height : 0;
-    let dragging = false;
+    const y0 = e.clientY, h0 = UI.drawer ? dockBody.getBoundingClientRect().height : 0, max = dockLimits().max, from = e.target, pid = e.pointerId;
+    let dragging = false, want = h0, raf = 0;
+    const paint = () => { raf = 0; dock.style.setProperty('--dock-h', want + 'px'); };
     const move = ev => {
+      if (ev.pointerId !== pid) return;
       const dy = y0 - ev.clientY;
       if (!dragging) {
-        if (Math.abs(dy) < 5) return;
-        dragging = true; dock.classList.add('resizing', 'open');
+        if (Math.abs(dy) < 4) return;
+        dragging = true; dock.classList.add('resizing', 'open'); document.body.classList.add('dock-dragging');
+        try { from.setPointerCapture(pid); } catch (err) { /* the window still hears the moves */ }
       }
-      dock.style.setProperty('--dock-h', Math.max(0, Math.min(dockLimits().max, h0 + dy)) + 'px');
+      want = Math.max(0, Math.min(max, h0 + dy));
+      if (!raf) raf = requestAnimationFrame(paint);
     };
-    const up = () => {
+    const up = ev => {
+      if (ev && ev.pointerId !== pid) return;
       removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up);
       if (!dragging) return;
+      if (raf) { cancelAnimationFrame(raf); paint(); }
       dockBar.dataset.dragged = '1'; // the click that ends a drag does not also toggle the panel
-      dock.classList.remove('resizing');
-      const hh = dockBody.getBoundingClientRect().height;
+      dock.classList.remove('resizing'); document.body.classList.remove('dock-dragging');
+      const hh = want;
       if (hh < 80) { dock.style.setProperty('--dock-h', (UI.dockH || 0) + 'px'); setDrawer(false); }
       else { setDockH(hh); setDrawer(true); }
       saveUI();
     };
     addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up);
-  });
+  };
+  dockBar.addEventListener('pointerdown', dockDrag);
+  split.addEventListener('pointerdown', dockDrag);
   split.addEventListener('keydown', e => {
     if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
     e.preventDefault();
@@ -4591,9 +4634,42 @@ function bind() {
   });
   if (window.ResizeObserver) {
     let lastH = 0;
-    new ResizeObserver(() => { if (viewOnly) return; const hh = $('#graphScroll').clientHeight; if (Math.abs(hh - lastH) > 2) { lastH = hh; clearTimeout(bind._ro); bind._ro = setTimeout(renderGraph, 60); } }).observe($('#graphScroll'));
+    new ResizeObserver(() => { if (viewOnly) return; const hh = $('#graphScroll').clientHeight; $('.graph-card').classList.toggle('cramped', hh < 150); if (dock.classList.contains('resizing')) return; if (Math.abs(hh - lastH) > 2) { lastH = hh; clearTimeout(bind._ro); bind._ro = setTimeout(renderGraph, 60); } }).observe($('#graphScroll'));
   }
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+  // Wander Map open in more than one tab: when another tab saves, this one takes that copy at once,
+  // so it never writes an older copy back over it. Undo starts afresh here, since its steps belong to
+  // the copy that was replaced. Work in progress (a new place or leg, unsaved edits, a plan being made) stays.
+  addEventListener('storage', e => {
+    if (e.storageArea !== localStorage) return;
+    if (e.key === STORE) {
+      let next = null;
+      try { next = e.newValue ? normalize(JSON.parse(e.newValue)) : blank(); } catch (err) { return; }
+      if (!next) return;
+      if (TOUR) { TOUR.saved = JSON.stringify(next); TOUR.undo = []; TOUR.redo = []; return; }
+      const a = document.activeElement, fid = a && a.id && a.matches('input, textarea') ? a.id : null;
+      let s0 = null, s1 = null; try { if (fid) { s0 = a.selectionStart; s1 = a.selectionEnd; } } catch (err) { /* no selection here */ }
+      S = next; undoStack.length = 0; redoStack.length = 0;
+      if (edit && !editDirty()) edit = null;
+      closeMenus();
+      quietSave = true;
+      try { renderAll(); } finally { quietSave = false; }
+      if (fid) { const f = document.getElementById(fid); if (f && f !== document.activeElement) { f.focus({ preventScroll: true }); try { if (s0 != null) f.setSelectionRange(s0, s1); } catch (err) { /* not a text field */ } } }
+      toast('Updated with the changes made in another tab.');
+    } else if (e.key === UIKEY && e.newValue && !TOUR) {
+      let u = null; try { u = JSON.parse(e.newValue); } catch (err) { return; }
+      const pinWas = pinOn(), costsWas = !!UI.costs;
+      for (const k of ['theme', 'costs', 'pinPlaces', 'motion']) if (k in u) UI[k] = u[k];
+      applyTheme(); applyMotion(); syncCostBtn(); syncSettings();
+      if (pinWas !== pinOn() || costsWas !== !!UI.costs) renderGraph();
+    }
+  });
+  // reloading or closing the page with unsaved work asks first
+  addEventListener('beforeunload', e => {
+    if (TOUR) return;
+    const unsaved = (draft && draftDirty()) || editDirty() || (B && (B.chosen.length || (B.name || '').trim()));
+    if (unsaved) { e.preventDefault(); e.returnValue = ''; }
+  });
   $('#modeEdit').addEventListener('click', () => setMode(false));
   $('#modeView').addEventListener('click', () => setMode(true));
   $('#addNode').addEventListener('click', newNode);
@@ -4622,6 +4698,25 @@ function bind() {
   $('#currency').replaceChildren(...CURRENCIES.map(c => h('option', { value: c, text: c })));
   $('#currency').addEventListener('change', e => { checkpoint(); S.currency = e.target.value; renderAll(); });
   $('#budget').addEventListener('input', e => { S.budget = num(e.target.value) ?? 0; renderPlans(); updateBuilderTotal(); save(); });
+  // the budget's arrows (and the arrow keys in it) move by a step that suits the size of the number
+  const stepBudget = d => {
+    const i = $('#budget'); if (i.disabled) return;
+    const v = Math.max(0, num(i.value) ?? 0), st = v >= 100000 ? 5000 : v >= 10000 ? 1000 : v >= 1000 ? 100 : 10;
+    const nv = Math.max(0, d > 0 ? Math.floor(v / st) * st + st : Math.ceil(v / st) * st - st);
+    i.value = nv ? String(nv) : ''; i.dispatchEvent(new Event('input', { bubbles: true }));
+  };
+  $('#budget').addEventListener('keydown', e => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); stepBudget(e.key === 'ArrowUp' ? 1 : -1); } });
+  document.querySelectorAll('.inpre .stp').forEach(b => {
+    let hold = null;
+    const stop = () => { clearTimeout(hold); clearInterval(hold); hold = null; };
+    b.addEventListener('pointerdown', e => {
+      if (e.button !== 0 || b.disabled) return;
+      e.preventDefault(); // keep the focus where it is
+      const d = +b.dataset.d; stepBudget(d);
+      stop(); hold = setTimeout(() => { hold = setInterval(() => stepBudget(d), 90); }, 420);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(t => b.addEventListener(t, stop));
+  });
   $('#sort').addEventListener('change', e => { S.sort = e.target.value; renderPlans(); save(); });
   $('#undo').addEventListener('click', undo);
   $('#redo').addEventListener('click', redo);
