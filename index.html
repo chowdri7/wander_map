@@ -419,7 +419,13 @@ body{overflow:hidden}
 /* ---------- phones ---------- */
 .more-btn,.phone-only{display:none}
 @media (max-width:700px){
-  .app{padding:8px 8px 0;gap:8px}
+  /* phones scroll the whole page, so the timeline or guide shows at full height */
+  html,body{height:auto}
+  body{overflow:auto}
+  .app{padding:8px 8px 0;gap:8px;height:auto;min-height:100dvh}
+  .main{flex:none;padding-bottom:58px}
+  .graph-card{flex:1 1 0;min-width:0;overflow:visible}
+  .graph-card .graph-scroll{flex:none;overflow-x:auto;overflow-y:hidden}
   .topbar{flex-wrap:nowrap;align-items:flex-start;gap:8px}
   .topbar h1{font-size:15px;margin:9px 0 0 2px}
   .topbar .toolbar{justify-content:flex-end;padding:5px;gap:5px}
@@ -1044,7 +1050,7 @@ function renderGraph() {
     width = Math.ceil(X(tmax) + LAY.right);
   }
   width = Math.max(width, sc.clientWidth || 0);
-  const height = Math.max(y + 16, (sc.clientHeight || 0) - 4);
+  const height = phone ? y + 16 : Math.max(y + 16, (sc.clientHeight || 0) - 4);
   svg.setAttribute('width', width); svg.setAttribute('height', height);
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
   const legs = {};
