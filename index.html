@@ -1359,7 +1359,7 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 /* light mode: day and night read apart at a glance. Day is a clear, bright sky; night a deep dusk-blue
    veil that its gold stars show on; dawn and dusk glow warm between them. Dark mode keeps its own sky
    (its rules are more specific than these). */
-:root{--sky-n:#27347f;--sky-a-n:.24;--sky-y:#bfe0fb;--sky-a-y:.38;--sky-d:#ffc4a0;--sky-a-d:.32;--sky-k:#ffae8f;--sky-a-k:.32;--daysun-o:1}
+:root{--sky-n:#27347f;--sky-a-n:.30;--sky-y:#bfe0fb;--sky-a-y:.38;--sky-d:#ffc4a0;--sky-a-d:.32;--sky-k:#ffae8f;--sky-a-k:.32;--daysun-o:1}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--daysun-o:.62}}
 :root[data-theme="dark"]{--daysun-o:.62}
 /* the midday sun over each day, behind the chart and its clouds */
@@ -1425,9 +1425,7 @@ body.dock-dragging,body.dock-dragging *{cursor:ns-resize !important}
 #graph .bodyart,#graph .bodyart *{pointer-events:none}
 #graph .nightmoon{opacity:var(--nightmoon-o)}
 #graph .nmglow{animation-duration:7s}
-#graph .nmdisc{fill:var(--bmoon)}
-#graph .nmdark{fill:color-mix(in srgb,var(--sky-n) 26%,var(--surface))}
-#graph .nmrim{fill:none;stroke:var(--moon-edge);stroke-width:1}
+#graph .nmdisc{fill:var(--bmoon);stroke:var(--moon-edge);stroke-width:1}
 #graph .ncloud .cpuffs{fill:var(--ncloud)}
 </style>
 </head>
@@ -1534,10 +1532,11 @@ body.dock-dragging,body.dock-dragging *{cursor:ns-resize !important}
         <label class="dock-field"><span>Sort</span>
           <select id="sort">
             <option value="made">As saved</option>
-            <option value="cost">Cheapest first</option>
-            <option value="start">Leaves earliest</option>
-            <option value="end">Arrives earliest</option>
-            <option value="dur">Shortest door to door</option>
+            <option value="cost">Price: low to high</option>
+            <option value="costDesc">Price: high to low</option>
+            <option value="start">Departure: earliest</option>
+            <option value="end">Arrival: earliest</option>
+            <option value="dur">Duration: shortest</option>
           </select>
         </label>
         <button id="drawerClose" type="button" hidden>Hide plans</button>
@@ -1657,7 +1656,7 @@ const LAY = { top: 68, rowH: 96, right: 260 };
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const BUFS = [0, 15, 30, 60, 120, 180];
-const SORTS = ['made', 'cost', 'start', 'end', 'dur'];
+const SORTS = ['made', 'cost', 'costDesc', 'start', 'end', 'dur'];
 const LEGF = { from: '', to: '', mode: 'flight', info: '', cost: '', dep: '', arr: '', buf: '' };
 
 /* ---------- state ---------- */
@@ -2515,6 +2514,7 @@ function drawTimeAxis(g) {
   const art = [];   // drawn over the strip's depth layer
   // the sun, the moon and the clouds over the chart: added after the grid lines, so none crosses them
   const bodyArt = el('g', { class: 'bodyart nohit' });
+  const moonGap = new Map();   // the midnight line leaves a gap where the moon is
   const k = Math.max(.55, Math.min(1, pph / 13));   // smaller when the days are narrow
   // a cloud over the chart keeps to its room: it moves in from an edge, shrinks only when it must,
   // and is left out when it would be too small; dx is how far it drifts each way
@@ -2563,11 +2563,12 @@ function drawTimeAxis(g) {
       if (pph >= 5 && day >= tmin && day <= tmax) {
         const cx = X(day), cy = yA + 30, R = 11.5 * k, mn = el('g', { class: 'nightmoon' }, bodyArt);
         el('circle', { cx, cy, r: 32 * k, fill: 'url(#bmoonglow)', class: 'nmglow mglow' }, mn);
-        // a crescent: the lit disc, with its dark side drawn over it inside the disc only
-        const cp = el('clipPath', { id: `mclip${i}` }, defs); el('circle', { cx, cy, r: R }, cp);
-        el('circle', { cx, cy, r: R, class: 'nmdisc' }, mn);
-        el('circle', { cx: cx + R * .5, cy: cy - R * .2, r: R * .88, class: 'nmdark', 'clip-path': `url(#mclip${i})` }, mn);
-        el('circle', { cx, cy, r: R, class: 'nmrim' }, mn);
+        // only the crescent: the disc, with an offset circle masked out of it
+        const mk = el('mask', { id: `mmask${i}`, maskUnits: 'userSpaceOnUse', x: cx - R - 4, y: cy - R - 4, width: 2 * R + 8, height: 2 * R + 8 }, defs);
+        el('circle', { cx, cy, r: R + 2, fill: '#fff' }, mk);
+        el('circle', { cx: cx + R * .5, cy: cy - R * .22, r: R * .86, fill: '#000' }, mk);
+        el('circle', { cx, cy, r: R, class: 'nmdisc', mask: `url(#mmask${i})` }, mn);
+        moonGap.set(day, [cy - R - 3, cy + R + 3]);
         const nR = Math.min(X(tmax) - 6, X(Math.min(tmax, day + 4.5 * H))), dx = Math.max(4, Math.min(12, (nR - cx) * .1));
         const f = fitCloud(cx + 24 * k, cy + 13 * k, 1.15 * k, cx - 4 * k, nR, dx);
         if (f) drawCloud('skycloud ncloud', `--dx:${dx.toFixed(1)}px;animation-duration:38s`, f.cx, cy + 13 * k, f.w, false);
@@ -2675,7 +2676,9 @@ function drawTimeAxis(g) {
     if (dt.getMinutes() !== 0) continue;
     if (hr === 0) {
       if (firstMid == null) firstMid = x;
-      el('line', { x1: x, x2: x, y1: hz, y2: height, class: 'midnight' }, g);
+      const gap = moonGap.get(t);
+      if (gap) { el('line', { x1: x, x2: x, y1: hz, y2: gap[0], class: 'midnight' }, g); el('line', { x1: x, x2: x, y1: gap[1], y2: height, class: 'midnight' }, g); }
+      else el('line', { x1: x, x2: x, y1: hz, y2: height, class: 'midnight' }, g);
       dayPill(x + 4, t);
     } else if (hr % step === 0) {
       el('line', { x1: x, x2: x, y1: yA, y2: height, class: 'tick' + (hr === 12 ? ' noon' : '') }, g);
@@ -3997,8 +4000,10 @@ function renderPlans() {
   $('#planEmpty').textContent = canEdit() ? 'No saved plans yet. Choose New, then Plan: click the leg you leave on, and take the way on at each place.' : 'No saved plans yet.';
   $('#plansTable').hidden = !plans.length;
   const key = S.sort;
-  const val = p => key === 'cost' ? p.cost : key === 'start' ? p.start : key === 'end' ? p.end : key === 'dur' ? p.dur : null;
-  if (key !== 'made') plans.sort((a, b) => (val(a) ?? Infinity) - (val(b) ?? Infinity));
+  const val = p => key === 'cost' || key === 'costDesc' ? p.cost : key === 'start' ? p.start : key === 'end' ? p.end : key === 'dur' ? p.dur : null;
+  // plans without the figure go last either way
+  if (key === 'costDesc') plans.sort((a, b) => (val(b) ?? -Infinity) - (val(a) ?? -Infinity));
+  else if (key !== 'made') plans.sort((a, b) => (val(a) ?? Infinity) - (val(b) ?? Infinity));
   const budget = +S.budget || 0;
   const max = Math.max(budget, 1, ...plans.map(p => p.cost));
   for (const p of plans) {
