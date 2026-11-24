@@ -727,6 +727,47 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 .rename .err[hidden]{display:none}
 .btn.small.icon{width:28px}
 
+/* fields that still need something before an item can be saved */
+#inspector .bad,#builder .bad{border-color:var(--bad) !important;box-shadow:0 0 0 3px color-mix(in srgb,var(--bad) 14%,transparent) !important}
+.fld .ferr{display:block;margin-top:5px;color:var(--bad);font-size:12px;line-height:1.35;font-weight:500;letter-spacing:0;text-transform:none}
+.fld .ferr[hidden]{display:none}
+.heldnote{margin:0 0 12px;padding:8px 10px;border-radius:var(--r-sm);background:var(--warn-bg);color:var(--warn-ink);font-size:12.5px;line-height:1.4}
+.heldnote[hidden]{display:none}
+.held-bar{flex:none;margin:0;padding:8px 14px;border-top:1px solid var(--border);background:var(--warn-bg);color:var(--warn-ink);font-size:12.5px;line-height:1.4}
+.held-bar[hidden]{display:none}
+.need{margin:14px 0 0;padding:8px 10px;border-radius:var(--r-sm);background:var(--surface2);color:var(--ink2);font-size:12.5px;line-height:1.4}
+.need.ok{color:var(--good)}
+.bproblems{margin:8px 0 10px}
+.bproblems[hidden]{display:none}
+.bproblems p + p{margin-top:4px}
+#noTimeHint{background:var(--warn-bg);color:var(--warn-ink);border-color:color-mix(in srgb,var(--warn-ink) 22%,transparent)}
+#noTimeHint .btn{display:inline-block;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:26px;background:transparent;color:inherit;border-color:color-mix(in srgb,var(--warn-ink) 35%,transparent)}
+#noTimeHint .btn:hover{background:color-mix(in srgb,var(--warn-ink) 8%,transparent)}
+#graph .edge.broken .seg{stroke-dasharray:2 6}
+
+/* the Edit | View switch */
+.modeseg{display:inline-flex;align-items:center;gap:2px;padding:2px;border:1px solid var(--border);border-radius:10px;background:var(--surface2)}
+.modeseg button{height:28px;display:inline-flex;align-items:center;gap:6px;padding:0 11px;border:0;border-radius:8px;background:none;color:var(--ink2);font:500 13px var(--font);cursor:pointer;transition:background .15s,color .15s}
+.modeseg button::before{width:14px;height:14px}
+.modeseg button:hover{color:var(--ink)}
+.modeseg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 0 0 1px var(--border),0 1px 2px rgba(0,0,0,.06)}
+.modeseg button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+
+/* view only: everything that changes something is put away */
+.viewing #createGroup,.viewing #editTools,.viewing .vsep,.viewing #exampleNote,.viewing #builder,.viewing #budgetField,.viewing #currency,.viewing .dock-sep,.viewing .guide-go{display:none !important}
+.guide-view{display:none;margin:14px 0 0;color:var(--ink2)}
+.viewing .guide-view{display:block}
+.dock-budget{font-size:12.5px;color:var(--ink2);white-space:nowrap}
+.dock-budget[hidden]{display:none}
+.ro-dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px 14px;margin:2px 0 16px;font-size:13px}
+.ro-dl dt{color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding-top:2px;white-space:nowrap}
+.ro-dl dd{margin:0;color:var(--ink)}
+.ro-text{margin:0;white-space:pre-wrap;color:var(--ink2)}
+.ro-lead{margin:0 0 10px;color:var(--ink2)}
+.name-plain{font-family:var(--serif);font-weight:600}
+.planbar .name-plain{font-size:16px}
+.star.ro{display:inline-block;min-width:16px;color:var(--accent);text-align:center}
+
 /* icons */
 [data-ico="edit"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z%22/%3E%3Cpath d=%22M14.5 7.5l3 3%22/%3E%3C/svg%3E")}
 [data-ico="file"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z%22/%3E%3Cpath d=%22M14 3v5h5M9 13h6M9 17h4%22/%3E%3C/svg%3E")}
@@ -899,13 +940,18 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
   <header class="topbar">
   <div class="brand"><img class="brand-mark" alt="" width="28" height="28"><h1 title="Add places, join them with legs, then build and save named plans.">Wander Map</h1></div>
   <div class="toolbar" id="toolbar" role="toolbar" aria-label="Planner tools">
-    <div class="tgroup">
+    <div class="tgroup" id="createGroup">
       <button id="addNode" class="btn primary" type="button" data-ico="place" title="Add a place">Add place</button>
       <button id="addLeg" class="btn" type="button" data-ico="leg" title="Add a leg between two places">Add leg</button>
       <button id="makePlan" class="btn" type="button" data-ico="plan" title="Build a named plan from your legs">Make a plan</button>
     </div>
     <span class="spacer"></span>
-    <div class="tgroup">
+    <div class="modeseg" id="modeSeg" role="group" aria-label="Mode">
+      <button id="modeEdit" type="button" data-ico="edit" aria-pressed="true" title="Edit: add and change places, legs and plans">Edit</button>
+      <button id="modeView" type="button" data-ico="eye" aria-pressed="false" title="View only: look at everything without changing anything">View</button>
+    </div>
+    <span class="tb-sep vsep"></span>
+    <div class="tgroup" id="editTools">
       <button id="undo" class="btn icon" type="button" data-ico="undo" title="Undo (Ctrl+Z)">Undo</button>
       <div class="menu" id="fileMenu">
         <button class="btn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" data-ico="file" title="Export, import or clear your plans">File</button>
@@ -971,6 +1017,7 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
               <li><b>Make a plan</b><span>Name it, pick where you start and finish, and choose the way wherever the routes split. Make as many plans as you like and compare them.</span></li>
             </ol>
             <div class="guide-go"><button class="btn primary" type="button" id="emptyAdd" data-ico="place">Add your first place</button></div>
+            <p class="guide-view">Nothing to view yet. Choose <b>Edit</b> at the top to add your places.</p>
             <p class="guide-note">Your plans are saved only in this browser. Use Export to keep a copy or move them to another device.</p>
           </div>
           <div class="phone-empty">
@@ -988,8 +1035,9 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
       <div class="dock-bar">
         <button class="dock-toggle" id="drawerTab" type="button" aria-expanded="false" aria-controls="drawerBody" title="Show or hide plans"><span class="chev" id="drawerArrow" aria-hidden="true"></span><span class="dock-title">Plans</span><span class="cnt" id="planCount"></span></button>
         <span class="spacer"></span>
-        <label class="dock-field"><span>Budget per head</span><input id="budget" type="number" min="0" step="10" inputmode="numeric" placeholder="none"></label>
+        <label class="dock-field" id="budgetField"><span>Budget per head</span><input id="budget" type="number" min="0" step="10" inputmode="numeric" placeholder="none"></label>
         <select id="currency" class="cursel" aria-label="Currency" title="Currency"></select>
+        <span class="dock-budget" id="budgetText" hidden></span>
         <span class="dock-sep"></span>
         <label class="dock-field"><span>Sort</span>
           <select id="sort">
@@ -1018,6 +1066,7 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
     <aside class="side" id="side" aria-label="Details panel">
       <div class="side-head"><span class="side-title">Details</span><button class="btn icon" type="button" id="sideHide" data-ico="collapse" title="Hide the details panel" aria-label="Hide the details panel"><span class="desk-only">Hide</span><span class="phone-only">Close</span></button></div>
       <div id="inspector"></div>
+      <p class="held-bar" id="heldBar" role="status" hidden></p>
       <div class="side-foot" id="sideFoot" hidden></div>
     </aside>
     <button class="rail" id="sideOpen" type="button" data-ico="side" title="Show the details panel" aria-label="Show the details panel"><span>Details</span></button>
@@ -1058,7 +1107,10 @@ const LEGF = { from: '', to: '', mode: 'flight', info: '', cost: '', dep: '', ar
 let S = null;                       // saved: nodes, legs, plans
 let T = {};                         // computed per leg: dep, arrSched, arr, buf, timed, ok, warn
 let PL = [], PLBY = {}, LEGPLANS = {}, hasTime = false;
+let BROKEN = { nodes: [], legs: [], plans: [] }; // incomplete items saved before these checks, or imported
 let sel = null;                     // { k: 'node' | 'leg', id }
+let draft = null;                   // a new place or leg being filled in: not saved until complete
+let held = null;                    // a change to a saved item that is not applied, because it would leave it incomplete
 let focusPlan = null, hoverPlan = null, hoverLeg = null, scrubT = null, pinned = false;
 let geo = null, gScrub = null, focusNext = null, pendingSnap = null;
 let bldSnap = null;
@@ -1067,7 +1119,7 @@ let scrubY = null;                  // pointer height in the timeline, for the h
 let viewPlan = null;                // plan view mode: only this plan's nodes and legs
 let renaming = null;                // { id, where } while a plan name is being edited
 const UIKEY = 'wander-map.ui', OLD_UIKEY = 'route-branch-planner.ui';
-let UI = { side: true, drawer: false, theme: null, costs: false };
+let UI = { side: true, drawer: false, theme: null, costs: false, view: false };
 try { Object.assign(UI, JSON.parse(localStorage.getItem(UIKEY) || localStorage.getItem(OLD_UIKEY) || '{}')); } catch (e) { /* ignore */ }
 let sideOpen = true;
 const VIEWQ = window.matchMedia ? matchMedia('(max-width: 700px)') : null;
@@ -1075,7 +1127,30 @@ let viewOnly = !!(VIEWQ && VIEWQ.matches);
 function applyViewOnly() {
   viewOnly = !!(VIEWQ && VIEWQ.matches);
   document.body.classList.toggle('viewonly', viewOnly);
-  if (viewOnly) { sel = null; B = null; focusPlan = null; hoverPlan = null; hoverLeg = null; }
+  if (viewOnly) { sel = null; B = null; draft = null; held = null; focusPlan = null; hoverPlan = null; hoverLeg = null; }
+  applyMode();
+}
+// View only (on a computer): the whole page as it is, with every way to change it put away.
+function applyMode() {
+  const viewing = !viewOnly && !!UI.view;
+  document.body.classList.toggle('viewing', viewing);
+  const e = document.getElementById('modeEdit'), v = document.getElementById('modeView');
+  if (e) e.setAttribute('aria-pressed', String(!viewing));
+  if (v) v.setAttribute('aria-pressed', String(viewing));
+}
+function setMode(view) {
+  view = !!view;
+  if (viewOnly || !!UI.view === view) return;
+  let lost = null;
+  if (view) {
+    if (B) { toast('Save or cancel the plan you are making first'); return; }
+    if (!leaveDraft()) return;
+    lost = held; held = null; renaming = null;
+  }
+  closeMenus();
+  UI.view = view; saveUI(); applyMode();
+  renderAll();
+  toast(view ? `View only: nothing can be changed. Choose Edit to make changes.${lost ? ' Your unfinished change was not saved.' : ''}` : 'Editing');
 }
 function saveUI() { try { localStorage.setItem(UIKEY, JSON.stringify(UI)); } catch (e) { /* ignore */ } }
 const undoStack = [];
@@ -1191,6 +1266,39 @@ function waitInfo(p, legId) {
   const auto = defaultWaitLabel(ms || 0, a, d), custom = (p.waits && p.waits[legId]) || '';
   return { plan: p.id, leg: legId, node, from: a, to: d, ms, auto, custom, label: custom || auto };
 }
+/* ---------- what a complete item needs ---------- */
+// Nothing incomplete is ever saved. New places and legs stay drafts until they are complete,
+// changes to saved ones apply only while the item stays complete, and a plan saves only when whole.
+// Each problem names its field (f), says what is wrong (msg) and what is still needed (need).
+function placeProblems(n, exceptId) {
+  const name = String((n && n.name) || '').trim();
+  if (!name) return [{ f: 'name', msg: 'Give the place a name.', need: 'a name' }];
+  const dup = findNode(name, exceptId);
+  return dup ? [{ f: 'name', msg: `Another place is already called “${nodeName(dup)}”.`, need: 'a name no other place has', dup }] : [];
+}
+function legProblems(l) {
+  const out = [], d = ts(l.dep), a = ts(l.arr);
+  if (!l.from || !S.nodes[l.from]) out.push({ f: 'from', msg: 'Choose where it leaves from.', need: 'where it leaves from' });
+  if (!l.to || !S.nodes[l.to]) out.push({ f: 'to', msg: 'Choose where it arrives.', need: 'where it arrives' });
+  else if (l.to === l.from) out.push({ f: 'to', msg: 'It has to arrive somewhere other than where it leaves.', need: 'a different place to arrive' });
+  if (!MODE[l.mode]) out.push({ f: 'mode', msg: 'Choose how you travel.', need: 'how you travel' });
+  if (d == null) out.push({ f: 'dep', msg: 'Add when it leaves.', need: 'when it leaves' });
+  if (a == null) out.push({ f: 'arr', msg: 'Add when it arrives.', need: 'when it arrives' });
+  else if (d != null && a <= d) out.push({ f: 'arr', msg: 'It has to arrive after it leaves.', need: 'an arrival after it leaves' });
+  if (l.cost === '' || l.cost == null || !(+l.cost >= 0)) out.push({ f: 'cost', msg: 'Add the fare (0 if it is free).', need: 'the fare (0 if free)' });
+  if (l.buf !== '' && l.buf != null && !(+l.buf >= 0)) out.push({ f: 'buf', msg: 'Use 0 or more minutes.', need: 'a buffer of 0 or more minutes' });
+  return out;
+}
+// An extra cost needs both a name and an amount. A row with neither is simply left out.
+function extraProblem(x) {
+  const named = !!String(x.label || '').trim(), priced = x.amount !== '' && x.amount != null;
+  if (!named && !priced) return null;
+  if (!named) return { f: 'label', msg: 'Name this cost.' };
+  if (!priced || !(+x.amount >= 0)) return { f: 'amount', msg: 'Add the amount.' };
+  return null;
+}
+// Editing is off on phones and in view-only mode.
+function canEdit() { return !viewOnly && !UI.view; }
 function fld(label, input, hint) { return h('label', { class: 'fld' }, h('span', { text: label }), input, hint ? h('small', { text: hint }) : null); }
 
 /* ---------- state lifecycle ---------- */
@@ -1340,17 +1448,16 @@ function compute() {
   T = {}; hasTime = false; LEGPLANS = {};
   for (const id in S.legs) {
     const l = S.legs[id];
-    let d = ts(l.dep), a = ts(l.arr);
+    const d = ts(l.dep), a = ts(l.arr);
     const noDep = d == null, noArr = a == null;
-    if (d == null && a != null) d = a - 2 * H;
-    if (a == null && d != null) a = d + 2 * H;
     const buf = Math.max(0, +l.buf || 0) * MIN, warn = [];
     const ok = !!(l.from && l.to && l.from !== l.to && S.nodes[l.from] && S.nodes[l.to]);
     if (!l.from || !l.to) warn.push('Pick both ends of this leg.');
     else if (l.from === l.to) warn.push('This leg starts and ends at the same place.');
     if (!noDep && !noArr && a < d) warn.push('It arrives before it leaves. Check the dates.');
-    T[id] = { dep: d, arrSched: a, buf, arr: a != null ? a + buf : null, noDep, noArr, timed: d != null, ok, warn };
-    if (ok && d != null) hasTime = true;
+    const problems = legProblems(l), timed = d != null && a != null && a > d;
+    T[id] = { dep: d, arrSched: a, buf, arr: a != null ? a + buf : null, noDep, noArr, timed, ok, warn, problems, complete: !problems.length };
+    if (ok && timed) hasTime = true;
   }
   S.planOrder.forEach(pid => S.plans[pid].legs.forEach(l => {
     if (!S.legs[l]) return;
@@ -1359,6 +1466,11 @@ function compute() {
   }));
   PL = S.planOrder.map(id => planInfo(S.plans[id]));
   PLBY = Object.fromEntries(PL.map(p => [p.id, p]));
+  BROKEN = {
+    nodes: S.order.filter(id => placeProblems(S.nodes[id], id).length),
+    legs: Object.keys(S.legs).filter(id => !T[id].complete).sort(byDep),
+    plans: PL.filter(p => p.warn).map(p => p.id),
+  };
   if (S.picked && !S.plans[S.picked]) S.picked = null;
   if (focusPlan && !S.plans[focusPlan]) focusPlan = null;
   if (hoverPlan && !S.plans[hoverPlan]) hoverPlan = null;
@@ -1371,13 +1483,16 @@ function compute() {
 function planInfo(p) {
   const legs = p.legs.filter(id => S.legs[id]);
   const missing = p.legs.length - legs.length, issues = [];
+  if (!normName(p.name)) issues.push('This plan has no name.');
+  else { const dup = S.planOrder.find(id => id !== p.id && normName(S.plans[id].name) === normName(p.name)); if (dup) issues.push(`Another plan is also called “${S.plans[dup].name.trim()}”.`); }
   if (missing) issues.push(`${missing} leg${missing > 1 ? 's were' : ' was'} deleted from this plan.`);
+  else if (!legs.length) issues.push('This plan has no legs.');
   let legCost = 0, extra = 0, move = 0, wait = 0;
   legs.forEach((id, i) => {
     const l = S.legs[id], t = T[id], c = legCostIn(p, id);
     if (c !== '') legCost += +c;
     if (t.dep != null && t.arr != null) move += Math.max(0, t.arr - t.dep);
-    if (t.warn.length) issues.push(`${legLabel(id)}: ${t.warn[0]}`);
+    if (t.problems.length) issues.push(`${legLabel(id)}: ${t.problems[0].msg}`);
     if (i > 0) {
       const pid = legs[i - 1], pt = T[pid];
       if (S.legs[pid].to !== l.from) issues.push(`${legLabel(pid)} does not connect to ${legLabel(id)}.`);
@@ -1388,7 +1503,7 @@ function planInfo(p) {
       }
     }
   });
-  p.extras.forEach(x => { if (x.amount !== '') extra += +x.amount; });
+  p.extras.forEach(x => { if (x.amount !== '') extra += +x.amount; const e = extraProblem(x); if (e) issues.push(e.f === 'label' ? 'An extra cost has no name.' : `The extra cost “${x.label.trim()}” has no amount.`); });
   const start = legs.length ? T[legs[0]].dep : null, end = legs.length ? T[legs[legs.length - 1]].arr : null;
   const nodes = legs.length ? [S.legs[legs[0]].from, ...legs.map(id => S.legs[id].to)] : [];
   return {
@@ -1405,7 +1520,7 @@ function findRoutes(start, end, startT, endT, startLeg, endLeg, allow) {
   const out = [], t0 = ts(startT), t1 = ts(endT);
   let capped = false;
   const outs = {};
-  for (const id in S.legs) if (T[id].ok && (!allow || allow.has(id))) (outs[S.legs[id].from] || (outs[S.legs[id].from] = [])).push(id);
+  for (const id in S.legs) if (T[id].complete && (!allow || allow.has(id))) (outs[S.legs[id].from] || (outs[S.legs[id].from] = [])).push(id);
   for (const k in outs) outs[k].sort(byDep);
   const used = new Set();
   const rec = (node, trail, tArr) => {
@@ -1503,6 +1618,21 @@ function renderMobileList() {
         plans ? h('div', { class: 'minfo', text: `In: ${plans}` }) : null)));
   });
 }
+// Items saved before these checks existed, or brought in from a file, that are still incomplete.
+// They stay out of route finding and new plans until fixed; this notice lists them for fixing.
+function renderFixNote() {
+  const box = $('#noTimeHint'); box.replaceChildren();
+  const items = [
+    ...BROKEN.nodes.map(id => ({ label: nodeName(id), title: placeProblems(S.nodes[id], id)[0].msg, run: () => select({ k: 'node', id }) })),
+    ...BROKEN.legs.map(id => ({ label: legLabel(id), title: T[id].problems[0].msg, run: () => select({ k: 'leg', id }) })),
+    ...BROKEN.plans.map(id => ({ label: `Plan: ${PLBY[id].name}`, title: PLBY[id].issues[0], run: () => togglePlan(id, true) })),
+  ];
+  box.hidden = !items.length || !canEdit();
+  if (box.hidden) return;
+  box.append(h('span', { class: 'fix-lead', text: `${items.length === 1 ? 'One item is' : `${items.length} items are`} incomplete, so ${items.length === 1 ? 'it is' : 'they are'} kept out of new plans. Fix:` }),
+    ...items.slice(0, 4).map(it => btn(it.label, it.run, 'small', it.title)));
+  if (items.length > 4) box.append(h('span', { class: 'muted', text: `and ${items.length - 4} more` }));
+}
 function renderGraph() {
   renderMobileList();
   const svg = $('#graph'), sc = $('#graphScroll');
@@ -1518,11 +1648,7 @@ function renderGraph() {
   const order = vp ? S.order.filter(id => vpNodes.has(id)) : S.order;
   const legIds = (vp ? vp.legs.concat(vpPend) : Object.keys(S.legs)).filter(id => T[id].ok).sort(byDep);
   const timeOn = legIds.some(id => T[id].timed);
-  const untimed = legIds.filter(id => !T[id].timed).length;
-  const nt = $('#noTimeHint');
-  nt.hidden = !(has && untimed);
-  nt.textContent = !hasTime ? 'Add leave and arrive times to your legs to draw them on the timeline.'
-    : `${untimed} leg${untimed > 1 ? 's have' : ' has'} no times yet, so ${untimed > 1 ? 'they are' : 'it is'} not drawn. Click a place to find its legs.`;
+  renderFixNote();
   if (!has) { svg.style.display = 'none'; geo = null; return; }
   svg.style.display = '';
 
@@ -1570,7 +1696,7 @@ function renderGraph() {
     txt(g, lx, r.y + 4, clip(nodeName(r.id), F.root, left - lx - 16), 'rowlbl');
     const nLegs = legsFrom(r.id).length + legsTo(r.id).length, np = meets[r.id] ? meets[r.id].size : 0;
     txt(g, lx, r.y + 19, np > 1 ? `${np} plans meet here` : `${nLegs} leg${nLegs === 1 ? '' : 's'}`, 'rowsub');
-    el('title', null, g).textContent = `${nodeName(r.id)}: click to edit, add legs from or to here`;
+    el('title', null, g).textContent = canEdit() ? `${nodeName(r.id)}: click to edit, add legs from or to here` : `${nodeName(r.id)}: click for details`;
   });
   if (!timeOn) { applyHighlight(); return; }
 
@@ -1594,7 +1720,7 @@ function renderGraph() {
     const t = T[id]; if (!t.timed) continue;
     const l = S.legs[id], yd = rowY[l.from], yk = rowY[l.to];
     const s0 = X(t.dep), xS = X(t.arrSched), xA = X(t.arr);
-    const g = el('g', { class: 'edge' + (sel && sel.k === 'leg' && sel.id === id ? ' sel' : '') + (vpPend.includes(id) ? ' pend' : ''), 'data-leg': id }, gEdge);
+    const g = el('g', { class: 'edge' + (sel && sel.k === 'leg' && sel.id === id ? ' sel' : '') + (vpPend.includes(id) ? ' pend' : '') + (t.complete ? '' : ' broken'), 'data-leg': id }, gEdge);
     g.style.setProperty('--c', legColor(id));
     const m = MODE[l.mode] || MODE.other, d = curve(s0, yd, xS, yk);
     if (t.buf) el('line', { x1: xS, y1: yk, x2: xA, y2: yk, class: 'bufband' }, g);
@@ -1618,7 +1744,7 @@ function renderGraph() {
       el('line', { x1: x0, x2: x1, y1: yy, y2: yy, class: 'dwell' }, g);
       const wi = waitInfo(pi.p, b);
       el('line', { x1: x0, x2: x1, y1: yy, y2: yy, class: 'waithit' }, g);
-      el('title', null, g).textContent = `${wi.label} at ${nodeName(S.legs[b].from)}, ${fmtDur(wi.ms)} (${pi.name})${wi.custom ? '' : '. Click to rename this wait.'}`;
+      el('title', null, g).textContent = `${wi.label} at ${nodeName(S.legs[b].from)}, ${fmtDur(wi.ms)} (${pi.name})${wi.custom || !canEdit() ? '' : '. Click to rename this wait.'}`;
       dwellJobs.push({ x0, x1, y: yy, ms: tb.dep - ta.arr, plan: pi.id, leg: b, lab: wi.label });
     }
   });
@@ -1643,7 +1769,7 @@ function renderGraph() {
       k.station = nl > 1;
       if (k.station) {
         const st = el('rect', { x: k.x0 - 11, y: r.y - 11, width: k.x1 - k.x0 + 22, height: 22, rx: 11, class: 'station', 'data-node': r.id }, gSt);
-        el('title', null, st).textContent = `${nodeName(r.id)}: ${nl} legs meet here. Click to edit the place.`;
+        el('title', null, st).textContent = `${nodeName(r.id)}: ${nl} legs meet here. ${canEdit() ? 'Click to edit the place.' : 'Click for details.'}`;
         boxes.push([k.x0 - 11, r.y - 11, k.x1 + 11, r.y + 11]);
       } else boxes.push([k.x0 - 8, r.y - 8, k.x1 + 8, r.y + 8]);
       k.items.forEach(q => {
@@ -1937,8 +2063,8 @@ function legTitle(id) {
   if (l.cost !== '') lines.push(`${money(l.cost)} per head`);
   const ps = LEGPLANS[id];
   if (ps && ps.length) lines.push('In: ' + ps.map(p => S.plans[p].name).join(', '));
-  t.warn.forEach(w => lines.push('⚠ ' + w));
-  lines.push('Click to edit');
+  t.problems.forEach(w => lines.push('⚠ ' + w.msg));
+  lines.push(canEdit() ? 'Click to edit' : 'Click for details');
   return lines.join('\n');
 }
 
@@ -1980,14 +2106,19 @@ function renderTip() {
 /* ---------- inspector ---------- */
 function renderInspector() {
   const box = $('#inspector');
+  if (held) { const x = held; held = null; toast(`Not saved: ${x.msg} ${x.legacy ? `The ${x.kind} is still incomplete.` : 'The last complete version is kept.'}`); }
   box.replaceChildren();
   setFoot(null);
+  $('#heldBar').hidden = true;
   $('#placeList').replaceChildren(...S.order.map(id => h('option', { value: nodeName(id) })));
-  if (!sel) box.append(viewPlan && PLBY[viewPlan] ? planPanel(PLBY[viewPlan]) : helpPanel());
+  if (draft) draftInspector(box);
+  else if (!sel) box.append(viewPlan && PLBY[viewPlan] ? planPanel(PLBY[viewPlan]) : canEdit() ? helpPanel() : viewHelp());
+  else if (!canEdit()) readOnlyInspector(box);
   else if (sel.k === 'node') nodeInspector(box, S.nodes[sel.id]);
   else if (sel.k === 'wait') waitInspector(box, S.plans[sel.plan], sel.id);
   else legInspector(box, S.legs[sel.id]);
   updateLive();
+  if (draft) showDraft();
   if (focusNext) { const f = $(focusNext); focusNext = null; if (f) { f.focus(); if (f.select) f.select(); } }
 }
 // A small menu: a trigger button and a list of actions that opens below it (or above, in footers).
@@ -2037,6 +2168,12 @@ function setFoot(primary, more, danger) {
 function icoBtn(label, fn, cls, ico, title, disabled) { const b = btn(label, fn, cls, title, disabled); b.dataset.ico = ico; return b; }
 // One set of plan actions, the same wherever a plan is shown.
 function planActions(p, where) {
+  const exit = where === 'bar' ? h('button', { class: 'btn small icon', type: 'button', 'data-ico': 'close', title: 'Exit plan view', 'aria-label': 'Exit plan view', onclick: () => setView(null) }, 'Exit') : null;
+  if (!canEdit()) return h('div', { class: 'btns' }, menuEl('More actions', [
+    where === 'bar' ? { label: 'Open itinerary', sub: 'Every leg, wait and cost', ico: 'list', run: () => togglePlan(p.id, true) }
+                    : { label: 'Show on the timeline', sub: 'Only this plan', ico: 'eye', run: () => setView(p.id) },
+    { label: 'Copy as text', sub: 'To paste into a message', ico: 'copy', run: () => copyText(planText(p)) },
+  ], { small: true, right: true, iconOnly: true }), exit);
   const items = [
     where === 'bar' ? { label: 'Open itinerary', sub: 'Every leg, wait and cost', ico: 'list', run: () => togglePlan(p.id, true) }
                     : { label: 'Show on the timeline', sub: 'Only this plan', ico: 'eye', run: () => setView(p.id) },
@@ -2048,18 +2185,19 @@ function planActions(p, where) {
   return h('div', { class: 'btns' },
     icoBtn('Edit', () => startBuilder(p.id), 'small primary', 'plan', 'Edit this plan’s route and costs'),
     menuEl('More actions', items, { small: true, right: true, iconOnly: true }),
-    where === 'bar' ? h('button', { class: 'btn small icon', type: 'button', 'data-ico': 'close', title: 'Exit plan view', 'aria-label': 'Exit plan view', onclick: () => setView(null) }, 'Exit') : null);
+    exit);
 }
 // The plan's name doubles as its rename control: click it (or press Enter on it) to edit in place.
 function nameTitle(p, where, cls) {
+  if (!canEdit()) return h('span', { class: 'name-plain' + (cls ? ' ' + cls : ''), text: (S.picked === p.id ? '★ ' : '') + p.name });
   return h('button', { type: 'button', class: 'name-btn' + (cls ? ' ' + cls : ''), title: 'Click to rename', 'aria-label': `${p.name}. Click to rename`, onclick: () => startRename(p.id, where) },
     h('span', { class: 'name-txt', text: (S.picked === p.id ? '★ ' : '') + p.name }), h('span', { class: 'pen', 'data-ico': 'edit', 'aria-hidden': 'true' }));
 }
-function inspHead(title, color) {
+function inspHead(title, color, onClose) {
   return h('div', { class: 'insp-head' },
     h('span', { class: 'key-dot', style: `--c:${color}` }),
     h('div', null, h('h2', { text: title }), h('p', { class: 'crumb', id: 'liveCrumb' })),
-    h('button', { class: 'icon-btn', type: 'button', title: 'Close', 'aria-label': 'Close', text: '×', onclick: () => { sel = null; renderInspector(); renderGraph(); } }));
+    h('button', { class: 'icon-btn', type: 'button', title: 'Close', 'aria-label': 'Close', text: '×', onclick: onClose || (() => { sel = null; renderInspector(); renderGraph(); }) }));
 }
 function input(obj, f, type, extra) {
   const i = h(type === 'textarea' ? 'textarea' : 'input', Object.assign({ 'data-f': f }, type === 'textarea' ? {} : { type }, extra || {}));
@@ -2087,6 +2225,7 @@ function legList(title, ids, side) {
 }
 function nodeInspector(box, n) {
   box.append(inspHead(nodeName(n.id), 'var(--ink)'));
+  box.append(h('p', { class: 'heldnote', id: 'liveHeld', role: 'status', hidden: true }));
   const pick = h('input', { type: 'file', accept: 'image/*', hidden: true, id: 'nodeImgFile' });
   pick.addEventListener('change', () => { const f = pick.files && pick.files[0]; pick.value = ''; if (f) setNodeImage(n.id, f); });
   const zone = n.img
@@ -2106,9 +2245,7 @@ function nodeInspector(box, n) {
   box.append(pick, zone,
     h('div', { class: 'nimg-link' }, link, btn('Load', go, 'small')),
     h('p', { class: 'nimg-msg', id: 'imgMsg', text: n.img && /^https?:/i.test(n.img) ? 'This picture loads from its link each time, so it needs the internet.' : '' }));
-  box.append(fld('Name', input(n, 'name', 'text', { placeholder: 'e.g. City Airport', id: 'fName', autocomplete: 'off' }), 'Every leg in or out of this place meets here.'));
-  box.append(h('div', { id: 'liveDup' }));
-  box.append(fld('Note', input(n, 'note', 'textarea')));
+  placeFields(box, n);
   box.append(legList(`Legs leaving ${nodeName(n.id)}`, legsFrom(n.id), 'to'));
   box.append(legList(`Legs arriving at ${nodeName(n.id)}`, legsTo(n.id), 'from'));
   const i = S.order.indexOf(n.id), cnt = legsFrom(n.id).length + legsTo(n.id).length;
@@ -2119,6 +2256,12 @@ function nodeInspector(box, n) {
     S.order.length > 1 ? { label: 'Move row up', ico: 'up', disabled: i === 0, run: () => moveRow(n.id, -1) } : null,
     S.order.length > 1 ? { label: 'Move row down', ico: 'down', disabled: i === S.order.length - 1, run: () => moveRow(n.id, 1) } : null,
   ], icoBtn('Delete', () => delNode(n.id), 'danger', 'trash', cnt ? `Delete this place and its ${cnt} leg${cnt > 1 ? 's' : ''} (you can undo)` : 'Delete this place (you can undo)'));
+  showSaved('node', n);
+}
+function placeFields(box, o) {
+  box.append(fld('Name', input(o, 'name', 'text', { placeholder: 'e.g. City Airport', id: 'fName', autocomplete: 'off', maxlength: '80', required: true }), 'Every leg in or out of this place meets here.'));
+  box.append(h('div', { id: 'liveDup' }));
+  box.append(fld('Note', input(o, 'note', 'textarea', { placeholder: 'Optional' })));
 }
 function waitInspector(box, p, legId) {
   const w = waitInfo(p, legId), pi = PLBY[p.id];
@@ -2194,30 +2337,8 @@ function nodeSelect(side, val) {
 }
 function legInspector(box, l) {
   box.append(inspHead('Leg', legColor(l.id)));
-  box.append(h('div', { class: 'row2' }, fld('From place', nodeSelect('from', l.from)), fld('To place', nodeSelect('to', l.to))));
-  box.append(h('div', { class: 'newnode', id: 'newNodeRow', hidden: true },
-    h('input', { type: 'text', id: 'newNodeName', placeholder: 'New place name', list: 'placeList', autocomplete: 'off', 'aria-label': 'New place name' }),
-    btn('Add', () => addNodeFromLeg(), 'primary small'),
-    btn('Cancel', () => { $('#newNodeRow').hidden = true; renderInspector(); }, 'small')));
-  const sel_ = h('select', { 'data-f': 'mode' });
-  MODES.forEach(([k, label]) => sel_.append(h('option', { value: k, text: label })));
-  sel_.value = l.mode;
-  box.append(h('div', { class: 'row2' },
-    fld('How', sel_),
-    fld(`Fare per head (${curSym()})`, input(l, 'cost', 'number', { min: '0', step: '1', inputmode: 'numeric', placeholder: 'e.g. 120' }))));
-  box.append(fld('Details', input(l, 'info', 'text', { placeholder: 'Airline, flight no., bus operator…' })));
-  box.append(fld('Leaves', input(l, 'dep', 'datetime-local')), fld('Arrives', input(l, 'arr', 'datetime-local')));
-  box.append(h('p', { class: 'live', id: 'liveDur' }));
-  const chips = h('div', { class: 'chips', role: 'group', 'aria-label': 'Buffer' });
-  BUFS.forEach(b => chips.append(h('button', {
-    type: 'button', class: 'chip', 'data-b': String(b), 'aria-pressed': String((+l.buf || 0) === b),
-    text: b ? '+' + fmtDur(b * MIN) : 'None', onclick: () => setBuf(l.id, b),
-  })));
-  box.append(h('div', { class: 'fld' },
-    h('span', { text: 'Buffer for traffic or delays' }),
-    h('div', { class: 'chiprow' }, chips, input(l, 'buf', 'number', { min: '0', step: '5', inputmode: 'numeric', placeholder: 'mins', class: 'bufnum', 'aria-label': 'Buffer in minutes', title: 'Or type your own, in minutes' })),
-    h('small', null, 'Moves the arrival later by this much. ',
-      h('button', { type: 'button', class: 'linkbtn', text: 'Use this on every bus and cab leg', onclick: () => applyBufRoad(+S.legs[l.id].buf || 0) }))));
+  box.append(h('p', { class: 'heldnote', id: 'liveHeld', role: 'status', hidden: true }));
+  legFields(box, l, false);
   const ps = LEGPLANS[l.id] || [];
   const s = h('div', { class: 'sect' }, h('h3', { text: `In saved plans (${ps.length})` }));
   if (ps.length) {
@@ -2226,11 +2347,206 @@ function legInspector(box, l) {
   } else s.append(h('p', { class: 'hint', text: 'Not in any saved plan yet.' }));
   box.append(s);
   box.append(h('div', { id: 'liveTwin' }));
-  box.append(h('div', { id: 'liveWarn' }));
   setFoot(icoBtn(l.to ? `Next leg from ${nodeName(l.to)}` : 'Next leg', () => newLeg({ from: l.to, mode: l.mode, after: T[l.id] ? T[l.id].arr : null }), 'primary', 'leg', 'A leg that leaves where this one arrives', !l.to), [
     { label: 'Return leg', sub: 'The same trip back the other way', ico: 'undo', disabled: !(l.from && l.to), run: () => newLeg({ from: l.to, to: l.from, mode: l.mode }) },
     { label: 'Alternative leg', sub: 'Another way between the same two places', ico: 'leg', run: () => newLeg({ from: l.from, to: l.to, mode: l.mode, dep: l.dep, arr: l.arr }) },
   ], icoBtn('Delete', () => delLeg(l.id), 'danger', 'trash', 'Delete this leg (you can undo)'));
+  showSaved('leg', l);
+}
+function legFields(box, o, isDraft) {
+  box.append(h('div', { class: 'row2' }, fld('From place', nodeSelect('from', o.from)), fld('To place', nodeSelect('to', o.to))));
+  box.append(h('div', { class: 'newnode', id: 'newNodeRow', hidden: true },
+    h('input', { type: 'text', id: 'newNodeName', placeholder: 'New place name', list: 'placeList', autocomplete: 'off', 'aria-label': 'New place name', maxlength: '80' }),
+    btn('Add', () => addNodeFromLeg(), 'primary small'),
+    btn('Cancel', () => {
+      const row = $('#newNodeRow'), sl = $(`#inspector select[data-end="${row.dataset.side}"]`);
+      row.hidden = true; if (sl) { sl.value = sl.dataset.prev || ''; sl.focus(); }
+    }, 'small')));
+  const sel_ = h('select', { 'data-f': 'mode' });
+  MODES.forEach(([k, label]) => sel_.append(h('option', { value: k, text: label })));
+  sel_.value = o.mode;
+  box.append(h('div', { class: 'row2' },
+    fld('How', sel_),
+    fld(`Fare per head (${curSym()})`, input(o, 'cost', 'number', { min: '0', step: '1', inputmode: 'numeric', placeholder: 'e.g. 120', required: true }))));
+  box.append(fld('Details', input(o, 'info', 'text', { placeholder: 'Optional: airline, flight no., bus operator…', maxlength: '120' })));
+  box.append(fld('Leaves', input(o, 'dep', 'datetime-local', { id: 'fDep', required: true })), fld('Arrives', input(o, 'arr', 'datetime-local', { id: 'fArr', required: true })));
+  box.append(h('p', { class: 'live', id: 'liveDur' }));
+  const chips = h('div', { class: 'chips', role: 'group', 'aria-label': 'Buffer' });
+  BUFS.forEach(b => chips.append(h('button', {
+    type: 'button', class: 'chip', 'data-b': String(b), 'aria-pressed': String((+o.buf || 0) === b),
+    text: b ? '+' + fmtDur(b * MIN) : 'None', onclick: () => pickBuf(b),
+  })));
+  box.append(h('div', { class: 'fld' },
+    h('span', { text: 'Buffer for traffic or delays' }),
+    h('div', { class: 'chiprow' }, chips, input(o, 'buf', 'number', { min: '0', step: '5', inputmode: 'numeric', placeholder: 'mins', class: 'bufnum', 'aria-label': 'Buffer in minutes', title: 'Or type your own, in minutes' })),
+    h('small', null, 'Moves the arrival later by this much. ',
+      isDraft ? null : h('button', { type: 'button', class: 'linkbtn', text: 'Use this on every bus and cab leg', onclick: () => applyBufRoad(+S.legs[o.id].buf || 0) }))));
+}
+// The travel time line under the times, for whatever the form says now.
+function durText(o) {
+  const d = ts(o.dep), a = ts(o.arr);
+  if (d == null || a == null) return 'Add both times to place this leg on the timeline.';
+  if (a <= d) return '';
+  const buf = Math.max(0, +o.buf || 0) * MIN;
+  const before = o.from && S.nodes[o.from] ? legsTo(o.from).filter(id => id !== o.id).map(id => T[id].arr).filter(x => x != null && x <= d) : [];
+  return `Travel time ${fmtDur(a - d)}${buf ? ` + ${fmtDur(buf)} buffer` : ''}${before.length ? `  ·  ${fmtDur(d - Math.max(...before))} after the latest arrival at ${nodeName(o.from)}` : ''}`;
+}
+function syncBufChips() {
+  const i = $('#inspector [data-f=buf]'), v = i ? (+i.value || 0) : 0;
+  document.querySelectorAll('#inspector .chip[data-b]').forEach(b => b.setAttribute('aria-pressed', String(v === +b.dataset.b)));
+}
+function pickBuf(b) {
+  const i = $('#inspector [data-f=buf]'); if (!i) return;
+  i.value = b ? String(b) : '';
+  if (draft) draftInput(i); else editField(i, true);
+}
+
+/* ---------- checking the form ---------- */
+// Everything the form says right now, so related fields (like leave and arrive) are checked together.
+function formValues() {
+  const v = {}, box = $('#inspector');
+  box.querySelectorAll('[data-f]').forEach(i => {
+    const f = i.dataset.f, raw = i.value;
+    v[f] = f === 'cost' || f === 'buf' ? (i.validity && i.validity.badInput ? NaN : String(raw).trim() === '' ? '' : (num(raw) ?? NaN)) : raw;
+  });
+  box.querySelectorAll('select[data-end]').forEach(sl => { if (sl.value !== '__new') v[sl.dataset.end] = sl.value; });
+  return v;
+}
+// Mark each field that still needs something, with the reason beside it. With `only`, just those fields.
+function markFields(probs, only) {
+  const by = {};
+  probs.forEach(p => { if (!by[p.f]) by[p.f] = p; });
+  $('#inspector').querySelectorAll('[data-f], select[data-end]').forEach(i => {
+    const f = i.dataset.f || i.dataset.end, p = by[f] && (!only || only.has(f)) ? by[f] : null;
+    i.classList.toggle('bad', !!p);
+    if (p) i.setAttribute('aria-invalid', 'true'); else i.removeAttribute('aria-invalid');
+    const wrap = i.closest('.fld'); if (!wrap) return;
+    let m = wrap.querySelector(':scope > .ferr');
+    if (!m) { if (!p) return; m = h('small', { class: 'ferr', id: `err-${f}` }); wrap.append(m); i.setAttribute('aria-describedby', m.id); }
+    m.textContent = p ? p.msg : ''; m.hidden = !p;
+  });
+}
+// A name another place already has: offer that place instead (new place) or a merge (saved place).
+function renderDup(probs) {
+  const box = $('#liveDup'); if (!box) return;
+  box.replaceChildren();
+  const p = probs.find(x => x.dup); if (!p) return;
+  const into = p.dup;
+  box.append(h('div', { class: 'warnbox' },
+    h('p', { text: draft ? `${nodeName(into)} is already one of your places. Use it, so every leg there meets at one place.` : `Merge this place into ${nodeName(into)}, so their legs meet at one place?` }),
+    h('p', { style: 'margin-top:6px' }, draft
+      ? btn(`Use ${nodeName(into)}`, () => { draft = null; select({ k: 'node', id: into }); }, 'small')
+      : btn(`Merge into ${nodeName(into)}`, () => mergeNode(sel.id, into), 'small'))));
+}
+// An incomplete saved item says so at the top when it opens. A change that is not applied yet says
+// so in a bar above the buttons, so the field being typed in never moves.
+function showHeld(kind, savedBad, on) {
+  const top = $('#liveHeld'), bar = $('#heldBar');
+  if (top) { top.hidden = !(on && savedBad); top.textContent = `This ${kind === 'node' ? 'place' : 'leg'} is incomplete, so it is kept out of new plans. Fill in the marked fields to fix it.`; }
+  if (bar) { bar.hidden = !(on && !savedBad); bar.textContent = 'Not saved yet: fill in the marked field. Until then the last complete version is kept.'; }
+}
+// A saved item that is already incomplete (from before these checks, or from a file) shows what to fix.
+function showSaved(kind, obj) {
+  const probs = kind === 'node' ? placeProblems(obj, obj.id) : legProblems(obj);
+  markFields(probs); renderDup(probs); showHeld(kind, true, probs.length > 0);
+}
+function diffKeys(obj, cand) { return Object.keys(cand).filter(f => f !== 'id' && cand[f] !== obj[f]); }
+function applyEdit(k, id, cand, changed) {
+  const obj = k === 'node' ? S.nodes[id] : S.legs[id];
+  for (const f of changed) { if (k === 'leg' && f === 'cost') setFare(id, cand.cost); else obj[f] = cand[f]; }
+  if (k === 'leg' && changed.some(f => ['from', 'to', 'mode', 'dep', 'arr'].includes(f))) adoptTwinFare(id);
+}
+// A change to a saved place or leg applies only while the item stays complete. Until then the form
+// marks what is missing, and the saved version stays as it was.
+function editField(target, discrete) {
+  if (!sel || (sel.k !== 'node' && sel.k !== 'leg') || !canEdit()) return;
+  const k = sel.k, id = sel.id, obj = k === 'node' ? S.nodes[id] : S.legs[id]; if (!obj) return;
+  const cand = Object.assign({}, obj, formValues());
+  const probs = k === 'node' ? placeProblems(cand, id) : legProblems(cand);
+  markFields(probs); renderDup(probs);
+  if (k === 'leg') { const d = $('#liveDur'); if (d) d.textContent = durText(cand); syncBufChips(); }
+  const savedBad = (k === 'node' ? placeProblems(obj, id) : legProblems(obj)).length > 0;
+  held = probs.length ? { msg: probs[0].msg, legacy: savedBad, kind: k === 'node' ? 'place' : 'leg' } : null;
+  showHeld(k, savedBad, !!held);
+  if (held) return;
+  const changed = diffKeys(obj, cand);
+  if (!changed.length) return;
+  if (pendingSnap) { undoStack.push(pendingSnap); if (undoStack.length > 80) undoStack.shift(); pendingSnap = null; }
+  else if (discrete) checkpoint();
+  applyEdit(k, id, cand, changed);
+  if (changed.includes('from') || changed.includes('to')) renderAll(); else refreshAfterEdit();
+}
+
+/* ---------- new places and legs: drafts until they are complete ---------- */
+function openDraft(k, obj, focusSel) {
+  draft = { k, obj, init: JSON.stringify(obj), touched: new Set(), tried: false, plan: k === 'leg' && viewPlan && S.plans[viewPlan] ? viewPlan : null };
+  sel = null; focusNext = focusSel || null;
+  if (!sideOpen) setSide(true);
+  renderInspector(); renderGraph();
+  if (window.innerWidth <= 1000) $('#inspector').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function draftDirty() { return !!draft && JSON.stringify(Object.assign({}, draft.obj)) !== draft.init; }
+// Before moving on: an untouched draft is simply dropped; one with something filled in stays open.
+function leaveDraft() {
+  if (!draft) return true;
+  if (!draftDirty()) { draft = null; return true; }
+  toast(`Save or cancel the new ${draft.k === 'node' ? 'place' : 'leg'} first`);
+  const b = $('#sideFoot .btn.primary'); if (b) b.focus();
+  return false;
+}
+function cancelDraft() { draft = null; renderInspector(); renderGraph(); }
+function draftInspector(box) {
+  const d = draft, isLeg = d.k === 'leg';
+  box.append(inspHead(isLeg ? 'New leg' : 'New place', isLeg ? (MODE[d.obj.mode] || MODE.other).color : 'var(--ink)', cancelDraft));
+  if (isLeg) legFields(box, d.obj, true); else placeFields(box, d.obj);
+  box.append(h('p', { class: 'need', id: 'draftNeed', 'aria-live': 'polite' }));
+  const cr = $('#liveCrumb'); if (cr) cr.textContent = d.plan && S.plans[d.plan] ? `Not saved yet · joins “${S.plans[d.plan].name}” when the route connects` : 'Not saved yet';
+  setFoot(icoBtn(isLeg ? 'Save leg' : 'Save place', saveDraft, 'primary', isLeg ? 'leg' : 'place'), [], btn('Cancel', cancelDraft, '', 'Drop this new ' + (isLeg ? 'leg' : 'place')));
+}
+function listJoin(a) { return a.length < 2 ? a.join('') : `${a.slice(0, -1).join(', ')} and ${a[a.length - 1]}`; }
+function showDraft() {
+  const d = draft; if (!d) return;
+  const probs = d.k === 'node' ? placeProblems(d.obj, null) : legProblems(d.obj);
+  markFields(probs, d.tried ? null : d.touched);
+  renderDup(probs);
+  const need = $('#draftNeed');
+  if (need) { need.classList.toggle('ok', !probs.length); need.textContent = probs.length ? `Still needed: ${listJoin(probs.map(p => p.need))}.` : 'Ready to save.'; }
+  if (d.k === 'leg') {
+    const du = $('#liveDur'); if (du) du.textContent = durText(d.obj);
+    syncBufChips();
+    const kd = $('#inspector .insp-head .key-dot'); if (kd) kd.style.setProperty('--c', (MODE[d.obj.mode] || MODE.other).color);
+  }
+}
+function draftInput(target) {
+  const d = draft; if (!d) return;
+  Object.assign(d.obj, formValues());
+  if (target && target.tagName === 'SELECT') d.touched.add(target.dataset.f || target.dataset.end);
+  showDraft();
+}
+function saveDraft() {
+  const d = draft; if (!d) return;
+  Object.assign(d.obj, formValues());
+  const probs = d.k === 'node' ? placeProblems(d.obj, null) : legProblems(d.obj);
+  if (probs.length) {
+    d.tried = true; showDraft();
+    const f = $(`#inspector [data-f="${probs[0].f}"], #inspector select[data-end="${probs[0].f}"]`); if (f) f.focus();
+    return;
+  }
+  checkpoint();
+  let id;
+  if (d.k === 'node') {
+    id = addNode(d.obj.name.trim());
+    S.nodes[id].note = String(d.obj.note || '').trim();
+  } else {
+    const o = d.obj;
+    id = addLeg({ from: o.from, to: o.to, mode: o.mode, info: String(o.info || '').trim(), cost: +o.cost, dep: o.dep, arr: o.arr, buf: o.buf === '' ? '' : +o.buf });
+    setFare(id, +o.cost); // one fare per trip: other legs with the same places, transport and times share it
+    if (d.plan && S.plans[d.plan]) S.plans[d.plan].pending = (S.plans[d.plan].pending || []).concat(id);
+  }
+  draft = null; S.example = false;
+  sel = { k: d.k, id };
+  renderAll();
+  toast(d.k === 'node' ? `Added ${nodeName(id)}` : `Added ${legLabel(id)}`, true);
 }
 function updateLive() {
   if (!sel) return;
@@ -2242,31 +2558,14 @@ function updateLive() {
     const np = PL.filter(p => p.nodes.includes(n.id)).length;
     if (cr) cr.textContent = `Place · ${cnt} leg${cnt === 1 ? '' : 's'}${np ? ` · in ${np} saved plan${np > 1 ? 's' : ''}` : ''}`;
     const hd = $('#inspector .insp-head h2'); if (hd) hd.textContent = nodeName(n.id);
-    const box = $('#liveDup');
-    if (box) {
-      box.replaceChildren();
-      const dup = findNode(n.name, n.id);
-      if (dup) box.append(h('div', { class: 'warnbox' },
-        h('p', { text: `Another place is already called ${nodeName(dup)}. Merge them so their legs meet at one place?` }),
-        h('p', { style: 'margin-top:6px' }, btn(`Merge into ${nodeName(dup)}`, () => mergeNode(n.id, dup), 'small'))));
-    }
     return;
   }
   const l = S.legs[sel.id], t = T[sel.id]; if (!l || !t) return;
   if (cr) cr.textContent = `${l.from ? nodeName(l.from) : '?'} → ${l.to ? nodeName(l.to) : '?'}`;
   const kd = $('#inspector .insp-head .key-dot'); if (kd) kd.style.setProperty('--c', legColor(l.id));
   const ms = $('#inspector select[data-f=mode]'); if (ms) ms.style.borderLeft = `6px solid ${legColor(l.id)}`;
-  const d = $('#liveDur');
-  if (d) {
-    if (t.noDep || t.noArr) d.textContent = 'Add both times to place this leg on the timeline.';
-    else {
-      let w = '';
-      const before = l.from ? legsTo(l.from).map(id => T[id].arr).filter(a => a != null && a <= t.dep) : [];
-      if (before.length) w = `  ·  ${fmtDur(t.dep - Math.max(...before))} after the latest arrival at ${nodeName(l.from)}`;
-      d.textContent = `Travel time ${fmtDur(t.arrSched - t.dep)}${t.buf ? ` + ${fmtDur(t.buf)} buffer` : ''}${w}`;
-    }
-  }
-  document.querySelectorAll('#inspector .chip[data-b]').forEach(b => b.setAttribute('aria-pressed', String((+l.buf || 0) === +b.dataset.b)));
+  const d = $('#liveDur'); if (d) d.textContent = durText(l);
+  syncBufChips();
   const tb = $('#liveTwin');
   if (tb) {
     tb.replaceChildren();
@@ -2278,8 +2577,54 @@ function updateLive() {
         differ ? h('p', { style: 'margin-top:6px' }, btn(`Use ${l.cost === '' ? 'no fare' : money(l.cost)} for all`, () => { checkpoint(); setFare(l.id, l.cost); renderAll(); }, 'small')) : null));
     }
   }
-  const w = $('#liveWarn');
-  if (w) { w.replaceChildren(); if (t.warn.length) w.append(h('div', { class: 'warnbox' }, ...t.warn.map(s => h('p', { text: '⚠ ' + s })))); }
+}
+// View only: the same details as plain text.
+function readOnlyInspector(box) {
+  if (sel.k === 'node') nodeView(box, S.nodes[sel.id]);
+  else if (sel.k === 'wait') waitView(box, S.plans[sel.plan], sel.id);
+  else legView(box, S.legs[sel.id]);
+}
+function nodeView(box, n) {
+  box.append(inspHead(nodeName(n.id), 'var(--ink)'));
+  if (n.img) box.append(h('div', { class: 'nimg' }, h('img', { src: n.img, alt: `Picture of ${nodeName(n.id)}` })));
+  if (String(n.note || '').trim()) box.append(h('div', { class: 'sect' }, h('h3', { text: 'Note' }), h('p', { class: 'ro-text', text: n.note.trim() })));
+  box.append(legList(`Legs leaving ${nodeName(n.id)}`, legsFrom(n.id), 'to'));
+  box.append(legList(`Legs arriving at ${nodeName(n.id)}`, legsTo(n.id), 'from'));
+}
+function legView(box, l) {
+  const t = T[l.id], m = MODE[l.mode] || MODE.other;
+  box.append(inspHead('Leg', legColor(l.id)));
+  const row = (k, v) => [h('dt', { text: k }), h('dd', { text: v })];
+  box.append(h('dl', { class: 'ro-dl' },
+    ...row('How', m.label + (l.info ? ` · ${l.info}` : '')),
+    ...row('Leaves', t.dep != null ? `${fmtDT(t.dep)} from ${nodeName(l.from)}` : '—'),
+    ...row('Arrives', t.arrSched != null ? `${fmtDT(t.arrSched)} at ${nodeName(l.to)}` : '—'),
+    ...row('Travel time', t.timed ? fmtDur(t.arrSched - t.dep) : '—'),
+    ...(t.buf ? row('Buffer', `+${fmtDur(t.buf)}, latest arrival ${fmtDT(t.arr)}`) : []),
+    ...row('Fare per head', l.cost === '' ? '—' : money(l.cost))));
+  const ps = LEGPLANS[l.id] || [];
+  box.append(h('div', { class: 'sect' }, h('h3', { text: `In saved plans (${ps.length})` }),
+    ps.length ? h('div', { class: 'chips' }, ...ps.map(pid => h('button', { type: 'button', class: 'chip', text: S.plans[pid].name, onclick: () => togglePlan(pid, true) })))
+      : h('p', { class: 'hint', text: 'Not in any saved plan.' })));
+}
+function waitView(box, p, legId) {
+  const w = waitInfo(p, legId), pi = PLBY[p.id];
+  box.append(inspHead('Waiting time', pi ? pi.color : 'var(--ink)'));
+  box.append(h('div', { class: 'sect' }, h('h3', { text: 'Details' }),
+    h('p', { class: 'live', text: `At ${nodeName(w.node)} · ${fmtDur(w.ms)}` }),
+    h('p', { class: 'live', text: `From ${fmtDT(w.from)} to ${fmtDT(w.to)}` }),
+    h('p', { class: 'live', text: `In plan “${p.name}”, before ${legLabel(legId)}` })));
+  setFoot(icoBtn('Show this plan', () => { sel = null; setView(p.id); }, 'primary', 'eye'), [], null);
+}
+function viewHelp() {
+  return h('div', { class: 'help' },
+    h('h2', { text: 'Viewing' }),
+    h('p', { class: 'ro-lead', text: 'View only: nothing can be changed here.' }),
+    h('ol', null,
+      h('li', null, 'Move the pointer across the timeline to see where each plan is at that moment. Click to pin it.'),
+      h('li', null, 'Click a place or a leg for its details.'),
+      h('li', null, 'Choose a plan above the timeline to see only that plan, or open ', h('b', { text: 'Plans' }), ' at the bottom for its full itinerary and costs.')),
+    h('p', { class: 'hint', text: 'To change anything, choose Edit at the top.' }));
 }
 function helpPanel() {
   const lg = h('div', { class: 'lg' });
@@ -2338,7 +2683,7 @@ function renderLegend() {
 
 /* ---------- plan maker ---------- */
 function startBuilder(planId, startNode) {
-  if (viewOnly) return;
+  if (!canEdit() || !leaveDraft()) return;
   if (!S.order.length) { toast('Add some places and legs first'); return; }
   if (planId && S.plans[planId]) {
     const p = S.plans[planId], legs = p.legs.filter(id => S.legs[id]);
@@ -2414,8 +2759,8 @@ function renderBuilder() {
     return s;
   };
   const sDep = B.startLeg && T[B.startLeg] ? T[B.startLeg].dep : null;
-  const outs = B.start ? legsFrom(B.start).filter(id => T[id].ok) : [];
-  const ins = B.end ? legsTo(B.end).filter(id => T[id].ok && (sDep == null || T[id].arr == null || T[id].arr > sDep)).sort((a, b) => (T[a].arr ?? Infinity) - (T[b].arr ?? Infinity)) : [];
+  const outs = B.start ? legsFrom(B.start).filter(id => T[id].complete) : [];
+  const ins = B.end ? legsTo(B.end).filter(id => T[id].complete && (sDep == null || T[id].arr == null || T[id].arr > sDep)).sort((a, b) => (T[a].arr ?? Infinity) - (T[b].arr ?? Infinity)) : [];
   box.append(h('div', { class: 'bhead' },
     h('h3', { text: B.editing ? `Edit plan: ${S.plans[B.editing].name}` : 'Make a plan' }),
     h('button', { class: 'icon-btn', type: 'button', title: 'Close', 'aria-label': 'Close plan maker', text: '×', onclick: closeBuilder })));
@@ -2540,6 +2885,7 @@ function renderBuilder() {
     btn('+ Add a cost', () => { B.extras.push({ label: '', amount: '' }); renderBuilder(); const e = box.querySelectorAll('[data-ex=label]'); if (e.length) e[e.length - 1].focus(); }, 'small'),
     ...[...new Set(sugg)].map(n => btn(`+ Stay at ${n}`, () => { B.extras.push({ label: `Stay at ${n}`, amount: '' }); renderBuilder(); const e = box.querySelectorAll('[data-ex=amount]'); if (e.length) e[e.length - 1].focus(); }, 'small'))));
   sec3.append(h('p', { class: 'btotal', id: 'bTotal' }));
+  sec3.append(h('div', { class: 'warnbox bproblems', id: 'bProblems', role: 'alert', hidden: true }));
   sec3.append(h('div', { class: 'brow' },
     btn(B.editing ? 'Save changes' : 'Save plan', savePlan, 'primary'),
     canBack ? btn('Back one choice', stepBack) : null,
@@ -2548,11 +2894,12 @@ function renderBuilder() {
     btn('Cancel', closeBuilder)));
   box.append(sec3);
   updateBuilderTotal();
+  showBuilderProblems();
 }
 function builderCosts() {
   let legs = 0, extra = 0;
   B.chosen.forEach(id => { const c = S.legs[id].cost; if (c !== '') legs += +c; });
-  B.extras.forEach(x => { if (x.amount !== '') extra += +x.amount; });
+  B.extras.forEach(x => { if (x.amount !== '' && +x.amount >= 0) extra += +x.amount; });
   return { legs, extra, total: legs + extra };
 }
 function updateBuilderTotal() {
@@ -2561,13 +2908,49 @@ function updateBuilderTotal() {
   e.replaceChildren(`Legs ${money(c.legs)} + other costs ${money(c.extra)} = `, h('b', { text: `${money(c.total)} per head` }),
     budget > 0 ? h('span', { class: 'st ' + (c.total > budget ? 'bad' : 'good'), text: c.total > budget ? `  ✕ ${money(c.total - budget)} over budget` : '  ✓ In budget' }) : null);
 }
+// A plan saves only when it is whole: a name no other plan has, a finished route of complete legs,
+// a fare on every leg, and both a name and an amount on every extra cost.
+function fareOk(i) { const x = num(i.value); return !(i.validity && i.validity.badInput) && x != null && x >= 0; }
+function builderProblems() {
+  const out = [];
+  const nameErr = planNameError(B.name, B.editing);
+  if (nameErr) out.push({ msg: nameErr, sel: '#bName' });
+  if (!builderDone()) out.push({ msg: 'Finish choosing the route.' });
+  B.chosen.forEach(id => {
+    if (!S.legs[id]) out.push({ msg: 'A leg in this route was deleted. Choose the route again.' });
+    else if (!T[id].complete) out.push({ msg: `${legLabel(id)} is incomplete: ${T[id].problems[0].msg} Fix that leg first.` });
+  });
+  document.querySelectorAll('#builder [data-fare]').forEach(i => { if (!fareOk(i)) out.push({ msg: `Add the fare for ${legLabel(i.dataset.fare)}. Use 0 if it is free.`, el: i }); });
+  B.extras.forEach((x, i) => {
+    const pr = extraProblem(x);
+    if (pr) out.push({ msg: pr.f === 'label' ? 'Give each extra cost a name, or remove it.' : `Add the amount for “${x.label.trim()}”, or remove it.`, sel: `#builder [data-ex="${pr.f}"][data-i="${i}"]` });
+  });
+  return out;
+}
+// Marks the fields that stop the plan from saving, and lists why above the Save button.
+function showBuilderProblems() {
+  if (!B) return [];
+  const probs = builderProblems();
+  document.querySelectorAll('#builder [data-fare]').forEach(i => i.classList.toggle('bad', !fareOk(i)));
+  document.querySelectorAll('#builder [data-ex]').forEach(i => { const x = B.extras[+i.dataset.i], pr = x && extraProblem(x); i.classList.toggle('bad', !!(B.tried && pr && pr.f === i.dataset.ex)); });
+  const box = $('#bProblems');
+  if (box) { box.replaceChildren(...probs.map(pr => h('p', { text: pr.msg }))); box.hidden = !B.tried || !probs.length; }
+  return probs;
+}
 function savePlan() {
-  if (!checkBuilderName()) return;
+  if (!B) return;
+  B.tried = true;
+  const probs = showBuilderProblems();
+  if (probs.length) {
+    const f = probs[0].el || (probs[0].sel && $(probs[0].sel));
+    if (f) { f.focus(); f.scrollIntoView({ block: 'center' }); } else { const bx = $('#bProblems'); if (bx) bx.scrollIntoView({ block: 'center' }); }
+    return;
+  }
   const name = B.name.trim();
   checkpoint();
   const data = {
     name, legs: B.chosen.slice(), pending: [], waits: Object.fromEntries(Object.entries(B.waits).filter(([k, v]) => B.chosen.includes(k) && String(v).trim()).map(([k, v]) => [k, String(v).trim()])),
-    extras: B.extras.filter(x => x.label.trim() || x.amount !== '').map(x => ({ label: x.label.trim(), amount: x.amount })),
+    extras: B.extras.filter(x => String(x.label || '').trim() || x.amount !== '').map(x => ({ label: x.label.trim(), amount: +x.amount })),
     start: B.start, end: B.end,
     startT: B.chosen.length && T[B.chosen[0]].dep != null ? toLocal(T[B.chosen[0]].dep) : '',
     endT: B.chosen.length && T[B.chosen[B.chosen.length - 1]].arr != null ? toLocal(T[B.chosen[B.chosen.length - 1]].arr) : '',
@@ -2588,6 +2971,7 @@ function renderPlans() {
   const tb = $('#plansBody'); tb.replaceChildren();
   const plans = PL.slice();
   $('#planEmpty').hidden = plans.length > 0 || !!B;
+  $('#planEmpty').textContent = canEdit() ? 'No saved plans yet. Choose “Make a plan”, pick where it starts and ends, and choose the way at each split.' : 'No saved plans yet.';
   $('#plansTable').hidden = !plans.length;
   const key = S.sort;
   const val = p => key === 'cost' ? p.cost : key === 'start' ? p.start : key === 'end' ? p.end : key === 'dur' ? p.dur : null;
@@ -2597,8 +2981,9 @@ function renderPlans() {
   for (const p of plans) {
     const isPicked = S.picked === p.id;
     const tr = h('tr', { class: (focusPlan === p.id ? 'focus ' : '') + (isPicked ? 'picked' : ''), dataset: { plan: p.id } });
-    const star = h('button', { class: 'star', type: 'button', 'aria-pressed': String(isPicked), title: isPicked ? 'Unpick' : 'Pick this plan', 'aria-label': isPicked ? 'Unpick plan' : 'Pick plan', text: isPicked ? '★' : '☆' });
-    star.addEventListener('click', e => { e.stopPropagation(); pick(p.id); });
+    const star = canEdit() ? h('button', { class: 'star', type: 'button', 'aria-pressed': String(isPicked), title: isPicked ? 'Unpick' : 'Pick this plan', 'aria-label': isPicked ? 'Unpick plan' : 'Pick plan', text: isPicked ? '★' : '☆' })
+      : h('span', { class: 'star ro', title: isPicked ? 'The plan you picked' : null, 'aria-label': isPicked ? 'Picked' : null, text: isPicked ? '★' : '' });
+    if (canEdit()) star.addEventListener('click', e => { e.stopPropagation(); pick(p.id); });
     const over = budget > 0 ? p.cost - budget : null;
     const status = over == null ? null : over > 0
       ? h('span', { class: 'st bad', text: `✕ ${money(over)} over` })
@@ -2646,7 +3031,7 @@ function renderDetail() {
       if (a != null && t.dep != null && t.dep - a > MIN) {
         const w = waitInfo(p.p, id);
         tb.append(h('tr', { class: 'wait' }, h('td', { colspan: '6' }, `${w.label} at ${nodeName(l.from)} · ${fmtDur(w.ms)}  `,
-          h('button', { type: 'button', class: 'linkbtn', text: 'rename', onclick: () => select({ k: 'wait', id, plan: p.id }, '#fWait') }))));
+          canEdit() ? h('button', { type: 'button', class: 'linkbtn', text: 'rename', onclick: () => select({ k: 'wait', id, plan: p.id }, '#fWait') }) : null)));
       }
     }
     const c = l.cost;
@@ -2688,7 +3073,7 @@ async function copyText(s) {
     ta.remove();
   }
 }
-function pick(id) { S.picked = S.picked === id ? null : id; save(); renderPlans(); renderGraph(); }
+function pick(id) { if (!canEdit()) return; S.picked = S.picked === id ? null : id; save(); renderPlans(); renderGraph(); }
 function togglePlan(id, only) {
   if (viewOnly) return;
   focusPlan = only ? id : focusPlan === id ? null : id;
@@ -2696,7 +3081,7 @@ function togglePlan(id, only) {
   if (only) { setDrawer(true); $('#detail').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
 }
 function delPlan(id) {
-  const p = S.plans[id]; if (!p) return;
+  const p = S.plans[id]; if (!p || !canEdit()) return;
   checkpoint();
   delete S.plans[id];
   S.planOrder.splice(S.planOrder.indexOf(id), 1);
@@ -2708,6 +3093,7 @@ function delPlan(id) {
 /* ---------- edits ---------- */
 function select(s, focusSel) {
   if (viewOnly) return; // phones only view the timeline
+  if (!leaveDraft()) return;
   sel = s; focusNext = focusSel || null;
   if (!sideOpen) setSide(true);
   renderInspector(); renderGraph();
@@ -2715,45 +3101,49 @@ function select(s, focusSel) {
   else if (window.innerWidth <= 1000) $('#inspector').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function newNode() {
-  checkpoint();
-  const id = addNode('');
-  S.example = false;
-  compute(); select({ k: 'node', id }, '#fName'); refreshRest();
+  if (!canEdit() || !leaveDraft()) return;
+  openDraft('node', { name: '', note: '' }, '#fName');
 }
 function newLeg(props) {
+  if (!canEdit() || !leaveDraft()) return;
   if (!S.order.length) { toast('Add a place first'); newNode(); return; }
-  checkpoint();
   const p = Object.assign({}, props);
-  if (!p.from && !p.to) p.from = sel ? (sel.k === 'node' ? sel.id : S.legs[sel.id].to) || '' : '';
-  if (p.dep == null && p.from) {
+  if (!p.from && !p.to) p.from = sel ? (sel.k === 'node' ? sel.id : S.legs[sel.id] ? S.legs[sel.id].to : '') || '' : '';
+  if (!p.dep && p.from) {
     let base = p.after != null ? p.after : null;
-    // in a plan's view, follow that plan's own arrival at this node
+    // in a plan's view, follow that plan's own arrival at this place
     const vpl = viewPlan && S.plans[viewPlan] ? S.plans[viewPlan].legs.filter(id => S.legs[id]) : [];
     if (base == null) { const inPlan = vpl.find(id => S.legs[id].to === p.from && T[id].arr != null); if (inPlan) base = T[inPlan].arr; }
     if (base == null) for (const id in S.legs) if (S.legs[id].to === p.from && T[id] && T[id].arr != null) base = Math.max(base ?? -Infinity, T[id].arr);
     if (base != null) { const d = roundTo(base + H, 30 * MIN); p.dep = toLocal(d); p.arr = toLocal(d + 2 * H); }
   }
   delete p.after;
-  const id = addLeg(p);
-  compute(); adoptTwinFare(id);
-  if (viewPlan && S.plans[viewPlan]) { const vp_ = S.plans[viewPlan]; vp_.pending = (vp_.pending || []).concat(id); }
-  S.example = false;
-  compute();
-  select({ k: 'leg', id }, !p.from ? '#fFrom' : !p.to ? '#fTo' : null);
-  refreshRest();
+  const o = Object.assign({}, LEGF, p);
+  openDraft('leg', o, !o.from ? '#fFrom' : !o.to ? '#fTo' : '#fDep');
 }
 function addNodeFromLeg() {
   const row = $('#newNodeRow'), name = $('#newNodeName').value.trim(), side = row.dataset.side;
   if (!name) { $('#newNodeName').focus(); return; }
-  const l = S.legs[sel.id]; if (!l) return;
-  checkpoint();
   const existing = findNode(name);
-  l[side] = existing || addNode(name);
+  if (draft) {
+    if (!existing) checkpoint();
+    const id = existing || addNode(name);
+    Object.assign(draft.obj, formValues(), { [side]: id }); draft.touched.add(side);
+    renderAll();
+    if (existing) toast(`Using the place you already have: ${nodeName(existing)}`);
+    return;
+  }
+  const l = sel && sel.k === 'leg' && S.legs[sel.id]; if (!l) return;
+  checkpoint();
+  const id = existing || addNode(name);
+  const cand = Object.assign({}, l, formValues(), { [side]: id }), probs = legProblems(cand);
+  if (probs.length) { held = null; renderAll(); toast(`${existing ? 'Found' : 'Added'} ${nodeName(id)}, but the leg is not changed yet: ${probs[0].msg}`); return; }
+  applyEdit('leg', l.id, cand, diffKeys(l, cand));
+  held = null; renderAll();
   if (existing) toast(`Using the place you already have: ${nodeName(existing)}`);
-  renderAll();
 }
 function mergeNode(from, into) {
-  checkpoint();
+  checkpoint(); held = null;
   for (const id in S.legs) { const l = S.legs[id]; if (l.from === from) l.from = into; if (l.to === from) l.to = into; }
   for (const id in S.plans) { const p = S.plans[id]; if (p.start === from) p.start = into; if (p.end === from) p.end = into; }
   delete S.nodes[from];
@@ -2761,12 +3151,6 @@ function mergeNode(from, into) {
   sel = { k: 'node', id: into };
   renderAll();
   toast(`Merged into ${nodeName(into)}`, true);
-}
-function setBuf(id, mins) {
-  const l = S.legs[id]; if (!l) return;
-  checkpoint();
-  l.buf = mins || '';
-  compute(); renderGraph(); renderInspector(); refreshRest();
 }
 function applyBufRoad(mins) {
   const legs = Object.values(S.legs).filter(l => l.mode === 'bus' || l.mode === 'cab');
@@ -2813,7 +3197,7 @@ function planNameError(name, exceptId) {
   return dup ? `Another plan is already called “${S.plans[dup].name}”. Pick a different name.` : null;
 }
 function startRename(id, where) {
-  if (viewOnly) return; renaming = { id, where }; renderPlanSurfaces(); const i = document.querySelector('[data-rename]'); if (i) { i.focus(); i.select(); } }
+  if (!canEdit()) return; renaming = { id, where }; renderPlanSurfaces(); const i = document.querySelector('[data-rename]'); if (i) { i.focus(); i.select(); } }
 function renderPlanSurfaces() { renderViewTabs(); renderPlanBar(); renderDetail(); if (!sel) renderInspector(); }
 const FIT = document.createElement('canvas').getContext('2d');
 // Rename in place. Enter or clicking away saves; Esc cancels. A name that is empty or already used
@@ -2871,9 +3255,9 @@ function renderViewTabs() {
   if (!viewOnly) $('#graphTitle').textContent = viewPlan && PLBY[viewPlan] ? 'Plan view' : 'Places and legs';
   const tab = (id, label, color) => {
     const b = h('button', { class: 'vtab', type: 'button', role: 'tab', 'aria-selected': String((viewPlan || null) === id),
-      title: id ? 'Show only this plan. Double-click to rename.' : 'Show every place and leg', onclick: () => setView(id) },
+      title: id ? (canEdit() ? 'Show only this plan. Double-click to rename.' : 'Show only this plan') : 'Show every place and leg', onclick: () => setView(id) },
       color ? h('span', { class: 'key', style: `--c:${color}` }) : null, label);
-    if (id) b.addEventListener('dblclick', () => { setView(id); startRename(id, 'bar'); });
+    if (id && canEdit()) b.addEventListener('dblclick', () => { setView(id); startRename(id, 'bar'); });
     return b;
   };
   if (!viewOnly) box.append(tab(null, 'All places and legs'));
@@ -2889,7 +3273,7 @@ function renderPlanBar() {
   if (renaming && renaming.id === p.id && renaming.where === 'bar') bar.append(nameEditor(p.id));
   else bar.append(nameTitle(p, 'bar', 'pb-name'));
   const pend = (p.p.pending || []).filter(id => S.legs[id]);
-  if (pend.length) bar.append(h('div', { class: 'pend-note' },
+  if (pend.length && canEdit()) bar.append(h('div', { class: 'pend-note' },
     `${pend.length} new leg${pend.length > 1 ? 's' : ''} (dashed) ${pend.length > 1 ? 'have' : 'has'} not joined this plan yet: ${pend.map(legLabel).join(', ')}. ${pend.length > 1 ? 'They join' : 'It joins'} as soon as the route connects through ${pend.length > 1 ? 'them' : 'it'}.`,
     btn('Leave out of this plan', () => { checkpoint(); S.plans[p.id].pending = []; renderAll(); }, 'small')));
   bar.append(h('span', { class: 'pb-route', text: p.route }),
@@ -2906,7 +3290,7 @@ function planPanel(p) {
   const ol = h('ol');
   p.legs.forEach((id, i) => {
     const l = S.legs[id], t = T[id], c = legCostIn(p.p, id);
-    if (i > 0) { const a = T[p.legs[i - 1]].arr; if (a != null && t.dep != null && t.dep - a > MIN) { const w = waitInfo(p.p, id); ol.append(h('li', { class: 'w', title: w.custom ? null : 'Click to rename this wait', style: 'cursor:pointer', text: `${w.label} at ${nodeName(l.from)} · ${fmtDur(w.ms)}`, onclick: () => select({ k: 'wait', id, plan: p.id }, '#fWait') })); } }
+    if (i > 0) { const a = T[p.legs[i - 1]].arr; if (a != null && t.dep != null && t.dep - a > MIN) { const w = waitInfo(p.p, id); ol.append(h('li', { class: 'w', title: w.custom || !canEdit() ? null : 'Click to rename this wait', style: 'cursor:pointer', text: `${w.label} at ${nodeName(l.from)} · ${fmtDur(w.ms)}`, onclick: () => select({ k: 'wait', id, plan: p.id }, '#fWait') })); } }
     const li = h('li', { style: `--c:${p.color}` }, h('b', { text: legLabel(id) }), h('br'),
       h('span', { class: 'muted', text: `${(MODE[l.mode] || MODE.other).tag} · ${t.timed ? `${shortDT(t.dep)} → ${shortDT(t.arrSched)}` : 'no times'}${c === '' ? '' : ' · ' + money(c)}` }));
     li.addEventListener('mouseenter', () => { hoverLeg = id; applyHighlight(); });
@@ -2975,7 +3359,7 @@ function joinPending() {
       if (!cur.length) break;
       const first = cur[0], last = cur[cur.length - 1];
       const startNode = S.legs[first].from, endNode = S.legs[last].to;
-      const ready = p.pending.filter(id => T[id] && T[id].ok);
+      const ready = p.pending.filter(id => T[id] && T[id].complete);
       let done = null;
       const pool = new Set([...cur, ...ready]);
       const routes = findRoutes(startNode, endNode, '', '', null, null, pool).paths.filter(r => r.some(id => ready.includes(id)));
@@ -3009,6 +3393,8 @@ function syncToolbar() {
   $('#currency').value = S.currency;
   $('#sort').value = S.sort;
   $('#undo').disabled = !undoStack.length;
+  const bt = $('#budgetText'), bv = +S.budget || 0;
+  if (bt) { bt.hidden = canEdit() || !bv; bt.textContent = bv ? `Budget ${money(bv)} per head` : ''; }
 }
 function refreshRest() { renderPlans(); renderNow(); syncToolbar(); $('#planCount').textContent = PL.length ? `(${PL.length})` : ''; save(); }
 function renderAll() { compute(); joinPending(); renderViewTabs(); renderPlanBar(); renderGraph(); renderInspector(); renderBuilder(); refreshRest(); }
@@ -3085,7 +3471,16 @@ function bind() {
     closeMenus();
   }, true);
   const insp = $('#inspector');
-  insp.addEventListener('focusin', e => { if (e.target.dataset && (e.target.dataset.f || e.target.dataset.waitLabel)) pendingSnap = JSON.stringify(S); });
+  insp.addEventListener('focusin', e => {
+    const d = e.target.dataset || {};
+    if (d.f || d.end || d.waitLabel) pendingSnap = JSON.stringify(S);
+    if (d.end) e.target.dataset.prev = e.target.value;
+  });
+  // a new item shows what a field still needs once you leave that field
+  insp.addEventListener('focusout', e => {
+    const d = e.target.dataset || {}, f = d.f || d.end;
+    if (draft && f) { draft.touched.add(f); showDraft(); }
+  });
   insp.addEventListener('input', e => {
     if (e.target.dataset && e.target.dataset.waitLabel && sel && sel.k === 'wait') {
       const p = S.plans[sel.plan]; if (!p) return;
@@ -3096,31 +3491,19 @@ function bind() {
       return;
     }
     const f = e.target.dataset && e.target.dataset.f;
-    if (!f || !sel) return;
-    const obj = sel.k === 'node' ? S.nodes[sel.id] : S.legs[sel.id];
-    if (!obj) return;
-    if (pendingSnap) { undoStack.push(pendingSnap); if (undoStack.length > 80) undoStack.shift(); pendingSnap = null; }
-    let v = e.target.value;
-    if (f === 'cost' || f === 'buf') { const x = num(v); v = x == null ? '' : Math.max(0, x); }
-    if (sel.k === 'leg' && f === 'cost') setFare(sel.id, v);
-    else {
-      obj[f] = v;
-      if (sel.k === 'leg' && ['dep', 'arr', 'mode'].includes(f)) adoptTwinFare(sel.id);
-    }
-    refreshAfterEdit();
+    if (!f) return;
+    if (draft) { draftInput(e.target); return; }
+    if (sel) editField(e.target);
   });
   insp.addEventListener('change', e => {
     const side = e.target.dataset && e.target.dataset.end;
-    if (!side || !sel || sel.k !== 'leg') return;
-    const v = e.target.value;
-    if (v === '__new') {
+    if (!side || !(draft || (sel && sel.k === 'leg'))) return;
+    if (e.target.value === '__new') {
       const row = $('#newNodeRow'); row.dataset.side = side; row.hidden = false;
       $('#newNodeName').value = ''; $('#newNodeName').focus();
       return;
     }
-    checkpoint();
-    S.legs[sel.id][side] = v;
-    renderAll();
+    if (draft) draftInput(e.target); else editField(e.target);
   });
   insp.addEventListener('keydown', e => { if (e.target.id === 'newNodeName' && e.key === 'Enter') { e.preventDefault(); addNodeFromLeg(); } });
 
@@ -3146,13 +3529,17 @@ function bind() {
     }
     else if (d.wl) { const v = e.target.value; if (v.trim()) B.waits[d.wl] = v; else delete B.waits[d.wl]; return; }
     else if (d.fare) {
-      if (bldSnap) { undoStack.push(bldSnap); if (undoStack.length > 80) undoStack.shift(); bldSnap = null; }
-      const x = num(e.target.value); setFare(d.fare, x == null ? '' : Math.max(0, x));
-      compute(); renderGraph(); renderPlans(); renderPlanBar(); if (sel) updateLive(); syncToolbar(); save();
+      // a fare is saved only as a number (0 or more); an empty or broken box is marked instead
+      if (fareOk(e.target)) {
+        if (bldSnap) { undoStack.push(bldSnap); if (undoStack.length > 80) undoStack.shift(); bldSnap = null; }
+        setFare(d.fare, num(e.target.value));
+        compute(); renderGraph(); renderPlans(); renderPlanBar(); if (sel) updateLive(); syncToolbar(); save();
+      }
     }
-    else if (d.ex) { const x = B.extras[+d.i]; if (!x) return; x[d.ex] = d.ex === 'amount' ? (num(e.target.value) ?? '') : e.target.value; }
+    else if (d.ex) { const x = B.extras[+d.i]; if (!x) return; x[d.ex] = d.ex === 'amount' ? (String(e.target.value).trim() === '' ? '' : (num(e.target.value) ?? NaN)) : e.target.value; }
     else return;
     updateBuilderTotal();
+    showBuilderProblems();
   });
 
   $('#costBtn').addEventListener('click', () => { UI.costs = !UI.costs; saveUI(); syncCostBtn(); renderGraph(); });
@@ -3185,6 +3572,8 @@ function bind() {
   }
   $('#themeBtn').addEventListener('click', () => { UI.theme = effectiveTheme() === 'dark' ? 'light' : 'dark'; saveUI(); applyTheme(); });
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+  $('#modeEdit').addEventListener('click', () => setMode(false));
+  $('#modeView').addEventListener('click', () => setMode(true));
   $('#addNode').addEventListener('click', newNode);
   $('#emptyAdd').addEventListener('click', newNode);
   $('#addLeg').addEventListener('click', () => newLeg({}));
@@ -3227,8 +3616,9 @@ function bind() {
     try {
       const d = normalize(JSON.parse(await file.text()));
       if (!d) throw new Error('bad');
-      checkpoint(); S = d; sel = null; focusPlan = null; B = null; renderAll();
-      toast(`Loaded ${file.name}`, true);
+      checkpoint(); S = d; sel = null; focusPlan = null; B = null; draft = null; held = null; renderAll();
+      const nb = BROKEN.nodes.length + BROKEN.legs.length + BROKEN.plans.length;
+      toast(nb && canEdit() ? `Loaded ${file.name}. ${nb === 1 ? 'One item is' : `${nb} items are`} incomplete: the note above the timeline lists ${nb === 1 ? 'it' : 'them'} to fix.` : `Loaded ${file.name}`, true);
     } catch (err) { toast('That file is not a planner export'); }
   });
   const clearAll = () => {
@@ -3247,10 +3637,11 @@ function bind() {
     if (e.key === 'Escape' && document.querySelector('.menu.open')) { const m = document.querySelector('.menu.open'); closeMenus(); const t = m && m.querySelector('[data-menu-btn]'); if (t) t.focus(); return; }
     if (viewOnly) return;
     const inField = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
-    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && !inField) { e.preventDefault(); undo(); }
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && !inField) { if (canEdit()) { e.preventDefault(); undo(); } }
+    else if (e.key === 'Escape' && !inField && draft) { if (draftDirty()) toast(`Choose Cancel to drop the new ${draft.k === 'node' ? 'place' : 'leg'}`); else cancelDraft(); }
     else if (e.key === 'Escape' && !inField && sel) { sel = null; renderInspector(); renderGraph(); }
     else if (e.key === 'Escape' && !inField && UI.drawer) setDrawer(false);
-    else if (e.key === 'Delete' && !inField && sel && sel.k !== 'wait') { if (sel.k === 'node') delNode(sel.id); else delLeg(sel.id); }
+    else if (e.key === 'Delete' && !inField && sel && sel.k !== 'wait' && canEdit()) { if (sel.k === 'node') delNode(sel.id); else delLeg(sel.id); }
   });
   window.addEventListener('resize', () => { clearTimeout(bind._rt); bind._rt = setTimeout(() => { if (VIEWQ && VIEWQ.matches !== viewOnly) { applyViewOnly(); renderAll(); } else renderGraph(); }, 150); });
 }
