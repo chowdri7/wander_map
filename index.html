@@ -414,7 +414,6 @@ body{overflow:hidden}
     <button id="export" class="btn" type="button" title="Save everything as a JSON file">Export</button>
     <button id="importBtn" class="btn" type="button" title="Load from a JSON file">Import</button>
     <input id="importFile" type="file" accept="application/json,.json" hidden>
-    <button id="example" class="btn" type="button">Example</button>
     <button id="clear" class="btn" type="button">Clear</button>
     <span class="tb-sep"></span>
     <button id="sideBtn" class="btn" type="button" aria-pressed="true" aria-controls="side" title="Show or hide the edit panel">Panel</button>
@@ -438,7 +437,6 @@ body{overflow:hidden}
         <div id="emptyGraph" class="empty" hidden>
           <p>No nodes yet. Add the places you might pass through: home, airports, stations, cities.</p>
           <button class="btn primary" type="button" id="emptyAdd">+ Add a node</button>
-          <button class="btn" type="button" id="emptyExample">Load an example</button>
         </div>
       </div>
       <div id="now" class="now" aria-live="polite"></div>
@@ -582,21 +580,15 @@ function fmtDur(ms) {
   const s = d ? `${d}d${hr ? ' ' + hr + 'h' : ''}` : hr ? `${hr}h${mm ? ' ' + mm + 'm' : ''}` : `${mm}m`;
   return (neg ? '−' : '') + s;
 }
-const CURRENCIES = ['USD', 'EUR', 'GBP', 'INR', 'JPY', 'CNY', 'AUD', 'CAD', 'CHF', 'SGD', 'AED', 'HKD', 'NZD', 'SEK', 'NOK', 'DKK', 'ZAR', 'BRL', 'MXN', 'KRW', 'THB', 'MYR', 'IDR', 'PHP', 'SAR', 'TRY', 'PLN'];
-const REGION_CURRENCY = { US: 'USD', GB: 'GBP', IN: 'INR', JP: 'JPY', CN: 'CNY', AU: 'AUD', CA: 'CAD', CH: 'CHF', SG: 'SGD', AE: 'AED', HK: 'HKD', NZ: 'NZD', SE: 'SEK', NO: 'NOK', DK: 'DKK', ZA: 'ZAR', BR: 'BRL', MX: 'MXN', KR: 'KRW', TH: 'THB', MY: 'MYR', ID: 'IDR', PH: 'PHP', SA: 'SAR', TR: 'TRY', PL: 'PLN',
-  DE: 'EUR', FR: 'EUR', ES: 'EUR', IT: 'EUR', NL: 'EUR', BE: 'EUR', AT: 'EUR', IE: 'EUR', PT: 'EUR', FI: 'EUR', GR: 'EUR', LU: 'EUR', SK: 'EUR', SI: 'EUR', EE: 'EUR', LV: 'EUR', LT: 'EUR', HR: 'EUR', MT: 'EUR', CY: 'EUR' };
-function guessCurrency() {
-  const langs = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en-US']);
-  for (const l of langs) { const r = (String(l).split('-')[1] || '').toUpperCase(); if (REGION_CURRENCY[r]) return REGION_CURRENCY[r]; }
-  return 'USD';
-}
+const CURRENCIES = ['INR', 'USD', 'EUR', 'GBP', 'JPY', 'CNY', 'AUD', 'CAD', 'CHF', 'SGD', 'AED', 'HKD', 'NZD', 'SEK', 'NOK', 'DKK', 'ZAR', 'BRL', 'MXN', 'KRW', 'THB', 'MYR', 'IDR', 'PHP', 'SAR', 'TRY', 'PLN'];
+const DEFAULT_CURRENCY = 'INR';
 const moneyFmt = {};
 function money(n) {
-  const c = (S && CURRENCIES.includes(S.currency)) ? S.currency : 'USD';
+  const c = (S && CURRENCIES.includes(S.currency)) ? S.currency : DEFAULT_CURRENCY;
   const f = moneyFmt[c] || (moneyFmt[c] = new Intl.NumberFormat(undefined, { style: 'currency', currency: c, maximumFractionDigits: 0, minimumFractionDigits: 0 }));
   return f.format(Math.round(+n || 0));
 }
-function curSym() { try { const p = new Intl.NumberFormat(undefined, { style: 'currency', currency: S.currency || 'USD', currencyDisplay: 'narrowSymbol' }).formatToParts(0).find(x => x.type === 'currency'); return p ? p.value : S.currency; } catch (e) { return S.currency; } }
+function curSym() { try { const p = new Intl.NumberFormat(undefined, { style: 'currency', currency: S.currency || DEFAULT_CURRENCY, currencyDisplay: 'narrowSymbol' }).formatToParts(0).find(x => x.type === 'currency'); return p ? p.value : S.currency; } catch (e) { return S.currency; } }
 function floorHour(t) { const d = new Date(t); d.setMinutes(0, 0, 0); return d.getTime(); }
 function roundTo(t, step) { return Math.round(t / step) * step; }
 function normName(s) { return String(s || '').trim().toLowerCase().replace(/\s+/g, ' '); }
@@ -646,7 +638,7 @@ function waitInfo(p, legId) {
 function fld(label, input, hint) { return h('label', { class: 'fld' }, h('span', { text: label }), input, hint ? h('small', { text: hint }) : null); }
 
 /* ---------- state lifecycle ---------- */
-function blank() { return { v: 3, currency: guessCurrency(), budget: 0, pph: null, sort: 'made', nodes: {}, order: [], legs: {}, plans: {}, planOrder: [], picked: null, seq: 1, example: false }; }
+function blank() { return { v: 3, currency: DEFAULT_CURRENCY, budget: 0, pph: null, sort: 'made', nodes: {}, order: [], legs: {}, plans: {}, planOrder: [], picked: null, seq: 1, example: false }; }
 function uid(p) { let id; do { id = p + (S.seq++).toString(36) + Math.random().toString(36).slice(2, 5); } while (S.nodes[id] || S.legs[id] || S.plans[id]); return id; }
 function addNode(name) { const id = uid('n'); S.nodes[id] = { id, name: name || '', note: '' }; S.order.push(id); return id; }
 function findNode(name, except) { const k = normName(name); if (!k) return null; return S.order.find(id => id !== except && normName(S.nodes[id].name) === k) || null; }
@@ -677,7 +669,7 @@ function normalize(d) {
   if (!d.nodes || !d.legs || typeof d.nodes !== 'object' || typeof d.legs !== 'object') return null;
   const out = blank();
   out.budget = num(d.budget) ?? 0;
-  out.currency = CURRENCIES.includes(d.currency) ? d.currency : (d.budget != null ? 'INR' : guessCurrency()); // saves made before currencies were added were in rupees
+  out.currency = CURRENCIES.includes(d.currency) ? d.currency : DEFAULT_CURRENCY;
   out.pph = num(d.pph);
   out.sort = SORTS.includes(d.sort) ? d.sort : 'made';
   out.example = !!d.example;
@@ -787,37 +779,6 @@ function undo() {
 }
 
 /* ---------- example ---------- */
-function exampleState() {
-  // A made-up weekend: three ways from Home to Hill Town or Coast City, starting this coming Friday.
-  const fri = new Date(); fri.setHours(0, 0, 0, 0);
-  fri.setDate(fri.getDate() + ((5 - fri.getDay() + 7) % 7 || 7));
-  const at = (day, hhmm) => { const d = new Date(fri); d.setDate(d.getDate() + day); const [hh, mm] = hhmm.split(':').map(Number); d.setHours(hh, mm, 0, 0); return toLocal(d.getTime()); };
-  const d = { roots: [], nodes: {}, example: true, budget: 0 };
-  let i = 0;
-  const mkn = (p, o) => { const id = 'x' + (i++); d.nodes[id] = Object.assign({ kids: [] }, o); if (p) d.nodes[p].kids.push(id); else d.roots.push(id); return id; };
-  const stay = 'Hotel and food, 2 nights (estimate)';
-  const home = mkn(null, { place: 'Home' });
-  // by train
-  const st1 = mkn(home, { place: 'Central Station', mode: 'cab', info: 'Taxi', cost: 15, dep: at(0, '07:00'), arr: at(0, '07:40') });
-  const hill1 = mkn(st1, { place: 'Hill Town', mode: 'train', info: 'Morning express', cost: 45, dep: at(0, '08:30'), arr: at(0, '14:30'), buf: 30, stay: 160, note: stay });
-  const st2 = mkn(hill1, { place: 'Central Station', mode: 'train', info: 'Afternoon express', cost: 45, dep: at(2, '15:00'), arr: at(2, '21:00') });
-  mkn(st2, { place: 'Home', mode: 'cab', info: 'Taxi', cost: 15, dep: at(2, '21:30'), arr: at(2, '22:10'), plan: 'By train' });
-  // fly to the coast, bus up to the hills, train home
-  const ap1 = mkn(home, { place: 'City Airport', mode: 'cab', info: 'Taxi', cost: 20, dep: at(0, '06:00'), arr: at(0, '06:45') });
-  const coast1 = mkn(ap1, { place: 'Coast City', mode: 'flight', info: 'Morning flight', cost: 110, dep: at(0, '08:00'), arr: at(0, '09:30') });
-  const hill2 = mkn(coast1, { place: 'Hill Town', mode: 'bus', info: 'Coach', cost: 12, dep: at(0, '10:30'), arr: at(0, '14:00'), buf: 30, stay: 160, note: stay });
-  const st3 = mkn(hill2, { place: 'Central Station', mode: 'train', info: 'Afternoon express', cost: 45, dep: at(2, '15:00'), arr: at(2, '21:00') });
-  mkn(st3, { place: 'Home', mode: 'cab', info: 'Taxi', cost: 15, dep: at(2, '21:30'), arr: at(2, '22:10'), plan: 'Fly, then coach' });
-  // a weekend at the coast
-  const ap2 = mkn(home, { place: 'City Airport', mode: 'cab', info: 'Taxi', cost: 20, dep: at(0, '06:00'), arr: at(0, '06:45') });
-  const coast2 = mkn(ap2, { place: 'Coast City', mode: 'flight', info: 'Morning flight', cost: 110, dep: at(0, '08:00'), arr: at(0, '09:30'), stay: 200, note: stay });
-  const ap3 = mkn(coast2, { place: 'City Airport', mode: 'flight', info: 'Evening flight', cost: 105, dep: at(2, '18:00'), arr: at(2, '19:30') });
-  mkn(ap3, { place: 'Home', mode: 'cab', info: 'Taxi', cost: 20, dep: at(2, '20:00'), arr: at(2, '20:45'), plan: 'Coast weekend' });
-  const out = migrateTree(d);
-  out.currency = guessCurrency();
-  return out;
-}
-
 /* ---------- compute ---------- */
 function compute() {
   T = {}; hasTime = false; LEGPLANS = {};
@@ -2434,7 +2395,6 @@ function bind() {
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
   $('#addNode').addEventListener('click', newNode);
   $('#emptyAdd').addEventListener('click', newNode);
-  $('#emptyExample').addEventListener('click', () => $('#example').click());
   $('#addLeg').addEventListener('click', () => newLeg({}));
   $('#makePlan').addEventListener('click', () => startBuilder());
   $('#makePlan2').addEventListener('click', () => startBuilder());
@@ -2476,13 +2436,6 @@ function bind() {
       checkpoint(); S = d; sel = null; focusPlan = null; B = null; renderAll();
       toast(`Loaded ${file.name}`, true);
     } catch (err) { toast('That file is not a planner export'); }
-  });
-  $('#example').addEventListener('click', () => {
-    checkpoint();
-    const keep = { budget: S.budget, currency: S.currency };
-    S = exampleState(); Object.assign(S, keep);
-    sel = null; focusPlan = null; B = null; renderAll();
-    toast('Example loaded', true);
   });
   const clearAll = () => {
     checkpoint();

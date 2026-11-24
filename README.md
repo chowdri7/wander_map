@@ -18,7 +18,7 @@ It is a single HTML file with no build step, no server and no dependencies. Open
 - Plan comparison: total per head, door-to-door time, waiting time and a budget check, sorted however you like. Star the plan you pick.
 - A picture for each node, from a file or a link.
 - Costs on the timeline, off by default, with a button to switch them on.
-- Currency picker, starting from the browser's region.
+- Currency picker, starting in Indian rupees (₹).
 - Light and dark mode, a hideable edit panel and a slide-up plans drawer.
 - Undo, plus Export and Import as a JSON file.
 
@@ -34,10 +34,6 @@ A picture added from a link is copied into your plans when the site allows it. O
 
 - **Online:** https://chowdri7.github.io/wander_map/
 - **Offline:** download `index.html` and open it in any current browser.
-
-## Try it
-
-Choose **Example** (or **Load an example** on the empty screen) to load a made-up weekend trip with three plans. Its places, times and costs are invented. **Clear** empties the planner again.
 
 ## License
 
