@@ -1324,6 +1324,53 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 .jn-ask{border-style:dashed}
 .bend-note{margin-top:8px}
 .jn-go.hl{background:var(--surface);border-color:color-mix(in srgb,var(--accent) 45%,var(--border));border-left-color:var(--c)}
+/* the place names: their own layer, pinned by the browser itself */
+.gwrap{position:relative}
+#pinSvg{display:block;position:relative;left:0;z-index:3}
+#pinSvg.sticky{position:sticky}
+#graph{display:block}
+#pinSvg text{font-family:var(--font)}
+#pinSvg .pinbg{fill:var(--surface)}
+#pinSvg .rowband{fill:var(--surface2);opacity:.7}
+#pinSvg .pinedge{stroke:var(--border);stroke-width:1}
+#pinSvg.lifted .pinedge{stroke:var(--axis)}
+#pinSvg.lifted{filter:drop-shadow(5px 0 8px rgba(0,0,0,.07))}
+#pinSvg .rowhead{cursor:pointer;outline:none}
+#pinSvg .rowhit{fill:transparent}
+#pinSvg .rowhead:hover .rowhit,#pinSvg .rowhead:focus-visible .rowhit{fill:var(--surface2)}
+#pinSvg .rowhead.sel .rowhit{fill:var(--surface2);stroke:var(--accent);stroke-width:1.5}
+#pinSvg .rowlbl{font-family:var(--serif);font-size:14px;font-weight:600;fill:var(--ink)}
+#pinSvg .rowsub{font-size:11px;fill:var(--muted)}
+#pinSvg .nimgring{fill:none;stroke:var(--border);stroke-width:1}
+#pinSvg .pinlbl{font:700 10px var(--font);letter-spacing:.09em;fill:var(--muted)}
+#pinSvg .pinbtn{cursor:pointer;outline:none}
+#pinSvg .pinhit{fill:transparent;stroke:var(--border);stroke-width:1}
+#pinSvg .pinbtn:hover .pinhit,#pinSvg .pinbtn:focus-visible .pinhit{fill:var(--surface2);stroke:var(--axis)}
+#pinSvg .pinbtn:focus-visible .pinhit{stroke:var(--accent);stroke-width:1.5}
+#pinSvg .pinico{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-linejoin:round;stroke-linecap:round}
+#pinSvg .pinbtn.on .pinico{fill:var(--accent);stroke:var(--accent)}
+#pinSvg .pinbtn.on .pinhit{fill:color-mix(in srgb,var(--accent) 12%,transparent);stroke:color-mix(in srgb,var(--accent) 35%,transparent)}
+.viewonly #pinSvg{display:none !important}
+/* the New button: a toolbar button like the others, set apart from the name by a divider */
+.brand-sep{margin:0 6px 0 10px}
+.newbtn{height:32px;padding:0 11px 0 9px;gap:6px;border-radius:var(--r);font-weight:600;letter-spacing:.005em}
+.newbtn::before{width:16px;height:16px}
+.newbtn .caret{width:6px;height:6px;margin:0 1px 3px 3px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);opacity:.85;transition:transform .15s}
+.menu.open > .newbtn .caret{transform:rotate(225deg);margin-bottom:-2px}
+.viewing .brand-sep{display:none}
+/* the daytime sky: clear and calm, with big soft clouds */
+:root{--sky-y:#cfe6fb;--sky-a-y:.34;--sky-d:#ffd0b3;--sky-k:#ffbda0;--daylight:rgba(255,255,255,.55);--cloudf:#ffffff;--cloud-shade:rgba(70,110,160,.16)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--sky-y:#5a87a6;--sky-a-y:.16;--sky-d:#b05f3c;--sky-k:#a24c2c;--daylight:rgba(170,200,235,.07);--cloudf:rgba(200,215,235,.10);--cloud-shade:rgba(0,0,0,.18)}}
+:root[data-theme="dark"]{--sky-y:#5a87a6;--sky-a-y:.16;--sky-d:#b05f3c;--sky-k:#a24c2c;--daylight:rgba(170,200,235,.07);--cloudf:rgba(200,215,235,.10);--cloud-shade:rgba(0,0,0,.18)}
+#graph .skycloud{animation:cloudpass 52s ease-in-out infinite alternate}
+#graph .skycloud.far{opacity:.75}
+#graph .cpuffs{fill:var(--cloudf);filter:url(#cloudsoft)}
+#graph .cshade{fill:var(--cloud-shade);filter:url(#cloudshade)}
+@keyframes cloudpass{0%{transform:translateX(-46px)}100%{transform:translateX(46px)}}
+.still #graph .skycloud{animation:none !important}
+@media (prefers-reduced-motion:reduce){#graph .skycloud{animation:none}}
+.menu.open > .newbtn{background:color-mix(in srgb,var(--accent) 86%,var(--ink)) !important;border-color:transparent !important;color:var(--accent-ink) !important}
+.brand-sep{background:var(--axis);height:20px}
 </style>
 </head>
 <body>
@@ -1331,8 +1378,9 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
   <header class="topbar">
   <div class="brand"><img class="brand-mark" alt="" width="28" height="28"><h1 title="Add places, join them with legs, then build and save named plans.">Wander Map</h1></div>
   <div class="toolbar" id="toolbar" role="toolbar" aria-label="Planner tools">
+    <span class="tb-sep brand-sep" aria-hidden="true"></span>
     <div class="menu" id="createGroup">
-      <button class="btn primary addbtn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" data-ico="plus" aria-label="Add" title="Add a place, a leg or a plan">Add</button>
+      <button class="btn primary newbtn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" data-ico="plus" title="Add a place, a leg or a plan">New<span class="caret" aria-hidden="true"></span></button>
       <div class="menu-pop" role="menu" hidden>
         <button type="button" role="menuitem" id="addNode" data-ico="place">Place<small>A home, station, airport or town</small></button>
         <button type="button" role="menuitem" id="addLeg" data-ico="leg">Leg<small>One way to travel between two places</small></button>
@@ -1377,7 +1425,10 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
       <div class="notice" id="guideNote" role="status" hidden></div>
       <div id="graphScroll" class="graph-scroll">
         <div id="scrubTip" class="scrubtip" hidden></div>
-        <svg id="graph" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Places and legs"></svg>
+        <div class="gwrap" id="gwrap">
+          <svg id="pinSvg" class="pinsvg" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Places"></svg>
+          <svg id="graph" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Places and legs"></svg>
+        </div>
         <div id="mlist" class="mlist" aria-label="Itinerary"></div>
         <div id="emptyGraph" class="empty" hidden>
           <div class="guide">
@@ -1438,7 +1489,7 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
             <tbody id="plansBody"></tbody>
           </table>
         </div>
-        <p id="planEmpty" class="hint" hidden>No saved plans yet. Choose + and then Plan, click the leg you leave on, and take the way on at each place.</p>
+        <p id="planEmpty" class="hint" hidden>No saved plans yet. Choose New, then Plan: click the leg you leave on, and take the way on at each place.</p>
         <div id="detail"></div>
       </div>
     </section>
@@ -2098,8 +2149,10 @@ function renderGraph() {
   const legIds = (vp ? vp.legs.concat(vpPend) : Object.keys(S.legs)).filter(id => T[id].ok).sort(byDep);
   const timeOn = legIds.some(id => T[id].timed);
   renderFixNote();
-  if (!has) { svg.style.display = 'none'; geo = null; return; }
-  svg.style.display = '';
+  const pinSvg = $('#pinSvg');
+  pinSvg.replaceChildren();
+  if (!has) { svg.style.display = 'none'; pinSvg.style.display = 'none'; geo = null; return; }
+  svg.style.display = ''; pinSvg.style.display = '';
 
   const phone = window.matchMedia && matchMedia('(max-width: 700px)').matches;
   let left = phone ? 104 : 150;
@@ -2126,8 +2179,12 @@ function renderGraph() {
   const gBg = el('g', null, svg), gEdge = el('g', null, svg), gSt = el('g', null, svg), gDot = el('g', null, svg),
         gLab = el('g', null, svg), gBadge = el('g', null, svg);
   geo.gEdge = gEdge;
-  // the place names sit on their own layer, drawn last, so they can stay pinned over the scrolling chart
-  const gPin = el('g', { class: 'pincol' }), pw = left - 14;
+  // the place names sit on their own layer beside the chart: pinned, the browser keeps it in place
+  // while the chart scrolls under it (CSS sticky), so it never lags behind
+  const gPin = pinSvg, pw = left - 14;
+  pinSvg.setAttribute('width', pw); pinSvg.setAttribute('height', height); pinSvg.setAttribute('viewBox', `0 0 ${pw} ${height}`);
+  pinSvg.style.marginBottom = `-${height}px`;
+  $('#gwrap').style.width = width + 'px';
   el('rect', { x: 0, y: 0, width: pw, height, class: 'pinbg' }, gPin);
   rows.forEach((r, i) => { if (i % 2 === 0) el('rect', { x: 0, y: r.top, width: pw, height: r.bot - r.top, class: 'rowband' }, gPin); });
   el('line', { x1: pw, x2: pw, y1: 0, y2: height, class: 'pinedge' }, gPin);
@@ -2159,7 +2216,7 @@ function renderGraph() {
     txt(g, lx, r.y + 19, np > 1 ? `${np} plans meet here` : `${nLegs} leg${nLegs === 1 ? '' : 's'}`, 'rowsub');
     el('title', null, g).textContent = canEdit() ? `${nodeName(r.id)}: click to edit, add legs from or to here` : `${nodeName(r.id)}: click for details`;
   });
-  if (!timeOn) { svg.append(gPin); placePin(); applyHighlight(); return; }
+  if (!timeOn) { placePin(); applyHighlight(); return; }
 
   const boxes = [];
   const free = (x0, y0, x1, y1) => !boxes.some(b => x0 < b[2] + 4 && x1 > b[0] - 4 && y0 < b[3] + 1 && y1 > b[1] - 1);
@@ -2360,7 +2417,7 @@ function renderGraph() {
   applyHighlight();
   drawGuide();
   drawNav();
-  svg.append(gPin); placePin();
+  placePin();
 }
 function curveY(L, x) {
   if (Math.abs(L.yk - L.yd) < .5 || L.xS - L.s0 < 1) return x >= L.xS ? L.yk : L.yd;
@@ -2382,10 +2439,10 @@ function drawTimeAxis(g) {
   // shared paint: glows for sun and moon, and a soft depth over the strip
   const glow = (id, v) => { const rg = el('radialGradient', { id }, defs); el('stop', { offset: '0', style: `stop-color:var(${v});stop-opacity:1` }, rg); el('stop', { offset: '1', style: `stop-color:var(${v});stop-opacity:0` }, rg); };
   glow('sunglow', '--sun-glow'); glow('moonglow', '--moon-glow'); glow('daylight', '--daylight');
-  const beam = el('linearGradient', { id: 'beamgrad', x1: 0, x2: 0, y1: 0, y2: 1 }, defs);
-  el('stop', { offset: '0', style: 'stop-color:var(--beam);stop-opacity:1' }, beam);
-  el('stop', { offset: '.7', style: 'stop-color:var(--beam);stop-opacity:.15' }, beam);
-  el('stop', { offset: '1', style: 'stop-color:var(--beam);stop-opacity:0' }, beam);
+  const soft = el('filter', { id: 'cloudsoft', x: '-30%', y: '-60%', width: '160%', height: '220%' }, defs);
+  el('feGaussianBlur', { stdDeviation: '2.2' }, soft);
+  const shade = el('filter', { id: 'cloudshade', x: '-40%', y: '-200%', width: '180%', height: '500%' }, defs);
+  el('feGaussianBlur', { stdDeviation: '5' }, shade);
   const depth = el('linearGradient', { id: 'skydepth', x1: 0, x2: 0, y1: 0, y2: 1 }, defs);
   [['0', 'rgba(8,10,24,.26)'], ['.55', 'rgba(8,10,24,0)'], ['1', 'rgba(255,255,255,.2)']].forEach(([o, c]) => el('stop', { offset: o, style: `stop-color:${c}` }, depth));
   const clip = el('clipPath', { id: 'skyclip' }, defs);
@@ -2407,31 +2464,27 @@ function drawTimeAxis(g) {
       el('rect', { x: X(a), y: yA, width: X(b) - X(a), height: height - yA, fill: `url(#skyb${i})`, class: 'skybody' }, g);
       el('rect', { x: X(day), y: sy, width: X(next) - X(day), height: sh, fill: `url(#sky${i})` }, sky);
       const r = rng(day / H + 7);
-      // warm daylight pouring down from the midday sun
-      { const tn = day + 12 * H; if (tn > tmin - 7 * H && tn < tmax + 7 * H) el('ellipse', { cx: X(tn), cy: yA, rx: 6.2 * pph, ry: Math.max(160, (height - yA) * .95), fill: 'url(#daylight)', class: 'nohit' }, g); }
-      // daytime over the chart, the counterpart of the night's stars: soft sunbeams from the
-      // midday sun, a few clouds drifting by and birds far off. All of it stays behind the legs.
+      // the midday sky is brightest near the top, as a clear sky is
+      { const tn = day + 12 * H; if (tn > tmin - 7 * H && tn < tmax + 7 * H) el('ellipse', { cx: X(tn), cy: yA, rx: 5.6 * pph, ry: Math.max(150, (height - yA) * .8), fill: 'url(#daylight)', class: 'nohit' }, g); }
+      // daytime over the chart, the counterpart of the night's stars: a clear sky with a few big, soft
+      // clouds drifting slowly, each with a faint shadow, in two layers that move at different speeds.
       {
-        const ta = Math.max(tmin, day + 7 * H), tb = Math.min(tmax, day + 17 * H);
+        const ta = Math.max(tmin, day + 7.5 * H), tb = Math.min(tmax, day + 16.5 * H);
         if (tb > ta) {
-          const top = yA, deep = height - yA, xn = X(day + 12 * H), w = X(tb) - X(ta), rr = rng(day / H + 31);
-          for (let k = -3; k <= 3; k++) {
-            const xb = xn + k * 2.3 * pph, wt = 2 + rr() * 3, wb = (.7 + rr() * .7) * pph;
-            el('polygon', { points: `${xn + k * 3 - wt / 2},${top} ${xn + k * 3 + wt / 2},${top} ${xb + wb / 2},${height} ${xb - wb / 2},${height}`, fill: 'url(#beamgrad)', class: 'beam nohit', style: `animation-delay:-${(rr() * 7).toFixed(2)}s` }, g);
-          }
-          for (let k = 0, n = Math.max(1, Math.round(w / 230)); k < n; k++) {
-            const cx = X(ta + rr() * (tb - ta)), cy = top + 36 + rr() * Math.max(10, deep - 80), C = 1.5 + rr() * 1.3;
-            const cl = el('g', { class: 'bcloudg drift nohit', style: `animation-delay:-${(rr() * 12).toFixed(1)}s;animation-duration:${(16 + rr() * 10).toFixed(1)}s` }, g);
-            const cw = 15 * C, chh = 5.2 * C;
-            el('ellipse', { cx, cy: cy + chh * .35, rx: cw, ry: chh * .75, class: 'bcloud' }, cl);
-            el('circle', { cx: cx - cw * .38, cy, r: chh * .95, class: 'bcloud' }, cl);
-            el('circle', { cx: cx + cw * .05, cy: cy - chh * .45, r: chh * 1.25, class: 'bcloud' }, cl);
-            el('circle', { cx: cx + cw * .45, cy: cy + chh * .05, r: chh * .9, class: 'bcloud' }, cl);
-          }
-          for (let k = 0, n = Math.max(1, Math.round(w / 300)); k < n; k++) {
-            const cx = X(ta + rr() * (tb - ta)), cy = top + 22 + rr() * Math.max(10, deep * .55), z = .8 + rr() * .7;
-            const bd = el('g', { class: 'birdg drift nohit', style: `animation-delay:-${(rr() * 9).toFixed(1)}s` }, g);
-            el('path', { d: `M${cx - 5 * z} ${cy}q${2.5 * z} ${-3 * z} ${5 * z} 0q${2.5 * z} ${-3 * z} ${5 * z} 0`, class: 'bird', style: `animation-delay:-${(rr() * 2).toFixed(2)}s` }, bd);
+          const rr = rng(day / H + 31), top = yA, deep = height - yA, span = X(tb) - X(ta);
+          const n = Math.max(1, Math.round(span / 210));
+          for (let k = 0; k < n; k++) {
+            const far = k % 2 === 1, C = (far ? 1.5 : 2.3) + rr() * (far ? .8 : 1.3);
+            const cx = X(ta) + span * (k + .5 + (rr() - .5) * .5) / n, cy = top + (far ? 26 : 56) + rr() * Math.max(12, deep * (far ? .35 : .6) - 60);
+            const cl = el('g', { class: 'skycloud nohit' + (far ? ' far' : ''), style: `animation-delay:-${(rr() * 60).toFixed(1)}s;animation-duration:${((far ? 70 : 48) + rr() * 24).toFixed(1)}s` }, g);
+            const w = 16 * C, hh = 6 * C;
+            el('ellipse', { cx: cx + w * .1, cy: cy + hh * 1.25, rx: w * 1.05, ry: hh * .32, class: 'cshade' }, cl);
+            const puffs = el('g', { class: 'cpuffs' }, cl);
+            el('ellipse', { cx, cy: cy + hh * .38, rx: w, ry: hh * .62 }, puffs);
+            el('circle', { cx: cx - w * .42, cy: cy + hh * .1, r: hh * .82 }, puffs);
+            el('circle', { cx: cx - w * .05, cy: cy - hh * .38, r: hh * 1.12 }, puffs);
+            el('circle', { cx: cx + w * .42, cy: cy - hh * .05, r: hh * .9 }, puffs);
+            el('circle', { cx: cx + w * .76, cy: cy + hh * .3, r: hh * .55 }, puffs);
           }
         }
       }
@@ -2722,9 +2775,9 @@ function drawNav() {
 function pinOn() { return UI.pinPlaces !== false; }
 function pinW() { return pinOn() && geo && geo.pinW ? geo.pinW : 0; }
 function placePin() {
-  const g = $('#graph .pincol'), sc = $('#graphScroll'); if (!g || !sc) return;
-  const on = pinOn(), x = on ? sc.scrollLeft : 0;
-  if (x) g.setAttribute('transform', `translate(${x} 0)`); else g.removeAttribute('transform');
+  const g = $('#pinSvg'), sc = $('#graphScroll'); if (!g || !sc) return;
+  const on = pinOn();
+  g.classList.toggle('sticky', on);
   g.classList.toggle('lifted', on && sc.scrollLeft > 2);
   const b = g.querySelector('.pinbtn');
   if (b) {
@@ -3836,7 +3889,7 @@ function renderPlans() {
   const tb = $('#plansBody'); tb.replaceChildren();
   const plans = PL.slice();
   $('#planEmpty').hidden = plans.length > 0;
-  $('#planEmpty').textContent = canEdit() ? 'No saved plans yet. Choose + and then Plan, click the leg you leave on, and take the way on at each place.' : 'No saved plans yet.';
+  $('#planEmpty').textContent = canEdit() ? 'No saved plans yet. Choose New, then Plan: click the leg you leave on, and take the way on at each place.' : 'No saved plans yet.';
   $('#plansTable').hidden = !plans.length;
   const key = S.sort;
   const val = p => key === 'cost' ? p.cost : key === 'start' ? p.start : key === 'end' ? p.end : key === 'dur' ? p.dur : null;
@@ -4341,7 +4394,6 @@ function bind() {
   const trackY = e => { const sc = $('#graphScroll'); scrubY = e.clientY - sc.getBoundingClientRect().top + sc.scrollTop; };
   svg.addEventListener('pointermove', e => {
     if (!geo || !geo.time || pinned || e.pointerType === 'touch') return;
-    if (e.target.closest('.pincol')) { if (scrubT != null) { scrubT = null; drawScrub(); renderNow(); } return; } // over the place names
     const t = tAt(e), y0 = scrubY;
     trackY(e);
     if (t !== scrubT) { scrubT = t; drawScrub(); renderNow(); }
@@ -4349,6 +4401,18 @@ function bind() {
   });
   svg.addEventListener('pointerleave', () => { if (pinned || scrubT == null) return; scrubT = null; drawScrub(); renderNow(); });
   $('#graphScroll').addEventListener('scroll', placePin, { passive: true });
+  const pinSvg = $('#pinSvg');
+  const onPlace = id => { if (viewOnly) return; if (B) guidePlace(id); else select({ k: 'node', id }); };
+  pinSvg.addEventListener('click', e => {
+    if (e.target.closest('.pinbtn')) { togglePin(); return; }
+    const rh = e.target.closest('.rowhead'); if (rh) onPlace(rh.dataset.node);
+  });
+  pinSvg.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const t = e.target.closest('.pinbtn, .rowhead'); if (!t) return;
+    e.preventDefault();
+    if (t.classList.contains('pinbtn')) togglePin(); else onPlace(t.dataset.node);
+  });
   // while making a plan, the leg under the pointer lights up its button in the panel
   svg.addEventListener('pointerover', e => {
     if (!B) return;
@@ -4356,8 +4420,6 @@ function bind() {
     if (id !== guideHover) { guideHover = id; applyHighlight(); }
   });
   svg.addEventListener('click', e => {
-    if (e.target.closest('.pinbtn')) { togglePin(); return; }
-    if (e.target.closest('.pincol') && !e.target.closest('.rowhead')) return;
     if (viewOnly) {
       const b = e.target.closest('.badge');
       if (b) { setView(b.dataset.plan); return; }
@@ -4388,7 +4450,6 @@ function bind() {
   });
   svg.addEventListener('keydown', e => {
     if (viewOnly || (e.key !== 'Enter' && e.key !== ' ')) return;
-    if (e.target.closest('.pinbtn')) { e.preventDefault(); togglePin(); return; }
     const t = e.target.closest('.badge, .rowhead');
     if (!t) return;
     e.preventDefault();
@@ -4617,12 +4678,12 @@ function bind() {
 // made-up trip and walks through the main parts of the page. Your plans come back when it ends.
 const TOUR_STEPS = [
   { title: 'Welcome to Wander Map', body: 'This tour uses a sample trip, so nothing of yours changes. It takes about a minute.' },
-  { target: () => $('#graph .rowhead'), title: 'Places are rows', body: 'Every place you might pass through gets a row: home, a station, an airport, a town. Legs that touch a place meet on its row.' },
+  { target: () => $('#pinSvg .rowhead'), title: 'Places are rows', body: 'Every place you might pass through gets a row: home, a station, an airport, a town. Legs that touch a place meet on its row.' },
   { target: () => $('#graph .edge'), title: 'Legs are the lines', body: 'A leg is one way to travel between two places: how, when it leaves and arrives, and the fare. Its colour shows the transport.' },
   { target: () => $('#graphScroll'), title: 'Read the timeline', body: 'Move the pointer across it and a card shows where each plan is at that moment. Night, sunrise, day and sunset run along the top.' },
   { target: () => $('#viewTabs'), title: 'One tab for each plan', body: 'A plan is one complete way from start to finish. Choose its tab to see only that plan.' },
   { target: () => $('.dock-bar'), title: 'Compare plans', body: 'Pull this bar up to compare the plans and to read any plan’s itinerary and costs.', before: () => { if (UI.drawer) setDrawer(false); } },
-  { target: () => $('#createGroup'), title: 'Add, and make plans', body: 'Choose + to add a place, a leg or a plan. For a plan, click the leg you leave on, then take the way on at each place until you get there.' },
+  { target: () => $('#createGroup'), title: 'Add, and make plans', body: 'Choose New to add a place, a leg or a plan. For a plan, click the leg you leave on, then take the way on at each place until you get there.' },
   { target: () => $('#modeSeg'), title: 'Edit, or just view', body: 'Switch to View to look at everything without changing anything.' },
   { target: () => $('#settingsBtn'), title: 'Settings', body: 'The theme, the sky, your currency and budget, and Export and Import to keep a copy or move your plans to another device.' },
   { title: 'You’re ready', body: 'Try the sample for yourself, or go back to your own plans. You can take it again any time from Settings.', last: true },
@@ -4714,7 +4775,7 @@ function exploreSample() {
   if (!$('#sampleBar')) $('#guideNote').before(h('div', { id: 'sampleBar', class: 'notice samplebar', role: 'status' },
     h('span', { class: 'sb-dot', 'aria-hidden': 'true' }), h('span', { class: 'sb-txt', text: 'You are trying a sample trip. Change anything you like: nothing here is saved.' }),
     btn('Back to my plans', endTour, 'small primary')));
-  toast('Try making a plan: choose + and then Plan, then click the legs on the timeline.');
+  toast('Try making a plan: choose New, then Plan, and click the legs on the timeline.');
 }
 function endTour() {
   if (!TOUR) return;
