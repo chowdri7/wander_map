@@ -421,7 +421,7 @@ body{overflow:hidden}
 .viewonly .toolbar > *:not(#importBtn){display:none !important}
 .viewonly #importBtn{display:inline-flex !important}
 .viewonly #importBtn{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
-.viewonly #viewTabs,.viewonly #planBar,.viewonly #side,.viewonly .sidetab,.viewonly #drawer,.viewonly #exampleNote{display:none !important}
+.viewonly #planBar .btns,.viewonly #planBar .pend-note,.viewonly #side,.viewonly .sidetab,.viewonly #drawer,.viewonly #exampleNote{display:none !important}
 .viewonly .guide{display:none}
 .viewonly .phone-empty{display:block;max-width:420px;margin:0 auto;text-align:center}
 .viewonly .phone-empty h3{margin:0 0 8px;font-size:18px;color:var(--ink)}
@@ -429,6 +429,8 @@ body{overflow:hidden}
 .viewonly .vo-note{display:inline;font-size:12px;color:var(--muted)}
 .viewonly .main{padding-bottom:14px}
 .viewonly #graph *{cursor:default !important}
+.viewonly #graph .badge,.viewonly #graph .badge *{cursor:pointer !important}
+.viewonly .planbar{gap:4px 12px}
 /* ---------- phones ---------- */
 .more-btn,.phone-only{display:none}
 @media (max-width:700px){
@@ -2225,7 +2227,8 @@ function planNameError(name, exceptId) {
   const dup = S.planOrder.find(id => id !== exceptId && normName(S.plans[id].name) === n);
   return dup ? `Another plan is already called “${S.plans[dup].name}”. Pick a different name.` : null;
 }
-function startRename(id, where) { renaming = { id, where }; renderPlanSurfaces(); const i = document.querySelector('[data-rename]'); if (i) { i.focus(); i.select(); } }
+function startRename(id, where) {
+  if (viewOnly) return; renaming = { id, where }; renderPlanSurfaces(); const i = document.querySelector('[data-rename]'); if (i) { i.focus(); i.select(); } }
 function renderPlanSurfaces() { renderViewTabs(); renderPlanBar(); renderDetail(); if (!sel) renderInspector(); }
 // Inline name editor: Save stays disabled while the name is empty or already used by another plan.
 function nameEditor(id) {
@@ -2426,7 +2429,12 @@ function bind() {
   });
   svg.addEventListener('pointerleave', () => { if (pinned || scrubT == null) return; scrubT = null; drawScrub(); renderNow(); });
   svg.addEventListener('click', e => {
-    if (viewOnly) { if (geo && geo.time) { scrubT = tAt(e); pinned = !pinned; drawScrub(); renderNow(); } return; }
+    if (viewOnly) {
+      const b = e.target.closest('.badge');
+      if (b) { setView(b.dataset.plan); return; }
+      if (geo && geo.time) { scrubT = tAt(e); pinned = !pinned; drawScrub(); renderNow(); }
+      return;
+    }
     const wait = e.target.closest('[data-wait]');
     if (wait) { select({ k: 'wait', id: wait.dataset.wait, plan: wait.dataset.plan }, '#fWait'); return; }
     const badge = e.target.closest('.badge');
