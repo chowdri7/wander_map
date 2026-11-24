@@ -4506,8 +4506,7 @@ function renderPlanBar() {
   if (pend.length && canEdit()) bar.append(h('div', { class: 'pend-note' },
     `${pend.length} new leg${pend.length > 1 ? 's' : ''} (dashed) ${pend.length > 1 ? 'have' : 'has'} not joined this plan yet: ${pend.map(legLabel).join(', ')}. ${pend.length > 1 ? 'They join' : 'It joins'} as soon as the route connects through ${pend.length > 1 ? 'them' : 'it'}.`,
     btn('Leave out of this plan', () => { checkpoint(); S.plans[p.id].pending = []; renderAll(); }, 'small')));
-  bar.append(h('span', { class: 'pb-route', text: p.route }),
-    h('span', { class: 'pb-cost' }, h('b', { text: money(p.cost) }), ' per head', budgetMeter(p.cost, budget)),
+  bar.append(h('span', { class: 'pb-cost' }, h('b', { text: money(p.cost) }), ' per head', budgetMeter(p.cost, budget)),
     h('span', { class: 'muted', text: `${fmtDT(p.start)} → ${fmtDT(p.end)} · ${fmtDur(p.dur)}` }),
     planActions(p, 'bar'));
 }
