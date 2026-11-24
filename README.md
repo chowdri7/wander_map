@@ -1,3 +1,5 @@
+<p><img src="icon.svg" width="72" height="72" alt="Wander Map icon"></p>
+
 # Wander Map
 
 Plan a trip as a network of places and the legs between them, then build, compare and pick named plans on one timeline.
