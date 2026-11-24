@@ -427,35 +427,41 @@ body{overflow:hidden}
   --serif: "Iowan Old Style", Charter, "Bitstream Charter", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Noto Serif", "DejaVu Serif", serif;
   --page:#f2efe8; --surface:#fbfaf6; --surface2:#f0ece4; --ink:#2b2a26; --ink2:#57544c; --muted:#77716a;
   --grid:#e6e1d7; --axis:#d3ccbf; --border:rgba(43,42,38,.12);
-  --accent:#4a6470; --accent-ink:#fbfaf6; --accent-soft:rgba(74,100,112,.10); --brand-navy:#36404e;
+  --accent:#2c6b7c; --accent-ink:#fbfaf6; --accent-soft:rgba(44,107,124,.12); --brand-navy:#2f3f66;
   --good:#5e7b52; --bad:#a3573f; --warn-bg:#f4ecdb; --warn-ink:#765a22; --note-bg:#e9edec; --note-ink:#3b5560;
-  --s1:#5d7e9a; --s2:#bf8656; --s3:#6f9682; --s4:#c3a252; --s5:#b07b8d; --s6:#808f5b; --s7:#7e719b; --s8:#a65f56; --s9:#9b968b;
-  --sun:#eab54d; --sun-glow:rgba(234,181,77,.65); --moon:#f3ecd6; --moon-glow:rgba(243,236,214,.5); --star:#fffaf0; --sunpath:rgba(255,252,244,.8); --gold:#d7a13f;
-  --sky-n:#28346a; --sky-d:#e6a07c; --sky-y:#cfe1e8; --sky-k:#db8a69; --sky-a-n:.2; --sky-a-d:.2; --sky-a-y:0; --sky-a-k:.2; --bstar:.55;
-  --night:rgba(43,53,87,.08); --twilight:rgba(219,138,105,.08);
+  --s1:#3c76bd; --s2:#d2733a; --s3:#2c9874; --s4:#b3821a; --s5:#c25a88; --s6:#6b973a; --s7:#7559c0; --s8:#c64b44; --s9:#8f8b80;
+  --sun:#f3b33d; --sun-glow:rgba(245,180,60,.7); --moon:#f6efd8; --moon-glow:rgba(246,239,216,.55); --star:#fffaf0; --sunpath:rgba(255,255,255,.85); --gold:#cf9325;
+  --strip-n:#1d2a66; --strip-d:#f19a78; --strip-y:#9dcdee; --strip-k:#ee8656;
+  --sky-n:#25327c; --sky-d:#f29a77; --sky-y:#ffd98a; --sky-k:#ef8a5a; --sky-a-n:.31; --sky-a-d:.26; --sky-a-y:.13; --sky-a-k:.26; --bstar:1; --bstar-c:#d79a22;
+  --daylight:rgba(255,206,96,.34); --cloud:rgba(255,255,255,.92); --cloud-edge:rgba(120,150,180,.18);
+  --night:rgba(37,50,124,.1); --twilight:rgba(239,138,90,.1);
   --shadow:none; --shadow-lg:0 14px 40px rgba(43,42,38,.14);
   --r-sm:7px; --r:9px; --r-lg:12px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --page:#151513; --surface:#1c1c1a; --surface2:#242421; --ink:#ebe7de; --ink2:#b6afa2; --muted:#878175;
   --grid:#2b2a27; --axis:#3a3834; --border:rgba(235,231,222,.09);
-  --accent:#8eadb9; --accent-ink:#151513; --accent-soft:rgba(142,173,185,.14); --brand-navy:#b8c4d2;
+  --accent:#6fb5c6; --accent-ink:#10181b; --accent-soft:rgba(111,181,198,.16); --brand-navy:#b9c7ea;
   --good:#91b081; --bad:#d08b74; --warn-bg:#2a251b; --warn-ink:#d9bf8a; --note-bg:#1e2628; --note-ink:#b3c7cd;
-  --s1:#87a3bb; --s2:#d19c71; --s3:#8fb39f; --s4:#d2b46c; --s5:#c69aa9; --s6:#a2af7d; --s7:#a296bf; --s8:#c78579; --s9:#7c776d;
-  --sun:#e2b45a; --sun-glow:rgba(226,180,90,.55); --moon:#ece5cf; --moon-glow:rgba(236,229,207,.42); --star:#f4efe0; --sunpath:rgba(240,232,210,.5); --gold:#caa04f;
-  --sky-n:#070a13; --sky-d:#915c41; --sky-y:#4d6573; --sky-k:#86492f; --sky-a-n:.62; --sky-a-d:.3; --sky-a-y:.12; --sky-a-k:.3; --bstar:.8;
-  --night:rgba(7,10,19,.32); --twilight:rgba(145,92,65,.12);
+  --s1:#6fa3e6; --s2:#ee9a62; --s3:#5cc39c; --s4:#e9be55; --s5:#e283ad; --s6:#9cc463; --s7:#a68ef0; --s8:#ee7a72; --s9:#827d72;
+  --sun:#f2bd55; --sun-glow:rgba(242,189,85,.6); --moon:#f1ead3; --moon-glow:rgba(241,234,211,.5); --star:#fbf6e8; --sunpath:rgba(240,232,210,.55); --gold:#e0b04f;
+  --strip-n:#04071a; --strip-d:#b05f3c; --strip-y:#3f6f95; --strip-k:#a24c2c;
+  --sky-n:#030616; --sky-d:#b05f3c; --sky-y:#5a87a6; --sky-k:#a24c2c; --sky-a-n:.62; --sky-a-d:.34; --sky-a-y:.16; --sky-a-k:.34; --bstar:1; --bstar-c:#fbf6e8;
+  --daylight:rgba(255,206,120,.10); --cloud:rgba(205,220,236,.42); --cloud-edge:rgba(0,0,0,0);
+  --night:rgba(3,6,22,.36); --twilight:rgba(176,95,60,.14);
   --shadow:none; --shadow-lg:0 16px 44px rgba(0,0,0,.5);
 }}
 :root[data-theme="dark"]{
   --page:#151513; --surface:#1c1c1a; --surface2:#242421; --ink:#ebe7de; --ink2:#b6afa2; --muted:#878175;
   --grid:#2b2a27; --axis:#3a3834; --border:rgba(235,231,222,.09);
-  --accent:#8eadb9; --accent-ink:#151513; --accent-soft:rgba(142,173,185,.14); --brand-navy:#b8c4d2;
+  --accent:#6fb5c6; --accent-ink:#10181b; --accent-soft:rgba(111,181,198,.16); --brand-navy:#b9c7ea;
   --good:#91b081; --bad:#d08b74; --warn-bg:#2a251b; --warn-ink:#d9bf8a; --note-bg:#1e2628; --note-ink:#b3c7cd;
-  --s1:#87a3bb; --s2:#d19c71; --s3:#8fb39f; --s4:#d2b46c; --s5:#c69aa9; --s6:#a2af7d; --s7:#a296bf; --s8:#c78579; --s9:#7c776d;
-  --sun:#e2b45a; --sun-glow:rgba(226,180,90,.55); --moon:#ece5cf; --moon-glow:rgba(236,229,207,.42); --star:#f4efe0; --sunpath:rgba(240,232,210,.5); --gold:#caa04f;
-  --sky-n:#070a13; --sky-d:#915c41; --sky-y:#4d6573; --sky-k:#86492f; --sky-a-n:.62; --sky-a-d:.3; --sky-a-y:.12; --sky-a-k:.3; --bstar:.8;
-  --night:rgba(7,10,19,.32); --twilight:rgba(145,92,65,.12);
+  --s1:#6fa3e6; --s2:#ee9a62; --s3:#5cc39c; --s4:#e9be55; --s5:#e283ad; --s6:#9cc463; --s7:#a68ef0; --s8:#ee7a72; --s9:#827d72;
+  --sun:#f2bd55; --sun-glow:rgba(242,189,85,.6); --moon:#f1ead3; --moon-glow:rgba(241,234,211,.5); --star:#fbf6e8; --sunpath:rgba(240,232,210,.55); --gold:#e0b04f;
+  --strip-n:#04071a; --strip-d:#b05f3c; --strip-y:#3f6f95; --strip-k:#a24c2c;
+  --sky-n:#030616; --sky-d:#b05f3c; --sky-y:#5a87a6; --sky-k:#a24c2c; --sky-a-n:.62; --sky-a-d:.34; --sky-a-y:.16; --sky-a-k:.34; --bstar:1; --bstar-c:#fbf6e8;
+  --daylight:rgba(255,206,120,.10); --cloud:rgba(205,220,236,.42); --cloud-edge:rgba(0,0,0,0);
+  --night:rgba(3,6,22,.36); --twilight:rgba(176,95,60,.14);
   --shadow:none; --shadow-lg:0 16px 44px rgba(0,0,0,.5);
 }
 body{background:var(--page);color:var(--ink);font:14px/1.5 var(--font);letter-spacing:-.002em}
@@ -607,13 +613,14 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 #graph .badge rect{fill:var(--surface);stroke:var(--c);stroke-width:1.25}
 #graph .badge .bt{font-weight:600;fill:var(--ink)}
 #graph .badge.picked rect{stroke-width:2.25}
-#graph .durtag rect{opacity:.13}
+#graph .durtag rect{opacity:.2}
 #graph .costtag rect{fill:var(--surface);stroke:var(--c);stroke-width:1.25}
 #graph .tick.noon{stroke:var(--axis)}
 #graph .midnight{stroke:var(--axis)}
 #graph .scrubpill{fill:var(--ink)}
 #graph .scrubtxt{fill:var(--surface)}
-#graph .seg{stroke-width:3.5}
+#graph .seg{stroke-width:4}
+#graph .pt .dot{stroke-width:2.25}
 #graph .nimgring{stroke:var(--border)}
 
 /* sky: sun, moon, stars, golden hours */
@@ -624,13 +631,25 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 #graph .moon{fill:var(--moon)}
 #graph .sunpath{fill:none;stroke:var(--sunpath);stroke-width:1.1;stroke-dasharray:1.5 3.5}
 #graph .star{fill:var(--star)}
-#graph .bstar{fill:var(--star)}
+#graph .bstar{fill:var(--bstar-c)}
+#graph .cloud{fill:var(--cloud);stroke:var(--cloud-edge);stroke-width:.6}
+#graph .cloudg{pointer-events:none}
+@keyframes drift{0%{transform:translateX(-7px)}100%{transform:translateX(7px)}}
+#graph .drift{animation:drift 9s ease-in-out infinite alternate}
+@keyframes spin{to{transform:rotate(360deg)}}
+#graph .rays{transform-box:fill-box;transform-origin:center;animation:spin 48s linear infinite}
+@keyframes breathe{0%,100%{opacity:.75}50%{opacity:1}}
+#graph .mglow{animation:breathe 5s ease-in-out infinite}
 #graph .goldline{stroke:var(--gold);stroke-width:1;stroke-dasharray:2 5;opacity:.55}
 #graph .skyframe{fill:none;stroke:color-mix(in srgb,var(--ink) 14%,transparent)}
 #graph .skybody,#graph .star,#graph .bstar,#graph .nohit,#graph .goldline,#graph .moong,#graph .sunpath{pointer-events:none}
 @keyframes twinkle{0%,100%{opacity:var(--o)}50%{opacity:calc(var(--o) * .2)}}
 #graph .tw{animation:twinkle 3.5s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){#graph .tw{animation:none}}
+@media (prefers-reduced-motion:reduce){#graph .tw,#graph .drift,#graph .rays,#graph .mglow{animation:none}}
+
+/* a thin sky stripe along the top of the app */
+.topbar{position:relative}
+.topbar::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--strip-n) 0%,var(--strip-d) 22%,var(--strip-y) 45%,var(--strip-y) 58%,var(--strip-k) 78%,var(--strip-n) 100%);opacity:.9}
 
 /* icons */
 [data-ico="place"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 21s-6.5-5.8-6.5-11a6.5 6.5 0 0 1 13 0c0 5.2-6.5 11-6.5 11z%22/%3E%3Ccircle cx=%2212%22 cy=%2210%22 r=%222.3%22/%3E%3C/svg%3E")}
@@ -1653,7 +1672,7 @@ function drawTimeAxis(g) {
   const tip = (e, t) => { el('title', null, e).textContent = t; return e; };
   // shared paint: glows for sun and moon, and a soft depth over the strip
   const glow = (id, v) => { const rg = el('radialGradient', { id }, defs); el('stop', { offset: '0', style: `stop-color:var(${v});stop-opacity:1` }, rg); el('stop', { offset: '1', style: `stop-color:var(${v});stop-opacity:0` }, rg); };
-  glow('sunglow', '--sun-glow'); glow('moonglow', '--moon-glow');
+  glow('sunglow', '--sun-glow'); glow('moonglow', '--moon-glow'); glow('daylight', '--daylight');
   const depth = el('linearGradient', { id: 'skydepth', x1: 0, x2: 0, y1: 0, y2: 1 }, defs);
   [['0', 'rgba(8,10,24,.26)'], ['.55', 'rgba(8,10,24,0)'], ['1', 'rgba(255,255,255,.2)']].forEach(([o, c]) => el('stop', { offset: o, style: `stop-color:${c}` }, depth));
   const clip = el('clipPath', { id: 'skyclip' }, defs);
@@ -1667,7 +1686,7 @@ function drawTimeAxis(g) {
     const next = nd.getTime();
     for (const body of [false, true]) {
       const lg = el('linearGradient', { id: `sky${body ? 'b' : ''}${i}`, gradientUnits: 'userSpaceOnUse', x1: X(day), x2: X(next), y1: 0, y2: 0 }, defs);
-      SKY.forEach(([hr, k]) => el('stop', { offset: (hr / 24).toFixed(4), style: `stop-color:var(--sky-${k});stop-opacity:${body ? `var(--sky-a-${k})` : 1}` }, lg));
+      SKY.forEach(([hr, k]) => el('stop', { offset: (hr / 24).toFixed(4), style: body ? `stop-color:var(--sky-${k});stop-opacity:var(--sky-a-${k})` : `stop-color:var(--strip-${k})` }, lg));
     }
     const a = Math.max(tmin, day), b = Math.min(tmax, next);
     if (b > a) {
@@ -1675,6 +1694,14 @@ function drawTimeAxis(g) {
       el('rect', { x: X(a), y: yA, width: X(b) - X(a), height: height - yA, fill: `url(#skyb${i})`, class: 'skybody' }, g);
       el('rect', { x: X(day), y: sy, width: X(next) - X(day), height: sh, fill: `url(#sky${i})` }, sky);
       const r = rng(day / H + 7);
+      // warm daylight pouring down from the midday sun
+      { const tn = day + 12 * H; if (tn > tmin - 7 * H && tn < tmax + 7 * H) el('ellipse', { cx: X(tn), cy: yA, rx: 6.2 * pph, ry: Math.max(160, (height - yA) * .95), fill: 'url(#daylight)', class: 'nohit' }, g); }
+      // soft clouds drifting across the daytime sky
+      if (6 * pph >= 36) for (const [hc, dy] of [[8.7 + r() * 1.6, 9 + r() * 4], [13.6 + r() * 1.8, 13 + r() * 4]]) {
+        const t = day + hc * H; if (t < tmin || t > tmax) continue;
+        const cx = X(t), cy = sy + dy, sc_ = .75 + r() * .45;
+        art.push(['cloud', cx, cy, sc_, (r() * 12).toFixed(1)]);
+      }
       // stars: in the night sky, and a few faint ones over the chart's night hours
       for (const [h0, h1] of [[0, 4.4], [19.6, 24]]) {
         const ta = Math.max(tmin, day + h0 * H), tb = Math.min(tmax, day + h1 * H);
@@ -1684,9 +1711,11 @@ function drawTimeAxis(g) {
           const big = r() < .12, o = (.5 + r() * .5).toFixed(2);
           art.push(['circle', { cx: X(ta) + r() * w, cy: sy + 3 + r() * (sh - 12), r: big ? 1.4 : .5 + r() * .7, class: 'star tw', style: `--o:${o};opacity:${o};animation-delay:-${(r() * 4).toFixed(2)}s;animation-duration:${(2.4 + r() * 3).toFixed(2)}s` }]);
         }
-        for (let k = 0, n = Math.round(w * (height - yA) / 5200); k < n; k++) {
-          const o = (.25 + r() * .45).toFixed(2);
-          el('circle', { cx: X(ta) + r() * w, cy: yA + 8 + r() * (height - yA - 16), r: .5 + r() * .6, class: 'bstar tw', style: `--o:calc(${o} * var(--bstar));opacity:calc(${o} * var(--bstar));animation-delay:-${(r() * 5).toFixed(2)}s;animation-duration:${(3 + r() * 3.5).toFixed(2)}s` }, g);
+        for (let k = 0, n = Math.round(w * (height - yA) / 4200); k < n; k++) {
+          const o = (.45 + r() * .5).toFixed(2), cx = X(ta) + r() * w, cy = yA + 8 + r() * (height - yA - 16);
+          const st = `--o:calc(${o} * var(--bstar));opacity:calc(${o} * var(--bstar));animation-delay:-${(r() * 5).toFixed(2)}s;animation-duration:${(2.6 + r() * 3.4).toFixed(2)}s`;
+          if (r() < .45) { const R = 2.2 + r() * 2.2, q = R * .28; el('path', { d: `M${cx} ${cy - R}L${cx + q} ${cy - q}L${cx + R} ${cy}L${cx + q} ${cy + q}L${cx} ${cy + R}L${cx - q} ${cy + q}L${cx - R} ${cy}L${cx - q} ${cy - q}Z`, class: 'bstar spark tw', style: st }, g); }
+          else el('circle', { cx, cy, r: .7 + r() * .7, class: 'bstar tw', style: st }, g);
         }
       }
       // sunrise and sunset: a gold line down the chart, and a sun on the horizon
@@ -1707,16 +1736,27 @@ function drawTimeAxis(g) {
     day = next;
   }
   el('rect', { x: x0, y: sy, width: x1 - x0, height: sh, fill: 'url(#skydepth)', class: 'nohit' }, sky);
-  for (const [kind, A, B, C] of art) {
+  for (const [kind, A, B, C, D] of art) {
+    if (kind === 'cloud') {
+      // a soft cloud: three overlapping puffs on a flat base, drifting slowly
+      const cl = el('g', { class: 'cloudg drift', style: `animation-delay:-${D}s` }, sky);
+      const w = 15 * C, hh = 5.2 * C;
+      el('ellipse', { cx: A, cy: B + hh * .35, rx: w, ry: hh * .75, class: 'cloud' }, cl);
+      el('circle', { cx: A - w * .38, cy: B, r: hh * .95, class: 'cloud' }, cl);
+      el('circle', { cx: A + w * .05, cy: B - hh * .45, r: hh * 1.25, class: 'cloud' }, cl);
+      el('circle', { cx: A + w * .45, cy: B + hh * .05, r: hh * .9, class: 'cloud' }, cl);
+      continue;
+    }
     if (kind === 'sun') {
       const sun = el('g', { class: 'sun' }, sky);
       el('circle', { cx: A, cy: B, r: 15, class: 'glow' }, sun);
-      for (let k = 0; k < 12; k++) { const an = k * Math.PI / 6, r1 = k % 2 ? 7.4 : 7, r2 = k % 2 ? 9.2 : 10.5; el('line', { x1: A + Math.cos(an) * r1, y1: B + Math.sin(an) * r1, x2: A + Math.cos(an) * r2, y2: B + Math.sin(an) * r2 }, sun); }
+      const rays = el('g', { class: 'rays' }, sun);
+      for (let k = 0; k < 12; k++) { const an = k * Math.PI / 6, r1 = k % 2 ? 7.4 : 7, r2 = k % 2 ? 9.2 : 10.5; el('line', { x1: A + Math.cos(an) * r1, y1: B + Math.sin(an) * r1, x2: A + Math.cos(an) * r2, y2: B + Math.sin(an) * r2 }, rays); }
       el('circle', { cx: A, cy: B, r: 5.2, class: 'disc' }, sun);
       tip(sun, 'Midday');
     } else if (kind === 'moon') {
       const mg = el('g', { class: 'moong' }, sky);
-      el('circle', { cx: A, cy: B, r: 13, fill: 'url(#moonglow)' }, mg);
+      el('circle', { cx: A, cy: B, r: 13, fill: 'url(#moonglow)', class: 'mglow' }, mg);
       el('path', { d: `M${A + 1.8} ${B - 6.5} A6.5 6.5 0 1 0 ${A + 1.8} ${B + 6.5} A5 5 0 1 1 ${A + 1.8} ${B - 6.5} Z`, class: 'moon' }, mg);
       tip(mg, 'Midnight');
     } else {
@@ -2094,7 +2134,7 @@ function bufSwatch() {
 function todSwatch() {
   const s = el('svg', { width: 34, height: 12, viewBox: '0 0 34 12', 'aria-hidden': 'true' });
   const lg = el('linearGradient', { id: 'todsw', x1: 0, x2: 1, y1: 0, y2: 0 }, el('defs', null, s));
-  SKY.forEach(([hr, k]) => el('stop', { offset: (hr / 24).toFixed(3), style: `stop-color:var(--sky-${k})` }, lg));
+  SKY.forEach(([hr, k]) => el('stop', { offset: (hr / 24).toFixed(3), style: `stop-color:var(--strip-${k})` }, lg));
   el('rect', { x: 1, y: 1, width: 32, height: 10, rx: 4, fill: 'url(#todsw)' }, s);
   return s;
 }
