@@ -85,8 +85,30 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-
 .notice .btn{background:transparent;color:inherit;border-color:currentColor}
 .graph-scroll{overflow-x:auto;overflow-y:hidden;position:relative;border-top:1px solid var(--border);-webkit-overflow-scrolling:touch}
 #graph{display:block;user-select:none;-webkit-user-select:none}
-.empty{padding:48px 16px;text-align:center;color:var(--ink2)}
+.empty{padding:28px 16px 36px;color:var(--ink2)}
 .empty p{margin:0 0 12px}
+.guide{max-width:760px;margin:0 auto}
+.guide h3{margin:0 0 6px;font-size:20px;color:var(--ink);text-align:center;letter-spacing:-.01em}
+.guide-lead{text-align:center;max-width:56ch;margin:0 auto 16px !important}
+.guide-pic{display:block;width:100%;max-width:420px;height:auto;margin:0 auto 18px}
+.gp-bg{fill:var(--surface2)}
+.gp-row line{stroke:var(--axis);stroke-width:1;stroke-dasharray:1 5}
+.gp-lbl text{font:600 12px var(--font);fill:var(--ink)}
+.gp-leg{fill:none;stroke-width:4;stroke-linecap:round}
+.gp-wait{stroke:var(--s1);stroke-width:2;opacity:.4}
+.gp-dot circle{stroke:var(--surface2);stroke-width:2}
+.gp-time text{font:600 10.5px var(--font);fill:var(--ink2);text-anchor:middle}
+.gp-badge{fill:var(--surface);stroke:var(--s4);stroke-width:1.5}
+.gp-btext{font:600 11px var(--font);fill:var(--ink);text-anchor:middle}
+.gsteps{list-style:none;counter-reset:g;margin:0 0 18px;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.gsteps li{counter-increment:g;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 14px 14px 52px;position:relative;text-align:left;font-size:13px;line-height:1.45}
+.gsteps li::before{content:counter(g);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.gsteps b{display:block;color:var(--ink);font-size:14px;margin-bottom:3px}
+.gsteps span{color:var(--ink2)}
+.guide-go{text-align:center;margin-bottom:10px}
+.guide-go .btn{padding:9px 18px;font-size:14px}
+.guide-note{text-align:center;font-size:12px;color:var(--muted);margin:0 !important}
+@media (max-width:760px){.gsteps{grid-template-columns:1fr}}
 .now{border-top:1px solid var(--border);padding:10px 16px 12px;min-height:48px;font-size:13px}
 .now .hint,.hint{margin:0;color:var(--muted);font-size:13px}
 .now-head{margin-bottom:6px}
@@ -437,8 +459,28 @@ body{overflow:hidden}
       <div id="graphScroll" class="graph-scroll">
         <svg id="graph" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Places and legs"></svg>
         <div id="emptyGraph" class="empty" hidden>
-          <p>No places yet. Add the places you might pass through: home, airports, stations, cities.</p>
-          <button class="btn primary" type="button" id="emptyAdd">+ Add a place</button>
+          <div class="guide">
+            <h3>Plan a trip in three steps</h3>
+            <p class="guide-lead">Add every place you might pass through, join them with the ways to travel between them, then build plans and compare them.</p>
+            <svg class="guide-pic" viewBox="0 0 340 128" role="img" aria-label="Example: three places as rows, joined by a cab and a flight, ending in a plan named Weekend trip">
+              <rect x="0" y="0" width="340" height="128" rx="10" class="gp-bg"/>
+              <g class="gp-row"><line x1="74" x2="330" y1="28" y2="28"/><line x1="74" x2="330" y1="64" y2="64"/><line x1="74" x2="330" y1="100" y2="100"/></g>
+              <g class="gp-lbl"><text x="12" y="32">Home</text><text x="12" y="68">Airport</text><text x="12" y="104">City</text></g>
+              <path d="M92 28 C118 28 110 64 136 64" class="gp-leg" style="stroke:var(--s3)"/>
+              <path d="M170 64 C206 64 196 100 232 100" class="gp-leg" style="stroke:var(--s1)"/>
+              <line x1="136" x2="170" y1="64" y2="64" class="gp-wait"/>
+              <g class="gp-dot"><circle cx="92" cy="28" r="4.5" style="fill:var(--s3)"/><circle cx="136" cy="64" r="4.5" style="fill:var(--s3)"/><circle cx="170" cy="64" r="4.5" style="fill:var(--s1)"/><circle cx="232" cy="100" r="4.5" style="fill:var(--s1)"/></g>
+              <g class="gp-time"><text x="92" y="18">6 AM</text><text x="170" y="80">8 AM</text><text x="232" y="88">9:30 AM</text></g>
+              <rect x="244" y="89" width="86" height="22" rx="11" class="gp-badge"/><text x="287" y="104" class="gp-btext">Weekend trip</text>
+            </svg>
+            <ol class="gsteps">
+              <li><b>Add your places</b><span>Home, the airport, a station, the city you are going to. Each place becomes one row.</span></li>
+              <li><b>Join them with legs</b><span>For each way to get between two places: how you travel, when it leaves and arrives, and the fare.</span></li>
+              <li><b>Make a plan</b><span>Name it, pick where you start and finish, and choose the way wherever the routes split. Make as many plans as you like and compare them.</span></li>
+            </ol>
+            <div class="guide-go"><button class="btn primary" type="button" id="emptyAdd">+ Add your first place</button></div>
+            <p class="guide-note">Your plans are saved only in this browser. Use Export to keep a copy or move them to another device.</p>
+          </div>
         </div>
       </div>
       <div id="now" class="now" aria-live="polite"></div>
@@ -2465,6 +2507,9 @@ function bind() {
 S = loadSaved() || blank();
 applyTheme();
 syncCostBtn();
+// On phone-size screens the panel floats over the timeline, so it starts closed there;
+// it opens when a place or leg is tapped, or with the Panel button.
+if (window.matchMedia && matchMedia('(max-width: 900px)').matches) UI.side = false;
 $('#main').classList.toggle('side-hidden', !UI.side);
 $('#sideBtn').setAttribute('aria-pressed', String(UI.side));
 setDrawer(UI.drawer);
