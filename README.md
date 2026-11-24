@@ -38,3 +38,7 @@ A picture added from a link is copied into your plans when the site allows it. O
 ## Try it
 
 Choose **Example** (or **Load an example** on the empty screen) to load a made-up weekend trip with three plans. Its places, times and costs are invented. **Clear** empties the planner again.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
