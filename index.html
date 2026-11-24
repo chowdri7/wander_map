@@ -1270,11 +1270,6 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 }
 #graph .rowband{opacity:.7}
 #modeSeg{margin-left:6px}
-/* the + button */
-.addbtn{width:34px;height:34px;padding:0;border-radius:50%;font-size:0;gap:0;margin-left:6px;box-shadow:0 1px 2px rgba(0,0,0,.12),0 3px 10px color-mix(in srgb,var(--accent) 28%,transparent)}
-.addbtn::before{width:18px;height:18px}
-.menu.open > .addbtn{background:var(--accent) !important;border-color:var(--accent) !important;color:var(--accent-ink) !important;transform:rotate(45deg)}
-.addbtn{transition:transform .18s ease,background .15s}
 /* pinned place names */
 #graph .pinbg{fill:var(--surface)}
 #graph .pinedge{stroke:var(--border);stroke-width:1}
@@ -1288,7 +1283,6 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 #graph .pinico{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-linejoin:round;stroke-linecap:round}
 #graph .pinbtn.on .pinico{fill:var(--accent);stroke:var(--accent)}
 #graph .pinbtn.on .pinhit{fill:color-mix(in srgb,var(--accent) 12%,transparent);stroke:color-mix(in srgb,var(--accent) 35%,transparent)}
-@media (prefers-reduced-motion:reduce){.addbtn{transition:none}}
 /* Settings: each section a card of rows, every control lined up on the right */
 .modal-card{width:min(600px,100%)}
 .modal-head{align-items:flex-start;padding:16px 20px 14px}
@@ -1351,13 +1345,6 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 #pinSvg .pinbtn.on .pinico{fill:var(--accent);stroke:var(--accent)}
 #pinSvg .pinbtn.on .pinhit{fill:color-mix(in srgb,var(--accent) 12%,transparent);stroke:color-mix(in srgb,var(--accent) 35%,transparent)}
 .viewonly #pinSvg{display:none !important}
-/* the New button: a toolbar button like the others, set apart from the name by a divider */
-.brand-sep{margin:0 6px 0 10px}
-.newbtn{height:32px;padding:0 11px 0 9px;gap:6px;border-radius:var(--r);font-weight:600;letter-spacing:.005em}
-.newbtn::before{width:16px;height:16px}
-.newbtn .caret{width:6px;height:6px;margin:0 1px 3px 3px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);opacity:.85;transition:transform .15s}
-.menu.open > .newbtn .caret{transform:rotate(225deg);margin-bottom:-2px}
-.viewing .brand-sep{display:none}
 /* the daytime sky: clear and calm, with big soft clouds */
 :root{--sky-y:#cfe6fb;--sky-a-y:.34;--sky-d:#ffd0b3;--sky-k:#ffbda0;--daylight:rgba(255,255,255,.55);--cloudf:#ffffff;--cloud-shade:rgba(70,110,160,.16)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--sky-y:#5a87a6;--sky-a-y:.16;--sky-d:#b05f3c;--sky-k:#a24c2c;--daylight:rgba(170,200,235,.07);--cloudf:rgba(200,215,235,.10);--cloud-shade:rgba(0,0,0,.18)}}
@@ -1369,8 +1356,32 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 @keyframes cloudpass{0%{transform:translateX(-46px)}100%{transform:translateX(46px)}}
 .still #graph .skycloud{animation:none !important}
 @media (prefers-reduced-motion:reduce){#graph .skycloud{animation:none}}
-.menu.open > .newbtn{background:color-mix(in srgb,var(--accent) 86%,var(--ink)) !important;border-color:transparent !important;color:var(--accent-ink) !important}
-.brand-sep{background:var(--axis);height:20px}
+/* light mode: day and night read apart at a glance. Day is a clear, bright sky; night a deep dusk-blue
+   veil that its gold stars show on; dawn and dusk glow warm between them. Dark mode keeps its own sky
+   (its rules are more specific than these). */
+:root{--sky-n:#27347f;--sky-a-n:.24;--sky-y:#bfe0fb;--sky-a-y:.38;--sky-d:#ffc4a0;--sky-a-d:.32;--sky-k:#ffae8f;--sky-a-k:.32;--daysun-o:1}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--daysun-o:.62}}
+:root[data-theme="dark"]{--daysun-o:.62}
+/* the midday sun over each day, behind the chart and its clouds */
+#graph .daysun{opacity:var(--daysun-o);pointer-events:none}
+#graph .dshalo{opacity:.6}
+#graph .dsrays{stroke:var(--sun);stroke-width:2.2;stroke-linecap:round;transform-box:fill-box;transform-origin:center;animation:spin 90s linear infinite}
+#graph .dsdisc{fill:var(--sun);stroke:color-mix(in srgb,var(--sun) 55%,#fff);stroke-width:1.5}
+.still #graph .dsrays{animation:none}
+@media (prefers-reduced-motion:reduce){#graph .dsrays{animation:none}}
+/* New: a floating button at the bottom right of the timeline, where apps keep theirs. It rests on a
+   zero-height shelf just above the status bar, so it never covers the times there. */
+.fabdock{position:relative;height:0;flex:none;z-index:8}
+.fab{position:absolute;right:22px;bottom:20px}
+.fabbtn{height:46px;padding:0 20px 0 15px;gap:8px;border-radius:15px;font-size:14px;font-weight:600;letter-spacing:.01em;
+  box-shadow:0 1px 2px rgba(16,24,40,.18),0 8px 22px -6px color-mix(in srgb,var(--accent) 60%,transparent);transition:box-shadow .15s,background .15s}
+.fabbtn::before{width:20px;height:20px;transition:transform .2s ease}
+.fabbtn:hover{box-shadow:0 2px 4px rgba(16,24,40,.2),0 12px 28px -6px color-mix(in srgb,var(--accent) 66%,transparent)}
+.menu.open > .fabbtn{background:color-mix(in srgb,var(--accent) 86%,var(--ink)) !important;border-color:transparent !important;color:var(--accent-ink) !important}
+.menu.open > .fabbtn::before{transform:rotate(45deg)}
+.fab .menu-pop{min-width:270px}
+.building #createGroup,.viewonly #createGroup,.viewonly .fabdock{display:none !important}
+@media (prefers-reduced-motion:reduce){.fabbtn,.fabbtn::before{transition:none}}
 </style>
 </head>
 <body>
@@ -1378,15 +1389,6 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
   <header class="topbar">
   <div class="brand"><img class="brand-mark" alt="" width="28" height="28"><h1 title="Add places, join them with legs, then build and save named plans.">Wander Map</h1></div>
   <div class="toolbar" id="toolbar" role="toolbar" aria-label="Planner tools">
-    <span class="tb-sep brand-sep" aria-hidden="true"></span>
-    <div class="menu" id="createGroup">
-      <button class="btn primary newbtn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" data-ico="plus" title="Add a place, a leg or a plan">New<span class="caret" aria-hidden="true"></span></button>
-      <div class="menu-pop" role="menu" hidden>
-        <button type="button" role="menuitem" id="addNode" data-ico="place">Place<small>A home, station, airport or town</small></button>
-        <button type="button" role="menuitem" id="addLeg" data-ico="leg">Leg<small>One way to travel between two places</small></button>
-        <button type="button" role="menuitem" id="makePlan" data-ico="plan">Plan<small>A complete way from start to finish</small></button>
-      </div>
-    </div>
     <span class="spacer"></span>
     <div class="tgroup" id="editTools">
       <button id="undo" class="btn icon" type="button" data-ico="undo" title="Undo (Ctrl+Z)">Undo</button>
@@ -1459,6 +1461,16 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
             <p>On a phone, Wander Map shows your timeline. Plans are made on a computer: choose <b>Export</b> there to save a file, send the file to this phone, then tap <b>Import plans</b> and pick it.</p>
             <button class="btn primary" type="button" id="emptyImport">Import plans</button>
             <p class="guide-note">Your plans are kept only in this browser.</p>
+          </div>
+        </div>
+      </div>
+      <div class="fabdock">
+        <div class="menu fab" id="createGroup">
+          <button class="btn primary fabbtn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" data-ico="plus" title="Add a place, a leg or a plan">New</button>
+          <div class="menu-pop up right" role="menu" hidden>
+            <button type="button" role="menuitem" id="addNode" data-ico="place">Place<small>A home, station, airport or town</small></button>
+            <button type="button" role="menuitem" id="addLeg" data-ico="leg">Leg<small>One way to travel between two places</small></button>
+            <button type="button" role="menuitem" id="makePlan" data-ico="plan">Plan<small>A complete way from start to finish</small></button>
           </div>
         </div>
       </div>
@@ -2466,6 +2478,15 @@ function drawTimeAxis(g) {
       const r = rng(day / H + 7);
       // the midday sky is brightest near the top, as a clear sky is
       { const tn = day + 12 * H; if (tn > tmin - 7 * H && tn < tmax + 7 * H) el('ellipse', { cx: X(tn), cy: yA, rx: 5.6 * pph, ry: Math.max(150, (height - yA) * .8), fill: 'url(#daylight)', class: 'nohit' }, g); }
+      // the sun high over the middle of the day, the counterpart of the night's stars
+      { const tn = day + 12 * H;
+        if (pph >= 6 && tn >= tmin && tn <= tmax) {
+          const cx = X(tn), cy = yA + 30, sn = el('g', { class: 'daysun nohit' }, g);
+          el('circle', { cx, cy, r: 30, fill: 'url(#sunglow)', class: 'dshalo' }, sn);
+          const rays = el('g', { class: 'dsrays' }, sn);
+          for (let k = 0; k < 12; k++) { const an = k * Math.PI / 6, r1 = 14.5, r2 = k % 2 ? 18 : 20.5; el('line', { x1: cx + Math.cos(an) * r1, y1: cy + Math.sin(an) * r1, x2: cx + Math.cos(an) * r2, y2: cy + Math.sin(an) * r2 }, rays); }
+          el('circle', { cx, cy, r: 10.5, class: 'dsdisc' }, sn);
+        } }
       // daytime over the chart, the counterpart of the night's stars: a clear sky with a few big, soft
       // clouds drifting slowly, each with a faint shadow, in two layers that move at different speeds.
       {
@@ -4683,7 +4704,7 @@ const TOUR_STEPS = [
   { target: () => $('#graphScroll'), title: 'Read the timeline', body: 'Move the pointer across it and a card shows where each plan is at that moment. Night, sunrise, day and sunset run along the top.' },
   { target: () => $('#viewTabs'), title: 'One tab for each plan', body: 'A plan is one complete way from start to finish. Choose its tab to see only that plan.' },
   { target: () => $('.dock-bar'), title: 'Compare plans', body: 'Pull this bar up to compare the plans and to read any plan’s itinerary and costs.', before: () => { if (UI.drawer) setDrawer(false); } },
-  { target: () => $('#createGroup'), title: 'Add, and make plans', body: 'Choose New to add a place, a leg or a plan. For a plan, click the leg you leave on, then take the way on at each place until you get there.' },
+  { target: () => $('#createGroup'), title: 'Add, and make plans', body: 'Choose New, at the bottom right, to add a place, a leg or a plan. For a plan, click the leg you leave on, then take the way on at each place until you get there.' },
   { target: () => $('#modeSeg'), title: 'Edit, or just view', body: 'Switch to View to look at everything without changing anything.' },
   { target: () => $('#settingsBtn'), title: 'Settings', body: 'The theme, the sky, your currency and budget, and Export and Import to keep a copy or move your plans to another device.' },
   { title: 'You’re ready', body: 'Try the sample for yourself, or go back to your own plans. You can take it again any time from Settings.', last: true },
