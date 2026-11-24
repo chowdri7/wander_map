@@ -892,6 +892,8 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 [data-ico="prev"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M15 18l-6-6 6-6%22/%3E%3C/svg%3E")}
 [data-ico="next"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M9 18l6-6-6-6%22/%3E%3C/svg%3E")}
 [data-ico="gear"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%223%22/%3E%3Cpath d=%22M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z%22/%3E%3C/svg%3E")}
+[data-ico="plus"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 5v14M5 12h14%22/%3E%3C/svg%3E")}
+[data-ico="pin"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M9 4h6l-1.2 6 3.2 3.2V15H7v-1.8L10.2 10z%22/%3E%3Cpath d=%22M12 15v5%22/%3E%3C/svg%3E")}
 [data-ico="edit"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z%22/%3E%3Cpath d=%22M14.5 7.5l3 3%22/%3E%3C/svg%3E")}
 [data-ico="file"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z%22/%3E%3Cpath d=%22M14 3v5h5M9 13h6M9 17h4%22/%3E%3C/svg%3E")}
 [data-ico="dots"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%225%22 cy=%2212%22 r=%221%22/%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%221%22/%3E%3Ccircle cx=%2219%22 cy=%2212%22 r=%221%22/%3E%3C/svg%3E")}
@@ -1268,6 +1270,25 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 }
 #graph .rowband{opacity:.7}
 #modeSeg{margin-left:6px}
+/* the + button */
+.addbtn{width:34px;height:34px;padding:0;border-radius:50%;font-size:0;gap:0;margin-left:6px;box-shadow:0 1px 2px rgba(0,0,0,.12),0 3px 10px color-mix(in srgb,var(--accent) 28%,transparent)}
+.addbtn::before{width:18px;height:18px}
+.menu.open > .addbtn{background:var(--accent) !important;border-color:var(--accent) !important;color:var(--accent-ink) !important;transform:rotate(45deg)}
+.addbtn{transition:transform .18s ease,background .15s}
+/* pinned place names */
+#graph .pinbg{fill:var(--surface)}
+#graph .pinedge{stroke:var(--border);stroke-width:1}
+#graph .pincol.lifted .pinedge{stroke:var(--axis)}
+#graph .pincol.lifted{filter:drop-shadow(4px 0 6px rgba(0,0,0,.08))}
+#graph .pinlbl{font:700 10px var(--font);letter-spacing:.09em;fill:var(--muted)}
+#graph .pinbtn{cursor:pointer;outline:none}
+#graph .pinhit{fill:transparent;stroke:var(--border);stroke-width:1}
+#graph .pinbtn:hover .pinhit,#graph .pinbtn:focus-visible .pinhit{fill:var(--surface2);stroke:var(--axis)}
+#graph .pinbtn:focus-visible .pinhit{stroke:var(--accent);stroke-width:1.5}
+#graph .pinico{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-linejoin:round;stroke-linecap:round}
+#graph .pinbtn.on .pinico{fill:var(--accent);stroke:var(--accent)}
+#graph .pinbtn.on .pinhit{fill:color-mix(in srgb,var(--accent) 12%,transparent);stroke:color-mix(in srgb,var(--accent) 35%,transparent)}
+@media (prefers-reduced-motion:reduce){.addbtn{transition:none}}
 </style>
 </head>
 <body>
@@ -1275,10 +1296,13 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
   <header class="topbar">
   <div class="brand"><img class="brand-mark" alt="" width="28" height="28"><h1 title="Add places, join them with legs, then build and save named plans.">Wander Map</h1></div>
   <div class="toolbar" id="toolbar" role="toolbar" aria-label="Planner tools">
-    <div class="tgroup" id="createGroup">
-      <button id="addNode" class="btn primary" type="button" data-ico="place" title="Add a place">Add place</button>
-      <button id="addLeg" class="btn" type="button" data-ico="leg" title="Add a leg between two places">Add leg</button>
-      <button id="makePlan" class="btn" type="button" data-ico="plan" title="Build a named plan from your legs">Make a plan</button>
+    <div class="menu" id="createGroup">
+      <button class="btn primary addbtn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" data-ico="plus" aria-label="Add" title="Add a place, a leg or a plan">Add</button>
+      <div class="menu-pop" role="menu" hidden>
+        <button type="button" role="menuitem" id="addNode" data-ico="place">Place<small>A home, station, airport or town</small></button>
+        <button type="button" role="menuitem" id="addLeg" data-ico="leg">Leg<small>One way to travel between two places</small></button>
+        <button type="button" role="menuitem" id="makePlan" data-ico="plan">Plan<small>A complete way from start to finish</small></button>
+      </div>
     </div>
     <span class="spacer"></span>
     <div class="tgroup" id="editTools">
@@ -1379,7 +1403,7 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
             <tbody id="plansBody"></tbody>
           </table>
         </div>
-        <p id="planEmpty" class="hint" hidden>No saved plans yet. Choose “Make a plan”, pick where it starts and ends, and choose the way at each split.</p>
+        <p id="planEmpty" class="hint" hidden>No saved plans yet. Choose + and then Plan, pick where it starts and ends, and choose the way at each split.</p>
         <div id="detail"></div>
       </div>
     </section>
@@ -1406,6 +1430,8 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
           <div class="seg" id="setSky" role="radiogroup" aria-label="Sky on the timeline"><button type="button" role="radio" data-v="full">Full</button><button type="button" role="radio" data-v="simple">Simple</button></div></div>
         <div class="set-row"><div class="set-lab"><b>Moving sky</b><small>Twinkling stars, drifting clouds and glowing choices</small></div>
           <label class="switch"><input type="checkbox" id="setMotion" aria-label="Moving sky"><span aria-hidden="true"></span></label></div>
+        <div class="set-row"><div class="set-lab"><b>Pin place names</b><small>Keep them in view when the timeline scrolls sideways</small></div>
+          <label class="switch"><input type="checkbox" id="setPin" aria-label="Pin place names"><span aria-hidden="true"></span></label></div>
         <div class="set-row"><div class="set-lab"><b>Fares on the timeline</b><small>Each leg’s fare on its line</small></div>
           <label class="switch"><input type="checkbox" id="setCosts" aria-label="Fares on the timeline"><span aria-hidden="true"></span></label></div>
       </section>
@@ -2058,6 +2084,17 @@ function renderGraph() {
   const gBg = el('g', null, svg), gEdge = el('g', null, svg), gSt = el('g', null, svg), gDot = el('g', null, svg),
         gLab = el('g', null, svg), gBadge = el('g', null, svg);
   geo.gEdge = gEdge;
+  // the place names sit on their own layer, drawn last, so they can stay pinned over the scrolling chart
+  const gPin = el('g', { class: 'pincol' }), pw = left - 14;
+  el('rect', { x: 0, y: 0, width: pw, height, class: 'pinbg' }, gPin);
+  rows.forEach((r, i) => { if (i % 2 === 0) el('rect', { x: 0, y: r.top, width: pw, height: r.bot - r.top, class: 'rowband' }, gPin); });
+  el('line', { x1: pw, x2: pw, y1: 0, y2: height, class: 'pinedge' }, gPin);
+  txt(gPin, 16, LAY.top + 4, 'PLACES', 'pinlbl');
+  const pb = el('g', { class: 'pinbtn', role: 'button', tabindex: '0', 'aria-label': 'Pin or unpin the place names' }, gPin);
+  el('rect', { x: pw - 34, y: LAY.top - 12, width: 26, height: 22, rx: 7, class: 'pinhit' }, pb);
+  el('path', { d: `M${pw - 24.5} ${LAY.top - 6.5}h7l-1.2 4.4 2.7 2.8v1.6h-10v-1.6l2.7-2.8z M${pw - 21} ${LAY.top + 2.3}v4.4`, class: 'pinico' }, pb);
+  el('title', null, pb);
+  geo.pinW = pw;
   gScrub = el('g', { class: 'scrub' }, svg);
   el('rect', { x: 0, y: 0, width, height, class: 'hit' }, gBg);
   rows.forEach((r, i) => { if (i % 2 === 0) el('rect', { x: 0, y: r.top, width, height: r.bot - r.top, class: 'rowband' }, gBg); });
@@ -2066,7 +2103,7 @@ function renderGraph() {
   plist.forEach(pi => pi.nodes.forEach(n => { (meets[n] || (meets[n] = new Set())).add(pi.id); }));
   rows.forEach(r => {
     el('line', { x1: left - 14, x2: width, y1: r.y, y2: r.y, class: 'rowline' }, gBg);
-    const g = el('g', { class: 'rowhead' + (sel && sel.k === 'node' && sel.id === r.id ? ' sel' : ''), 'data-node': r.id, tabindex: '0', role: 'button', 'aria-label': `Place ${nodeName(r.id)}. Edit` }, gBg);
+    const g = el('g', { class: 'rowhead' + (sel && sel.k === 'node' && sel.id === r.id ? ' sel' : ''), 'data-node': r.id, tabindex: '0', role: 'button', 'aria-label': `Place ${nodeName(r.id)}. Edit` }, gPin);
     el('rect', { x: 6, y: r.y - 17, width: left - 24, height: 40, rx: 8, class: 'rowhit' }, g);
     const im = S.nodes[r.id].img, lx = im ? 50 : 16;
     if (im) {
@@ -2080,7 +2117,7 @@ function renderGraph() {
     txt(g, lx, r.y + 19, np > 1 ? `${np} plans meet here` : `${nLegs} leg${nLegs === 1 ? '' : 's'}`, 'rowsub');
     el('title', null, g).textContent = canEdit() ? `${nodeName(r.id)}: click to edit, add legs from or to here` : `${nodeName(r.id)}: click for details`;
   });
-  if (!timeOn) { applyHighlight(); return; }
+  if (!timeOn) { svg.append(gPin); placePin(); applyHighlight(); return; }
 
   const boxes = [];
   const free = (x0, y0, x1, y1) => !boxes.some(b => x0 < b[2] + 4 && x1 > b[0] - 4 && y0 < b[3] + 1 && y1 > b[1] - 1);
@@ -2281,6 +2318,7 @@ function renderGraph() {
   applyHighlight();
   drawGuide();
   drawNav();
+  svg.append(gPin); placePin();
 }
 function curveY(L, x) {
   if (Math.abs(L.yk - L.yd) < .5 || L.xS - L.s0 < 1) return x >= L.xS ? L.yk : L.yd;
@@ -2559,7 +2597,8 @@ function frameLeg(id) {
     if (Math.max(...all) - Math.min(...all) <= room) { xs.push(M[end]); ys.push(end === 's0' ? M.yd : M.yk); }
   }
   const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
-  sc.scrollTo({ left: Math.max(0, cx - sc.clientWidth / 2), top: Math.max(0, cy - sc.clientHeight / 2), behavior: 'smooth' });
+  const pw = pinW();
+  sc.scrollTo({ left: Math.max(0, cx - pw - (sc.clientWidth - pw) / 2), top: Math.max(0, cy - sc.clientHeight / 2), behavior: 'smooth' });
 }
 // The journey around the selected leg: where it can come from, the leg itself, and every way it goes
 // on, as a tree you can unfold branch by branch. Click any leg to go there.
@@ -2632,6 +2671,26 @@ function drawNav() {
     el('title', null, n).textContent = `Way on ${k + 1}: ${legLabel(id)}. Click to go there.`;
   });
 }
+// Pinned (the default), the place names follow the sideways scroll so they never leave the view.
+function pinOn() { return UI.pinPlaces !== false; }
+function pinW() { return pinOn() && geo && geo.pinW ? geo.pinW : 0; }
+function placePin() {
+  const g = $('#graph .pincol'), sc = $('#graphScroll'); if (!g || !sc) return;
+  const on = pinOn(), x = on ? sc.scrollLeft : 0;
+  if (x) g.setAttribute('transform', `translate(${x} 0)`); else g.removeAttribute('transform');
+  g.classList.toggle('lifted', on && sc.scrollLeft > 2);
+  const b = g.querySelector('.pinbtn');
+  if (b) {
+    b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
+    b.querySelector('title').textContent = on ? 'Place names are pinned: they stay in view when you scroll sideways. Click to unpin.' : 'Place names scroll with the timeline. Click to pin them.';
+  }
+}
+function togglePin() {
+  UI.pinPlaces = !pinOn(); saveUI(); placePin();
+  if (!$('#settings').hidden) syncSettings();
+  if (sel && sel.k === 'node' && !draft) renderInspector();
+  toast(pinOn() ? 'Place names pinned: they stay in view when you scroll sideways' : 'Place names unpinned: they scroll with the timeline');
+}
 function legTitle(id) {
   const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
   const lines = [legLabel(id), `${m.tag}${l.info ? ': ' + l.info : ''}`];
@@ -2673,7 +2732,7 @@ function renderTip() {
   const sc = $('#graphScroll'), x = geo.X(scrubT), w = tip.offsetWidth, hh = tip.offsetHeight;
   let left = x + 16;
   if (left + w > sc.scrollLeft + sc.clientWidth - 10) left = x - 16 - w;
-  left = Math.max(sc.scrollLeft + 10, left);
+  left = Math.max(sc.scrollLeft + pinW() + 10, left);
   let top = (scrubY != null ? scrubY : sc.scrollTop + LAY.top + 40) + 16;
   top = Math.max(sc.scrollTop + LAY.top + 14, Math.min(sc.scrollTop + sc.clientHeight - hh - 10, top));
   tip.style.left = Math.round(left) + 'px';
@@ -2841,6 +2900,7 @@ function nodeInspector(box, n) {
   ed.normalFoot = () => setFoot(icoBtn('Add leg from here', () => newLeg({ from: n.id }), 'primary', 'leg', 'A leg that leaves this place'), [
     { label: 'Add leg into here', sub: 'A leg that arrives at this place', ico: 'leg', run: () => newLeg({ to: n.id }) },
     { label: 'Make a plan from here', sub: 'Start a plan at this place', ico: 'plan', run: () => startBuilder(null, n.id) },
+    { label: pinOn() ? 'Unpin the place names' : 'Pin the place names', sub: pinOn() ? 'Let them scroll with the timeline' : 'Keep them in view when you scroll sideways', ico: 'pin', run: togglePin },
     S.order.length > 1 ? '-' : null,
     S.order.length > 1 ? { label: 'Move row up', ico: 'up', disabled: i === 0, run: () => moveRow(n.id, -1) } : null,
     S.order.length > 1 ? { label: 'Move row down', ico: 'down', disabled: i === S.order.length - 1, run: () => moveRow(n.id, 1) } : null,
@@ -3730,7 +3790,7 @@ function focusGuide() {
   const Ls = ids.map(id => geo.legs[id]).filter(Boolean);
   if (!Ls.length) return;
   const x0 = Math.min(...Ls.map(L => L.s0)), y0 = Math.min(...Ls.map(L => Math.min(L.yd, L.yk))), y1 = Math.max(...Ls.map(L => Math.max(L.yd, L.yk)));
-  const inX = x0 >= sc.scrollLeft + geo.left - 20 && x0 <= sc.scrollLeft + sc.clientWidth - 80;
+  const inX = x0 >= sc.scrollLeft + Math.max(pinW(), geo.left - 20) && x0 <= sc.scrollLeft + sc.clientWidth - 80;
   const inY = y0 >= sc.scrollTop + LAY.top && y0 <= sc.scrollTop + sc.clientHeight - 40;
   if (inX && inY) return;
   sc.scrollTo({ left: inX ? sc.scrollLeft : Math.max(0, x0 - geo.left - 60), top: inY ? sc.scrollTop : Math.max(0, Math.min(y0 - LAY.top - 30, y1 - sc.clientHeight + 60)), behavior: 'smooth' });
@@ -3819,7 +3879,7 @@ function renderPlans() {
   const tb = $('#plansBody'); tb.replaceChildren();
   const plans = PL.slice();
   $('#planEmpty').hidden = plans.length > 0;
-  $('#planEmpty').textContent = canEdit() ? 'No saved plans yet. Choose “Make a plan”, pick where it starts and ends, and choose the way at each split.' : 'No saved plans yet.';
+  $('#planEmpty').textContent = canEdit() ? 'No saved plans yet. Choose + and then Plan, pick where it starts and ends, and choose the way at each split.' : 'No saved plans yet.';
   $('#plansTable').hidden = !plans.length;
   const key = S.sort;
   const val = p => key === 'cost' ? p.cost : key === 'start' ? p.start : key === 'end' ? p.end : key === 'dur' ? p.dur : null;
@@ -4219,6 +4279,7 @@ function syncSettings() {
   document.querySelectorAll('#setSky [data-v]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.v === sky)));
   $('#setMotion').checked = UI.motion !== false;
   $('#setCosts').checked = !!UI.costs;
+  $('#setPin').checked = pinOn();
   const ed = canEdit() && !TOUR;
   $('#currency').disabled = $('#budget').disabled = !ed;
   $('#menuImport').disabled = $('#clear').disabled = !ed;
@@ -4323,12 +4384,14 @@ function bind() {
   const trackY = e => { const sc = $('#graphScroll'); scrubY = e.clientY - sc.getBoundingClientRect().top + sc.scrollTop; };
   svg.addEventListener('pointermove', e => {
     if (!geo || !geo.time || pinned || e.pointerType === 'touch') return;
+    if (e.target.closest('.pincol')) { if (scrubT != null) { scrubT = null; drawScrub(); renderNow(); } return; } // over the place names
     const t = tAt(e), y0 = scrubY;
     trackY(e);
     if (t !== scrubT) { scrubT = t; drawScrub(); renderNow(); }
     else if (Math.abs((y0 || 0) - scrubY) > 2) renderTip();
   });
   svg.addEventListener('pointerleave', () => { if (pinned || scrubT == null) return; scrubT = null; drawScrub(); renderNow(); });
+  $('#graphScroll').addEventListener('scroll', placePin, { passive: true });
   // while making a plan, the leg under the pointer lights up its button in the panel
   svg.addEventListener('pointerover', e => {
     if (!B) return;
@@ -4336,6 +4399,8 @@ function bind() {
     if (id !== guideHover) { guideHover = id; applyHighlight(); }
   });
   svg.addEventListener('click', e => {
+    if (e.target.closest('.pinbtn')) { togglePin(); return; }
+    if (e.target.closest('.pincol') && !e.target.closest('.rowhead')) return;
     if (viewOnly) {
       const b = e.target.closest('.badge');
       if (b) { setView(b.dataset.plan); return; }
@@ -4366,6 +4431,7 @@ function bind() {
   });
   svg.addEventListener('keydown', e => {
     if (viewOnly || (e.key !== 'Enter' && e.key !== ' ')) return;
+    if (e.target.closest('.pinbtn')) { e.preventDefault(); togglePin(); return; }
     const t = e.target.closest('.badge, .rowhead');
     if (!t) return;
     e.preventDefault();
@@ -4453,6 +4519,7 @@ function bind() {
   $('#setSky').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; UI.sky = b.dataset.v; saveUI(); syncSettings(); renderGraph(); });
   $('#setMotion').addEventListener('change', e => { UI.motion = e.target.checked; saveUI(); applyMotion(); });
   $('#setCosts').addEventListener('change', e => { UI.costs = e.target.checked; saveUI(); syncCostBtn(); renderGraph(); });
+  $('#setPin').addEventListener('change', e => { if (e.target.checked !== pinOn()) togglePin(); });
   $('#setTour').addEventListener('click', () => { closeSettings(); startTour(); });
   $('#sideHide').addEventListener('click', () => setSide(false));
   $('#sideOpen').addEventListener('click', () => setSide(true));
@@ -4603,7 +4670,7 @@ const TOUR_STEPS = [
   { target: () => $('#graphScroll'), title: 'Read the timeline', body: 'Move the pointer across it and a card shows where each plan is at that moment. Night, sunrise, day and sunset run along the top.' },
   { target: () => $('#viewTabs'), title: 'One tab for each plan', body: 'A plan is one complete way from start to finish. Choose its tab to see only that plan.' },
   { target: () => $('.dock-bar'), title: 'Compare plans', body: 'Pull this bar up to compare the plans and to read any plan’s itinerary and costs.', before: () => { if (UI.drawer) setDrawer(false); } },
-  { target: () => $('#makePlan'), title: 'Make a plan', body: 'Click the leg you leave on, then the leg you arrive on, then a numbered leg wherever the routes split.' },
+  { target: () => $('#createGroup'), title: 'Add, and make plans', body: 'Choose + to add a place, a leg or a plan. For a plan, click the leg you leave on, then the leg you arrive on, then a numbered leg wherever the routes split.' },
   { target: () => $('#modeSeg'), title: 'Edit, or just view', body: 'Switch to View to look at everything without changing anything.' },
   { target: () => $('#settingsBtn'), title: 'Settings', body: 'The theme, the sky, your currency and budget, and Export and Import to keep a copy or move your plans to another device.' },
   { title: 'You’re ready', body: 'Try the sample for yourself, or go back to your own plans. You can take it again any time from Settings.', last: true },
@@ -4695,7 +4762,7 @@ function exploreSample() {
   if (!$('#sampleBar')) $('#guideNote').before(h('div', { id: 'sampleBar', class: 'notice samplebar', role: 'status' },
     h('span', { class: 'sb-dot', 'aria-hidden': 'true' }), h('span', { class: 'sb-txt', text: 'You are trying a sample trip. Change anything you like: nothing here is saved.' }),
     btn('Back to my plans', endTour, 'small primary')));
-  toast('Try making a plan: choose Make a plan, then click the legs on the timeline.');
+  toast('Try making a plan: choose + and then Plan, then click the legs on the timeline.');
 }
 function endTour() {
   if (!TOUR) return;
