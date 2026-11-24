@@ -416,6 +416,19 @@ body{overflow:hidden}
 :root{--sun:#ffc93c;--moon:#f4efd6;--sky-n:#1f2f63;--sky-d:#f6a06e;--sky-y:#a9d6f7;--sky-k:#ec7b57;--sky-a-n:.17;--sky-a-d:.16;--sky-a-y:.10;--sky-a-k:.16;--star:#fff;--sunpath:rgba(255,255,255,.85);--night:rgba(42,82,160,.075);--twilight:rgba(230,140,80,.07);--tod-night:#34456b;--tod-night-ink:#eef2fb;--tod-dawn:#f5c79a;--tod-day:#f8e3a0;--tod-dusk:#f0a985;--tod-ink:#3a2a08}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--sky-n:#0a1230;--sky-d:#b4552c;--sky-y:#3d6fa6;--sky-k:#a3402a;--sky-a-n:.55;--sky-a-d:.26;--sky-a-y:.16;--sky-a-k:.26;--star:#eef2ff;--sunpath:rgba(255,236,190,.6);--night:rgba(90,130,230,.10);--twilight:rgba(220,130,80,.08);--tod-night:#22304f;--tod-night-ink:#d3dcf2;--tod-dawn:#7d5130;--tod-day:#7a6524;--tod-dusk:#7f432d;--tod-ink:#fbefd6}}
 :root[data-theme="dark"]{--sky-n:#0a1230;--sky-d:#b4552c;--sky-y:#3d6fa6;--sky-k:#a3402a;--sky-a-n:.55;--sky-a-d:.26;--sky-a-y:.16;--sky-a-k:.26;--star:#eef2ff;--sunpath:rgba(255,236,190,.6);--night:rgba(90,130,230,.10);--twilight:rgba(220,130,80,.08);--tod-night:#22304f;--tod-night-ink:#d3dcf2;--tod-dawn:#7d5130;--tod-day:#7a6524;--tod-dusk:#7f432d;--tod-ink:#fbefd6}
+/* ---------- view-only on phones: just the timeline and Import ---------- */
+.phone-empty,.vo-note{display:none}
+.viewonly .toolbar > *:not(#importBtn){display:none !important}
+.viewonly #importBtn{display:inline-flex !important}
+.viewonly #importBtn{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.viewonly #viewTabs,.viewonly #planBar,.viewonly #side,.viewonly .sidetab,.viewonly #drawer,.viewonly #exampleNote{display:none !important}
+.viewonly .guide{display:none}
+.viewonly .phone-empty{display:block;max-width:420px;margin:0 auto;text-align:center}
+.viewonly .phone-empty h3{margin:0 0 8px;font-size:18px;color:var(--ink)}
+.viewonly .phone-empty .btn{margin:6px 0 12px;padding:9px 18px;font-size:15px}
+.viewonly .vo-note{display:inline;font-size:12px;color:var(--muted)}
+.viewonly .main{padding-bottom:14px}
+.viewonly #graph *{cursor:default !important}
 /* ---------- phones ---------- */
 .more-btn,.phone-only{display:none}
 @media (max-width:700px){
@@ -498,7 +511,7 @@ body{overflow:hidden}
 
   <div class="main" id="main">
     <section class="card graph-card" aria-label="Places and legs">
-      <div class="card-head"><h2 id="graphTitle">Places and legs</h2><div class="legend" id="legend"></div></div>
+      <div class="card-head"><h2 id="graphTitle">Places and legs</h2><span class="vo-note">View only · edit on a computer</span><div class="legend" id="legend"></div></div>
       <div class="viewtabs" id="viewTabs" role="tablist" aria-label="View"></div>
       <div class="planbar" id="planBar" hidden></div>
       <div class="notice" id="exampleNote" hidden>
@@ -531,6 +544,12 @@ body{overflow:hidden}
             </ol>
             <div class="guide-go"><button class="btn primary" type="button" id="emptyAdd">+ Add your first place</button></div>
             <p class="guide-note">Your plans are saved only in this browser. Use Export to keep a copy or move them to another device.</p>
+          </div>
+          <div class="phone-empty">
+            <h3>View your trip on the go</h3>
+            <p>On a phone, Wander Map shows your timeline. Plans are made on a computer: choose <b>Export</b> there to save a file, send the file to this phone, then tap <b>Import plans</b> and pick it.</p>
+            <button class="btn primary" type="button" id="emptyImport">Import plans</button>
+            <p class="guide-note">Your plans are kept only in this browser.</p>
           </div>
         </div>
       </div>
@@ -619,6 +638,13 @@ const UIKEY = 'wander-map.ui', OLD_UIKEY = 'route-branch-planner.ui';
 let UI = { side: true, drawer: false, theme: null, costs: false };
 try { Object.assign(UI, JSON.parse(localStorage.getItem(UIKEY) || localStorage.getItem(OLD_UIKEY) || '{}')); } catch (e) { /* ignore */ }
 let sideOpen = true;
+const VIEWQ = window.matchMedia ? matchMedia('(max-width: 700px)') : null;
+let viewOnly = !!(VIEWQ && VIEWQ.matches);
+function applyViewOnly() {
+  viewOnly = !!(VIEWQ && VIEWQ.matches);
+  document.body.classList.toggle('viewonly', viewOnly);
+  if (viewOnly) { sel = null; B = null; viewPlan = null; focusPlan = null; hoverPlan = null; hoverLeg = null; }
+}
 function saveUI() { try { localStorage.setItem(UIKEY, JSON.stringify(UI)); } catch (e) { /* ignore */ } }
 const undoStack = [];
 
@@ -1719,6 +1745,7 @@ function renderLegend() {
 
 /* ---------- plan maker ---------- */
 function startBuilder(planId, startNode) {
+  if (viewOnly) return;
   if (!S.order.length) { toast('Add some places and legs first'); return; }
   if (planId && S.plans[planId]) {
     const p = S.plans[planId], legs = p.legs.filter(id => S.legs[id]);
@@ -2076,6 +2103,7 @@ async function copyText(s) {
 }
 function pick(id) { S.picked = S.picked === id ? null : id; save(); renderPlans(); renderGraph(); }
 function togglePlan(id, only) {
+  if (viewOnly) return;
   focusPlan = only ? id : focusPlan === id ? null : id;
   renderPlans(); applyHighlight();
   if (only) { setDrawer(true); $('#detail').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
@@ -2092,6 +2120,7 @@ function delPlan(id) {
 
 /* ---------- edits ---------- */
 function select(s, focusSel) {
+  if (viewOnly) return; // phones only view the timeline
   sel = s; focusNext = focusSel || null;
   if (!sideOpen) setSide(true);
   renderInspector(); renderGraph();
@@ -2397,6 +2426,7 @@ function bind() {
   });
   svg.addEventListener('pointerleave', () => { if (pinned || scrubT == null) return; scrubT = null; drawScrub(); renderNow(); });
   svg.addEventListener('click', e => {
+    if (viewOnly) { if (geo && geo.time) { scrubT = tAt(e); pinned = !pinned; drawScrub(); renderNow(); } return; }
     const wait = e.target.closest('[data-wait]');
     if (wait) { select({ k: 'wait', id: wait.dataset.wait, plan: wait.dataset.plan }, '#fWait'); return; }
     const badge = e.target.closest('.badge');
@@ -2409,7 +2439,7 @@ function bind() {
     if (sel) { sel = null; renderInspector(); renderGraph(); }
   });
   svg.addEventListener('keydown', e => {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
+    if (viewOnly || (e.key !== 'Enter' && e.key !== ' ')) return;
     const t = e.target.closest('.badge, .rowhead');
     if (!t) return;
     e.preventDefault();
@@ -2535,6 +2565,8 @@ function bind() {
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   });
   $('#importBtn').addEventListener('click', () => $('#importFile').click());
+  $('#emptyImport').addEventListener('click', () => $('#importFile').click());
+  if (VIEWQ && VIEWQ.addEventListener) VIEWQ.addEventListener('change', () => { applyViewOnly(); renderAll(); });
   $('#importFile').addEventListener('change', async e => {
     const file = e.target.files && e.target.files[0]; e.target.value = '';
     if (!file) return;
@@ -2558,6 +2590,7 @@ function bind() {
   $('#exampleHide').addEventListener('click', () => { S.example = false; save(); renderGraph(); });
 
   document.addEventListener('keydown', e => {
+    if (viewOnly) return;
     const inField = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
     if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && !inField) { e.preventDefault(); undo(); }
     else if (e.key === 'Escape' && !inField && sel) { sel = null; renderInspector(); renderGraph(); }
@@ -2569,6 +2602,7 @@ function bind() {
 
 /* ---------- start ---------- */
 S = loadSaved() || blank();
+applyViewOnly();
 applyTheme();
 syncCostBtn();
 // On phone-size screens the panel floats over the timeline, so it starts closed there;
