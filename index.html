@@ -1395,16 +1395,6 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 .inpre .stp:active{background:var(--accent-soft);color:var(--accent)}
 .inpre .stp:disabled{opacity:.4;cursor:default;background:none}
 .inpre input{padding-right:8px}
-/* the itinerary keeps a readable width, so each leg's time, length and fare stay close together;
-   on a wide panel its totals sit beside it and stay in view while you scroll */
-#drawerBody{container:dockb/inline-size}
-.dock-body #detail{max-width:800px}
-@container dockb (min-width:1100px){
-  .dock-body #detail{max-width:1060px;display:grid;grid-template-columns:minmax(0,1fr) 250px;grid-auto-flow:row dense;column-gap:24px;align-items:start}
-  #detail .detail-head,#detail .warnbox,#detail > .hint{grid-column:1/-1}
-  #detail .it-wrap{grid-column:1;min-width:0}
-  #detail .it-stats{grid-column:2;grid-template-columns:1fr !important;margin:0;position:sticky;top:12px}
-}
 /* the plans panel: a bigger grip to take hold of, and no text selected while dragging */
 .dock-split,.dock:not(.open) .dock-split{top:-5px;width:76px;height:18px;margin-left:-38px;background:transparent !important;border-radius:0;box-shadow:none !important;touch-action:none}
 .dock-split::after{display:block;content:"";position:absolute;left:16px;right:16px;top:8px;width:auto;height:5px;margin:0;border-radius:3px;background:var(--axis);opacity:1;transition:background .15s}
@@ -1428,6 +1418,38 @@ body.dock-dragging,body.dock-dragging *{cursor:ns-resize !important}
 #graph .nmdisc{fill:var(--bmoon);stroke:var(--moon-edge);stroke-width:1.1}
 #graph .nmcres{filter:var(--moon-shadow)}
 #graph .ncloud .cpuffs{fill:var(--ncloud)}
+/* a plan in the details panel */
+.plan-panel .pp-head{display:flex;align-items:flex-start;gap:8px}
+.plan-panel .pp-head .key-dot{margin-top:9px;flex:none}
+.plan-panel .pp-titles{flex:1;min-width:0}
+.side .plan-panel .pp-head h2{margin:0;font-size:19px;line-height:1.25;overflow-wrap:anywhere}
+.plan-panel .pp-head .btns{display:flex;gap:4px;flex:none;margin:1px 0 0}
+.plan-panel .pp-head .icon-btn{flex:none}
+.plan-panel .pp-stats{grid-template-columns:repeat(2,minmax(0,1fr)) !important;margin:14px 0}
+.pp-list{border:1px solid var(--border);border-radius:var(--r);background:var(--surface);overflow:hidden;font-variant-numeric:tabular-nums}
+.pp-day{padding:10px 12px 4px;font-family:var(--serif);font-size:13.5px;font-weight:600;color:var(--ink)}
+.pp-leg,.pp-wait{display:grid;grid-template-columns:60px 3px minmax(0,1fr) auto;column-gap:10px;align-items:start;padding:8px 12px}
+.pp-leg{cursor:pointer;border-top:1px solid var(--grid);outline:none}
+.pp-day + .pp-leg{border-top:0}
+.pp-leg:hover,.pp-leg:focus-visible{background:color-mix(in srgb,var(--ink) 3.5%,transparent)}
+.pp-leg:focus-visible{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent) 45%,transparent)}
+.pp-time b{display:block;font-size:12.5px;font-weight:700;color:var(--ink);white-space:nowrap}
+.pp-time small{display:block;margin-top:1px;font-size:11px;color:var(--muted)}
+.pp-bar{align-self:stretch;min-height:28px;border-radius:2px;background:var(--c)}
+.pp-what{min-width:0}
+.pp-what b{display:block;font-size:12.5px;font-weight:600;line-height:1.35;color:var(--ink);overflow-wrap:anywhere}
+.pp-what small{display:block;margin-top:2px;font-size:11.5px;line-height:1.35;color:var(--muted)}
+.pp-fare{font-size:12.5px;font-weight:600;color:var(--ink);white-space:nowrap}
+.pp-wait{padding-top:5px;padding-bottom:5px;font-size:11.5px;line-height:1.4;color:var(--muted);background:color-mix(in srgb,var(--surface2) 65%,transparent);border-top:1px solid var(--grid)}
+.pp-wbar{align-self:stretch;justify-self:center;border-left:2px dotted var(--axis)}
+.pp-wait .it-wlab{font-style:italic;color:var(--ink2)}
+.pp-wait .it-ren{margin-left:6px}
+.pp-sub{padding:12px 12px 4px;border-top:1px solid var(--grid);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.pp-extra{display:flex;justify-content:space-between;gap:12px;padding:4px 12px;font-size:12.5px;color:var(--ink2)}
+.pp-total{display:flex;justify-content:space-between;gap:12px;margin-top:6px;padding:10px 12px;border-top:1.5px solid var(--axis);font-size:13.5px;font-weight:700;color:var(--ink)}
+.pp-budget{display:flex;justify-content:space-between;gap:12px;padding:0 12px 10px;font-size:12px;font-weight:600;color:var(--good)}
+.pp-budget.over{color:var(--bad)}
+.dock-hint{margin:2px 0 0;padding:8px 20px 14px;font-size:12.5px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -1550,7 +1572,7 @@ body.dock-dragging,body.dock-dragging *{cursor:ns-resize !important}
           </table>
         </div>
         <p id="planEmpty" class="hint" hidden>No saved plans yet. Choose New, then Plan: click the leg you leave on, and take the way on at each place.</p>
-        <div id="detail"></div>
+        <p id="planHint" class="hint dock-hint" hidden>Click a plan to see its itinerary in the details panel.</p>
       </div>
     </section>
     </div>
@@ -2961,7 +2983,7 @@ function renderInspector() {
   box.hidden = !!B;
   if (B) { builderFoot(guidePhase()); return; }
   if (draft) draftInspector(box);
-  else if (!sel) box.append(viewPlan && PLBY[viewPlan] ? planPanel(PLBY[viewPlan]) : canEdit() ? helpPanel() : viewHelp());
+  else if (!sel) { const pp = (focusPlan && PLBY[focusPlan]) || (viewPlan && PLBY[viewPlan]); box.append(pp ? planPanel(pp) : canEdit() ? helpPanel() : viewHelp()); }
   else if (!canEdit()) readOnlyInspector(box);
   else if (sel.k === 'node') nodeInspector(box, S.nodes[sel.id]);
   else if (sel.k === 'wait') waitInspector(box, S.plans[sel.plan], sel.id);
@@ -3549,7 +3571,7 @@ function viewHelp() {
     h('ol', null,
       h('li', null, 'Move the pointer across the timeline to see where each plan is at that moment. Click to pin it.'),
       h('li', null, 'Click a place or a leg for its details.'),
-      h('li', null, 'Choose a plan above the timeline to see only that plan, or open ', h('b', { text: 'Plans' }), ' at the bottom for its full itinerary and costs.')),
+      h('li', null, 'Choose a plan above the timeline to see only that plan, or click one under ', h('b', { text: 'Plans' }), ' at the bottom to read its full itinerary and costs here.')),
     h('p', { class: 'hint', text: 'To change anything, choose Edit at the top.' }));
 }
 function helpPanel() {
@@ -4036,72 +4058,13 @@ function renderPlans() {
     tb.append(tr);
   }
   renderDetail();
+  if (!sel && !draft && !B && (focusPlan || viewPlan)) renderInspector();
 }
 // The itinerary of the open plan: key figures, then every leg and wait in order, day by day, with
 // this plan's other costs and the total.
+// A plan's itinerary is read in the details panel; the plans panel only says how to open one.
 function renderDetail() {
-  const box = $('#detail'); box.replaceChildren();
-  const id = focusPlan || S.picked, p = id && PLBY[id];
-  if (!p) {
-    box.hidden = !PL.length;
-    box.append(h('p', { class: 'hint', text: 'Click a plan to see its full itinerary here.' }));
-    return;
-  }
-  box.hidden = false;
-  const budget = +S.budget || 0;
-  box.append(h('div', { class: 'detail-head' },
-    h('div', { class: 'it-titles' }, h('h3', null, h('span', { class: 'key', style: `--c:${p.color}` }),
-      renaming && renaming.id === p.id && renaming.where === 'detail' ? nameEditor(p.id) : nameTitle(p, 'detail')), h('p', { text: p.route })),
-    planActions(p, 'detail')));
-  if (p.issues.length) box.append(h('div', { class: 'warnbox' }, ...p.issues.map(s => h('p', { text: '⚠ ' + s }))));
-  const stat = (label, value, sub) => h('div', { class: 'it-stat' }, h('span', { class: 'it-lab', text: label }), h('b', { class: 'it-val', text: value }),
-    sub == null ? null : typeof sub === 'string' ? h('small', { text: sub }) : sub);
-  const span = (a, b) => a == null || b == null ? '' : new Date(a).toDateString() === new Date(b).toDateString() ? `${hm(a)} – ${hm(b)}` : `${shortDT(a)} – ${shortDT(b)}`;
-  box.append(h('div', { class: 'it-stats' },
-    stat('Total per head', money(p.cost), budget > 0 ? budgetMeter(p.cost, budget) : `Legs ${money(p.legCost)} + other ${money(p.extra)}`),
-    stat('Door to door', fmtDur(p.dur), span(p.start, p.end)),
-    stat('Travelling', fmtDur(p.move), `${p.legs.length} leg${p.legs.length === 1 ? '' : 's'}`),
-    stat('Waiting', fmtDur(p.wait), p.legs.length > 1 ? `${p.legs.length - 1} stop${p.legs.length > 2 ? 's' : ''}` : 'No stops')));
-  const tbl = h('table', { class: 'itin' });
-  tbl.append(h('colgroup', null, h('col', { class: 'c-time' }), h('col'), h('col', { class: 'c-dur' }), h('col', { class: 'c-fare' })));
-  tbl.append(h('thead', null, h('tr', null, h('th', { text: 'Time' }), h('th', { text: 'Leg' }), h('th', { class: 'num', text: 'Takes' }), h('th', { class: 'num', text: 'Fare' }))));
-  const tb = h('tbody');
-  let day = null;
-  p.legs.forEach((id, i) => {
-    const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
-    if (i > 0) {
-      const a = T[p.legs[i - 1]].arr;
-      if (a != null && t.dep != null && t.dep - a > MIN) {
-        const w = waitInfo(p.p, id);
-        tb.append(h('tr', { class: 'it-wait' },
-          h('td', { class: 'it-time', text: span(a, t.dep) }),
-          h('td', null, h('span', { class: 'it-wlab', text: w.label }), h('span', { text: ` at ${nodeName(l.from)}` }),
-            canEdit() ? h('button', { type: 'button', class: 'linkbtn it-ren', text: 'Rename', onclick: () => select({ k: 'wait', id, plan: p.id }, '#fWait') }) : null),
-          h('td', { class: 'num', text: fmtDur(w.ms) }), h('td')));
-      }
-    }
-    const dk = t.dep != null ? new Date(t.dep).toDateString() : '';
-    if (dk && dk !== day) { day = dk; tb.append(h('tr', { class: 'it-day' }, h('td', { colspan: '4', text: dayLbl(t.dep) }))); }
-    const later = t.arrSched != null && new Date(t.arrSched).toDateString() !== dk;
-    const tr = h('tr', { class: 'it-leg', style: `--c:${legColor(id)}` },
-      h('td', { class: 'it-time' }, h('b', { text: hm(t.dep) }), h('small', { text: `to ${later ? shortDT(t.arrSched) : hm(t.arrSched)}` })),
-      h('td', null, h('div', { class: 'it-legcell' }, h('span', { class: 'it-bar', 'aria-hidden': 'true' }),
-        h('span', null, h('b', { text: legLabel(id) }), h('small', { text: [m.label, l.info, t.buf ? `+${fmtDur(t.buf)} buffer` : null].filter(Boolean).join(' · ') })))),
-      h('td', { class: 'num', text: fmtDur(t.arrSched - t.dep) }),
-      h('td', { class: 'num', text: l.cost === '' ? '—' : money(l.cost) }));
-    hoverRow(tr, id);
-    tb.append(tr);
-  });
-  if (p.p.extras.length) {
-    tb.append(h('tr', { class: 'it-sub' }, h('td', { colspan: '4', text: 'Other costs in this plan' })));
-    p.p.extras.forEach(x => tb.append(h('tr', { class: 'it-extra' }, h('td'), h('td', { text: x.label || 'Other cost' }), h('td'), h('td', { class: 'num', text: x.amount === '' ? '—' : money(x.amount) }))));
-  }
-  tbl.append(tb);
-  tbl.append(h('tfoot', null,
-    h('tr', { class: 'it-total' }, h('td'), h('td', { text: 'Total per head' }), h('td'), h('td', { class: 'num', text: money(p.cost) })),
-    budget > 0 ? h('tr', { class: 'it-budget' + (p.cost > budget ? ' over' : '') }, h('td'), h('td', { text: `Budget ${money(budget)} per head` }), h('td'),
-      h('td', { class: 'num', text: p.cost > budget ? `${money(p.cost - budget)} over` : `${money(budget - p.cost)} left` })) : null));
-  box.append(h('div', { class: 'table-scroll it-wrap' }, tbl));
+  const hint = $('#planHint'); if (hint) hint.hidden = !PL.length || viewOnly;
 }
 function planText(p) {
   const out = [`${p.name}: ${money(p.cost)} per head`, p.route, ''];
@@ -4123,11 +4086,18 @@ async function copyText(s) {
   }
 }
 function pick(id) { if (!canEdit()) return; S.picked = S.picked === id ? null : id; save(); renderPlans(); renderGraph(); }
+// Clicking a plan opens its itinerary in the details panel (clicking it again closes it).
 function togglePlan(id, only) {
   if (viewOnly) return;
-  focusPlan = only ? id : focusPlan === id ? null : id;
+  const next = only ? id : focusPlan === id ? null : id;
+  const hadSel = !!sel;
+  if (next && !B && (sel || draft)) { if (!canLeave()) return; sel = null; draft = null; }
+  focusPlan = next;
+  if (focusPlan && !B && !sideOpen) setSide(true);
   renderPlans(); applyHighlight();
-  if (only) { setDrawer(true); $('#detail').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+  if (!B) renderInspector();
+  if (hadSel && !sel) renderGraph();
+  if (focusPlan && !B) { const ins = $('#inspector'); if (ins) ins.scrollTop = 0; }
 }
 function delPlan(id) {
   const p = S.plans[id]; if (!p || !canEdit()) return;
@@ -4336,27 +4306,63 @@ function renderPlanBar() {
     h('span', { class: 'muted', text: `${fmtDT(p.start)} → ${fmtDT(p.end)} · ${fmtDur(p.dur)}` }),
     planActions(p, 'bar'));
 }
+// A plan in the details panel: its key figures, then every leg and wait in order, day by day, with
+// this plan's other costs and the total. Click a leg for its details; Rename names a wait.
 function planPanel(p) {
   const box = h('div', { class: 'plan-panel' });
-  box.append(h('div', { class: 'insp-head' }, h('span', { class: 'key-dot', style: `--c:${p.color}` }),
-    h('div', null, h('h2', { text: p.name }), h('p', { class: 'crumb', text: 'Plan view: only this plan is drawn' }))));
-  box.append(h('p', { class: 'pp-route', text: p.route }));
-  if (p.issues.length) box.append(h('div', { class: 'warnbox' }, ...p.issues.map(s => h('p', { text: '⚠ ' + s }))));
-  const ol = h('ol');
+  const budget = +S.budget || 0;
+  // in plan view the bar above the timeline has its own Exit, so there is nothing here to close
+  const close = focusPlan === p.id && viewPlan !== p.id ? h('button', { class: 'icon-btn', type: 'button', title: 'Close', 'aria-label': 'Close the plan', text: '×',
+    onclick: () => { focusPlan = null; renderPlans(); applyHighlight(); renderInspector(); } }) : null;
+  box.append(h('div', { class: 'insp-head pp-head' },
+    h('span', { class: 'key-dot', style: `--c:${p.color}` }),
+    h('div', { class: 'pp-titles' }, h('h2', null, renaming && renaming.id === p.id && renaming.where === 'side' ? nameEditor(p.id) : nameTitle(p, 'side')),
+      h('p', { class: 'crumb', text: p.route })),
+    planActions(p, 'side'), close));
+  if (p.issues.length) box.append(h('div', { class: 'warnbox' }, ...p.issues.map(x => h('p', { text: '⚠ ' + x }))));
+  const stat = (label, value, sub) => h('div', { class: 'it-stat' }, h('span', { class: 'it-lab', text: label }), h('b', { class: 'it-val', text: value }),
+    sub == null ? null : typeof sub === 'string' ? h('small', { text: sub }) : sub);
+  const span = (a, b) => a == null || b == null ? '' : new Date(a).toDateString() === new Date(b).toDateString() ? `${hm(a)} – ${hm(b)}` : `${shortDT(a)} – ${shortDT(b)}`;
+  box.append(h('div', { class: 'it-stats pp-stats' },
+    stat('Total per head', money(p.cost), budget > 0 ? budgetMeter(p.cost, budget) : `Legs ${money(p.legCost)} + other ${money(p.extra)}`),
+    stat('Door to door', fmtDur(p.dur), span(p.start, p.end)),
+    stat('Travelling', fmtDur(p.move), `${p.legs.length} leg${p.legs.length === 1 ? '' : 's'}`),
+    stat('Waiting', fmtDur(p.wait), p.legs.length > 1 ? `${p.legs.length - 1} stop${p.legs.length > 2 ? 's' : ''}` : 'No stops')));
+  const list = h('div', { class: 'pp-list', role: 'list', 'aria-label': 'Itinerary' });
+  let day = null;
   p.legs.forEach((id, i) => {
-    const l = S.legs[id], t = T[id], c = legCostIn(p.p, id);
-    if (i > 0) { const a = T[p.legs[i - 1]].arr; if (a != null && t.dep != null && t.dep - a > MIN) { const w = waitInfo(p.p, id); ol.append(h('li', { class: 'w', title: w.custom || !canEdit() ? null : 'Click to rename this wait', style: 'cursor:pointer', text: `${w.label} at ${nodeName(l.from)} · ${fmtDur(w.ms)}`, onclick: () => select({ k: 'wait', id, plan: p.id }, '#fWait') })); } }
-    const li = h('li', { style: `--c:${p.color}` }, h('b', { text: legLabel(id) }), h('br'),
-      h('span', { class: 'muted', text: `${(MODE[l.mode] || MODE.other).tag} · ${t.timed ? `${shortDT(t.dep)} → ${shortDT(t.arrSched)}` : 'no times'}${c === '' ? '' : ' · ' + money(c)}` }));
-    li.addEventListener('mouseenter', () => { hoverLeg = id; applyHighlight(); });
-    li.addEventListener('mouseleave', () => { hoverLeg = null; applyHighlight(); });
-    ol.append(li);
+    const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
+    if (i > 0) {
+      const a = T[p.legs[i - 1]].arr;
+      if (a != null && t.dep != null && t.dep - a > MIN) {
+        const w = waitInfo(p.p, id);
+        list.append(h('div', { class: 'pp-wait', role: 'listitem' }, h('span'), h('span', { class: 'pp-wbar', 'aria-hidden': 'true' }),
+          h('div', { class: 'pp-what' }, h('span', { class: 'it-wlab', text: w.label }), h('span', { text: ` at ${nodeName(l.from)} · ${fmtDur(w.ms)}` }),
+            canEdit() ? h('button', { type: 'button', class: 'linkbtn it-ren', text: 'Rename', onclick: () => select({ k: 'wait', id, plan: p.id }, '#fWait') }) : null),
+          h('span')));
+      }
+    }
+    const dk = t.dep != null ? new Date(t.dep).toDateString() : '';
+    if (dk && dk !== day) { day = dk; list.append(h('div', { class: 'pp-day', text: dayLbl(t.dep) })); }
+    const later = t.arrSched != null && new Date(t.arrSched).toDateString() !== dk;
+    const row = h('div', { class: 'pp-leg', role: 'listitem', tabindex: '0', style: `--c:${legColor(id)}`, title: 'Show this leg', onclick: () => select({ k: 'leg', id }) },
+      h('div', { class: 'pp-time' }, h('b', { text: hm(t.dep) }), h('small', { text: `to ${later ? shortDT(t.arrSched) : hm(t.arrSched)}` })),
+      h('span', { class: 'pp-bar', 'aria-hidden': 'true' }),
+      h('div', { class: 'pp-what' }, h('b', { text: legLabel(id) }),
+        h('small', { text: [m.label, fmtDur(t.arrSched - t.dep), l.info, t.buf ? `+${fmtDur(t.buf)} buffer` : null].filter(Boolean).join(' · ') })),
+      h('span', { class: 'pp-fare', text: l.cost === '' ? '—' : money(l.cost) }));
+    row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select({ k: 'leg', id }); } });
+    hoverRow(row, id);
+    list.append(row);
   });
-  box.append(ol);
-  if (p.p.extras.length) box.append(h('div', { class: 'sect' }, h('h3', { text: 'Other costs' }), ...p.p.extras.map(x => h('div', { class: 'exl' }, h('span', { text: x.label || 'Other cost' }), h('span', { text: x.amount === '' ? '—' : money(x.amount) })))));
-  box.append(h('div', { class: 'tot' }, h('span', { text: 'Total per head' }), h('span', { text: money(p.cost) })));
-  box.append(h('div', { class: 'summary' }, h('span', null, 'Door to door ', h('b', { text: fmtDur(p.dur) })), h('span', null, 'Waiting ', h('b', { text: fmtDur(p.wait) }))));
-
+  if (p.p.extras.length) {
+    list.append(h('div', { class: 'pp-sub', text: 'Other costs in this plan' }));
+    p.p.extras.forEach(x => list.append(h('div', { class: 'pp-extra' }, h('span', { text: x.label || 'Other cost' }), h('span', { text: x.amount === '' ? '—' : money(x.amount) }))));
+  }
+  list.append(h('div', { class: 'pp-total' }, h('span', { text: 'Total per head' }), h('span', { text: money(p.cost) })));
+  if (budget > 0) list.append(h('div', { class: 'pp-budget' + (p.cost > budget ? ' over' : '') }, h('span', { text: `Budget ${money(budget)} per head` }),
+    h('span', { text: p.cost > budget ? `${money(p.cost - budget)} over` : `${money(budget - p.cost)} left` })));
+  box.append(list);
   return box;
 }
 function setSide(open) {
@@ -4852,6 +4858,7 @@ function bind() {
     }
     else if (e.key === 'Escape' && !inField && draft) { if (draftDirty()) toast(`Choose Cancel to drop the new ${draft.k === 'node' ? 'place' : 'leg'}`); else cancelDraft(); }
     else if (e.key === 'Escape' && !inField && sel) { if (canLeave()) { sel = null; renderInspector(); renderGraph(); } }
+    else if (e.key === 'Escape' && !inField && focusPlan && !B) { focusPlan = null; renderPlans(); applyHighlight(); renderInspector(); }
     else if (e.key === 'Escape' && !inField && UI.drawer) setDrawer(false);
     else if (e.key === 'Delete' && !inField && sel && sel.k !== 'wait' && canEdit()) { if (sel.k === 'node') delNode(sel.id); else delLeg(sel.id); }
   });
@@ -4867,7 +4874,7 @@ const TOUR_STEPS = [
   { target: () => $('#graph .edge'), title: 'Legs are the lines', body: 'A leg is one way to travel between two places: how, when it leaves and arrives, and the fare. Its colour shows the transport.' },
   { target: () => $('#graphScroll'), title: 'Read the timeline', body: 'Move the pointer across it and a card shows where each plan is at that moment. Night, sunrise, day and sunset run along the top.' },
   { target: () => $('#viewTabs'), title: 'One tab for each plan', body: 'A plan is one complete way from start to finish. Choose its tab to see only that plan.' },
-  { target: () => $('.dock-bar'), title: 'Compare plans', body: 'Pull this bar up to compare the plans and to read any plan’s itinerary and costs.', before: () => { if (UI.drawer) setDrawer(false); } },
+  { target: () => $('.dock-bar'), title: 'Compare plans', body: 'Pull this bar up to compare your plans. Click one to read its itinerary and costs in the details panel.', before: () => { if (UI.drawer) setDrawer(false); } },
   { target: () => $('#createGroup'), title: 'Add, and make plans', body: 'Choose New, at the bottom right, to add a place, a leg or a plan. For a plan, click the leg you leave on, then take the way on at each place until you get there.' },
   { target: () => $('#modeSeg'), title: 'Edit, or just view', body: 'Switch to View to look at everything without changing anything.' },
   { target: () => $('#settingsBtn'), title: 'Settings', body: 'The theme, the sky, your currency and budget, and Export and Import to keep a copy or move your plans to another device.' },
