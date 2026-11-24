@@ -889,6 +889,8 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 [data-ico="redo"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M15 14l5-5-5-5%22/%3E%3Cpath d=%22M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13%22/%3E%3C/svg%3E")}
 [data-ico="check"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M5 12.5l4.2 4.2L19 7%22/%3E%3C/svg%3E")}
 [data-ico="compass"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%229%22/%3E%3Cpath d=%22M15.6 8.4l-2.2 5-5 2.2 2.2-5z%22/%3E%3C/svg%3E")}
+[data-ico="prev"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M15 18l-6-6 6-6%22/%3E%3C/svg%3E")}
+[data-ico="next"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M9 18l6-6-6-6%22/%3E%3C/svg%3E")}
 [data-ico="edit"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z%22/%3E%3Cpath d=%22M14.5 7.5l3 3%22/%3E%3C/svg%3E")}
 [data-ico="file"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z%22/%3E%3Cpath d=%22M14 3v5h5M9 13h6M9 17h4%22/%3E%3C/svg%3E")}
 [data-ico="dots"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%225%22 cy=%2212%22 r=%221%22/%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%221%22/%3E%3Ccircle cx=%2219%22 cy=%2212%22 r=%221%22/%3E%3C/svg%3E")}
@@ -1137,6 +1139,43 @@ table.itin tr.it-budget.over td{color:var(--bad)}
 .sb-dot{width:8px;height:8px;border-radius:50%;background:var(--s4);flex:none}
 .guide-go{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
 @media (prefers-reduced-motion:reduce){.tour-ring,.tour-card{transition:none}}
+/* the journey around a selected leg */
+.journey{margin:2px 0 14px;padding:12px 12px 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2)}
+.jn-head{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.jn-head h4{flex:1;margin:0;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink2)}
+.jn-head .btn{height:28px;padding:0 9px;gap:4px}
+.btn.ico-after{flex-direction:row-reverse}
+.jn-lab{margin:8px 2px 4px;font-size:11.5px;font-weight:600;color:var(--muted)}
+.jn-row{display:flex;align-items:stretch;gap:4px}
+.jn-row + .jn-row{margin-top:2px}
+.jn-go{flex:1;min-width:0;display:flex;align-items:flex-start;gap:9px;padding:6px 8px;border:1px solid transparent;border-left:3px solid var(--c);border-radius:7px;background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer;transition:background .15s,border-color .15s}
+.jn-go:hover,.jn-go:focus-visible{background:var(--surface);border-color:var(--border);border-left-color:var(--c);outline:none}
+.jn-go:focus-visible{box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 45%,transparent)}
+.jn-txt{min-width:0}
+.jn-txt b{display:block;font-size:13px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.jn-txt small{display:block;margin-top:1px;font-size:11.5px;color:var(--muted)}
+.jn-num{flex:none;width:19px;height:19px;margin-top:1px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:700 11px/19px var(--font);text-align:center}
+.jn-dot{flex:none;width:8px;height:8px;margin:5px 5px 0;border-radius:50%;border:2px solid var(--c);background:var(--surface)}
+.jn-dot.came,.jn-dot.next{background:var(--c)}
+.jn-cur{display:flex;align-items:flex-start;gap:9px;margin:8px 0 2px;padding:8px 9px;border:1px solid color-mix(in srgb,var(--accent) 45%,var(--border));border-left:3px solid var(--c);border-radius:7px;background:var(--surface);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 10%,transparent)}
+.jn-here{flex:none;width:10px;height:10px;margin:4px 4px 0;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
+.jn-unfold{flex:none;display:inline-flex;align-items:center;gap:4px;padding:0 8px;border:1px solid var(--border);border-radius:7px;background:var(--surface);color:var(--ink2);font:600 11.5px var(--font);cursor:pointer}
+.jn-unfold:hover{color:var(--ink);border-color:var(--axis)}
+.jn-unfold .chev{width:9px;height:9px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(-45deg);transition:transform .15s;margin-right:1px}
+.jn-unfold[aria-expanded="true"] .chev{transform:rotate(45deg)}
+.jn-end{flex:none;align-self:center;padding:0 6px;font-size:11px;color:var(--muted)}
+.jn-branches.sub{margin:2px 0 4px 13px;padding-left:9px;border-left:1.5px dotted var(--axis)}
+.jn-plans{display:inline-flex;gap:3px;margin-left:6px;vertical-align:1px}
+.jn-plans i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+.jn-more-note{margin:4px 0 0 12px;font-size:11.5px;color:var(--muted)}
+.jn-flash{animation:jnflash .8s ease 2}
+@keyframes jnflash{50%{background:color-mix(in srgb,var(--accent) 16%,transparent);border-radius:8px}}
+#graph .navdim{opacity:.3}
+#graph .nnum{cursor:pointer}
+#graph .nnum circle{fill:var(--accent);stroke:var(--surface);stroke-width:2.5}
+#graph .nnum:hover circle{stroke-width:4}
+#graph .nnumtxt{font:700 11px var(--font);fill:var(--accent-ink);text-anchor:middle;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.jn-flash{animation:none}}
 </style>
 </head>
 <body>
@@ -2117,6 +2156,7 @@ function renderGraph() {
   drawScrub();
   applyHighlight();
   drawGuide();
+  drawNav();
 }
 function curveY(L, x) {
   if (Math.abs(L.yk - L.yd) < .5 || L.xS - L.s0 < 1) return x >= L.xS ? L.yk : L.yd;
@@ -2308,13 +2348,14 @@ function drawScrub() {
 }
 function applyHighlight() {
   const svg = $('#graph');
-  let legSet = null, planId = null, chosen = null;
+  let legSet = null, planId = null, chosen = null, navSet = null;
   const ph = guidePhase();
   if (ph) {
     if (ph === 'end') { legSet = reach(); chosen = new Set(B.startLeg ? [B.startLeg] : []); }
     else if (ph === 'route' || ph === 'done') { legSet = new Set(); builderRemaining().forEach(p => p.forEach(id => legSet.add(id))); chosen = new Set(B.chosen); }
     if (hoverLeg) legSet = new Set([hoverLeg, ...B.chosen, ...(B.startLeg ? [B.startLeg] : [])]);
   } else if (hoverLeg) legSet = new Set([hoverLeg]);
+  else if (!hoverPlan && sel && sel.k === 'leg' && S.legs[sel.id]) navSet = new Set([sel.id, ...nextLegs(sel.id), ...prevLegs(sel.id)]);
   else {
     planId = hoverPlan || focusPlan;
     if (planId && PLBY[planId]) legSet = new Set([...PLBY[planId].legs, ...(S.plans[planId].pending || [])]); else planId = null;
@@ -2322,9 +2363,150 @@ function applyHighlight() {
   svg.querySelectorAll('[data-leg],[data-plan]').forEach(e => {
     const dim = !legSet ? false : e.dataset.plan ? e.dataset.plan !== planId : !(legSet.has(e.dataset.leg) || (e.dataset.also && e.dataset.also.split(' ').some(x => legSet.has(x))));
     e.classList.toggle('dim', dim);
+    e.classList.toggle('navdim', !!navSet && (e.dataset.plan || !(navSet.has(e.dataset.leg) || (e.dataset.also && e.dataset.also.split(' ').some(x => navSet.has(x))))));
     if (e.classList.contains('edge')) e.classList.toggle('chosen', !!chosen && chosen.has(e.dataset.leg));
   });
   document.querySelectorAll('#builder .opt[data-opt]').forEach(b => b.classList.toggle('hl', b.dataset.opt === (hoverLeg || guideHover)));
+}
+/* ---------- moving along legs ---------- */
+// The legs you can take after a leg (leaving its arrival place once you are there) and the legs that
+// can bring you to it. In a plan's view, only that plan's own next and previous leg.
+const navBack = {}, navFwd = {}, navOpen = new Set(); // the way you came, and which branches are unfolded
+function nextLegs(id) {
+  const l = S.legs[id], t = T[id]; if (!l || !t || !t.timed) return [];
+  const vp = viewPlan && PLBY[viewPlan];
+  if (vp) { const i = vp.legs.indexOf(id); return i >= 0 && vp.legs[i + 1] ? [vp.legs[i + 1]] : []; }
+  return legsFrom(l.to).filter(x => x !== id && T[x].ok && T[x].timed && T[x].dep >= t.arr - MIN);
+}
+function prevLegs(id) {
+  const l = S.legs[id], t = T[id]; if (!l || !t || !t.timed) return [];
+  const vp = viewPlan && PLBY[viewPlan];
+  if (vp) { const i = vp.legs.indexOf(id); return i > 0 ? [vp.legs[i - 1]] : []; }
+  return legsTo(l.from).filter(x => x !== id && T[x].ok && T[x].timed && T[x].arr <= t.dep + MIN).sort((a, b) => T[b].arr - T[a].arr);
+}
+// Go to a leg along the way, remember the way you went (so Previous and Next retrace it), and bring it
+// into view. A jump through the tree passes its whole chain of legs.
+function navTo(id, via, chain) {
+  if (!S.legs[id]) return;
+  const from = sel && sel.k === 'leg' ? sel.id : null;
+  if (from !== id) select({ k: 'leg', id });
+  if (!(sel && sel.k === 'leg' && sel.id === id)) return; // unsaved changes kept it where it was
+  const link = (a, b) => { navFwd[a] = b; navBack[b] = a; }; // a comes just before b
+  if (chain && chain.length > 1) for (let i = 1; i < chain.length; i++) link(chain[i - 1], chain[i]);
+  else if (from && from !== id) { if (via === 'back') link(id, from); else link(from, id); }
+  frameLeg(id);
+}
+function navNext() {
+  const id = sel && sel.k === 'leg' ? sel.id : null; if (!id) return;
+  const nx = nextLegs(id);
+  if (!nx.length) { toast(`No leg leaves ${nodeName(S.legs[id].to)} after this one`); return; }
+  const fwd = navFwd[id], pid = focusPlan || S.picked, pl = pid && PLBY[pid], inPlan = pl && pl.legs.includes(id) ? pl.legs[pl.legs.indexOf(id) + 1] : null;
+  const pick = nx.length === 1 ? nx[0] : nx.includes(fwd) ? fwd : nx.includes(inPlan) ? inPlan : null;
+  if (pick) { navTo(pick); return; }
+  flashJourney('.jn-next');
+  toast(`${nx.length} ways go on from ${nodeName(S.legs[id].to)}: choose one, or press its number`);
+}
+function navPrev() {
+  const id = sel && sel.k === 'leg' ? sel.id : null; if (!id) return;
+  const pv = prevLegs(id);
+  if (!pv.length) { toast(`No leg arrives at ${nodeName(S.legs[id].from)} before this one`); return; }
+  const back = navBack[id], pid = focusPlan || S.picked, pl = pid && PLBY[pid], inPlan = pl && pl.legs.includes(id) ? pl.legs[pl.legs.indexOf(id) - 1] : null;
+  const pick = pv.length === 1 ? pv[0] : pv.includes(back) ? back : pv.includes(inPlan) ? inPlan : null;
+  if (pick) { navTo(pick, 'back'); return; }
+  flashJourney('.jn-prev');
+  toast(`${pv.length} legs can bring you to ${nodeName(S.legs[id].from)}: choose one`);
+}
+function flashJourney(q) { const e = $(`#inspector ${q}`); if (!e) return; e.classList.remove('jn-flash'); void e.offsetWidth; e.classList.add('jn-flash'); e.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+// Bring a leg into view, centred, with its nearest connections when they fit. The timeline zooms out
+// only when the leg itself would not fit.
+function frameLeg(id) {
+  const sc = $('#graphScroll'); if (!sc || !geo || !geo.time) return;
+  let L = geo.legs[id]; if (!L) return;
+  const pad = 90, room = sc.clientWidth - 2 * pad, t = T[id];
+  if (L.xA - L.s0 > room && S.pph > 3) {
+    S.pph = Math.max(3, Math.floor(room / Math.max(.25, (t.arr - t.dep) / H)));
+    renderGraph(); syncToolbar(); save();
+    L = geo.legs[id]; if (!L) return;
+  }
+  const xs = [L.s0, L.xA], ys = [L.yd, L.yk];
+  for (const [x, end] of [...nextLegs(id).map(x => [x, 's0']), ...prevLegs(id).map(x => [x, 'xA'])]) {
+    const M = geo.legs[x]; if (!M) continue;
+    const all = [...xs, M[end]];
+    if (Math.max(...all) - Math.min(...all) <= room) { xs.push(M[end]); ys.push(end === 's0' ? M.yd : M.yk); }
+  }
+  const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+  sc.scrollTo({ left: Math.max(0, cx - sc.clientWidth / 2), top: Math.max(0, cy - sc.clientHeight / 2), behavior: 'smooth' });
+}
+// The journey around the selected leg: where it can come from, the leg itself, and every way it goes
+// on, as a tree you can unfold branch by branch. Click any leg to go there.
+function journeyCard(l) {
+  const id = l.id, t = T[id], nx = nextLegs(id), pv = prevLegs(id);
+  const card = h('section', { class: 'journey', 'aria-label': 'Journey' });
+  card.append(h('div', { class: 'jn-head' }, h('h4', { text: 'Journey' }),
+    icoBtn('Previous', navPrev, 'small', 'prev', pv.length ? 'The leg before this one (←)' : 'No leg comes before this one', !pv.length),
+    icoBtn('Next', navNext, 'small ico-after', 'next', nx.length ? 'The leg after this one (→)' : 'No leg goes on from here', !nx.length)));
+  if (!t || !t.timed) { card.append(h('p', { class: 'hint', text: 'Add both times to see which legs connect to this one.' })); return card; }
+  const plansOf = x => { const ps = LEGPLANS[x] || []; return ps.length ? h('span', { class: 'jn-plans', title: 'In ' + ps.map(p => S.plans[p].name).join(', ') }, ...ps.map(p => h('i', { style: `--c:${PLBY[p] ? PLBY[p].color : 'var(--s9)'}` }))) : null; };
+  const row = (x, mark, sub, onGo) => {
+    const lx = S.legs[x], m = MODE[lx.mode] || MODE.other;
+    return h('button', { type: 'button', class: 'jn-go', style: `--c:${legColor(x)}`, 'data-nav': x, onclick: onGo,
+      onmouseenter: () => { hoverLeg = x; applyHighlight(); }, onmouseleave: () => { hoverLeg = null; applyHighlight(); } },
+      mark, h('span', { class: 'jn-txt' }, h('b', null, legLabel(x), plansOf(x)), h('small', { text: `${m.label} · ${sub}` })));
+  };
+  // before
+  const prev = h('div', { class: 'jn-sect jn-prev' }, h('p', { class: 'jn-lab', text: pv.length > 1 ? `Can come from · ${pv.length} legs` : pv.length ? 'Comes from' : 'Starts here: no leg arrives before it' }));
+  pv.slice(0, 6).forEach(x => prev.append(h('div', { class: 'jn-row' }, row(x, h('span', { class: 'jn-dot' + (navBack[id] === x ? ' came' : ''), 'aria-hidden': 'true' }),
+    `${shortDT(T[x].dep)} → ${shortDT(T[x].arrSched)} · ${fmtDur(t.dep - T[x].arr)} before`, () => navTo(x, 'back')))));
+  if (pv.length > 6) prev.append(h('p', { class: 'jn-more-note', text: `and ${pv.length - 6} more` }));
+  card.append(prev);
+  // this leg
+  const m = MODE[l.mode] || MODE.other;
+  card.append(h('div', { class: 'jn-cur', style: `--c:${legColor(id)}` }, h('span', { class: 'jn-here', 'aria-hidden': 'true' }),
+    h('span', { class: 'jn-txt' }, h('b', { text: legLabel(id) }), h('small', { text: `${m.label} · ${shortDT(t.dep)} → ${shortDT(t.arrSched)} · this leg` }))));
+  // after, as a tree
+  const next = h('div', { class: 'jn-sect jn-next' }, h('p', { class: 'jn-lab', text: nx.length > 1 ? `Goes on · ${nx.length} ways` : nx.length ? 'Goes on' : `Ends here: no leg leaves ${nodeName(l.to)} after it` }));
+  const tree = (ids, parent, depth, path) => {
+    const box = h('div', { class: 'jn-branches' + (depth ? ' sub' : '') }), cap = depth ? 5 : 8;
+    ids.slice(0, cap).forEach((x, k) => {
+      const kids = depth < 5 ? nextLegs(x) : [], key = `${path}>${x}`;
+      const mark = depth ? h('span', { class: 'jn-dot', 'aria-hidden': 'true' }) : ids.length > 1 ? h('span', { class: 'jn-num', text: String(k + 1) }) : h('span', { class: 'jn-dot next', 'aria-hidden': 'true' });
+      const r = h('div', { class: 'jn-row' }, row(x, mark, `${shortDT(T[x].dep)} → ${shortDT(T[x].arrSched)} · after ${fmtDur(T[x].dep - T[parent].arr)}`, () => navTo(x, null, key.split('>'))));
+      let subBox = null;
+      if (kids.length) {
+        const tg = h('button', { type: 'button', class: 'jn-unfold', 'aria-expanded': String(navOpen.has(key)), title: `${kids.length} way${kids.length > 1 ? 's go' : ' goes'} on from ${nodeName(S.legs[x].to)}` }, h('span', { class: 'chev', 'aria-hidden': 'true' }), String(kids.length));
+        tg.addEventListener('click', () => {
+          const open = tg.getAttribute('aria-expanded') !== 'true';
+          tg.setAttribute('aria-expanded', String(open));
+          if (open) { navOpen.add(key); subBox = tree(kids, x, depth + 1, key); r.after(subBox); } else { navOpen.delete(key); if (subBox) subBox.remove(); subBox = null; }
+        });
+        r.append(tg);
+      } else r.append(h('span', { class: 'jn-end', title: `No leg leaves ${nodeName(S.legs[x].to)} after this one`, text: 'end' }));
+      box.append(r);
+      if (kids.length && navOpen.has(key)) { subBox = tree(kids, x, depth + 1, key); box.append(subBox); }
+    });
+    if (ids.length > cap) box.append(h('p', { class: 'jn-more-note', text: `and ${ids.length - cap} more` }));
+    return box;
+  };
+  if (nx.length) next.append(tree(nx, id, 0, id));
+  card.append(next);
+  return card;
+}
+// On the timeline: the ways on from the selected leg carry the same numbers as in the panel.
+function drawNav() {
+  const svg = $('#graph');
+  svg.querySelectorAll('.navg').forEach(e => e.remove());
+  if (B || !geo || !geo.time || !sel || sel.k !== 'leg' || !S.legs[sel.id]) return;
+  const nx = nextLegs(sel.id); if (nx.length < 2) return;
+  const g = el('g', { class: 'navg' }, svg);
+  nx.slice(0, 9).forEach((id, k) => {
+    const L = geo.legs[id]; if (!L) return;
+    const tag = svg.querySelector(`.durtag[data-leg="${id}"] rect`);
+    const cx = tag ? +tag.getAttribute('x') - 13 : (L.s0 + L.xS) / 2, cy = tag ? +tag.getAttribute('y') + 8 : (L.yd + L.yk) / 2;
+    const n = el('g', { class: 'nnum', 'data-leg': id }, g);
+    el('circle', { cx, cy, r: 9.5 }, n);
+    txt(n, cx, cy + 4, String(k + 1), 'nnumtxt');
+    el('title', null, n).textContent = `Way on ${k + 1}: ${legLabel(id)}. Click to go there.`;
+  });
 }
 function legTitle(id) {
   const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
@@ -2494,7 +2676,7 @@ function legList(title, ids, side) {
     const l = S.legs[id], t = T[id];
     ul.append(h('li', null, h('button', {
       class: 'legbtn', type: 'button',
-      onclick: () => select({ k: 'leg', id }),
+      onclick: () => { select({ k: 'leg', id }); if (sel && sel.k === 'leg' && sel.id === id) frameLeg(id); },
       onmouseenter: () => { hoverLeg = id; applyHighlight(); },
       onmouseleave: () => { hoverLeg = null; applyHighlight(); },
     }, h('span', { class: 'key', style: `--c:${legColor(id)}` }),
@@ -2627,6 +2809,7 @@ function legInspector(box, l) {
   const ed = editFor('leg', l.id);
   box.append(inspHead('Leg', legColor(l.id)));
   box.append(h('p', { class: 'heldnote', id: 'liveHeld', role: 'status', hidden: true }));
+  box.append(journeyCard(l));
   legFields(box, ed.obj, false);
   const ps = LEGPLANS[l.id] || [];
   const s = h('div', { class: 'sect' }, h('h3', { text: `In saved plans (${ps.length})` }));
@@ -2636,7 +2819,7 @@ function legInspector(box, l) {
   } else s.append(h('p', { class: 'hint', text: 'Not in any saved plan yet.' }));
   box.append(s);
   box.append(h('div', { id: 'liveTwin' }));
-  ed.normalFoot = () => setFoot(icoBtn(l.to ? `Next leg from ${nodeName(l.to)}` : 'Next leg', () => newLeg({ from: l.to, mode: l.mode, after: T[l.id] ? T[l.id].arr : null }), 'primary', 'leg', 'A leg that leaves where this one arrives', !l.to), [
+  ed.normalFoot = () => setFoot(icoBtn(l.to ? `Add leg from ${nodeName(l.to)}` : 'Add the next leg', () => newLeg({ from: l.to, mode: l.mode, after: T[l.id] ? T[l.id].arr : null }), 'primary', 'leg', 'A leg that leaves where this one arrives', !l.to), [
     { label: 'Return leg', sub: 'The same trip back the other way', ico: 'undo', disabled: !(l.from && l.to), run: () => newLeg({ from: l.to, to: l.from, mode: l.mode }) },
     { label: 'Alternative leg', sub: 'Another way between the same two places', ico: 'leg', run: () => newLeg({ from: l.from, to: l.to, mode: l.mode, dep: l.dep, arr: l.arr }) },
   ], icoBtn('Delete', () => delLeg(l.id), 'danger', 'trash', 'Delete this leg (you can undo)'));
@@ -2942,6 +3125,7 @@ function nodeView(box, n) {
 function legView(box, l) {
   const t = T[l.id], m = MODE[l.mode] || MODE.other;
   box.append(inspHead('Leg', legColor(l.id)));
+  box.append(journeyCard(l));
   const row = (k, v) => [h('dt', { text: k }), h('dd', { text: v })];
   box.append(h('dl', { class: 'ro-dl' },
     ...row('How', m.label + (l.info ? ` · ${l.info}` : '')),
@@ -4021,7 +4205,13 @@ function bind() {
     const node = e.target.closest('[data-node]');
     if (node) { select({ k: 'node', id: node.dataset.node }); return; }
     const leg = e.target.closest('[data-leg]');
-    if (leg) { select({ k: 'leg', id: leg.dataset.leg }); return; }
+    if (leg) {
+      const id = leg.dataset.leg, cur = sel && sel.k === 'leg' ? sel.id : null;
+      if (cur && cur !== id && nextLegs(cur).includes(id)) navTo(id);
+      else if (cur && cur !== id && prevLegs(cur).includes(id)) navTo(id, 'back');
+      else select({ k: 'leg', id });
+      return;
+    }
     if (geo && geo.time) { trackY(e); scrubT = tAt(e); pinned = !pinned; drawScrub(); renderNow(); }
     if (sel && canLeave()) { sel = null; renderInspector(); renderGraph(); }
   });
@@ -4230,6 +4420,11 @@ function bind() {
     if (mod && key === 's') { e.preventDefault(); if (draft) saveDraft(); else if (edit && editDirty()) saveEdit(); else if (B && guidePhase() === 'done') savePlan(); return; }
     if (mod && !e.shiftKey && key === 'z' && !inField) { if (canEdit()) { e.preventDefault(); undo(); } }
     else if (mod && ((e.shiftKey && key === 'z') || (!e.shiftKey && key === 'y')) && !inField) { if (canEdit()) { e.preventDefault(); redo(); } }
+    else if (!inField && !B && sel && sel.k === 'leg' && !mod && !e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || /^[1-9]$/.test(e.key)) && !e.target.closest('.menu, [role=tablist], #dockSplit')) {
+      e.preventDefault();
+      if (e.key === 'ArrowRight') navNext(); else if (e.key === 'ArrowLeft') navPrev();
+      else { const x = nextLegs(sel.id)[+e.key - 1]; if (x) navTo(x); }
+    }
     else if (e.key === 'Escape' && !inField && draft) { if (draftDirty()) toast(`Choose Cancel to drop the new ${draft.k === 'node' ? 'place' : 'leg'}`); else cancelDraft(); }
     else if (e.key === 'Escape' && !inField && sel) { if (canLeave()) { sel = null; renderInspector(); renderGraph(); } }
     else if (e.key === 'Escape' && !inField && UI.drawer) setDrawer(false);
