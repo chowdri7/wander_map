@@ -416,32 +416,77 @@ body{overflow:hidden}
 :root{--sun:#ffc93c;--moon:#f4efd6;--sky-n:#1f2f63;--sky-d:#f6a06e;--sky-y:#a9d6f7;--sky-k:#ec7b57;--sky-a-n:.17;--sky-a-d:.16;--sky-a-y:.10;--sky-a-k:.16;--star:#fff;--sunpath:rgba(255,255,255,.85);--night:rgba(42,82,160,.075);--twilight:rgba(230,140,80,.07);--tod-night:#34456b;--tod-night-ink:#eef2fb;--tod-dawn:#f5c79a;--tod-day:#f8e3a0;--tod-dusk:#f0a985;--tod-ink:#3a2a08}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--sky-n:#0a1230;--sky-d:#b4552c;--sky-y:#3d6fa6;--sky-k:#a3402a;--sky-a-n:.55;--sky-a-d:.26;--sky-a-y:.16;--sky-a-k:.26;--star:#eef2ff;--sunpath:rgba(255,236,190,.6);--night:rgba(90,130,230,.10);--twilight:rgba(220,130,80,.08);--tod-night:#22304f;--tod-night-ink:#d3dcf2;--tod-dawn:#7d5130;--tod-day:#7a6524;--tod-dusk:#7f432d;--tod-ink:#fbefd6}}
 :root[data-theme="dark"]{--sky-n:#0a1230;--sky-d:#b4552c;--sky-y:#3d6fa6;--sky-k:#a3402a;--sky-a-n:.55;--sky-a-d:.26;--sky-a-y:.16;--sky-a-k:.26;--star:#eef2ff;--sunpath:rgba(255,236,190,.6);--night:rgba(90,130,230,.10);--twilight:rgba(220,130,80,.08);--tod-night:#22304f;--tod-night-ink:#d3dcf2;--tod-dawn:#7d5130;--tod-day:#7a6524;--tod-dusk:#7f432d;--tod-ink:#fbefd6}
+/* ---------- phones ---------- */
+.more-btn,.phone-only{display:none}
+@media (max-width:700px){
+  .app{padding:8px 8px 0;gap:8px}
+  .topbar{flex-wrap:nowrap;align-items:flex-start;gap:8px}
+  .topbar h1{font-size:15px;margin:9px 0 0 2px}
+  .topbar .toolbar{justify-content:flex-end;padding:5px;gap:5px}
+  .toolbar .tb-more,.toolbar .spacer{display:none !important}
+  .toolbar.open .tb-more{display:inline-flex !important}
+  .toolbar.open .tb-sep.tb-more{display:none !important}
+  .more-btn{display:inline-flex}
+  .more-btn[aria-expanded="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+  .desk-only{display:none}.phone-only{display:inline}
+  input,select,textarea{font-size:16px}
+  .legend{display:none}
+  .card-head{padding:10px 12px 8px}
+  .viewtabs{padding:0 12px 8px}
+  .planbar{margin:0 12px 8px}
+  .planbar .btns{margin-left:0;flex-wrap:wrap}
+  .notice{margin:0 12px 8px}
+  .main{gap:0}
+  .main.side-hidden .graph-card{margin-right:0}
+  .sidetab{display:none !important}
+  /* the edit panel becomes a sheet that slides up from the bottom */
+  .side{position:fixed;left:0;right:0;top:auto;bottom:0;width:auto;height:min(80vh,680px);max-height:none;border-radius:18px 18px 0 0;z-index:8;box-shadow:0 -12px 32px rgba(0,0,0,.32);padding:0 14px 20px}
+  .side-head{position:sticky;top:0;z-index:2;background:var(--surface);margin:0 -14px 8px;padding:14px 14px 8px;justify-content:flex-end;border-bottom:1px solid var(--border)}
+  .side-head::before{content:"";position:absolute;left:50%;top:6px;width:40px;height:4px;margin-left:-20px;border-radius:2px;background:var(--axis)}
+  .side-head .btn{font-size:14px;padding:6px 14px}
+  .drawer{left:0;right:0}
+  .drawer.open .drawer-body{height:84vh}
+  .drawer-body .card-head{flex-wrap:wrap}
+  .plans-card .card-head .tb-group{flex-wrap:wrap}
+  #builder{padding:6px 12px 14px}
+  .bform{grid-template-columns:1fr}
+  .exrow{grid-template-columns:minmax(0,1fr) 100px auto}
+  .now-list{grid-template-columns:1fr}
+  .now{padding:8px 12px 10px}
+  .actions .btn{flex:1 1 auto}
+  .nimg-link{grid-template-columns:1fr}
+  .nimg img,.nimg-add{width:min(100%,240px);margin-left:auto;margin-right:auto}
+  .nimg-btns{justify-content:center}
+  .toast{bottom:58px}
+  .opts{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
   <h1 title="Add places, join them with legs, then build and save named plans.">Wander Map</h1>
-  <div class="toolbar" role="toolbar" aria-label="Planner tools">
+  <div class="toolbar" id="toolbar" role="toolbar" aria-label="Planner tools">
     <button id="addNode" class="btn primary" type="button">+ Place</button>
     <button id="addLeg" class="btn" type="button">+ Leg</button>
     <button id="makePlan" class="btn" type="button">Make a plan</button>
-    <span class="tb-sep"></span>
-    <span class="tb-group"><span class="tb-label">Zoom</span><input id="zoom" type="range" min="3" max="60" step="1" aria-label="Zoom timeline"></span>
-    <button id="fit" class="btn" type="button" title="Fit the whole timeline on screen">Fit</button>
-    <button id="costBtn" class="btn" type="button" aria-pressed="false" title="Show the cost of each leg on the timeline">Costs: off</button>
-    <span class="tb-sep"></span>
-    <label class="tb-group"><span class="tb-label" title="Budget per head; leave empty for none">Budget</span><input id="budget" type="number" min="0" step="10" inputmode="numeric" placeholder="none"></label>
-    <select id="currency" class="cursel" aria-label="Currency" title="Currency"></select>
+    <button id="moreBtn" class="btn more-btn" type="button" aria-expanded="false" aria-controls="toolbar">More</button>
+    <span class="tb-sep tb-more"></span>
+    <span class="tb-group tb-more"><span class="tb-label">Zoom</span><input id="zoom" type="range" min="3" max="60" step="1" aria-label="Zoom timeline"></span>
+    <button id="fit" class="btn tb-more" type="button" title="Fit the whole timeline on screen">Fit</button>
+    <button id="costBtn" class="btn tb-more" type="button" aria-pressed="false" title="Show the cost of each leg on the timeline">Costs: off</button>
+    <span class="tb-sep tb-more"></span>
+    <label class="tb-group tb-more"><span class="tb-label" title="Budget per head; leave empty for none">Budget</span><input id="budget" type="number" min="0" step="10" inputmode="numeric" placeholder="none"></label>
+    <select id="currency" class="cursel tb-more" aria-label="Currency" title="Currency"></select>
     <span class="spacer"></span>
     <button id="undo" class="btn" type="button" title="Undo (Ctrl+Z)">Undo</button>
-    <button id="export" class="btn" type="button" title="Save everything as a JSON file">Export</button>
-    <button id="importBtn" class="btn" type="button" title="Load from a JSON file">Import</button>
+    <button id="export" class="btn tb-more" type="button" title="Save everything as a JSON file">Export</button>
+    <button id="importBtn" class="btn tb-more" type="button" title="Load from a JSON file">Import</button>
     <input id="importFile" type="file" accept="application/json,.json" hidden>
-    <button id="clear" class="btn" type="button">Clear</button>
-    <span class="tb-sep"></span>
-    <button id="sideBtn" class="btn" type="button" aria-pressed="true" aria-controls="side" title="Show or hide the edit panel">Panel</button>
-    <button id="themeBtn" class="btn" type="button" title="Switch between light and dark">Dark</button>
+    <button id="clear" class="btn tb-more" type="button">Clear</button>
+    <span class="tb-sep tb-more"></span>
+    <button id="sideBtn" class="btn tb-more" type="button" aria-pressed="true" aria-controls="side" title="Show or hide the edit panel">Panel</button>
+    <button id="themeBtn" class="btn tb-more" type="button" title="Switch between light and dark">Dark</button>
   </div>
   </header>
 
@@ -486,7 +531,7 @@ body{overflow:hidden}
       <div id="now" class="now" aria-live="polite"></div>
     </section>
     <aside class="card side" id="side" aria-label="Edit panel">
-      <div class="side-head"><button class="btn" type="button" id="sideHide" title="Hide this panel">Hide ▶</button></div>
+      <div class="side-head"><button class="btn" type="button" id="sideHide" title="Hide this panel"><span class="desk-only">Hide ▶</span><span class="phone-only">Close</span></button></div>
       <div id="inspector"></div>
     </aside>
     <button class="sidetab" id="sideOpen" type="button" title="Show the edit panel">◀ Panel</button>
@@ -567,12 +612,15 @@ let renaming = null;                // { id, where } while a plan name is being 
 const UIKEY = 'wander-map.ui', OLD_UIKEY = 'route-branch-planner.ui';
 let UI = { side: true, drawer: false, theme: null, costs: false };
 try { Object.assign(UI, JSON.parse(localStorage.getItem(UIKEY) || localStorage.getItem(OLD_UIKEY) || '{}')); } catch (e) { /* ignore */ }
+let sideOpen = true;
 function saveUI() { try { localStorage.setItem(UIKEY, JSON.stringify(UI)); } catch (e) { /* ignore */ } }
 const undoStack = [];
 
 /* ---------- small helpers ---------- */
 const mctx = document.createElement('canvas').getContext('2d');
 function tw(s, font) { mctx.font = font; return mctx.measureText(s).width; }
+const TOUCH = window.matchMedia && matchMedia('(hover: none)').matches;
+function clip(s, font, w) { if (tw(s, font) <= w) return s; while (s.length > 1 && tw(s + '…', font) > w) s = s.slice(0, -1); return s + '…'; }
 function el(tag, attrs, parent) {
   const e = document.createElementNS(SVGNS, tag);
   if (attrs) for (const k in attrs) if (attrs[k] != null) e.setAttribute(k, attrs[k]);
@@ -980,8 +1028,9 @@ function renderGraph() {
   if (!has) { svg.style.display = 'none'; geo = null; return; }
   svg.style.display = '';
 
-  let left = 150;
-  order.forEach(id => { left = Math.max(left, Math.min(300, tw(nodeName(id), F.root) + 52 + (S.nodes[id].img ? 34 : 0))); });
+  const phone = window.matchMedia && matchMedia('(max-width: 700px)').matches;
+  let left = phone ? 104 : 150;
+  order.forEach(id => { left = Math.max(left, Math.min(phone ? 150 : 300, tw(nodeName(id), F.root) + 52 + (S.nodes[id].img ? 34 : 0))); });
   const rowY = {};
   let y = LAY.top + 14;
   const rows = order.map(id => { const r = { id, top: y, y: y + 50, bot: y + LAY.rowH }; y = r.bot; rowY[id] = r.y; return r; });
@@ -1020,7 +1069,7 @@ function renderGraph() {
       el('image', { href: im, x: 16, y: r.y - 10, width: 28, height: 28, preserveAspectRatio: 'xMidYMid slice', 'clip-path': `url(#nimg-${r.id})` }, g);
       el('circle', { cx: 30, cy: r.y + 4, r: 14, class: 'nimgring' }, g);
     }
-    txt(g, lx, r.y + 4, nodeName(r.id), 'rowlbl');
+    txt(g, lx, r.y + 4, clip(nodeName(r.id), F.root, left - lx - 16), 'rowlbl');
     const nLegs = legsFrom(r.id).length + legsTo(r.id).length, np = meets[r.id] ? meets[r.id].size : 0;
     txt(g, lx, r.y + 19, np > 1 ? `${np} plans meet here` : `${nLegs} leg${nLegs === 1 ? '' : 's'}`, 'rowsub');
     el('title', null, g).textContent = `${nodeName(r.id)}: click to edit, add legs from or to here`;
@@ -1355,9 +1404,9 @@ function renderNow() {
   if (!S.order.length) return;
   if (!geo || !geo.time) { box.append(h('p', { class: 'hint', text: 'Add times to your legs to use the timeline.' })); return; }
   if (!PL.some(p => p.legs.length)) { box.append(h('p', { class: 'hint', text: 'Save a plan, then move the pointer across the timeline to see where each plan is at that moment.' })); return; }
-  if (scrubT == null) { box.append(h('p', { class: 'hint', text: 'Move the pointer across the timeline to see where every saved plan is at that moment. Click to pin it.' })); return; }
+  if (scrubT == null) { box.append(h('p', { class: 'hint', text: TOUCH ? 'Tap the timeline to see where every saved plan is at that moment. Tap again to release.' : 'Move the pointer across the timeline to see where every saved plan is at that moment. Click to pin it.' })); return; }
   box.append(h('div', { class: 'now-head' }, h('strong', { text: fmtDT(scrubT) }),
-    h('span', { class: 'muted', text: pinned ? '  ·  pinned, click the timeline to release' : '  ·  click to pin' })));
+    h('span', { class: 'muted', text: pinned ? (TOUCH ? '  ·  tap the timeline to release' : '  ·  pinned, click the timeline to release') : '  ·  click to pin' })));
   const ul = h('ul', { class: 'now-list' });
   for (const pi of (viewPlan && PLBY[viewPlan] ? [PLBY[viewPlan]] : PL)) {
     if (!pi.legs.length) continue;
@@ -2038,9 +2087,10 @@ function delPlan(id) {
 /* ---------- edits ---------- */
 function select(s, focusSel) {
   sel = s; focusNext = focusSel || null;
-  if (!UI.side) setSide(true);
+  if (!sideOpen) setSide(true);
   renderInspector(); renderGraph();
-  if (window.innerWidth <= 1000) $('#inspector').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (window.innerWidth <= 700) $('#side').scrollTop = 0; // phone: the panel is a sheet, start at its top
+  else if (window.innerWidth <= 1000) $('#inspector').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function newNode() {
   checkpoint();
@@ -2231,9 +2281,11 @@ function planPanel(p) {
   return box;
 }
 function setSide(open) {
-  UI.side = !!open; saveUI();
-  $('#main').classList.toggle('side-hidden', !UI.side);
-  $('#sideBtn').setAttribute('aria-pressed', String(UI.side));
+  sideOpen = !!open;
+  // phones open and close the panel as needed; only a computer's choice is remembered
+  if (!(window.matchMedia && matchMedia('(max-width: 900px)').matches)) { UI.side = sideOpen; saveUI(); }
+  $('#main').classList.toggle('side-hidden', !sideOpen);
+  $('#sideBtn').setAttribute('aria-pressed', String(sideOpen));
   renderGraph();
 }
 function setDrawer(open) {
@@ -2429,8 +2481,14 @@ function bind() {
     updateBuilderTotal();
   });
 
+  $('#moreBtn').addEventListener('click', () => {
+    const tb = $('#toolbar'), open = !tb.classList.contains('open');
+    tb.classList.toggle('open', open);
+    $('#moreBtn').setAttribute('aria-expanded', String(open));
+    $('#moreBtn').textContent = open ? 'Less' : 'More';
+  });
   $('#costBtn').addEventListener('click', () => { UI.costs = !UI.costs; saveUI(); syncCostBtn(); renderGraph(); });
-  $('#sideBtn').addEventListener('click', () => setSide(!UI.side));
+  $('#sideBtn').addEventListener('click', () => setSide(!sideOpen));
   $('#sideHide').addEventListener('click', () => setSide(false));
   $('#sideOpen').addEventListener('click', () => setSide(true));
   $('#drawerTab').addEventListener('click', () => setDrawer(!UI.drawer));
@@ -2509,9 +2567,9 @@ applyTheme();
 syncCostBtn();
 // On phone-size screens the panel floats over the timeline, so it starts closed there;
 // it opens when a place or leg is tapped, or with the Panel button.
-if (window.matchMedia && matchMedia('(max-width: 900px)').matches) UI.side = false;
-$('#main').classList.toggle('side-hidden', !UI.side);
-$('#sideBtn').setAttribute('aria-pressed', String(UI.side));
+sideOpen = window.matchMedia && matchMedia('(max-width: 900px)').matches ? false : UI.side;
+$('#main').classList.toggle('side-hidden', !sideOpen);
+$('#sideBtn').setAttribute('aria-pressed', String(sideOpen));
 setDrawer(UI.drawer);
 renderLegend();
 bind();
