@@ -431,6 +431,19 @@ body{overflow:hidden}
 .viewonly #graph *{cursor:default !important}
 .viewonly #graph .badge,.viewonly #graph .badge *{cursor:pointer !important}
 .viewonly .planbar{gap:4px 12px}
+.mlist{display:none}
+.viewonly #graph{display:none !important}
+.viewonly #now{display:none}
+.viewonly .mlist{display:block;padding:4px 12px 14px}
+.mday{font-weight:700;font-size:13px;color:var(--ink);margin:14px 2px 6px}
+.mleg{display:flex;gap:12px;align-items:stretch;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:6px}
+.mtimes{display:flex;flex-direction:column;justify-content:space-between;min-width:64px;font-variant-numeric:tabular-nums;font-size:13px;color:var(--ink2)}
+.mtimes b{color:var(--ink);font-size:14px}
+.mbody{flex:1;min-width:0;border-left:4px solid var(--c);padding-left:10px}
+.mroute{font-weight:600;font-size:14px;color:var(--ink);overflow-wrap:anywhere}
+.mmeta{font-size:12.5px;color:var(--ink2);margin-top:2px}
+.minfo{font-size:12px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.mwait{font-size:12.5px;color:var(--muted);font-style:italic;margin:2px 0 6px 76px;padding-left:14px;border-left:2px dashed var(--axis)}
 /* ---------- phones ---------- */
 .more-btn,.phone-only{display:none}
 @media (max-width:700px){
@@ -524,6 +537,7 @@ body{overflow:hidden}
       <div class="notice" id="noTimeHint" hidden></div>
       <div id="graphScroll" class="graph-scroll">
         <svg id="graph" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Places and legs"></svg>
+        <div id="mlist" class="mlist" aria-label="Itinerary"></div>
         <div id="emptyGraph" class="empty" hidden>
           <div class="guide">
             <h3>Plan a trip in three steps</h3>
@@ -1040,7 +1054,39 @@ function statusAt(pi, t) {
 /* ---------- graph ---------- */
 // One row per node. Every leg in or out of a node starts or ends on that node's row, so legs
 // meet there; legs at a node within a few pixels of each other share one station capsule.
+// Phones get a plain itinerary list instead of the chart: legs in time order, grouped by day,
+// with the wait between legs when a plan is shown.
+function renderMobileList() {
+  const box = $('#mlist'); if (!box) return;
+  box.replaceChildren();
+  if (!viewOnly || !S.order.length) return;
+  const vp = viewPlan && PLBY[viewPlan];
+  const ids = vp ? vp.legs.slice() : Object.keys(S.legs).filter(id => T[id].ok).sort(byDep);
+  if (!ids.length) { box.append(h('p', { class: 'hint', style: 'padding:16px', text: vp ? 'This plan has no legs yet.' : 'No legs yet. Add them on a computer.' })); return; }
+  let day = null;
+  ids.forEach((id, i) => {
+    const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
+    if (vp && i > 0) {
+      const w = waitInfo(vp.p, id);
+      if (w && w.ms != null && w.ms > MIN) box.append(h('div', { class: 'mwait' }, `${w.label} at ${nodeName(w.node)} · ${fmtDur(w.ms)}`));
+    }
+    const d = t.dep != null ? dayLbl(t.dep) : 'No time set';
+    if (d !== day) { day = d; box.append(h('div', { class: 'mday', text: d })); }
+    const nextDay = t.dep != null && t.arrSched != null && dayLbl(t.arrSched) !== dayLbl(t.dep) ? ` (${dayLbl(t.arrSched)})` : '';
+    const plans = !vp && LEGPLANS[id] && LEGPLANS[id].length ? LEGPLANS[id].map(pid => S.plans[pid].name).join(', ') : '';
+    box.append(h('div', { class: 'mleg', style: `--c:${m.color}` },
+      h('div', { class: 'mtimes' },
+        h('b', { text: t.noDep ? '—' : hm(t.dep) }),
+        h('span', { text: t.noArr ? '—' : hm(t.arrSched) })),
+      h('div', { class: 'mbody' },
+        h('div', { class: 'mroute', text: `${nodeName(l.from)} → ${nodeName(l.to)}` }),
+        h('div', { class: 'mmeta', text: [m.label, t.noDep || t.noArr ? null : fmtDur(t.arrSched - t.dep), t.buf ? `+${fmtDur(t.buf)} buffer` : null, UI.costs && l.cost !== '' ? money(l.cost) : null].filter(Boolean).join(' · ') + nextDay }),
+        l.info ? h('div', { class: 'minfo', text: l.info }) : null,
+        plans ? h('div', { class: 'minfo', text: `In: ${plans}` }) : null)));
+  });
+}
 function renderGraph() {
+  renderMobileList();
   const svg = $('#graph'), sc = $('#graphScroll');
   svg.replaceChildren();
   gScrub = null;
@@ -2605,7 +2651,7 @@ function bind() {
     else if (e.key === 'Escape' && !inField && UI.drawer) setDrawer(false);
     else if (e.key === 'Delete' && !inField && sel && sel.k !== 'wait') { if (sel.k === 'node') delNode(sel.id); else delLeg(sel.id); }
   });
-  window.addEventListener('resize', () => { clearTimeout(bind._rt); bind._rt = setTimeout(renderGraph, 150); });
+  window.addEventListener('resize', () => { clearTimeout(bind._rt); bind._rt = setTimeout(() => { if (VIEWQ && VIEWQ.matches !== viewOnly) { applyViewOnly(); renderAll(); } else renderGraph(); }, 150); });
 }
 
 /* ---------- start ---------- */
