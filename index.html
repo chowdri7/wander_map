@@ -659,7 +659,7 @@ let viewOnly = !!(VIEWQ && VIEWQ.matches);
 function applyViewOnly() {
   viewOnly = !!(VIEWQ && VIEWQ.matches);
   document.body.classList.toggle('viewonly', viewOnly);
-  if (viewOnly) { sel = null; B = null; viewPlan = null; focusPlan = null; hoverPlan = null; hoverLeg = null; }
+  if (viewOnly) { sel = null; B = null; focusPlan = null; hoverPlan = null; hoverLeg = null; }
 }
 function saveUI() { try { localStorage.setItem(UIKEY, JSON.stringify(UI)); } catch (e) { /* ignore */ } }
 const undoStack = [];
@@ -949,6 +949,7 @@ function compute() {
   if (hoverLeg && !S.legs[hoverLeg]) hoverLeg = null;
   if (sel && !(sel.k === 'node' ? S.nodes[sel.id] : sel.k === 'wait' ? S.plans[sel.plan] && waitInfo(S.plans[sel.plan], sel.id) : S.legs[sel.id])) sel = null;
   if (viewPlan && !S.plans[viewPlan]) viewPlan = null;
+  if (viewOnly && !viewPlan && PL.length) viewPlan = S.picked && PLBY[S.picked] ? S.picked : PL[0].id;
   if (renaming && !S.plans[renaming.id]) renaming = null;
 }
 function planInfo(p) {
@@ -1061,8 +1062,9 @@ function renderMobileList() {
   box.replaceChildren();
   if (!viewOnly || !S.order.length) return;
   const vp = viewPlan && PLBY[viewPlan];
-  const ids = vp ? vp.legs.slice() : Object.keys(S.legs).filter(id => T[id].ok).sort(byDep);
-  if (!ids.length) { box.append(h('p', { class: 'hint', style: 'padding:16px', text: vp ? 'This plan has no legs yet.' : 'No legs yet. Add them on a computer.' })); return; }
+  if (!vp) { box.append(h('p', { class: 'hint', style: 'padding:16px', text: 'No plans yet. Make your plans on a computer, then Export them and Import the file here.' })); return; }
+  const ids = vp.legs.slice();
+  if (!ids.length) { box.append(h('p', { class: 'hint', style: 'padding:16px', text: 'This plan has no legs yet.' })); return; }
   let day = null;
   ids.forEach((id, i) => {
     const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
@@ -2305,7 +2307,8 @@ function setView(id) {
 function renderViewTabs() {
   const box = $('#viewTabs'); box.replaceChildren();
   box.hidden = !PL.length;
-  $('#graphTitle').textContent = viewPlan && PLBY[viewPlan] ? 'Plan view' : 'Places and legs';
+  $('#graphTitle').textContent = viewOnly ? 'Plans' : '';
+  if (!viewOnly) $('#graphTitle').textContent = viewPlan && PLBY[viewPlan] ? 'Plan view' : 'Places and legs';
   const tab = (id, label, color) => {
     const b = h('button', { class: 'vtab', type: 'button', role: 'tab', 'aria-selected': String((viewPlan || null) === id),
       title: id ? 'Show only this plan. Double-click to rename.' : 'Show every place and leg', onclick: () => setView(id) },
@@ -2313,7 +2316,7 @@ function renderViewTabs() {
     if (id) b.addEventListener('dblclick', () => { setView(id); startRename(id, 'bar'); });
     return b;
   };
-  box.append(tab(null, 'All places and legs'));
+  if (!viewOnly) box.append(tab(null, 'All places and legs'));
   PL.forEach(p => box.append(tab(p.id, p.name, p.color)));
 }
 function renderPlanBar() {
