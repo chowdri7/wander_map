@@ -1353,7 +1353,7 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 #graph .skycloud.far{opacity:.75}
 #graph .cpuffs{fill:var(--cloudf);filter:url(#cloudsoft)}
 #graph .cshade{fill:var(--cloud-shade);filter:url(#cloudshade)}
-@keyframes cloudpass{0%{transform:translateX(-46px)}100%{transform:translateX(46px)}}
+@keyframes cloudpass{0%{transform:translateX(calc(-1 * var(--dx,46px)))}100%{transform:translateX(var(--dx,46px))}}
 .still #graph .skycloud{animation:none !important}
 @media (prefers-reduced-motion:reduce){#graph .skycloud{animation:none}}
 /* light mode: day and night read apart at a glance. Day is a clear, bright sky; night a deep dusk-blue
@@ -1415,6 +1415,20 @@ body.dock-dragging{user-select:none;-webkit-user-select:none}
 body.dock-dragging,body.dock-dragging *{cursor:ns-resize !important}
 /* New steps aside when the timeline is too short to hold it */
 .graph-card.cramped .fabdock{display:none}
+/* the budget field fills its box, with its arrows at the right end */
+.set-ctl .inpre #budget{flex:1 1 0;width:0;min-width:0}
+.inpre .stepper{padding:0;margin-left:auto}
+/* the moon over each night: a crescent with a soft glow, and one small cloud passing it */
+:root{--bmoon:#f7e2a0;--bmoon-glow:rgba(255,255,255,.95);--moon-edge:rgba(160,128,50,.55);--ncloud:rgba(255,255,255,.88);--nightmoon-o:1}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bmoon:var(--moon);--bmoon-glow:rgba(241,234,211,.32);--moon-edge:rgba(255,255,255,.14);--ncloud:rgba(196,210,236,.16);--nightmoon-o:.92}}
+:root[data-theme="dark"]{--bmoon:var(--moon);--bmoon-glow:rgba(241,234,211,.32);--moon-edge:rgba(255,255,255,.14);--ncloud:rgba(196,210,236,.16);--nightmoon-o:.92}
+#graph .bodyart,#graph .bodyart *{pointer-events:none}
+#graph .nightmoon{opacity:var(--nightmoon-o)}
+#graph .nmglow{animation-duration:7s}
+#graph .nmdisc{fill:var(--bmoon)}
+#graph .nmdark{fill:color-mix(in srgb,var(--sky-n) 26%,var(--surface))}
+#graph .nmrim{fill:none;stroke:var(--moon-edge);stroke-width:1}
+#graph .ncloud .cpuffs{fill:var(--ncloud)}
 </style>
 </head>
 <body>
@@ -1428,6 +1442,7 @@ body.dock-dragging,body.dock-dragging *{cursor:ns-resize !important}
       <button id="redo" class="btn icon" type="button" data-ico="redo" title="Redo (Ctrl+Shift+Z or Ctrl+Y)">Redo</button>
     </div>
     <span class="tb-sep vsep"></span>
+    <button id="themeBtn" class="btn icon" type="button" data-ico="moon" aria-pressed="false" aria-label="Dark mode" title="Switch to dark mode">Theme</button>
     <button id="settingsBtn" class="btn icon" type="button" data-ico="gear" aria-haspopup="dialog" aria-controls="settings" title="Settings: theme, sky, currency, budget, your data and the tour">Settings</button>
     <div class="modeseg" id="modeSeg" role="group" aria-label="Mode">
       <button id="modeEdit" type="button" data-ico="edit" aria-pressed="true" aria-label="Edit" title="Edit: add and change places, legs and plans">Edit</button>
@@ -2179,6 +2194,9 @@ function renderFixNote() {
     ...items.slice(0, 4).map(it => btn(it.label, it.run, 'small', it.title)));
   if (items.length > 4) box.append(h('span', { class: 'muted', text: `and ${items.length - 4} more` }));
 }
+// The inner width of the timeline's frame, rounded down: the browser rounds clientWidth up or down,
+// and a chart even a fraction of a pixel too wide brings a scrollbar that can come and go for ever.
+function frameW(sc) { return Math.max(0, Math.floor(sc.getBoundingClientRect().width) - (sc.offsetWidth - sc.clientWidth)); }
 function renderGraph() {
   renderMobileList();
   const svg = $('#graph'), sc = $('#graphScroll');
@@ -2215,7 +2233,7 @@ function renderGraph() {
     X = t => left + (t - tmin) / H * pph;
     width = Math.ceil(X(tmax) + LAY.right);
   }
-  width = Math.max(width, sc.clientWidth || 0);
+  width = Math.max(width, frameW(sc));
   const height = phone ? y + 16 : Math.max(y + 16, (sc.clientHeight || 0) - 4);
   svg.setAttribute('width', width); svg.setAttribute('height', height);
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
@@ -2478,13 +2496,13 @@ function curveY(L, x) {
 const SKY = [[0, 'n'], [4.5, 'n'], [6, 'd'], [7.5, 'y'], [16.5, 'y'], [18, 'k'], [19.5, 'n'], [24, 'n']];
 function rng(seed) { let x = (seed * 2654435761) >>> 0 || 1; return () => { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; return ((x >>> 0) % 10000) / 10000; }; }
 function drawTimeAxis(g) {
-  const { X, tmin, tmax, pph, height } = geo;
+  const { X, tmin, tmax, pph, height, left } = geo;
   const svg = $('#graph'), defs = el('defs', null, svg);
   const yA = LAY.top + 8, sy = 25, sh = 34, x0 = X(tmin), x1 = X(tmax), hz = sy + sh;
   const tip = (e, t) => { el('title', null, e).textContent = t; return e; };
   // shared paint: glows for sun and moon, and a soft depth over the strip
   const glow = (id, v) => { const rg = el('radialGradient', { id }, defs); el('stop', { offset: '0', style: `stop-color:var(${v});stop-opacity:1` }, rg); el('stop', { offset: '1', style: `stop-color:var(${v});stop-opacity:0` }, rg); };
-  glow('sunglow', '--sun-glow'); glow('moonglow', '--moon-glow'); glow('daylight', '--daylight');
+  glow('sunglow', '--sun-glow'); glow('moonglow', '--moon-glow'); glow('bmoonglow', '--bmoon-glow'); glow('daylight', '--daylight');
   const soft = el('filter', { id: 'cloudsoft', x: '-30%', y: '-60%', width: '160%', height: '220%' }, defs);
   el('feGaussianBlur', { stdDeviation: '2.2' }, soft);
   const shade = el('filter', { id: 'cloudshade', x: '-40%', y: '-200%', width: '180%', height: '500%' }, defs);
@@ -2495,6 +2513,26 @@ function drawTimeAxis(g) {
   el('rect', { x: x0, y: sy, width: x1 - x0, height: sh, rx: 9 }, clip);
   const sky = el('g', { 'clip-path': 'url(#skyclip)' }, g);
   const art = [];   // drawn over the strip's depth layer
+  // the sun, the moon and the clouds over the chart: added after the grid lines, so none crosses them
+  const bodyArt = el('g', { class: 'bodyart nohit' });
+  const k = Math.max(.55, Math.min(1, pph / 13));   // smaller when the days are narrow
+  // a cloud over the chart keeps to its room: it moves in from an edge, shrinks only when it must,
+  // and is left out when it would be too small; dx is how far it drifts each way
+  const fitCloud = (cx, cy, C, roomL, roomR, dx) => {
+    const w = Math.min(16 * C, (roomR - roomL - 2 * dx) / 2.15, (cy - yA - 6) / .5625, (height - 6 - cy) / .6);
+    if (!(w >= 9)) return null;
+    return { w, cx: Math.max(roomL + dx + w, Math.min(roomR - dx - 1.15 * w, cx)) };
+  };
+  const drawCloud = (cls, style, cx, cy, w, shade) => {
+    const cl = el('g', { class: cls, style }, bodyArt), hh = w * .375;
+    if (shade) el('ellipse', { cx: cx + w * .1, cy: cy + hh * 1.25, rx: w * 1.05, ry: hh * .32, class: 'cshade' }, cl);
+    const puffs = el('g', { class: 'cpuffs' }, cl);
+    el('ellipse', { cx, cy: cy + hh * .38, rx: w, ry: hh * .62 }, puffs);
+    el('circle', { cx: cx - w * .42, cy: cy + hh * .1, r: hh * .82 }, puffs);
+    el('circle', { cx: cx - w * .05, cy: cy - hh * .38, r: hh * 1.12 }, puffs);
+    el('circle', { cx: cx + w * .42, cy: cy - hh * .05, r: hh * .9 }, puffs);
+    el('circle', { cx: cx + w * .76, cy: cy + hh * .3, r: hh * .55 }, puffs);
+  };
   const d0 = new Date(tmin); d0.setHours(0, 0, 0, 0);
   let i = 0;
   for (let day = d0.getTime(); day < tmax; i++) {
@@ -2514,32 +2552,40 @@ function drawTimeAxis(g) {
       { const tn = day + 12 * H; if (tn > tmin - 7 * H && tn < tmax + 7 * H) el('ellipse', { cx: X(tn), cy: yA, rx: 5.6 * pph, ry: Math.max(150, (height - yA) * .8), fill: 'url(#daylight)', class: 'nohit' }, g); }
       // the sun high over the middle of the day, the counterpart of the night's stars
       { const tn = day + 12 * H;
-        if (pph >= 6 && tn >= tmin && tn <= tmax) {
-          const cx = X(tn), cy = yA + 30, sn = el('g', { class: 'daysun nohit' }, g);
-          el('circle', { cx, cy, r: 30, fill: 'url(#sunglow)', class: 'dshalo' }, sn);
+        if (pph >= 5 && tn >= tmin && tn <= tmax) {
+          const cx = X(tn), cy = yA + 30, sn = el('g', { class: 'daysun' }, bodyArt);
+          el('circle', { cx, cy, r: 30 * k, fill: 'url(#sunglow)', class: 'dshalo' }, sn);
           const rays = el('g', { class: 'dsrays' }, sn);
-          for (let k = 0; k < 12; k++) { const an = k * Math.PI / 6, r1 = 14.5, r2 = k % 2 ? 18 : 20.5; el('line', { x1: cx + Math.cos(an) * r1, y1: cy + Math.sin(an) * r1, x2: cx + Math.cos(an) * r2, y2: cy + Math.sin(an) * r2 }, rays); }
-          el('circle', { cx, cy, r: 10.5, class: 'dsdisc' }, sn);
+          for (let q = 0; q < 12; q++) { const an = q * Math.PI / 6, r1 = 14.5 * k, r2 = (q % 2 ? 18 : 20.5) * k; el('line', { x1: cx + Math.cos(an) * r1, y1: cy + Math.sin(an) * r1, x2: cx + Math.cos(an) * r2, y2: cy + Math.sin(an) * r2 }, rays); }
+          el('circle', { cx, cy, r: 10.5 * k, class: 'dsdisc' }, sn);
         } }
-      // daytime over the chart, the counterpart of the night's stars: a clear sky with a few big, soft
-      // clouds drifting slowly, each with a faint shadow, in two layers that move at different speeds.
+      // the moon high over the middle of the night, with one small cloud passing it
+      if (pph >= 5 && day >= tmin && day <= tmax) {
+        const cx = X(day), cy = yA + 30, R = 11.5 * k, mn = el('g', { class: 'nightmoon' }, bodyArt);
+        el('circle', { cx, cy, r: 32 * k, fill: 'url(#bmoonglow)', class: 'nmglow mglow' }, mn);
+        // a crescent: the lit disc, with its dark side drawn over it inside the disc only
+        const cp = el('clipPath', { id: `mclip${i}` }, defs); el('circle', { cx, cy, r: R }, cp);
+        el('circle', { cx, cy, r: R, class: 'nmdisc' }, mn);
+        el('circle', { cx: cx + R * .5, cy: cy - R * .2, r: R * .88, class: 'nmdark', 'clip-path': `url(#mclip${i})` }, mn);
+        el('circle', { cx, cy, r: R, class: 'nmrim' }, mn);
+        const nR = Math.min(X(tmax) - 6, X(Math.min(tmax, day + 4.5 * H))), dx = Math.max(4, Math.min(12, (nR - cx) * .1));
+        const f = fitCloud(cx + 24 * k, cy + 13 * k, 1.15 * k, cx - 4 * k, nR, dx);
+        if (f) drawCloud('skycloud ncloud', `--dx:${dx.toFixed(1)}px;animation-duration:38s`, f.cx, cy + 13 * k, f.w, false);
+      }
+      // daytime over the chart: a clear sky with a few big, soft clouds drifting slowly, each with a
+      // faint shadow, in two layers that move at different speeds. Each keeps between sunrise and sunset.
       {
         const ta = Math.max(tmin, day + 7.5 * H), tb = Math.min(tmax, day + 16.5 * H);
         if (tb > ta) {
           const rr = rng(day / H + 31), top = yA, deep = height - yA, span = X(tb) - X(ta);
           const n = Math.max(1, Math.round(span / 210));
-          for (let k = 0; k < n; k++) {
-            const far = k % 2 === 1, C = (far ? 1.5 : 2.3) + rr() * (far ? .8 : 1.3);
-            const cx = X(ta) + span * (k + .5 + (rr() - .5) * .5) / n, cy = top + (far ? 26 : 56) + rr() * Math.max(12, deep * (far ? .35 : .6) - 60);
-            const cl = el('g', { class: 'skycloud nohit' + (far ? ' far' : ''), style: `animation-delay:-${(rr() * 60).toFixed(1)}s;animation-duration:${((far ? 70 : 48) + rr() * 24).toFixed(1)}s` }, g);
-            const w = 16 * C, hh = 6 * C;
-            el('ellipse', { cx: cx + w * .1, cy: cy + hh * 1.25, rx: w * 1.05, ry: hh * .32, class: 'cshade' }, cl);
-            const puffs = el('g', { class: 'cpuffs' }, cl);
-            el('ellipse', { cx, cy: cy + hh * .38, rx: w, ry: hh * .62 }, puffs);
-            el('circle', { cx: cx - w * .42, cy: cy + hh * .1, r: hh * .82 }, puffs);
-            el('circle', { cx: cx - w * .05, cy: cy - hh * .38, r: hh * 1.12 }, puffs);
-            el('circle', { cx: cx + w * .42, cy: cy - hh * .05, r: hh * .9 }, puffs);
-            el('circle', { cx: cx + w * .76, cy: cy + hh * .3, r: hh * .55 }, puffs);
+          const rL = Math.max(left + 6, X(Math.max(tmin, day + 6 * H))), rR = Math.min(X(tmax) - 6, X(Math.min(tmax, day + 18 * H))), slot = (rR - rL) / n;
+          for (let q = 0; q < n; q++) {
+            const far = q % 2 === 1, C = (far ? 1.5 : 2.3) + rr() * (far ? .8 : 1.3);
+            const cx = X(ta) + span * (q + .5 + (rr() - .5) * .5) / n, cy = top + (far ? 26 : 56) + rr() * Math.max(12, deep * (far ? .35 : .6) - 60);
+            const delay = (rr() * 60).toFixed(1), dur = ((far ? 70 : 48) + rr() * 24).toFixed(1), dx = Math.min(46, Math.max(5, slot * .16));
+            const f = fitCloud(cx, cy, C, rL + q * slot, rL + (q + 1) * slot, dx);
+            if (f) drawCloud('skycloud' + (far ? ' far' : ''), `--dx:${dx.toFixed(1)}px;animation-delay:-${delay}s;animation-duration:${dur}s`, f.cx, cy, f.w, true);
           }
         }
       }
@@ -2583,9 +2629,13 @@ function drawTimeAxis(g) {
     day = next;
   }
   el('rect', { x: x0, y: sy, width: x1 - x0, height: sh, fill: 'url(#skydepth)', class: 'nohit' }, sky);
-  for (const [kind, A, B, C, D] of art) {
+  for (let [kind, A, B, C, D] of art) {
     if (kind === 'cloud') {
       // a soft cloud: three overlapping puffs on a flat base, drifting slowly
+      // it fits the strip: never cut by its top, bottom or ends
+      C = Math.min(C, (B - sy - 1.5) / (1.7 * 5.2), (hz - 1.5 - B) / (1.1 * 5.2), (x1 - x0 - 26) / 30);
+      if (!(C >= .4)) continue;
+      A = Math.max(x0 + 10 + 15 * C, Math.min(x1 - 10 - 15 * C, A));
       const cl = el('g', { class: 'cloudg drift', style: `animation-delay:-${D}s` }, sky);
       const w = 15 * C, hh = 5.2 * C;
       el('ellipse', { cx: A, cy: B + hh * .35, rx: w, ry: hh * .75, class: 'cloud' }, cl);
@@ -2632,6 +2682,7 @@ function drawTimeAxis(g) {
       if (pph * step >= 34) txt(g, x, yA - 4, hm(t), 'hrlbl halo');
     }
   }
+  g.append(bodyArt);
   if (firstMid == null || firstMid - X(tmin) > 110) dayPill(X(tmin) + 4, tmin);
 }
 function drawScrub() {
@@ -4370,6 +4421,15 @@ function applyMotion() { document.body.classList.toggle('still', UI.motion === f
 function applyTheme() {
   if (UI.theme === 'light' || UI.theme === 'dark') document.documentElement.dataset.theme = UI.theme;
   else delete document.documentElement.dataset.theme;
+  syncThemeBtn();
+}
+// The header's light and dark switch shows the mode it leads to, and always agrees with Settings.
+function syncThemeBtn() {
+  const b = document.getElementById('themeBtn'); if (!b) return;
+  const dark = effectiveTheme() === 'dark';
+  b.dataset.ico = dark ? 'sun' : 'moon';
+  b.setAttribute('aria-pressed', String(dark));
+  b.title = dark ? 'Switch to light mode' : 'Switch to dark mode';
 }
 
 /* ---------- legs added inside a plan's view join that plan ---------- */
@@ -4579,6 +4639,7 @@ function bind() {
   $('#setClose').addEventListener('click', closeSettings);
   $('#settings').addEventListener('click', e => { if (e.target.id === 'settings') closeSettings(); });
   $('#settings').addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeSettings(); } });
+  $('#themeBtn').addEventListener('click', () => { UI.theme = effectiveTheme() === 'dark' ? 'light' : 'dark'; saveUI(); applyTheme(); syncSettings(); });
   $('#setTheme').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; UI.theme = b.dataset.v === 'system' ? null : b.dataset.v; saveUI(); applyTheme(); syncSettings(); });
   $('#setMotion').addEventListener('change', e => { UI.motion = e.target.checked; saveUI(); applyMotion(); });
   $('#setCosts').addEventListener('change', e => { UI.costs = e.target.checked; saveUI(); syncCostBtn(); renderGraph(); });
@@ -4633,8 +4694,8 @@ function bind() {
     if (hh < 80) setDrawer(false); else { setDockH(hh); saveUI(); renderGraph(); }
   });
   if (window.ResizeObserver) {
-    let lastH = 0;
-    new ResizeObserver(() => { if (viewOnly) return; const hh = $('#graphScroll').clientHeight; $('.graph-card').classList.toggle('cramped', hh < 150); if (dock.classList.contains('resizing')) return; if (Math.abs(hh - lastH) > 2) { lastH = hh; clearTimeout(bind._ro); bind._ro = setTimeout(renderGraph, 60); } }).observe($('#graphScroll'));
+    let lastH = 0, roHits = [];
+    new ResizeObserver(() => { if (viewOnly) return; const hh = $('#graphScroll').clientHeight; $('.graph-card').classList.toggle('cramped', hh < 150); if (dock.classList.contains('resizing')) return; if (Math.abs(hh - lastH) > 2) { lastH = hh; const now = performance.now(); roHits = roHits.filter(t => now - t < 1500); roHits.push(now); if (roHits.length > 6) return; /* a size flipping back and forth is not chased for ever */ clearTimeout(bind._ro); bind._ro = setTimeout(renderGraph, 60); } }).observe($('#graphScroll'));
   }
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
   // Wander Map open in more than one tab: when another tab saves, this one takes that copy at once,
@@ -4691,7 +4752,7 @@ function bind() {
     if (!geo || !geo.time) return;
     const sc = $('#graphScroll');
     const hours = (geo.tmax - geo.tmin) / H;
-    S.pph = Math.max(3, Math.min(60, Math.floor((sc.clientWidth - geo.left - LAY.right) / hours)));
+    S.pph = Math.max(3, Math.min(60, Math.floor((frameW(sc) - geo.left - LAY.right) / hours)));
     renderGraph(); syncToolbar(); save();
     sc.scrollLeft = 0;
   });
