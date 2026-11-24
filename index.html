@@ -768,6 +768,73 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 .planbar .name-plain{font-size:16px}
 .star.ro{display:inline-block;min-width:16px;color:var(--accent);text-align:center}
 
+/* the plan maker in the side panel */
+.side #builder{flex:1 1 auto;min-height:0;overflow:auto;padding:18px 20px 24px;border:0}
+.side #builder[hidden]{display:none}
+#inspector[hidden]{display:none}
+#builder .bname{max-width:none}
+#builder .bname .fld{margin-bottom:6px}
+.bends{display:grid;gap:8px;margin:8px 0 6px}
+.bend{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface)}
+.bend.todo{background:var(--surface2);border-style:dashed}
+.bend.cur{border-style:solid;border-color:color-mix(in srgb,var(--accent) 60%,transparent);background:color-mix(in srgb,var(--accent) 7%,var(--surface));box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}
+.bend-lab{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.bend.cur .bend-lab{color:var(--accent)}
+.bend-txt{min-width:0;font-size:13px;line-height:1.35;color:var(--ink2)}
+.bend-txt b{display:block;color:var(--ink);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bend-txt small{display:block;margin-top:1px;color:var(--muted);font-size:12px}
+.blists{margin:0 0 4px}
+.blists summary{cursor:pointer;width:max-content;padding:4px 0;font-size:12.5px;color:var(--ink2)}
+.blists summary:hover{color:var(--ink)}
+.blists[open] summary{margin-bottom:8px}
+.blists select{width:100%;text-overflow:ellipsis}
+#builder .bsec{margin-top:18px}
+.bsum{margin:0 0 10px !important;font-size:12.5px !important;color:var(--ink2)}
+.side .steps{gap:8px}
+.side .steps li{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:8px;align-items:start;font-size:13px}
+.side .steps .key{margin-top:8px;transform:none}
+.side .steps li.muted{display:block;color:var(--muted)}
+.sbody{min-width:0}
+.sbody b{display:block;font-weight:600}
+.sbody small{display:block;color:var(--muted);font-size:12px}
+.side .ask{margin-top:12px}
+.side .ask > p{font-weight:500;font-size:13px;line-height:1.4}
+.side .opts{grid-template-columns:1fr}
+.opt{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;align-items:start}
+.opt.hl{border-color:color-mix(in srgb,var(--accent) 55%,transparent);background:color-mix(in srgb,var(--accent) 7%,var(--surface))}
+.onum{width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:700 12px/22px var(--font);text-align:center}
+.obody{min-width:0}
+.bcosts{display:grid;gap:0}
+.bcost{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:10px;align-items:center;padding:8px 0 8px 10px;border-left:3px solid var(--c);margin:3px 0}
+.bc-txt{min-width:0}
+.bc-txt b{display:block;font-size:13px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.bc-txt small{display:block;color:var(--muted);font-size:12px}
+.bcost .ovin{width:100% !important}
+.bwait{display:grid;gap:3px;margin:0 0 0 1px;padding:5px 0 5px 11px;border-left:2px dotted var(--axis)}
+.bwait input{height:28px;font-size:12.5px}
+.bwait small{color:var(--muted);font-size:12px}
+.side .exrow{grid-template-columns:minmax(0,1fr) 88px auto}
+.side .btotal{margin:12px 0 0}
+#guideNote{background:color-mix(in srgb,var(--accent) 9%,var(--surface));color:var(--ink);border-color:color-mix(in srgb,var(--accent) 32%,transparent);font-weight:500}
+#guideNote{flex-wrap:nowrap;align-items:flex-start}
+#guideNote > span:last-child{flex:1;min-width:0}
+.gn-dot{width:8px;height:8px;margin-top:6px;border-radius:50%;background:var(--accent);flex:none;animation:gndot 1.6s ease-in-out infinite}
+@keyframes gndot{0%,100%{opacity:.45}50%{opacity:1}}
+/* the guide on the timeline */
+#graph .gglow{fill:none;stroke:var(--accent);stroke-width:16;stroke-linecap:round;pointer-events:none;animation:gpulse 1.6s ease-in-out infinite}
+@keyframes gpulse{0%,100%{opacity:.12}50%{opacity:.36}}
+#graph .gnum{cursor:pointer}
+#graph .gnum circle{fill:var(--accent);stroke:var(--surface);stroke-width:2.5}
+#graph .gnum:hover circle{stroke-width:4}
+#graph .gnumtxt{font:700 11px var(--font);fill:var(--accent-ink);text-anchor:middle;pointer-events:none}
+#graph .gflag{pointer-events:none}
+#graph .gflag rect{fill:var(--ink)}
+#graph .gflagtxt{font:700 10px var(--font);fill:var(--surface);text-anchor:middle;letter-spacing:.05em}
+.building #graph .edge,.building #graph .rowhead,.building #graph .station{cursor:pointer}
+/* on narrow screens the panel would cover the timeline while you pick legs: share the width instead */
+@media (max-width:900px) and (min-width:701px){.building .main:not(.side-hidden) .maincol{padding-right:min(380px,92vw)}}
+@media (prefers-reduced-motion:reduce){#graph .gglow{animation:none;opacity:.25}.gn-dot{animation:none}}
+
 /* icons */
 [data-ico="edit"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z%22/%3E%3Cpath d=%22M14.5 7.5l3 3%22/%3E%3C/svg%3E")}
 [data-ico="file"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z%22/%3E%3Cpath d=%22M14 3v5h5M9 13h6M9 17h4%22/%3E%3C/svg%3E")}
@@ -992,6 +1059,7 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
         <button class="btn small" type="button" id="exampleHide">Keep it</button>
       </div>
       <div class="notice" id="noTimeHint" hidden></div>
+      <div class="notice" id="guideNote" role="status" hidden></div>
       <div id="graphScroll" class="graph-scroll">
         <div id="scrubTip" class="scrubtip" hidden></div>
         <svg id="graph" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Places and legs"></svg>
@@ -1051,7 +1119,6 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
         <button id="drawerClose" type="button" hidden>Hide plans</button>
       </div>
       <div class="dock-body" id="drawerBody">
-        <div id="builder" hidden></div>
         <div class="table-scroll">
           <table class="plans" id="plansTable">
             <thead><tr><th><span class="muted" title="Pick">★</span></th><th>Plan</th><th>Route</th><th>Leaves</th><th>Arrives</th><th>Door to door</th><th>Cost per head</th></tr></thead>
@@ -1064,7 +1131,8 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
     </section>
     </div>
     <aside class="side" id="side" aria-label="Details panel">
-      <div class="side-head"><span class="side-title">Details</span><button class="btn icon" type="button" id="sideHide" data-ico="collapse" title="Hide the details panel" aria-label="Hide the details panel"><span class="desk-only">Hide</span><span class="phone-only">Close</span></button></div>
+      <div class="side-head"><span class="side-title" id="sideTitle">Details</span><button class="btn icon" type="button" id="sideHide" data-ico="collapse" title="Hide the details panel" aria-label="Hide the details panel"><span class="desk-only">Hide</span><span class="phone-only">Close</span></button></div>
+      <div id="builder" hidden></div>
       <div id="inspector"></div>
       <p class="held-bar" id="heldBar" role="status" hidden></p>
       <div class="side-foot" id="sideFoot" hidden></div>
@@ -1115,7 +1183,8 @@ let focusPlan = null, hoverPlan = null, hoverLeg = null, scrubT = null, pinned =
 let geo = null, gScrub = null, focusNext = null, pendingSnap = null;
 let bldSnap = null;
 let B = null;                       // the plan being made (not saved until "Save plan")
-let scrubY = null;                  // pointer height in the timeline, for the hover card
+let scrubY = null;
+let guideHover = null;               // the leg under the pointer while making a plan                  // pointer height in the timeline, for the hover card
 let viewPlan = null;                // plan view mode: only this plan's nodes and legs
 let renaming = null;                // { id, where } while a plan name is being edited
 const UIKEY = 'wander-map.ui', OLD_UIKEY = 'route-branch-planner.ui';
@@ -1479,6 +1548,7 @@ function compute() {
   if (viewPlan && !S.plans[viewPlan]) viewPlan = null;
   if (viewOnly && !viewPlan && PL.length) viewPlan = S.picked && PLBY[S.picked] ? S.picked : PL[0].id;
   if (renaming && !S.plans[renaming.id]) renaming = null;
+  if (B) checkBuilder();
 }
 function planInfo(p) {
   const legs = p.legs.filter(id => S.legs[id]);
@@ -1627,7 +1697,7 @@ function renderFixNote() {
     ...BROKEN.legs.map(id => ({ label: legLabel(id), title: T[id].problems[0].msg, run: () => select({ k: 'leg', id }) })),
     ...BROKEN.plans.map(id => ({ label: `Plan: ${PLBY[id].name}`, title: PLBY[id].issues[0], run: () => togglePlan(id, true) })),
   ];
-  box.hidden = !items.length || !canEdit();
+  box.hidden = !items.length || !canEdit() || !!B;
   if (box.hidden) return;
   box.append(h('span', { class: 'fix-lead', text: `${items.length === 1 ? 'One item is' : `${items.length} items are`} incomplete, so ${items.length === 1 ? 'it is' : 'they are'} kept out of new plans. Fix:` }),
     ...items.slice(0, 4).map(it => btn(it.label, it.run, 'small', it.title)));
@@ -1676,6 +1746,7 @@ function renderGraph() {
 
   const gBg = el('g', null, svg), gEdge = el('g', null, svg), gSt = el('g', null, svg), gDot = el('g', null, svg),
         gLab = el('g', null, svg), gBadge = el('g', null, svg);
+  geo.gEdge = gEdge;
   gScrub = el('g', { class: 'scrub' }, svg);
   el('rect', { x: 0, y: 0, width, height, class: 'hit' }, gBg);
   rows.forEach((r, i) => { if (i % 2 === 0) el('rect', { x: 0, y: r.top, width, height: r.bot - r.top, class: 'rowband' }, gBg); });
@@ -1878,6 +1949,7 @@ function renderGraph() {
   }
   drawScrub();
   applyHighlight();
+  drawGuide();
 }
 function curveY(L, x) {
   if (Math.abs(L.yk - L.yd) < .5 || L.xS - L.s0 < 1) return x >= L.xS ? L.yk : L.yd;
@@ -2040,10 +2112,11 @@ function drawScrub() {
 function applyHighlight() {
   const svg = $('#graph');
   let legSet = null, planId = null, chosen = null;
-  if (B && B.paths) {
-    legSet = new Set(); builderRemaining().forEach(p => p.forEach(id => legSet.add(id)));
-    chosen = new Set(B.chosen);
-    if (hoverLeg) legSet = new Set([hoverLeg, ...B.chosen]);
+  const ph = guidePhase();
+  if (ph) {
+    if (ph === 'end') { legSet = reach(); chosen = new Set(B.startLeg ? [B.startLeg] : []); }
+    else if (ph === 'route' || ph === 'done') { legSet = new Set(); builderRemaining().forEach(p => p.forEach(id => legSet.add(id))); chosen = new Set(B.chosen); }
+    if (hoverLeg) legSet = new Set([hoverLeg, ...B.chosen, ...(B.startLeg ? [B.startLeg] : [])]);
   } else if (hoverLeg) legSet = new Set([hoverLeg]);
   else {
     planId = hoverPlan || focusPlan;
@@ -2054,6 +2127,7 @@ function applyHighlight() {
     e.classList.toggle('dim', dim);
     if (e.classList.contains('edge')) e.classList.toggle('chosen', !!chosen && chosen.has(e.dataset.leg));
   });
+  document.querySelectorAll('#builder .opt[data-opt]').forEach(b => b.classList.toggle('hl', b.dataset.opt === (hoverLeg || guideHover)));
 }
 function legTitle(id) {
   const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
@@ -2111,6 +2185,8 @@ function renderInspector() {
   setFoot(null);
   $('#heldBar').hidden = true;
   $('#placeList').replaceChildren(...S.order.map(id => h('option', { value: nodeName(id) })));
+  box.hidden = !!B;
+  if (B) { builderFoot(guidePhase()); return; }
   if (draft) draftInspector(box);
   else if (!sel) box.append(viewPlan && PLBY[viewPlan] ? planPanel(PLBY[viewPlan]) : canEdit() ? helpPanel() : viewHelp());
   else if (!canEdit()) readOnlyInspector(box);
@@ -2682,44 +2758,133 @@ function renderLegend() {
 }
 
 /* ---------- plan maker ---------- */
+/* ---------- making a plan: the timeline is the guide ---------- */
+// The plan maker sits in the side panel and the timeline guides each step: click the leg you leave
+// on, then the leg you arrive on, then one of the numbered legs at every split. The lists in the
+// panel do the same from the keyboard. Nothing is chosen for you where routes split.
 function startBuilder(planId, startNode) {
   if (!canEdit() || !leaveDraft()) return;
+  if (B) { toast('Finish or cancel the plan you are making first'); return; }
   if (!S.order.length) { toast('Add some places and legs first'); return; }
+  const dockWas = UI.drawer;
   if (planId && S.plans[planId]) {
     const p = S.plans[planId], legs = p.legs.filter(id => S.legs[id]);
-    B = { start: p.start, end: p.end, startLeg: legs[0] || '', endLeg: legs[legs.length - 1] || '', startT: p.startT, endT: p.endT, paths: [legs], chosen: legs.slice(), auto: new Set(), name: p.name, extras: p.extras.map(x => Object.assign({}, x)), waits: Object.assign({}, p.waits), editing: p.id, capped: false };
+    B = { start: p.start, end: p.end, startLeg: legs[0] || '', endLeg: legs[legs.length - 1] || '', startT: p.startT, endT: p.endT, paths: [legs], chosen: legs.slice(), auto: new Set(), name: p.name, extras: p.extras.map(x => Object.assign({}, x)), waits: Object.assign({}, p.waits), editing: p.id, capped: false, dockWas };
   } else {
-    B = { start: startNode || '', end: '', startLeg: '', endLeg: '', startT: '', endT: '', paths: null, chosen: [], auto: new Set(), name: '', extras: [], waits: {}, editing: null, capped: false };
+    B = { start: startNode || '', end: '', startLeg: '', endLeg: '', startT: '', endT: '', paths: null, chosen: [], auto: new Set(), name: '', extras: [], waits: {}, editing: null, capped: false, dockWas };
   }
-  focusPlan = null; hoverPlan = null;
-  renderBuilder(); renderPlans(); applyHighlight();
-  setDrawer(true);
-  $('#drawerBody').scrollTop = 0;
-  setTimeout(() => { const i = $('#bName'); if (i && B && !B.editing) i.focus({ preventScroll: true }); $('#drawerBody').scrollTop = 0; }, 260);
+  sel = null; held = null; renaming = null; guideHover = null;
+  viewPlan = null; focusPlan = null; hoverPlan = null; hoverLeg = null; // every leg has to be in view
+  if (!sideOpen) setSide(true);
+  if (UI.drawer) setDrawer(false); // more room for the timeline while choosing
+  renderAll();
+  focusGuide();
+  setTimeout(() => { const i = $('#bName'); if (i && B && !B.editing) i.focus({ preventScroll: true }); }, 60);
 }
-function closeBuilder() { B = null; hoverLeg = null; renderBuilder(); applyHighlight(); }
-function checkBuilderName() {
-  const err = planNameError(B.name, B.editing), box = $('#bNameErr'), i = $('#bName');
-  if (box) { box.textContent = err || ''; box.hidden = !err; }
-  if (err) { toast(err); if (i) { i.focus(); i.scrollIntoView({ block: 'center' }); } return false; }
-  return true;
+function checkBuilder() {
+  if (B.editing && !S.plans[B.editing]) B.editing = null;
+  if (B.start && !S.nodes[B.start]) { B.start = ''; B.startLeg = ''; }
+  if (B.end && !S.nodes[B.end]) { B.end = ''; B.endLeg = ''; }
+  if (B.startLeg && !S.legs[B.startLeg]) B.startLeg = '';
+  if (B.endLeg && !S.legs[B.endLeg]) B.endLeg = '';
+  if (B.paths && B.paths.some(p => p.some(id => !S.legs[id]))) B.paths = null;
+  if (B.start && B.end && !B.paths) {
+    const r = findRoutes(B.start, B.end, '', '', B.startLeg, B.endLeg);
+    B.paths = r.paths; B.capped = r.capped; B.chosen = []; B.auto = new Set(); builderAdvance();
+  }
+  if (!B.start || !B.end) { B.paths = null; B.chosen = []; B.auto = new Set(); }
+  B.reach = null;
+}
+function closeBuilder() {
+  if (!B) return;
+  const reopen = B.dockWas;
+  B = null; hoverLeg = null;
+  renderAll();
+  if (reopen) setDrawer(true);
+}
+function guidePhase() {
+  if (!B) return null;
+  if (!B.start) return 'start';
+  if (!B.end || !B.paths) return 'end';
+  if (!B.paths.length) return 'none';
+  return builderDone() ? 'done' : 'route';
+}
+// Every complete leg you can take after leaving the start, keeping to the clock: a leg counts when
+// it leaves after the earliest time you can be at its place.
+function reach() {
+  const key = `${B.start}|${B.startLeg}`;
+  if (B.reachKey === key && B.reach) return B.reach;
+  const live = new Set(), at = {};
+  if (B.startLeg && T[B.startLeg] && T[B.startLeg].complete) { live.add(B.startLeg); at[S.legs[B.startLeg].to] = T[B.startLeg].arr; }
+  else if (!B.startLeg) at[B.start] = -Infinity;
+  const legs = Object.keys(S.legs).filter(id => T[id].complete && id !== B.startLeg).sort(byDep);
+  for (let pass = 0, grew = true; grew && pass < 8; pass++) {
+    grew = false;
+    for (const id of legs) {
+      if (live.has(id)) continue;
+      const l = S.legs[id], t0 = at[l.from];
+      if (t0 == null || T[id].dep < t0 - MIN) continue;
+      live.add(id); grew = true;
+      if (at[l.to] == null || T[id].arr < at[l.to]) at[l.to] = T[id].arr;
+    }
+  }
+  B.reachKey = key; B.reach = live;
+  return live;
+}
+// A click on the timeline while a plan is being made.
+function guideClick(e) {
+  if (e.target.closest('[data-wait], .badge')) return false;
+  const legEl = e.target.closest('[data-leg]'), nodeEl = e.target.closest('[data-node]');
+  if (legEl) { guideLeg(legEl.dataset.leg); return true; }
+  if (nodeEl) { guidePlace(nodeEl.dataset.node); return true; }
+  return false;
+}
+function guideLeg(id) {
+  const ph = guidePhase(), l = S.legs[id]; if (!l) return;
+  if (!T[id].complete) { toast(`${legLabel(id)} is incomplete, so it can’t be in a plan yet: ${T[id].problems[0].msg}`); return; }
+  if (ph === 'start') { B.start = l.from; B.startLeg = id; afterEnds(); }
+  else if (ph === 'end') {
+    if (!reach().has(id)) { toast(`You can’t reach that leg from ${nodeName(B.start)} in time`); return; }
+    B.end = l.to; B.endLeg = id; afterEnds();
+  }
+  else if (ph === 'route') {
+    if (builderOptions().includes(id)) choose(id);
+    else toast(B.chosen.includes(id) ? 'That leg is already in your route' : 'Choose one of the numbered legs');
+  }
+  else if (ph === 'done') toast(B.chosen.includes(id) ? 'That leg is in your route' : 'The route is complete. To change it, use the panel: change the start or the end, or go back a choice.');
+  else toast('No route connects the start and the end. Change one of them in the panel.');
+}
+function guidePlace(node) {
+  const ph = guidePhase();
+  if (ph === 'start') { B.start = node; B.startLeg = ''; afterEnds(); }
+  else if (ph === 'end') { B.end = node; B.endLeg = ''; afterEnds(); }
+  else toast('To change where the plan starts or ends, choose Change in the panel');
+}
+function afterEnds() {
+  hoverLeg = null;
+  B.paths = null; B.chosen = []; B.auto = new Set();
+  if (B.start && B.end) runFind(); else { renderBuilder(); applyHighlight(); focusGuide(); }
+}
+function clearEnd(which) {
+  if (which === 'start') { B.start = ''; B.startLeg = ''; } else { B.end = ''; B.endLeg = ''; }
+  afterEnds();
 }
 function runFind() {
-  if (!checkBuilderName()) return;
-  if (!B.start || !B.end) { toast('Choose both a start place and an end place'); return; }
+  if (!B || !B.start || !B.end) return;
   const r = findRoutes(B.start, B.end, '', '', B.startLeg, B.endLeg);
   B.paths = r.paths; B.capped = r.capped; B.chosen = []; B.auto = new Set();
   builderAdvance();
-  renderBuilder(); applyHighlight();
+  renderBuilder(); applyHighlight(); focusGuide();
 }
-function choose(id) { hoverLeg = null; B.chosen.push(id); builderAdvance(); renderBuilder(); applyHighlight(); }
+function changeRoute() { B.paths = null; B.chosen = []; B.auto = new Set(); runFind(); }
+function choose(id) { hoverLeg = null; B.chosen.push(id); builderAdvance(); renderBuilder(); applyHighlight(); focusGuide(); }
 function stepBack() {
   while (B.chosen.length) {
     const i = B.chosen.length - 1, wasAuto = B.auto.has(i);
     B.chosen.pop(); B.auto.delete(i);
     if (!wasAuto) break;
   }
-  hoverLeg = null; renderBuilder(); applyHighlight();
+  hoverLeg = null; renderBuilder(); applyHighlight(); focusGuide();
 }
 function legRowCells(id) {
   const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
@@ -2734,11 +2899,59 @@ function hoverRow(tr, id) {
   tr.addEventListener('mouseenter', () => { hoverLeg = id; applyHighlight(); });
   tr.addEventListener('mouseleave', () => { hoverLeg = null; applyHighlight(); });
 }
+const BSTEP = {
+  start: 'Step 1 of 3: where you leave from',
+  end: 'Step 2 of 3: where you arrive',
+  route: 'Step 3 of 3: the way at each split',
+  none: 'No route between these yet',
+  done: 'Last step: check the costs, then save',
+};
 function renderBuilder() {
   const box = $('#builder');
   box.replaceChildren();
-  if (!B) { box.hidden = true; return; }
-  box.hidden = false;
+  document.body.classList.toggle('building', !!B);
+  $('#sideTitle').textContent = B ? 'Plan maker' : 'Details';
+  if (!B) { box.hidden = true; $('#inspector').hidden = false; renderGuideNote(); drawGuide(); return; }
+  box.hidden = false; $('#inspector').hidden = true; $('#heldBar').hidden = true;
+  const ph = guidePhase();
+  box.append(h('div', { class: 'insp-head' },
+    h('span', { class: 'key-dot', style: '--c:var(--accent)' }),
+    h('div', null, h('h2', { text: B.editing ? `Edit ${S.plans[B.editing].name}` : 'Make a plan' }), h('p', { class: 'crumb', text: B.editing && ph === 'done' ? 'Check the route and costs, then save' : BSTEP[ph] })),
+    h('button', { class: 'icon-btn', type: 'button', title: 'Close', 'aria-label': 'Close the plan maker', text: '×', onclick: () => closeBuilder() })));
+  const nm = h('input', { type: 'text', 'data-pf': 'name', id: 'bName', placeholder: 'e.g. Weekend by train', maxlength: '80', required: true, 'aria-required': 'true', autocomplete: 'off' });
+  nm.value = B.name;
+  box.append(h('div', { class: 'bname' }, fld('Plan name (required)', nm), h('p', { class: 'fielderr', id: 'bNameErr', hidden: true })));
+  box.append(h('div', { class: 'bends' }, endCard('start', ph), endCard('end', ph)));
+  box.append(builderLists());
+  if (ph === 'none') {
+    const outs = legsFrom(B.start).length, ins = legsTo(B.end).length;
+    box.append(h('div', { class: 'warnbox' },
+      h('p', { text: `No chain of legs goes from ${nodeName(B.start)} to ${nodeName(B.end)}${B.startLeg || B.endLeg ? ' using the departure and arrival you picked' : ''}.` }),
+      h('p', { style: 'margin-top:4px', text: `${outs} leg${outs === 1 ? ' leaves' : 's leave'} ${nodeName(B.start)} and ${ins} arrive${ins === 1 ? 's' : ''} at ${nodeName(B.end)}. Change the start or the end, or add the missing legs: each one has to leave after the one before it arrives.` })));
+  }
+  if (ph === 'route' || ph === 'done') box.append(routeSection(ph));
+  if (ph === 'done') box.append(costSection());
+  builderFoot(ph);
+  renderGuideNote(); drawGuide();
+  if (ph === 'done') { updateBuilderTotal(); showBuilderProblems(); }
+}
+// The start or the end of the plan: what you picked, or what to click next.
+function endCard(which, ph) {
+  const isStart = which === 'start', node = isStart ? B.start : B.end, legId = isStart ? B.startLeg : B.endLeg, lab = isStart ? 'Start' : 'End';
+  if (!node) {
+    const now = ph === which;
+    return h('div', { class: 'bend todo' + (now ? ' cur' : '') }, h('span', { class: 'bend-lab', text: lab }),
+      h('span', { class: 'bend-txt' }, now ? h('b', { text: isStart ? 'Click the leg you leave on' : 'Click the leg you arrive on' }) : null,
+        h('small', { text: now ? 'in the timeline, or the name of a place' : 'after the start' })));
+  }
+  const l = legId && S.legs[legId], t = legId && T[legId], m = l && (MODE[l.mode] || MODE.other);
+  const sub = l ? (isStart ? `${fmtDT(t.dep)} · ${m.label} to ${nodeName(l.to)}` : `${fmtDT(t.arrSched)} · ${m.label} from ${nodeName(l.from)}`) : (isStart ? 'Any departure' : 'Any arrival');
+  return h('div', { class: 'bend' }, h('span', { class: 'bend-lab', text: lab }),
+    h('span', { class: 'bend-txt' }, h('b', { text: nodeName(node) }), h('small', { text: sub })),
+    h('button', { type: 'button', class: 'linkbtn', text: 'Change', 'aria-label': `Change the ${lab.toLowerCase()}`, onclick: () => clearEnd(which) }));
+}
+// The same choices from lists, for the keyboard.
+function builderLists() {
   const nodeSel = key => {
     const s = h('select', { 'data-bf': key });
     s.append(h('option', { value: '', text: 'Choose a place…' }));
@@ -2751,8 +2964,7 @@ function renderBuilder() {
     s.append(h('option', { value: '', text: ids.length ? (arr ? 'Any arrival' : 'Any departure') : (arr ? 'No legs arrive here yet' : 'No legs leave here yet') }));
     ids.forEach(id => {
       const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
-      const when = arr ? (t.noArr ? 'no time' : fmtDT(t.arrSched)) : (t.noDep ? 'no time' : fmtDT(t.dep));
-      s.append(h('option', { value: id, text: `${when} · ${m.label} ${arr ? 'from' : 'to'} ${l[arr ? 'from' : 'to'] ? nodeName(l[arr ? 'from' : 'to']) : '?'}${l.cost !== '' ? ' · ' + money(l.cost) : ''}` }));
+      s.append(h('option', { value: id, text: `${fmtDT(arr ? t.arrSched : t.dep)} · ${m.label} ${arr ? 'from' : 'to'} ${nodeName(l[arr ? 'from' : 'to'])} · ${money(l.cost)}` }));
     });
     s.value = ids.includes(B[key]) ? B[key] : '';
     s.disabled = !ids.length;
@@ -2760,141 +2972,164 @@ function renderBuilder() {
   };
   const sDep = B.startLeg && T[B.startLeg] ? T[B.startLeg].dep : null;
   const outs = B.start ? legsFrom(B.start).filter(id => T[id].complete) : [];
-  const ins = B.end ? legsTo(B.end).filter(id => T[id].complete && (sDep == null || T[id].arr == null || T[id].arr > sDep)).sort((a, b) => (T[a].arr ?? Infinity) - (T[b].arr ?? Infinity)) : [];
-  box.append(h('div', { class: 'bhead' },
-    h('h3', { text: B.editing ? `Edit plan: ${S.plans[B.editing].name}` : 'Make a plan' }),
-    h('button', { class: 'icon-btn', type: 'button', title: 'Close', 'aria-label': 'Close plan maker', text: '×', onclick: closeBuilder })));
-  const nm = h('input', { type: 'text', 'data-pf': 'name', id: 'bName', placeholder: 'e.g. Weekend by train', maxlength: '80', required: true, 'aria-required': 'true' });
-  nm.value = B.name;
-  box.append(h('div', { class: 'bname' }, fld('Plan name (required)', nm), h('p', { class: 'fielderr', id: 'bNameErr', hidden: true })));
-  box.append(h('div', { class: 'bform' },
-    fld('Start place', nodeSel('start')), fld('Leaves at', legPick('startLeg', outs, false), B.start ? `${outs.length} departure${outs.length === 1 ? '' : 's'} from ${nodeName(B.start)}` : 'Pick a start place first'),
-    fld('End place', nodeSel('end')), fld('Arrives at', legPick('endLeg', ins, true), B.end ? `${ins.length} arrival${ins.length === 1 ? '' : 's'} at ${nodeName(B.end)}${sDep != null ? ' after you leave' : ''}` : 'Pick an end place first'),
-    h('div', { class: 'bgo' }, btn(B.paths ? 'Find again' : 'Find routes', runFind, 'primary'))));
-  if (!B.paths) {
-    box.append(h('p', { class: 'hint', text: 'Pick the start place and which departure you take, then the end place and which arrival you want. Every leg that fits between them is listed, and you choose the way wherever the routes split.' }));
-    return;
+  const ins = B.end ? legsTo(B.end).filter(id => T[id].complete && (sDep == null || T[id].arr > sDep)).sort((a, b) => T[a].arr - T[b].arr) : [];
+  const d = h('details', { class: 'blists' }, h('summary', { text: 'Or choose from lists' }),
+    fld('Start place', nodeSel('start')), fld('Leaves at', legPick('startLeg', outs, false)),
+    fld('End place', nodeSel('end')), fld('Arrives at', legPick('endLeg', ins, true)));
+  d.open = !!B.listsOpen;
+  d.addEventListener('toggle', () => { if (B) B.listsOpen = d.open; });
+  return d;
+}
+function routeSection(ph) {
+  const rem = builderRemaining(), sec = h('div', { class: 'bsec' }, h('h4', { text: 'Your route' }));
+  if (ph === 'route' && !B.editing) {
+    const used = new Set(); rem.forEach(p => p.forEach(id => used.add(id)));
+    sec.append(h('p', { class: 'bsum', text: `${rem.length}${B.capped ? '+' : ''} possible route${rem.length === 1 ? '' : 's'} using ${used.size} leg${used.size === 1 ? '' : 's'}, shown bright on the timeline.` }));
   }
-  if (!B.paths.length) {
-    const outs = legsFrom(B.start).length, ins = legsTo(B.end).length;
-    box.append(h('div', { class: 'warnbox' },
-      h('p', { text: `No chain of legs goes from ${nodeName(B.start)} to ${nodeName(B.end)}${B.startLeg || B.endLeg ? ' using the departure and arrival you picked' : ''}.` }),
-      h('p', { style: 'margin-top:4px', text: `${outs} leg${outs === 1 ? ' leaves' : 's leave'} ${nodeName(B.start)} and ${ins} arrive${ins === 1 ? 's' : ''} at ${nodeName(B.end)}. Add the missing legs, or check that each leg leaves after the one before it arrives.` })));
-    return;
-  }
-  const rem = builderRemaining(), all = new Set(), live = new Set(), chosen = new Set(B.chosen);
-  B.paths.forEach(p => p.forEach(id => all.add(id)));
-  rem.forEach(p => p.forEach(id => live.add(id)));
-
-  // 1. everything that fits between start and end
-  if (!B.editing) {
-    const sec = h('div', { class: 'bsec' }, h('h4', { text: `Everything between ${nodeName(B.start)} and ${nodeName(B.end)}` }),
-      h('p', { text: `${B.paths.length}${B.capped ? '+' : ''} possible route${B.paths.length > 1 ? 's' : ''} using ${all.size} leg${all.size > 1 ? 's' : ''}. Nothing is picked for you: where routes split, you choose.` }));
-    const tbl = h('table', { class: 'legs' });
-    tbl.append(h('thead', null, h('tr', null, h('th', { text: '' }), ...['Leaves', 'Arrives', 'From → to', 'How'].map(s => h('th', { text: s })), h('th', { class: 'num', text: 'Fare' }))));
-    const tb = h('tbody');
-    [...all].sort(byDep).forEach(id => {
-      const st = chosen.has(id) ? ['in', 'in plan'] : live.has(id) ? ['', 'option'] : ['out', 'ruled out'];
-      const tr = h('tr', { class: st[0] === 'out' ? 'out' : '' }, h('td', null, h('span', { class: 'tag ' + st[0], text: st[1] })), ...legRowCells(id),
-        h('td', { class: 'num', text: S.legs[id].cost === '' ? '' : money(S.legs[id].cost) }));
-      hoverRow(tr, id);
-      tb.append(tr);
-    });
-    tbl.append(tb);
-    sec.append(h('div', { class: 'table-scroll' }, tbl));
-    box.append(sec);
-  }
-
-  // 2. the route so far, and the next question
-  const sec2 = h('div', { class: 'bsec' }, h('h4', { text: 'Your route' }));
   const ol = h('ol', { class: 'steps' });
   B.chosen.forEach((id, i) => {
     const l = S.legs[id], t = T[id];
     ol.append(h('li', null, h('span', { class: 'key', style: `--c:${legColor(id)}` }),
-      h('b', { text: legLabel(id) }), ` · ${(MODE[l.mode] || MODE.other).tag}${t.timed ? ` · ${shortDT(t.dep)} → ${shortDT(t.arrSched)}` : ''}`,
+      h('span', { class: 'sbody' }, h('b', { text: legLabel(id) }), h('small', { text: `${(MODE[l.mode] || MODE.other).tag} · ${shortDT(t.dep)} → ${shortDT(t.arrSched)}` })),
       B.editing ? null : h('span', { class: 'tag', text: (i === 0 && B.startLeg === id) || (i === B.chosen.length - 1 && B.endLeg === id && builderDone()) ? 'you picked' : B.auto.has(i) ? 'only way' : 'your choice' })));
   });
   if (!B.chosen.length) ol.append(h('li', { class: 'muted', text: `Starting at ${nodeName(B.start)}.` }));
-  sec2.append(ol);
-  const done = builderDone();
-  if (!done) {
-    const at = B.chosen.length ? S.legs[B.chosen[B.chosen.length - 1]].to : B.start;
-    const lastT = B.chosen.length ? T[B.chosen[B.chosen.length - 1]].arr : ts(B.startT);
-    const opts = builderOptions(), i = B.chosen.length;
-    const ask = h('div', { class: 'ask' }, h('p', { text: `${B.chosen.length ? 'The routes split' : 'Routes leave'} at ${nodeName(at)}${lastT != null ? ` (you are there from ${shortDT(lastT)})` : ''}. Which leg should this plan take?` }));
-    const box2 = h('div', { class: 'opts' });
-    opts.forEach(id => {
-      const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
-      const n = rem.filter(p => p[i] === id).length;
-      const wait = lastT != null && t.dep != null ? t.dep - lastT : null;
-      const b = h('button', { class: 'opt', type: 'button', style: `--c:${legColor(id)}`, onclick: () => choose(id) },
-        h('b', { text: `${m.label} to ${nodeName(l.to)}` }), l.cost !== '' ? ` · ${money(l.cost)}` : '',
-        h('small', { text: t.timed ? `${fmtDT(t.dep)} → ${fmtDT(t.arrSched)}` : 'no times' }),
-        h('small', { text: [l.info, wait != null && wait > 0 ? `wait ${fmtDur(wait)} first` : null, n > 1 ? `${n} routes go on from here` : 'one route goes on from here'].filter(Boolean).join(' · ') }));
-      b.addEventListener('mouseenter', () => { hoverLeg = id; applyHighlight(); });
-      b.addEventListener('mouseleave', () => { hoverLeg = null; applyHighlight(); });
-      box2.append(b);
-    });
-    ask.append(box2);
-    sec2.append(ask);
-  }
-  const canBack = B.chosen.some((_, i) => !B.auto.has(i)) && !B.editing;
-  if (!done) {
-    sec2.append(h('div', { class: 'brow' }, canBack ? btn('Back one choice', stepBack, 'small') : null, h('span', { class: 'spacer' }), btn('Cancel', closeBuilder, 'small')));
-    box.append(sec2);
-    return;
-  }
-  box.append(sec2);
-
-  // 3. name, prices and extra costs for this plan only
-  const sec3 = h('div', { class: 'bsec' }, h('h4', { text: `Costs for “${B.name.trim() || 'this plan'}”` }));
-  const tbl = h('table', { class: 'legs' });
-  tbl.append(h('thead', null, h('tr', null, ...['Leaves', 'Arrives', 'From → to', 'How'].map(s => h('th', { text: s })), h('th', { text: `Fare per head (${curSym()})` }))));
-  const tb = h('tbody');
+  sec.append(ol);
+  if (ph !== 'route') return sec;
+  const at = B.chosen.length ? S.legs[B.chosen[B.chosen.length - 1]].to : B.start;
+  const lastT = B.chosen.length ? T[B.chosen[B.chosen.length - 1]].arr : null;
+  const opts = builderOptions(), i = B.chosen.length;
+  const ask = h('div', { class: 'ask' }, h('p', { text: `${B.chosen.length ? 'The routes split' : 'Routes leave'} at ${nodeName(at)}${lastT != null ? ` (you are there from ${shortDT(lastT)})` : ''}. Click a numbered leg on the timeline, or choose here:` }));
+  const list = h('div', { class: 'opts' });
+  opts.forEach((id, k) => {
+    const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
+    const n = rem.filter(p => p[i] === id).length, wait = lastT != null ? t.dep - lastT : null;
+    const b = h('button', { class: 'opt', type: 'button', style: `--c:${legColor(id)}`, 'data-opt': id, onclick: () => choose(id) },
+      h('span', { class: 'onum', text: String(k + 1), 'aria-hidden': 'true' }),
+      h('span', { class: 'obody' }, h('b', { text: `${m.label} to ${nodeName(l.to)}` }), ` · ${money(l.cost)}`,
+        h('small', { text: `${fmtDT(t.dep)} → ${fmtDT(t.arrSched)}` }),
+        h('small', { text: [l.info, wait != null && wait > MIN ? `wait ${fmtDur(wait)} first` : null, n > 1 ? `${n} routes go on from here` : 'one route goes on from here'].filter(Boolean).join(' · ') })));
+    b.addEventListener('mouseenter', () => { hoverLeg = id; applyHighlight(); });
+    b.addEventListener('mouseleave', () => { hoverLeg = null; applyHighlight(); });
+    list.append(b);
+  });
+  ask.append(list);
+  sec.append(ask);
+  return sec;
+}
+// Fares for the chosen legs, labels for the waits, and this plan's own other costs.
+function costSection() {
+  const sec = h('div', { class: 'bsec' }, h('h4', { text: `Costs per head (${curSym()})` }));
+  const list = h('div', { class: 'bcosts' });
   B.chosen.forEach((id, i) => {
     if (i > 0) {
       const a = T[B.chosen[i - 1]].arr, d = T[id].dep;
       if (a != null && d != null && d - a > MIN) {
         const auto = defaultWaitLabel(d - a, a, d);
-        const wl = h('input', { type: 'text', 'data-wl': id, maxlength: '60', placeholder: auto, class: 'ovin', style: 'width:180px !important', 'aria-label': `Label for the wait at ${nodeName(S.legs[id].from)}` });
+        const wl = h('input', { type: 'text', 'data-wl': id, maxlength: '60', placeholder: auto, autocomplete: 'off', 'aria-label': `Label for the wait at ${nodeName(S.legs[id].from)}` });
         wl.value = B.waits[id] || '';
-        tb.append(h('tr', { class: 'wait' }, h('td', { colspan: '6' }, wl, `  at ${nodeName(S.legs[id].from)} · ${fmtDur(d - a)}`)));
+        list.append(h('div', { class: 'bwait' }, wl, h('small', { text: `at ${nodeName(S.legs[id].from)} · ${fmtDur(d - a)}` })));
       }
     }
+    const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
     const ov = h('input', { type: 'number', min: '0', step: '1', inputmode: 'numeric', class: 'ovin', 'data-fare': id, placeholder: curSym(), 'aria-label': `Fare of ${legLabel(id)}` });
-    ov.value = S.legs[id].cost;
-    const tr = h('tr', null, ...legRowCells(id), h('td', null, ov));
-    hoverRow(tr, id);
-    tb.append(tr);
+    ov.value = l.cost;
+    const row = h('div', { class: 'bcost', style: `--c:${legColor(id)}` },
+      h('span', { class: 'bc-txt' }, h('b', { text: legLabel(id) }), h('small', { text: `${m.tag} · ${shortDT(t.dep)} → ${shortDT(t.arrSched)}` })), ov);
+    hoverRow(row, id);
+    list.append(row);
   });
-  tbl.append(tb);
-  sec3.append(h('div', { class: 'table-scroll' }, tbl));
-  sec3.append(h('p', { class: 'hint', style: 'margin:4px 0 10px', text: 'Each leg has one fare. Changing it here changes it in every plan that uses this leg, and on any other leg with the same places, transport and times.' }));
-  sec3.append(h('div', { class: 'fld' }, h('span', { text: `Other costs in this plan, per head (${curSym()})` })));
+  sec.append(list);
+  sec.append(h('p', { class: 'hint', style: 'margin:6px 0 14px', text: 'A leg has one fare, shared by every plan that uses it and by any leg with the same places, transport and times.' }));
+  sec.append(h('div', { class: 'fld' }, h('span', { text: 'Other costs in this plan' })));
   B.extras.forEach((x, i) => {
-    const lab = h('input', { type: 'text', 'data-ex': 'label', 'data-i': String(i), placeholder: 'e.g. Hotel, 2 nights', 'aria-label': 'Cost name' }); lab.value = x.label;
-    const amt = h('input', { type: 'number', min: '0', step: '1', inputmode: 'numeric', 'data-ex': 'amount', 'data-i': String(i), placeholder: curSym(), 'aria-label': 'Amount' }); amt.value = x.amount;
-    sec3.append(h('div', { class: 'exrow' }, lab, amt, h('button', { class: 'icon-btn', type: 'button', title: 'Remove', 'aria-label': 'Remove this cost', text: '×', onclick: () => { B.extras.splice(i, 1); renderBuilder(); } })));
+    const lab = h('input', { type: 'text', 'data-ex': 'label', 'data-i': String(i), placeholder: 'e.g. Hotel, 2 nights', 'aria-label': 'Cost name', autocomplete: 'off' }); lab.value = x.label;
+    const amt = h('input', { type: 'number', min: '0', step: '1', inputmode: 'numeric', 'data-ex': 'amount', 'data-i': String(i), placeholder: curSym(), 'aria-label': 'Amount' }); amt.value = Number.isNaN(x.amount) ? '' : x.amount;
+    sec.append(h('div', { class: 'exrow' }, lab, amt, h('button', { class: 'icon-btn', type: 'button', title: 'Remove', 'aria-label': 'Remove this cost', text: '×', onclick: () => { B.extras.splice(i, 1); renderBuilder(); } })));
   });
   const sugg = [];
   for (let i = 1; i < B.chosen.length; i++) {
     const a = T[B.chosen[i - 1]].arr, d = T[B.chosen[i]].dep, node = nodeName(S.legs[B.chosen[i]].from);
-    if (a != null && d != null && d - a >= 6 * H && !B.extras.some(x => x.label.includes(node))) sugg.push(node);
+    if (a != null && d != null && d - a >= 6 * H && !B.extras.some(x => String(x.label).includes(node))) sugg.push(node);
   }
-  sec3.append(h('div', { class: 'chiprow' },
-    btn('+ Add a cost', () => { B.extras.push({ label: '', amount: '' }); renderBuilder(); const e = box.querySelectorAll('[data-ex=label]'); if (e.length) e[e.length - 1].focus(); }, 'small'),
-    ...[...new Set(sugg)].map(n => btn(`+ Stay at ${n}`, () => { B.extras.push({ label: `Stay at ${n}`, amount: '' }); renderBuilder(); const e = box.querySelectorAll('[data-ex=amount]'); if (e.length) e[e.length - 1].focus(); }, 'small'))));
-  sec3.append(h('p', { class: 'btotal', id: 'bTotal' }));
-  sec3.append(h('div', { class: 'warnbox bproblems', id: 'bProblems', role: 'alert', hidden: true }));
-  sec3.append(h('div', { class: 'brow' },
-    btn(B.editing ? 'Save changes' : 'Save plan', savePlan, 'primary'),
-    canBack ? btn('Back one choice', stepBack) : null,
-    B.editing ? btn('Change route', () => { B.paths = null; B.chosen = []; B.auto = new Set(); runFind(); }) : null,
-    h('span', { class: 'spacer' }),
-    btn('Cancel', closeBuilder)));
-  box.append(sec3);
-  updateBuilderTotal();
-  showBuilderProblems();
+  const focusLast = f => { const e = $('#builder').querySelectorAll(`[data-ex=${f}]`); if (e.length) e[e.length - 1].focus(); };
+  sec.append(h('div', { class: 'chiprow' },
+    btn('+ Add a cost', () => { B.extras.push({ label: '', amount: '' }); renderBuilder(); focusLast('label'); }, 'small'),
+    ...[...new Set(sugg)].map(n => btn(`+ Stay at ${n}`, () => { B.extras.push({ label: `Stay at ${n}`, amount: '' }); renderBuilder(); focusLast('amount'); }, 'small'))));
+  sec.append(h('p', { class: 'btotal', id: 'bTotal' }));
+  sec.append(h('div', { class: 'warnbox bproblems', id: 'bProblems', role: 'alert', hidden: true }));
+  return sec;
+}
+// Save and the other plan maker buttons, kept in view at the bottom of the panel.
+function builderFoot(ph) {
+  if (!B) return;
+  const canBack = B.chosen.some((_, i) => !B.auto.has(i)) && !B.editing;
+  const cancel = btn('Cancel', () => closeBuilder(), '', 'Close the plan maker without saving');
+  if (ph === 'done') setFoot(icoBtn(B.editing ? 'Save changes' : 'Save plan', savePlan, 'primary', 'plan'), [
+    canBack ? { label: 'Back one choice', sub: 'Undo the last split you chose', ico: 'undo', run: stepBack } : null,
+    B.editing ? { label: 'Change route', sub: 'Choose the way again', ico: 'leg', run: changeRoute } : null,
+  ], cancel);
+  else setFoot(canBack ? icoBtn('Back one choice', stepBack, '', 'undo') : null, [], cancel);
+}
+// One line above the timeline saying what to click.
+function renderGuideNote() {
+  const box = $('#guideNote'); if (!box) return;
+  const ph = guidePhase();
+  box.hidden = !ph;
+  if (!ph) return;
+  const at = B.chosen.length ? S.legs[B.chosen[B.chosen.length - 1]].to : B.start;
+  const text = {
+    start: 'Making a plan: click the leg you leave on, or the name of the place you start from.',
+    end: `Now click the leg you arrive on, or the place you are going to. Faded legs can’t be reached from ${nodeName(B.start)} in time.`,
+    route: `The routes split at ${nodeName(at)}: click one of the numbered legs.`,
+    none: 'No route connects the start and the end. Change one of them in the panel.',
+    done: 'The route is complete. Check the costs in the panel, then save.',
+  }[ph];
+  box.replaceChildren(h('span', { class: 'gn-dot', 'aria-hidden': 'true' }), h('span', { text }));
+}
+// On the timeline: the choices at the current split glow and carry the numbers of the buttons in
+// the panel, and the chosen start and end are flagged.
+function drawGuide() {
+  const svg = $('#graph');
+  svg.querySelectorAll('.guide').forEach(e => e.remove());
+  const ph = guidePhase();
+  if (!ph || !geo || !geo.time || !geo.gEdge) return;
+  const opts = ph === 'route' ? builderOptions() : [];
+  if (opts.length) {
+    const glow = el('g', { class: 'guide' }); geo.gEdge.insertBefore(glow, geo.gEdge.firstChild);
+    const nums = el('g', { class: 'guide' }, svg);
+    opts.forEach((id, k) => {
+      const seg = svg.querySelector(`.edge[data-leg="${id}"] .seg`), L = geo.legs[id]; if (!seg || !L) return;
+      el('path', { d: seg.getAttribute('d'), class: 'gglow' }, glow);
+      const tag = svg.querySelector(`.durtag[data-leg="${id}"] rect`);
+      const cx = tag ? +tag.getAttribute('x') - 13 : (L.s0 + L.xS) / 2, cy = tag ? +tag.getAttribute('y') + 8 : (L.yd + L.yk) / 2;
+      const g = el('g', { class: 'gnum', 'data-leg': id }, nums);
+      el('circle', { cx, cy, r: 10 }, g);
+      txt(g, cx, cy + 4, String(k + 1), 'gnumtxt');
+      el('title', null, g).textContent = `Option ${k + 1}: ${legLabel(id)}. Click to take it.`;
+    });
+  }
+  const flags = el('g', { class: 'guide' }, svg), font = `700 10px ${FONT}`;
+  const flag = (x, y, s, right) => {
+    const w = tw(s.toUpperCase(), font) + 14, x0 = right ? x + 10 : x - 10 - w, g = el('g', { class: 'gflag' }, flags);
+    el('rect', { x: x0, y: y - 8, width: w, height: 16, rx: 8 }, g);
+    txt(g, x0 + w / 2, y + 3.5, s.toUpperCase(), 'gflagtxt');
+  };
+  if (B.startLeg && geo.legs[B.startLeg]) flag(geo.legs[B.startLeg].s0, geo.legs[B.startLeg].yd, 'Start', false);
+  if (B.endLeg && B.paths && geo.legs[B.endLeg]) flag(geo.legs[B.endLeg].xA, geo.legs[B.endLeg].yk, 'End', true);
+}
+// Bring the legs to click into view when they are scrolled away.
+function focusGuide() {
+  const ph = guidePhase(), sc = $('#graphScroll');
+  if (!ph || !geo || !geo.time || !sc) return;
+  const ids = ph === 'route' ? builderOptions() : ph === 'end' ? [...reach()] : [];
+  const Ls = ids.map(id => geo.legs[id]).filter(Boolean);
+  if (!Ls.length) return;
+  const x0 = Math.min(...Ls.map(L => L.s0)), y0 = Math.min(...Ls.map(L => Math.min(L.yd, L.yk))), y1 = Math.max(...Ls.map(L => Math.max(L.yd, L.yk)));
+  const inX = x0 >= sc.scrollLeft + geo.left - 20 && x0 <= sc.scrollLeft + sc.clientWidth - 80;
+  const inY = y0 >= sc.scrollTop + LAY.top && y0 <= sc.scrollTop + sc.clientHeight - 40;
+  if (inX && inY) return;
+  sc.scrollTo({ left: inX ? sc.scrollLeft : Math.max(0, x0 - geo.left - 60), top: inY ? sc.scrollTop : Math.max(0, Math.min(y0 - LAY.top - 30, y1 - sc.clientHeight + 60)), behavior: 'smooth' });
 }
 function builderCosts() {
   let legs = 0, extra = 0;
@@ -2935,6 +3170,10 @@ function showBuilderProblems() {
   document.querySelectorAll('#builder [data-ex]').forEach(i => { const x = B.extras[+i.dataset.i], pr = x && extraProblem(x); i.classList.toggle('bad', !!(B.tried && pr && pr.f === i.dataset.ex)); });
   const box = $('#bProblems');
   if (box) { box.replaceChildren(...probs.map(pr => h('p', { text: pr.msg }))); box.hidden = !B.tried || !probs.length; }
+  // the name's problem shows under the name: a clash as you type, a missing name once you try to save
+  const nameErr = planNameError(B.name, B.editing), show = !!nameErr && (B.tried || !!B.name.trim()), ne = $('#bNameErr'), ni = $('#bName');
+  if (ne) { ne.textContent = show ? nameErr : ''; ne.hidden = !show; }
+  if (ni) ni.classList.toggle('bad', show);
   return probs;
 }
 function savePlan() {
@@ -2963,6 +3202,7 @@ function savePlan() {
   const was = !!B.editing;
   B = null; hoverLeg = null; focusPlan = id;
   renderAll();
+  setDrawer(true);
   toast(was ? `Saved changes to “${name}”` : `Saved “${name}”`, true);
 }
 
@@ -2970,7 +3210,7 @@ function savePlan() {
 function renderPlans() {
   const tb = $('#plansBody'); tb.replaceChildren();
   const plans = PL.slice();
-  $('#planEmpty').hidden = plans.length > 0 || !!B;
+  $('#planEmpty').hidden = plans.length > 0;
   $('#planEmpty').textContent = canEdit() ? 'No saved plans yet. Choose “Make a plan”, pick where it starts and ends, and choose the way at each split.' : 'No saved plans yet.';
   $('#plansTable').hidden = !plans.length;
   const key = S.sort;
@@ -3093,6 +3333,7 @@ function delPlan(id) {
 /* ---------- edits ---------- */
 function select(s, focusSel) {
   if (viewOnly) return; // phones only view the timeline
+  if (B) { toast('Finish or cancel the plan you are making first'); return; }
   if (!leaveDraft()) return;
   sel = s; focusNext = focusSel || null;
   if (!sideOpen) setSide(true);
@@ -3102,10 +3343,12 @@ function select(s, focusSel) {
 }
 function newNode() {
   if (!canEdit() || !leaveDraft()) return;
+  if (B) { toast('Finish or cancel the plan you are making first'); return; }
   openDraft('node', { name: '', note: '' }, '#fName');
 }
 function newLeg(props) {
   if (!canEdit() || !leaveDraft()) return;
+  if (B) { toast('Finish or cancel the plan you are making first'); return; }
   if (!S.order.length) { toast('Add a place first'); newNode(); return; }
   const p = Object.assign({}, props);
   if (!p.from && !p.to) p.from = sel ? (sel.k === 'node' ? sel.id : S.legs[sel.id] ? S.legs[sel.id].to : '') || '' : '';
@@ -3241,6 +3484,7 @@ function nameEditor(id) {
   return h('div', { class: 'rename' }, i, err);
 }
 function setView(id) {
+  if (B) { toast('Finish or cancel the plan you are making first'); return; }
   viewPlan = id && S.plans[id] ? id : null;
   focusPlan = viewPlan; hoverPlan = null; hoverLeg = null; renaming = null;
   if (viewPlan) sel = null;
@@ -3426,10 +3670,21 @@ function bind() {
     else if (Math.abs((y0 || 0) - scrubY) > 2) renderTip();
   });
   svg.addEventListener('pointerleave', () => { if (pinned || scrubT == null) return; scrubT = null; drawScrub(); renderNow(); });
+  // while making a plan, the leg under the pointer lights up its button in the panel
+  svg.addEventListener('pointerover', e => {
+    if (!B) return;
+    const g = e.target.closest('[data-leg]'), id = g && !g.dataset.wait ? g.dataset.leg : null;
+    if (id !== guideHover) { guideHover = id; applyHighlight(); }
+  });
   svg.addEventListener('click', e => {
     if (viewOnly) {
       const b = e.target.closest('.badge');
       if (b) { setView(b.dataset.plan); return; }
+      if (geo && geo.time) { trackY(e); scrubT = tAt(e); pinned = !pinned; drawScrub(); renderNow(); }
+      return;
+    }
+    if (B) {
+      if (guideClick(e)) return;
       if (geo && geo.time) { trackY(e); scrubT = tAt(e); pinned = !pinned; drawScrub(); renderNow(); }
       return;
     }
@@ -3449,6 +3704,7 @@ function bind() {
     const t = e.target.closest('.badge, .rowhead');
     if (!t) return;
     e.preventDefault();
+    if (B) { if (t.dataset.node) guidePlace(t.dataset.node); return; }
     if (t.dataset.plan) togglePlan(t.dataset.plan); else select({ k: 'node', id: t.dataset.node });
   });
 
@@ -3515,8 +3771,7 @@ function bind() {
     if (k === 'start') B.startLeg = '';
     if (k === 'end') B.endLeg = '';
     if ((k === 'start' || k === 'startLeg') && B.endLeg && B.startLeg && T[B.endLeg] && T[B.startLeg] && T[B.endLeg].arr != null && T[B.startLeg].dep != null && T[B.endLeg].arr <= T[B.startLeg].dep) B.endLeg = '';
-    if (B.paths) { B.paths = null; B.chosen = []; B.auto = new Set(); if (B.editing) toast('Press “Find routes” to choose the route again'); }
-    renderBuilder(); applyHighlight();
+    afterEnds();
   });
   bld.addEventListener('focusin', e => { if (e.target.dataset && e.target.dataset.fare) bldSnap = JSON.stringify(S); });
   bld.addEventListener('input', e => {
