@@ -399,9 +399,9 @@ body{overflow:hidden}
 <body>
 <div class="app">
   <header class="topbar">
-  <h1 title="Add places as nodes, join them with legs, then build and save named plans.">Wander Map</h1>
+  <h1 title="Add places, join them with legs, then build and save named plans.">Wander Map</h1>
   <div class="toolbar" role="toolbar" aria-label="Planner tools">
-    <button id="addNode" class="btn primary" type="button">+ Node</button>
+    <button id="addNode" class="btn primary" type="button">+ Place</button>
     <button id="addLeg" class="btn" type="button">+ Leg</button>
     <button id="makePlan" class="btn" type="button">Make a plan</button>
     <span class="tb-sep"></span>
@@ -424,8 +424,8 @@ body{overflow:hidden}
   </header>
 
   <div class="main" id="main">
-    <section class="card graph-card" aria-label="Nodes and legs">
-      <div class="card-head"><h2 id="graphTitle">Nodes and legs</h2><div class="legend" id="legend"></div></div>
+    <section class="card graph-card" aria-label="Places and legs">
+      <div class="card-head"><h2 id="graphTitle">Places and legs</h2><div class="legend" id="legend"></div></div>
       <div class="viewtabs" id="viewTabs" role="tablist" aria-label="View"></div>
       <div class="planbar" id="planBar" hidden></div>
       <div class="notice" id="exampleNote" hidden>
@@ -435,10 +435,10 @@ body{overflow:hidden}
       </div>
       <div class="notice" id="noTimeHint" hidden></div>
       <div id="graphScroll" class="graph-scroll">
-        <svg id="graph" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Nodes and legs"></svg>
+        <svg id="graph" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Places and legs"></svg>
         <div id="emptyGraph" class="empty" hidden>
-          <p>No nodes yet. Add the places you might pass through: home, airports, stations, cities.</p>
-          <button class="btn primary" type="button" id="emptyAdd">+ Add a node</button>
+          <p>No places yet. Add the places you might pass through: home, airports, stations, cities.</p>
+          <button class="btn primary" type="button" id="emptyAdd">+ Add a place</button>
         </div>
       </div>
       <div id="now" class="now" aria-live="polite"></div>
@@ -594,7 +594,7 @@ function curSym() { try { const p = new Intl.NumberFormat(undefined, { style: 'c
 function floorHour(t) { const d = new Date(t); d.setMinutes(0, 0, 0); return d.getTime(); }
 function roundTo(t, step) { return Math.round(t / step) * step; }
 function normName(s) { return String(s || '').trim().toLowerCase().replace(/\s+/g, ' '); }
-function nodeName(id) { const n = S.nodes[id]; return n ? (n.name.trim() || 'Unnamed node') : '?'; }
+function nodeName(id) { const n = S.nodes[id]; return n ? (n.name.trim() || 'Unnamed place') : '?'; }
 function planColor(p) { return p && Number.isInteger(p.cslot) && p.cslot >= 0 && p.cslot < 8 ? `var(--s${p.cslot + 1})` : 'var(--s9)'; }
 // Legs are coloured by how you travel; plans keep their own colour for tabs, badges and waits.
 function legColor(id) { const l = S.legs[id]; return (l && MODE[l.mode] ? MODE[l.mode] : MODE.other).color; }
@@ -766,7 +766,7 @@ function migrateTree(d) {
 let saveWarned = false;
 function save() {
   try { localStorage.setItem(STORE, JSON.stringify(S)); saveWarned = false; }
-  catch (e) { if (!saveWarned) { saveWarned = true; toast('Could not save in this browser: storage is full. Remove some node images, or use Export to keep a copy.'); } }
+  catch (e) { if (!saveWarned) { saveWarned = true; toast('Could not save in this browser: storage is full. Remove some place images, or use Export to keep a copy.'); } }
 }
 function loadSaved() {
   try { const raw = localStorage.getItem(STORE) || localStorage.getItem(OLD_STORE); if (raw) return normalize(JSON.parse(raw)); } catch (e) { /* ignore */ }
@@ -793,7 +793,7 @@ function compute() {
     const buf = Math.max(0, +l.buf || 0) * MIN, warn = [];
     const ok = !!(l.from && l.to && l.from !== l.to && S.nodes[l.from] && S.nodes[l.to]);
     if (!l.from || !l.to) warn.push('Pick both ends of this leg.');
-    else if (l.from === l.to) warn.push('This leg starts and ends at the same node.');
+    else if (l.from === l.to) warn.push('This leg starts and ends at the same place.');
     if (!noDep && !noArr && a < d) warn.push('It arrives before it leaves. Check the dates.');
     T[id] = { dep: d, arrSched: a, buf, arr: a != null ? a + buf : null, noDep, noArr, timed: d != null, ok, warn };
     if (ok && d != null) hasTime = true;
@@ -934,7 +934,7 @@ function renderGraph() {
   const nt = $('#noTimeHint');
   nt.hidden = !(has && untimed);
   nt.textContent = !hasTime ? 'Add leave and arrive times to your legs to draw them on the timeline.'
-    : `${untimed} leg${untimed > 1 ? 's have' : ' has'} no times yet, so ${untimed > 1 ? 'they are' : 'it is'} not drawn. Click a node to find its legs.`;
+    : `${untimed} leg${untimed > 1 ? 's have' : ' has'} no times yet, so ${untimed > 1 ? 'they are' : 'it is'} not drawn. Click a place to find its legs.`;
   if (!has) { svg.style.display = 'none'; geo = null; return; }
   svg.style.display = '';
 
@@ -969,7 +969,7 @@ function renderGraph() {
   plist.forEach(pi => pi.nodes.forEach(n => { (meets[n] || (meets[n] = new Set())).add(pi.id); }));
   rows.forEach(r => {
     el('line', { x1: left - 14, x2: width, y1: r.y, y2: r.y, class: 'rowline' }, gBg);
-    const g = el('g', { class: 'rowhead' + (sel && sel.k === 'node' && sel.id === r.id ? ' sel' : ''), 'data-node': r.id, tabindex: '0', role: 'button', 'aria-label': `Node ${nodeName(r.id)}. Edit` }, gBg);
+    const g = el('g', { class: 'rowhead' + (sel && sel.k === 'node' && sel.id === r.id ? ' sel' : ''), 'data-node': r.id, tabindex: '0', role: 'button', 'aria-label': `Place ${nodeName(r.id)}. Edit` }, gBg);
     el('rect', { x: 6, y: r.y - 17, width: left - 24, height: 40, rx: 8, class: 'rowhit' }, g);
     const im = S.nodes[r.id].img, lx = im ? 50 : 16;
     if (im) {
@@ -1054,7 +1054,7 @@ function renderGraph() {
       k.station = nl > 1;
       if (k.station) {
         const st = el('rect', { x: k.x0 - 11, y: r.y - 11, width: k.x1 - k.x0 + 22, height: 22, rx: 11, class: 'station', 'data-node': r.id }, gSt);
-        el('title', null, st).textContent = `${nodeName(r.id)}: ${nl} legs meet here. Click to edit the node.`;
+        el('title', null, st).textContent = `${nodeName(r.id)}: ${nl} legs meet here. Click to edit the place.`;
         boxes.push([k.x0 - 11, r.y - 11, k.x1 + 11, r.y + 11]);
       } else boxes.push([k.x0 - 8, r.y - 8, k.x1 + 8, r.y + 8]);
       k.items.forEach(q => {
@@ -1389,19 +1389,19 @@ function nodeInspector(box, n) {
   box.append(pick, zone,
     h('div', { class: 'nimg-link' }, link, btn('Load', go, 'small')),
     h('p', { class: 'nimg-msg', id: 'imgMsg', text: n.img && /^https?:/i.test(n.img) ? 'This picture loads from its link each time, so it needs the internet.' : '' }));
-  box.append(fld('Name', input(n, 'name', 'text', { placeholder: 'e.g. City Airport', id: 'fName', autocomplete: 'off' }), 'One node per place. Every leg in or out of it meets here.'));
+  box.append(fld('Name', input(n, 'name', 'text', { placeholder: 'e.g. City Airport', id: 'fName', autocomplete: 'off' }), 'Every leg in or out of this place meets here.'));
   box.append(h('div', { id: 'liveDup' }));
   box.append(fld('Note', input(n, 'note', 'textarea')));
   box.append(legList(`Legs leaving ${nodeName(n.id)}`, legsFrom(n.id), 'to'));
   box.append(legList(`Legs arriving at ${nodeName(n.id)}`, legsTo(n.id), 'from'));
   const i = S.order.indexOf(n.id), cnt = legsFrom(n.id).length + legsTo(n.id).length;
   box.append(h('div', { class: 'actions' },
-    btn('+ Leg from here', () => newLeg({ from: n.id }), 'primary', 'A leg that leaves this node'),
-    btn('+ Leg into here', () => newLeg({ to: n.id }), '', 'A leg that arrives at this node'),
-    btn('Make a plan from here', () => startBuilder(null, n.id), '', 'Start a plan at this node'),
+    btn('+ Leg from here', () => newLeg({ from: n.id }), 'primary', 'A leg that leaves this place'),
+    btn('+ Leg into here', () => newLeg({ to: n.id }), '', 'A leg that arrives at this place'),
+    btn('Make a plan from here', () => startBuilder(null, n.id), '', 'Start a plan at this place'),
     S.order.length > 1 ? btn('Move up', () => moveRow(n.id, -1), '', 'Move this row up', i === 0) : null,
     S.order.length > 1 ? btn('Move down', () => moveRow(n.id, 1), '', 'Move this row down', i === S.order.length - 1) : null,
-    btn(cnt ? `Delete node and ${cnt} leg${cnt > 1 ? 's' : ''}` : 'Delete node', () => delNode(n.id), 'danger')));
+    btn(cnt ? `Delete place and ${cnt} leg${cnt > 1 ? 's' : ''}` : 'Delete place', () => delNode(n.id), 'danger')));
 }
 function waitInspector(box, p, legId) {
   const w = waitInfo(p, legId), pi = PLBY[p.id];
@@ -1469,17 +1469,17 @@ function setNodeImageUrl(id, raw) {
 }
 function nodeSelect(side, val) {
   const s = h('select', { 'data-end': side, id: side === 'from' ? 'fFrom' : 'fTo' });
-  s.append(h('option', { value: '', text: 'Choose a node…' }));
+  s.append(h('option', { value: '', text: 'Choose a place…' }));
   S.order.forEach(id => s.append(h('option', { value: id, text: nodeName(id) })));
-  s.append(h('option', { value: '__new', text: '＋ New node…' }));
+  s.append(h('option', { value: '__new', text: '＋ New place…' }));
   s.value = val || '';
   return s;
 }
 function legInspector(box, l) {
   box.append(inspHead('Leg', legColor(l.id)));
-  box.append(h('div', { class: 'row2' }, fld('From node', nodeSelect('from', l.from)), fld('To node', nodeSelect('to', l.to))));
+  box.append(h('div', { class: 'row2' }, fld('From place', nodeSelect('from', l.from)), fld('To place', nodeSelect('to', l.to))));
   box.append(h('div', { class: 'newnode', id: 'newNodeRow', hidden: true },
-    h('input', { type: 'text', id: 'newNodeName', placeholder: 'New node name', list: 'placeList', autocomplete: 'off', 'aria-label': 'New node name' }),
+    h('input', { type: 'text', id: 'newNodeName', placeholder: 'New place name', list: 'placeList', autocomplete: 'off', 'aria-label': 'New place name' }),
     btn('Add', () => addNodeFromLeg(), 'primary small'),
     btn('Cancel', () => { $('#newNodeRow').hidden = true; renderInspector(); }, 'small')));
   const sel_ = h('select', { 'data-f': 'mode' });
@@ -1513,7 +1513,7 @@ function legInspector(box, l) {
   box.append(h('div', { class: 'actions' },
     btn(l.to ? `+ Next leg from ${nodeName(l.to)}` : '+ Next leg', () => newLeg({ from: l.to, mode: l.mode, after: T[l.id] ? T[l.id].arr : null }), 'primary', 'A leg that leaves where this one arrives', !l.to),
     btn('Return leg', () => newLeg({ from: l.to, to: l.from, mode: l.mode }), '', 'The same trip back the other way', !(l.from && l.to)),
-    btn('Alternative', () => newLeg({ from: l.from, to: l.to, mode: l.mode, dep: l.dep, arr: l.arr }), '', 'Another way between the same two nodes'),
+    btn('Alternative', () => newLeg({ from: l.from, to: l.to, mode: l.mode, dep: l.dep, arr: l.arr }), '', 'Another way between the same two places'),
     btn('Delete leg', () => delLeg(l.id), 'danger')));
 }
 function updateLive() {
@@ -1524,14 +1524,14 @@ function updateLive() {
     const n = S.nodes[sel.id]; if (!n) return;
     const cnt = legsFrom(n.id).length + legsTo(n.id).length;
     const np = PL.filter(p => p.nodes.includes(n.id)).length;
-    if (cr) cr.textContent = `Node · ${cnt} leg${cnt === 1 ? '' : 's'}${np ? ` · in ${np} saved plan${np > 1 ? 's' : ''}` : ''}`;
+    if (cr) cr.textContent = `Place · ${cnt} leg${cnt === 1 ? '' : 's'}${np ? ` · in ${np} saved plan${np > 1 ? 's' : ''}` : ''}`;
     const hd = $('#inspector .insp-head h2'); if (hd) hd.textContent = nodeName(n.id);
     const box = $('#liveDup');
     if (box) {
       box.replaceChildren();
       const dup = findNode(n.name, n.id);
       if (dup) box.append(h('div', { class: 'warnbox' },
-        h('p', { text: `Another node is already called ${nodeName(dup)}. Merge them so their legs meet at one node?` }),
+        h('p', { text: `Another place is already called ${nodeName(dup)}. Merge them so their legs meet at one place?` }),
         h('p', { style: 'margin-top:6px' }, btn(`Merge into ${nodeName(dup)}`, () => mergeNode(n.id, dup), 'small'))));
     }
     return;
@@ -1558,7 +1558,7 @@ function updateLive() {
     if (tws.length) {
       const differ = tws.some(x => S.legs[x].cost !== l.cost);
       tb.append(h('div', { class: differ ? 'warnbox' : 'live' },
-        h('p', { text: `${differ ? '⚠ ' : ''}${tws.length} other leg${tws.length > 1 ? 's are' : ' is'} the same trip (same nodes, transport and times)${differ ? ' but with a different fare.' : ', so they share this fare.'}` }),
+        h('p', { text: `${differ ? '⚠ ' : ''}${tws.length} other leg${tws.length > 1 ? 's are' : ' is'} the same trip (same places, transport and times)${differ ? ' but with a different fare.' : ', so they share this fare.'}` }),
         differ ? h('p', { style: 'margin-top:6px' }, btn(`Use ${l.cost === '' ? 'no fare' : money(l.cost)} for all`, () => { checkpoint(); setFare(l.id, l.cost); renderAll(); }, 'small')) : null));
     }
   }
@@ -1568,17 +1568,17 @@ function updateLive() {
 function helpPanel() {
   const lg = h('div', { class: 'lg' });
   MODES.forEach(([k, label, color]) => lg.append(modeSwatch(color, 34), h('span', { text: label })));
-  lg.append(lineSwatch(), h('span', { text: 'Thin line: waiting at a node in a saved plan, with its label and how long. Click it to rename the wait.' }));
+  lg.append(lineSwatch(), h('span', { text: 'Thin line: waiting at a place in a saved plan, with its label and how long. Click it to rename the wait.' }));
   lg.append(durSwatch(), h('span', { text: 'Tag on a leg: its travel time' }));
   lg.append(todSwatch(), h('span', { text: 'Sky above the timeline: night with stars and the moon, sunrise, day with the sun’s path, sunset. The same sky is shaded faintly behind the legs.' }));
   lg.append(bufSwatch(), h('span', { text: 'Shaded end: buffer for traffic or delays' }));
   return h('div', { class: 'help' },
     h('h2', { text: 'How it works' }),
     h('ol', null,
-      h('li', null, h('b', { text: 'Nodes' }), ' are places: home, a station, an airport, a city. Each node is one row, used by every leg and plan that passes through it.'),
-      h('li', null, h('b', { text: 'Legs' }), ' join two nodes, with how, when and the fare. When you add a leg, pick its ends from your nodes or create a new node.'),
-      h('li', null, 'Legs that touch the same node ', h('b', { text: 'meet on its row' }), '. Legs there at about the same time share one station.'),
-      h('li', null, h('b', { text: 'Make a plan' }), ': choose the start node and pick one of its departures, then the end node and one of its arrivals. Every leg that fits is listed, and wherever routes split you choose which way.'),
+      h('li', null, h('b', { text: 'Places' }), ' are where you go or pass through: home, a station, an airport, a city. Each place is one row, used by every leg and plan that passes through it.'),
+      h('li', null, h('b', { text: 'Legs' }), ' join two places, with how, when and the fare. When you add a leg, pick its ends from your places or create a new place.'),
+      h('li', null, 'Legs that touch the same place ', h('b', { text: 'meet on its row' }), '. Legs there at about the same time share one station.'),
+      h('li', null, h('b', { text: 'Make a plan' }), ': choose the start place and pick one of its departures, then the end place and one of its arrivals. Every leg that fits is listed, and wherever routes split you choose which way.'),
       h('li', null, 'Name the plan and add its own other costs (stay, food), then save. Travel fares belong to the legs, so a fare is the same in every plan. Compare saved plans below and star the one you pick.')),
     h('div', { class: 'sect' }, h('h3', { text: 'Transport colours' }), lg),
     h('p', { class: 'hint', style: 'margin-top:12px', text: 'Your work saves automatically in this browser. Use Export to keep a copy or share it.' }));
@@ -1622,7 +1622,7 @@ function renderLegend() {
 
 /* ---------- plan maker ---------- */
 function startBuilder(planId, startNode) {
-  if (!S.order.length) { toast('Add some nodes and legs first'); return; }
+  if (!S.order.length) { toast('Add some places and legs first'); return; }
   if (planId && S.plans[planId]) {
     const p = S.plans[planId], legs = p.legs.filter(id => S.legs[id]);
     B = { start: p.start, end: p.end, startLeg: legs[0] || '', endLeg: legs[legs.length - 1] || '', startT: p.startT, endT: p.endT, paths: [legs], chosen: legs.slice(), auto: new Set(), name: p.name, extras: p.extras.map(x => Object.assign({}, x)), waits: Object.assign({}, p.waits), editing: p.id, capped: false };
@@ -1644,7 +1644,7 @@ function checkBuilderName() {
 }
 function runFind() {
   if (!checkBuilderName()) return;
-  if (!B.start || !B.end) { toast('Choose both a start node and an end node'); return; }
+  if (!B.start || !B.end) { toast('Choose both a start place and an end place'); return; }
   const r = findRoutes(B.start, B.end, '', '', B.startLeg, B.endLeg);
   B.paths = r.paths; B.capped = r.capped; B.chosen = []; B.auto = new Set();
   builderAdvance();
@@ -1679,7 +1679,7 @@ function renderBuilder() {
   box.hidden = false;
   const nodeSel = key => {
     const s = h('select', { 'data-bf': key });
-    s.append(h('option', { value: '', text: 'Choose a node…' }));
+    s.append(h('option', { value: '', text: 'Choose a place…' }));
     S.order.forEach(id => s.append(h('option', { value: id, text: nodeName(id) })));
     s.value = B[key] || '';
     return s;
@@ -1706,11 +1706,11 @@ function renderBuilder() {
   nm.value = B.name;
   box.append(h('div', { class: 'bname' }, fld('Plan name (required)', nm), h('p', { class: 'fielderr', id: 'bNameErr', hidden: true })));
   box.append(h('div', { class: 'bform' },
-    fld('Start node', nodeSel('start')), fld('Leaves at', legPick('startLeg', outs, false), B.start ? `${outs.length} departure${outs.length === 1 ? '' : 's'} from ${nodeName(B.start)}` : 'Pick a start node first'),
-    fld('End node', nodeSel('end')), fld('Arrives at', legPick('endLeg', ins, true), B.end ? `${ins.length} arrival${ins.length === 1 ? '' : 's'} at ${nodeName(B.end)}${sDep != null ? ' after you leave' : ''}` : 'Pick an end node first'),
+    fld('Start place', nodeSel('start')), fld('Leaves at', legPick('startLeg', outs, false), B.start ? `${outs.length} departure${outs.length === 1 ? '' : 's'} from ${nodeName(B.start)}` : 'Pick a start place first'),
+    fld('End place', nodeSel('end')), fld('Arrives at', legPick('endLeg', ins, true), B.end ? `${ins.length} arrival${ins.length === 1 ? '' : 's'} at ${nodeName(B.end)}${sDep != null ? ' after you leave' : ''}` : 'Pick an end place first'),
     h('div', { class: 'bgo' }, btn(B.paths ? 'Find again' : 'Find routes', runFind, 'primary'))));
   if (!B.paths) {
-    box.append(h('p', { class: 'hint', text: 'Pick the start node and which departure you take, then the end node and which arrival you want. Every leg that fits between them is listed, and you choose the way wherever the routes split.' }));
+    box.append(h('p', { class: 'hint', text: 'Pick the start place and which departure you take, then the end place and which arrival you want. Every leg that fits between them is listed, and you choose the way wherever the routes split.' }));
     return;
   }
   if (!B.paths.length) {
@@ -1807,7 +1807,7 @@ function renderBuilder() {
   });
   tbl.append(tb);
   sec3.append(h('div', { class: 'table-scroll' }, tbl));
-  sec3.append(h('p', { class: 'hint', style: 'margin:4px 0 10px', text: 'Each leg has one fare. Changing it here changes it in every plan that uses this leg, and on any other leg with the same nodes, transport and times.' }));
+  sec3.append(h('p', { class: 'hint', style: 'margin:4px 0 10px', text: 'Each leg has one fare. Changing it here changes it in every plan that uses this leg, and on any other leg with the same places, transport and times.' }));
   sec3.append(h('div', { class: 'fld' }, h('span', { text: `Other costs in this plan, per head (${curSym()})` })));
   B.extras.forEach((x, i) => {
     const lab = h('input', { type: 'text', 'data-ex': 'label', 'data-i': String(i), placeholder: 'e.g. Hotel, 2 nights', 'aria-label': 'Cost name' }); lab.value = x.label;
@@ -2007,7 +2007,7 @@ function newNode() {
   compute(); select({ k: 'node', id }, '#fName'); refreshRest();
 }
 function newLeg(props) {
-  if (!S.order.length) { toast('Add a node first'); newNode(); return; }
+  if (!S.order.length) { toast('Add a place first'); newNode(); return; }
   checkpoint();
   const p = Object.assign({}, props);
   if (!p.from && !p.to) p.from = sel ? (sel.k === 'node' ? sel.id : S.legs[sel.id].to) || '' : '';
@@ -2035,7 +2035,7 @@ function addNodeFromLeg() {
   checkpoint();
   const existing = findNode(name);
   l[side] = existing || addNode(name);
-  if (existing) toast(`Using the node you already have: ${nodeName(existing)}`);
+  if (existing) toast(`Using the place you already have: ${nodeName(existing)}`);
   renderAll();
 }
 function mergeNode(from, into) {
@@ -2129,15 +2129,15 @@ function setView(id) {
 function renderViewTabs() {
   const box = $('#viewTabs'); box.replaceChildren();
   box.hidden = !PL.length;
-  $('#graphTitle').textContent = viewPlan && PLBY[viewPlan] ? 'Plan view' : 'Nodes and legs';
+  $('#graphTitle').textContent = viewPlan && PLBY[viewPlan] ? 'Plan view' : 'Places and legs';
   const tab = (id, label, color) => {
     const b = h('button', { class: 'vtab', type: 'button', role: 'tab', 'aria-selected': String((viewPlan || null) === id),
-      title: id ? 'Show only this plan. Double-click to rename.' : 'Show every node and leg', onclick: () => setView(id) },
+      title: id ? 'Show only this plan. Double-click to rename.' : 'Show every place and leg', onclick: () => setView(id) },
       color ? h('span', { class: 'key', style: `--c:${color}` }) : null, label);
     if (id) b.addEventListener('dblclick', () => { setView(id); startRename(id, 'bar'); });
     return b;
   };
-  box.append(tab(null, 'All nodes and legs'));
+  box.append(tab(null, 'All places and legs'));
   PL.forEach(p => box.append(tab(p.id, p.name, p.color)));
 }
 function renderPlanBar() {
