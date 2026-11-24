@@ -1267,6 +1267,7 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
   --shadow-lg:0 14px 40px rgba(20,26,36,.14);
 }
 #graph .rowband{opacity:.7}
+#modeSeg{margin-left:6px}
 </style>
 </head>
 <body>
@@ -1280,20 +1281,15 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
       <button id="makePlan" class="btn" type="button" data-ico="plan" title="Build a named plan from your legs">Make a plan</button>
     </div>
     <span class="spacer"></span>
-    <button id="tourBtn" class="btn tourbtn" type="button" data-ico="compass" title="A one-minute guided tour, on a sample trip">Tour</button>
-    <div class="modeseg" id="modeSeg" role="group" aria-label="Mode">
-      <button id="modeEdit" type="button" data-ico="edit" aria-pressed="true" aria-label="Edit" title="Edit: add and change places, legs and plans">Edit</button>
-      <button id="modeView" type="button" data-ico="eye" aria-pressed="false" aria-label="View only" title="View only: look at everything without changing anything">View</button>
-    </div>
-    <span class="tb-sep vsep"></span>
     <div class="tgroup" id="editTools">
       <button id="undo" class="btn icon" type="button" data-ico="undo" title="Undo (Ctrl+Z)">Undo</button>
       <button id="redo" class="btn icon" type="button" data-ico="redo" title="Redo (Ctrl+Shift+Z or Ctrl+Y)">Redo</button>
     </div>
-    <span class="tb-sep"></span>
-    <div class="tgroup">
-      <button id="themeBtn" class="btn icon" type="button" data-ico="moon" title="Switch between light and dark">Dark</button>
-      <button id="settingsBtn" class="btn icon" type="button" data-ico="gear" aria-haspopup="dialog" aria-controls="settings" title="Settings: theme, sky, currency, budget, and your data">Settings</button>
+    <span class="tb-sep vsep"></span>
+    <button id="settingsBtn" class="btn icon" type="button" data-ico="gear" aria-haspopup="dialog" aria-controls="settings" title="Settings: theme, sky, currency, budget, your data and the tour">Settings</button>
+    <div class="modeseg" id="modeSeg" role="group" aria-label="Mode">
+      <button id="modeEdit" type="button" data-ico="edit" aria-pressed="true" aria-label="Edit" title="Edit: add and change places, legs and plans">Edit</button>
+      <button id="modeView" type="button" data-ico="eye" aria-pressed="false" aria-label="View only" title="View only: look at everything without changing anything">View</button>
     </div>
     <button id="importBtn" class="btn phone-import" type="button" data-ico="up" title="Import plans from a file">Import</button>
     <input id="importFile" type="file" accept="application/json,.json" hidden>
@@ -4248,10 +4244,6 @@ function applyMotion() { document.body.classList.toggle('still', UI.motion === f
 function applyTheme() {
   if (UI.theme === 'light' || UI.theme === 'dark') document.documentElement.dataset.theme = UI.theme;
   else delete document.documentElement.dataset.theme;
-  const dark = effectiveTheme() === 'dark';
-  $('#themeBtn').textContent = dark ? 'Light' : 'Dark';
-  $('#themeBtn').dataset.ico = dark ? 'sun' : 'moon';
-  $('#themeBtn').setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
 }
 
 /* ---------- legs added inside a plan's view join that plan ---------- */
@@ -4504,14 +4496,12 @@ function bind() {
     let lastH = 0;
     new ResizeObserver(() => { if (viewOnly) return; const hh = $('#graphScroll').clientHeight; if (Math.abs(hh - lastH) > 2) { lastH = hh; clearTimeout(bind._ro); bind._ro = setTimeout(renderGraph, 60); } }).observe($('#graphScroll'));
   }
-  $('#themeBtn').addEventListener('click', () => { UI.theme = effectiveTheme() === 'dark' ? 'light' : 'dark'; saveUI(); applyTheme(); if (!$('#settings').hidden) syncSettings(); });
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
   $('#modeEdit').addEventListener('click', () => setMode(false));
   $('#modeView').addEventListener('click', () => setMode(true));
   $('#addNode').addEventListener('click', newNode);
   $('#emptyAdd').addEventListener('click', newNode);
   $('#emptyTour').addEventListener('click', startTour);
-  $('#tourBtn').addEventListener('click', startTour);
   addEventListener('resize', () => { if (TOUR && !TOUR.explore) showTourStep(); });
   $('#addLeg').addEventListener('click', () => newLeg({}));
   $('#makePlan').addEventListener('click', () => startBuilder());
@@ -4577,7 +4567,7 @@ function bind() {
   $('#exampleHide').addEventListener('click', () => { S.example = false; save(); renderGraph(); });
 
   document.addEventListener('keydown', e => {
-    if (!$('#settings').hidden) return; // the panel handles its own keys
+    if (!$('#settings').hidden) { if (e.key === 'Escape') { e.preventDefault(); closeSettings(); } return; } // while Settings is open, keys stay with it
     if (TOUR && !TOUR.explore && $('#tour')) {
       if (e.key === 'Escape') { e.preventDefault(); endTour(); return; }
       if (e.key === 'ArrowRight' && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) { e.preventDefault(); tourGo(1); return; }
@@ -4616,7 +4606,7 @@ const TOUR_STEPS = [
   { target: () => $('#makePlan'), title: 'Make a plan', body: 'Click the leg you leave on, then the leg you arrive on, then a numbered leg wherever the routes split.' },
   { target: () => $('#modeSeg'), title: 'Edit, or just view', body: 'Switch to View to look at everything without changing anything.' },
   { target: () => $('#settingsBtn'), title: 'Settings', body: 'The theme, the sky, your currency and budget, and Export and Import to keep a copy or move your plans to another device.' },
-  { title: 'You’re ready', body: 'Try the sample for yourself, or go back to your own plans. You can take the tour again any time from Tour at the top.', last: true },
+  { title: 'You’re ready', body: 'Try the sample for yourself, or go back to your own plans. You can take it again any time from Settings.', last: true },
 ];
 function sampleTrip() {
   const d0 = new Date(); d0.setHours(0, 0, 0, 0); d0.setDate(d0.getDate() + ((12 - d0.getDay()) % 7 || 7)); // the coming Friday
