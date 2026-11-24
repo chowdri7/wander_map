@@ -651,7 +651,64 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 .topbar{position:relative}
 .topbar::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--strip-n) 0%,var(--strip-d) 22%,var(--strip-y) 45%,var(--strip-y) 58%,var(--strip-k) 78%,var(--strip-n) 100%);opacity:.9}
 
+/* ---------- placement: every control has one home ---------- */
+/* header */
+.tgroup{display:inline-flex;align-items:center;gap:4px}
+.phone-import{display:none}
+/* timeline header tools */
+.graph-card .card-head{flex-wrap:nowrap}
+.ctools{display:flex;align-items:center;gap:6px;margin-left:auto;flex-wrap:nowrap}
+.zoomgrp{display:inline-flex;align-items:center;gap:8px;padding:0 6px}
+.zoomgrp #zoom{width:110px}
+.ctools .btn.small{height:30px}
+.ctools .btn.small.icon{width:30px}
+.keypop{min-width:240px;padding:12px 14px}
+.keypop .legend{display:grid;grid-template-columns:1fr;gap:8px;font-size:12.5px;color:var(--ink2)}
+.keypop .legend span{display:flex;align-items:center;gap:10px}
+/* plans panel bar */
+.dock-field{display:inline-flex;align-items:center;gap:8px}
+.dock-field span{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.dock-field select,.dock-field input{height:30px;width:auto}
+.dock-field #budget{width:96px}
+.dock-bar .cursel{height:30px;width:auto !important}
+.dock-sep{width:1px;height:18px;background:var(--border);margin:0 4px}
+/* details panel action bar */
+.side-foot{flex:none;display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--border);background:var(--surface)}
+.side-foot[hidden]{display:none}
+.side-foot .spacer,.brow .spacer{flex:1}
+.side-foot .btn.danger{border-color:transparent;background:none}
+.side-foot .btn.danger:hover:not(:disabled){border-color:color-mix(in srgb,var(--bad) 28%,transparent)}
+/* menus */
+.menu{position:relative;display:inline-flex}
+.menu.open > [data-menu-btn]{background:var(--surface2);border-color:var(--axis);color:var(--ink)}
+.menu-pop{position:absolute;top:calc(100% + 6px);left:0;min-width:232px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-lg);padding:6px;z-index:40;display:flex;flex-direction:column}
+.menu-pop[hidden]{display:none}
+.menu-pop.right{left:auto;right:0}
+.menu-pop.up{top:auto;bottom:calc(100% + 6px)}
+.menu-pop [role=menuitem]{display:grid;grid-template-columns:16px 1fr;column-gap:10px;align-items:center;width:100%;text-align:left;border:0;background:none;border-radius:7px;padding:8px 10px;font:500 13px var(--font);color:var(--ink);cursor:pointer}
+.menu-pop [role=menuitem]::before{grid-row:1 / span 2;color:var(--ink2)}
+.menu-pop [role=menuitem] small{grid-column:2;font-size:11.5px;font-weight:400;color:var(--muted);margin-top:1px}
+.menu-pop [role=menuitem]:hover:not(:disabled),.menu-pop [role=menuitem]:focus-visible{background:var(--surface2);outline:none}
+.menu-pop [role=menuitem]:disabled{opacity:.4;cursor:default}
+.menu-pop [role=menuitem].danger,.menu-pop [role=menuitem].danger::before{color:var(--bad)}
+.menu-pop hr{border:0;border-top:1px solid var(--border);margin:6px 4px;width:auto}
+/* plan action sets */
+.planbar .btns,.detail-head .btns{display:flex;align-items:center;gap:6px;margin-left:auto}
+.detail-head{align-items:center}
+/* messages sit above the plans bar instead of on top of it */
+.toast{bottom:62px}
+.viewonly .toast{bottom:20px}
+.viewonly .ctools{display:none !important}
+
 /* icons */
+[data-ico="file"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z%22/%3E%3Cpath d=%22M14 3v5h5M9 13h6M9 17h4%22/%3E%3C/svg%3E")}
+[data-ico="dots"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%225%22 cy=%2212%22 r=%221%22/%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%221%22/%3E%3Ccircle cx=%2219%22 cy=%2212%22 r=%221%22/%3E%3C/svg%3E")}
+[data-ico="key"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223.5%22 y=%224%22 width=%227%22 height=%227%22 rx=%221.5%22/%3E%3Crect x=%2213.5%22 y=%224%22 width=%227%22 height=%227%22 rx=%221.5%22/%3E%3Crect x=%223.5%22 y=%2213%22 width=%227%22 height=%227%22 rx=%221.5%22/%3E%3Cpath d=%22M14 16.5h6.5%22/%3E%3C/svg%3E")}
+[data-ico="close"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M6 6l12 12M18 6L6 18%22/%3E%3C/svg%3E")}
+[data-ico="star"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 3.6l2.6 5.2 5.8.9-4.2 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.2-4.1 5.8-.9z%22/%3E%3C/svg%3E")}
+[data-ico="copy"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%228.5%22 y=%228.5%22 width=%2211.5%22 height=%2211.5%22 rx=%222%22/%3E%3Cpath d=%22M15.5 8.5V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7.5a2 2 0 0 0 2 2h2.5%22/%3E%3C/svg%3E")}
+[data-ico="eye"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z%22/%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%222.8%22/%3E%3C/svg%3E")}
+[data-ico="dot"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%222%22/%3E%3C/svg%3E")}
 [data-ico="place"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 21s-6.5-5.8-6.5-11a6.5 6.5 0 0 1 13 0c0 5.2-6.5 11-6.5 11z%22/%3E%3Ccircle cx=%2212%22 cy=%2210%22 r=%222.3%22/%3E%3C/svg%3E")}
 [data-ico="leg"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%225.5%22 cy=%2218.5%22 r=%222.2%22/%3E%3Ccircle cx=%2218.5%22 cy=%225.5%22 r=%222.2%22/%3E%3Cpath d=%22M7.7 18.5H15a3.3 3.3 0 0 0 0-6.6H9a3.3 3.3 0 0 1 0-6.6h7.3%22/%3E%3C/svg%3E")}
 [data-ico="plan"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4z%22/%3E%3Cpath d=%22M9 4v14M15 6v14%22/%3E%3C/svg%3E")}
@@ -815,34 +872,45 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
   <header class="topbar">
   <div class="brand"><img class="brand-mark" alt="" width="28" height="28"><h1 title="Add places, join them with legs, then build and save named plans.">Wander Map</h1></div>
   <div class="toolbar" id="toolbar" role="toolbar" aria-label="Planner tools">
-    <button id="addNode" class="btn primary" type="button" data-ico="place" title="Add a place">Add place</button>
-    <button id="addLeg" class="btn" type="button" data-ico="leg" title="Add a leg between two places">Add leg</button>
-    <button id="makePlan" class="btn" type="button" data-ico="plan" title="Build a named plan from your legs">Make a plan</button>
-    <button id="moreBtn" class="btn more-btn" type="button" aria-expanded="false" aria-controls="toolbar">More</button>
-    <span class="tb-sep tb-more"></span>
-    <span class="tb-group tb-more"><span class="tb-label">Zoom</span><input id="zoom" type="range" min="3" max="60" step="1" aria-label="Zoom timeline"></span>
-    <button id="fit" class="btn icon tb-more" type="button" data-ico="fit" title="Fit the whole timeline on screen">Fit</button>
-    <button id="costBtn" class="btn tb-more" type="button" data-ico="coin" aria-pressed="false" title="Show the cost of each leg on the timeline">Costs: off</button>
-    <span class="tb-sep tb-more"></span>
-    <label class="tb-group tb-more"><span class="tb-label" title="Budget per head; leave empty for none">Budget</span><input id="budget" type="number" min="0" step="10" inputmode="numeric" placeholder="none"></label>
-    <select id="currency" class="cursel tb-more" aria-label="Currency" title="Currency"></select>
+    <div class="tgroup">
+      <button id="addNode" class="btn primary" type="button" data-ico="place" title="Add a place">Add place</button>
+      <button id="addLeg" class="btn" type="button" data-ico="leg" title="Add a leg between two places">Add leg</button>
+      <button id="makePlan" class="btn" type="button" data-ico="plan" title="Build a named plan from your legs">Make a plan</button>
+    </div>
     <span class="spacer"></span>
-    <button id="undo" class="btn icon" type="button" data-ico="undo" title="Undo (Ctrl+Z)">Undo</button>
-    <span class="tb-sep tb-more"></span>
-    <button id="export" class="btn icon tb-more" type="button" data-ico="down" title="Export: save everything as a file">Export</button>
-    <button id="importBtn" class="btn icon tb-more" type="button" data-ico="up" title="Import: load plans from a file">Import</button>
+    <div class="tgroup">
+      <button id="undo" class="btn icon" type="button" data-ico="undo" title="Undo (Ctrl+Z)">Undo</button>
+      <div class="menu" id="fileMenu">
+        <button class="btn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" data-ico="file" title="Export, import or clear your plans">File</button>
+        <div class="menu-pop right" role="menu" hidden>
+          <button type="button" role="menuitem" id="export" data-ico="down">Export plans<small>Save everything as a file</small></button>
+          <button type="button" role="menuitem" id="menuImport" data-ico="up">Import plans<small>Load plans from a file</small></button>
+          <hr>
+          <button type="button" role="menuitem" class="danger" id="clear" data-ico="trash">Clear everything<small>You can undo this</small></button>
+        </div>
+      </div>
+    </div>
+    <span class="tb-sep"></span>
+    <div class="tgroup">
+      <button id="sideBtn" class="btn icon" type="button" data-ico="side" aria-pressed="true" aria-controls="side" title="Show or hide the details panel">Panel</button>
+      <button id="themeBtn" class="btn icon" type="button" data-ico="moon" title="Switch between light and dark">Dark</button>
+    </div>
+    <button id="importBtn" class="btn phone-import" type="button" data-ico="up" title="Import plans from a file">Import</button>
     <input id="importFile" type="file" accept="application/json,.json" hidden>
-    <button id="clear" class="btn icon tb-more" type="button" data-ico="trash" title="Clear everything (you can undo)">Clear</button>
-    <span class="tb-sep tb-more"></span>
-    <button id="sideBtn" class="btn icon tb-more" type="button" data-ico="side" aria-pressed="true" aria-controls="side" title="Show or hide the edit panel">Panel</button>
-    <button id="themeBtn" class="btn icon tb-more" type="button" data-ico="moon" title="Switch between light and dark">Dark</button>
   </div>
   </header>
 
   <div class="main" id="main">
     <div class="maincol">
     <section class="card graph-card" aria-label="Places and legs">
-      <div class="card-head"><h2 id="graphTitle">Places and legs</h2><span class="vo-note">View only · edit on a computer</span><div class="legend" id="legend"></div></div>
+      <div class="card-head"><h2 id="graphTitle">Places and legs</h2><span class="vo-note">View only · edit on a computer</span>
+        <div class="ctools" role="toolbar" aria-label="Timeline tools">
+          <button id="costBtn" class="btn small" type="button" data-ico="coin" aria-pressed="false" title="Show the cost of each leg on the timeline">Costs: off</button>
+          <span class="zoomgrp"><span class="tb-label">Zoom</span><input id="zoom" type="range" min="3" max="60" step="1" aria-label="Zoom timeline"></span>
+          <button id="fit" class="btn small icon" type="button" data-ico="fit" title="Fit the whole timeline on screen">Fit</button>
+          <div class="menu" id="keyMenu"><button class="btn small" type="button" data-menu-btn aria-haspopup="true" aria-expanded="false" data-ico="key" title="What the colours and lines mean">Key</button><div class="menu-pop right keypop" role="dialog" aria-label="Colour key" hidden><div class="legend" id="legend"></div></div></div>
+        </div>
+      </div>
       <div class="viewtabs" id="viewTabs" role="tablist" aria-label="View"></div>
       <div class="planbar" id="planBar" hidden></div>
       <div class="notice" id="exampleNote" hidden>
@@ -892,7 +960,10 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
       <div class="dock-bar">
         <button class="dock-toggle" id="drawerTab" type="button" aria-expanded="false" aria-controls="drawerBody" title="Show or hide plans"><span class="chev" id="drawerArrow" aria-hidden="true"></span><span class="dock-title">Plans</span><span class="cnt" id="planCount"></span></button>
         <span class="spacer"></span>
-        <label class="dock-sort"><span>Sort</span>
+        <label class="dock-field"><span>Budget per head</span><input id="budget" type="number" min="0" step="10" inputmode="numeric" placeholder="none"></label>
+        <select id="currency" class="cursel" aria-label="Currency" title="Currency"></select>
+        <span class="dock-sep"></span>
+        <label class="dock-field"><span>Sort</span>
           <select id="sort">
             <option value="made">As saved</option>
             <option value="cost">Cheapest first</option>
@@ -901,7 +972,6 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
             <option value="dur">Shortest door to door</option>
           </select>
         </label>
-        <button id="makePlan2" class="btn small primary" type="button" data-ico="plan">Make a plan</button>
         <button id="drawerClose" type="button" hidden>Hide plans</button>
       </div>
       <div class="dock-body" id="drawerBody">
@@ -920,6 +990,7 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
     <aside class="side" id="side" aria-label="Details panel">
       <div class="side-head"><span class="side-title">Details</span><button class="btn icon" type="button" id="sideHide" data-ico="collapse" title="Hide the details panel" aria-label="Hide the details panel"><span class="desk-only">Hide</span><span class="phone-only">Close</span></button></div>
       <div id="inspector"></div>
+      <div class="side-foot" id="sideFoot" hidden></div>
     </aside>
     <button class="rail" id="sideOpen" type="button" data-ico="side" title="Show the details panel" aria-label="Show the details panel"><span>Details</span></button>
   </div>
@@ -1866,6 +1937,7 @@ function renderNow() {
 function renderInspector() {
   const box = $('#inspector');
   box.replaceChildren();
+  setFoot(null);
   $('#placeList').replaceChildren(...S.order.map(id => h('option', { value: nodeName(id) })));
   if (!sel) box.append(viewPlan && PLBY[viewPlan] ? planPanel(PLBY[viewPlan]) : helpPanel());
   else if (sel.k === 'node') nodeInspector(box, S.nodes[sel.id]);
@@ -1873,6 +1945,55 @@ function renderInspector() {
   else legInspector(box, S.legs[sel.id]);
   updateLive();
   if (focusNext) { const f = $(focusNext); focusNext = null; if (f) { f.focus(); if (f.select) f.select(); } }
+}
+// A small menu: a trigger button and a list of actions that opens below it (or above, in footers).
+function menuEl(label, items, opt) {
+  opt = opt || {};
+  const pop = h('div', { class: 'menu-pop' + (opt.up ? ' up' : '') + (opt.right ? ' right' : ''), role: 'menu', hidden: true });
+  items.filter(Boolean).forEach(it => {
+    if (it === '-') { pop.append(h('hr')); return; }
+    pop.append(h('button', { type: 'button', role: 'menuitem', id: it.id || null, class: it.danger ? 'danger' : null, disabled: !!it.disabled, title: it.title || null, 'data-ico': it.ico || 'dot', onclick: it.run }, it.label, it.sub ? h('small', { text: it.sub }) : null));
+  });
+  const trigger = h('button', { type: 'button', class: 'btn' + (opt.small ? ' small' : ''), 'data-menu-btn': true, 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'data-ico': opt.ico || 'dots', title: opt.title || label }, label);
+  return h('div', { class: 'menu' }, trigger, pop);
+}
+function closeMenus(except) {
+  document.querySelectorAll('.menu.open').forEach(m => {
+    if (m === except) return;
+    m.classList.remove('open');
+    const pp = m.querySelector('.menu-pop'); if (pp) pp.hidden = true;
+    const t = m.querySelector('[data-menu-btn]'); if (t) t.setAttribute('aria-expanded', 'false');
+  });
+}
+// The details panel's action bar: the main action, a menu for the rest, and delete set apart on the right.
+function setFoot(primary, more, danger) {
+  const f = $('#sideFoot'); if (!f) return;
+  f.replaceChildren();
+  const items = (more || []).filter(Boolean);
+  if (!primary && !items.length && !danger) { f.hidden = true; return; }
+  f.hidden = false;
+  if (primary) f.append(primary);
+  if (items.length) f.append(menuEl('More', items, { up: true, right: true }));
+  f.append(h('span', { class: 'spacer' }));
+  if (danger) f.append(danger);
+}
+function icoBtn(label, fn, cls, ico, title, disabled) { const b = btn(label, fn, cls, title, disabled); b.dataset.ico = ico; return b; }
+// One set of plan actions, the same wherever a plan is shown.
+function planActions(p, where) {
+  const isPicked = S.picked === p.id;
+  const items = [
+    where === 'bar' ? { label: 'Open itinerary', sub: 'Every leg, wait and cost', ico: 'list', run: () => togglePlan(p.id, true) }
+                    : { label: 'Show on the timeline', sub: 'Only this plan', ico: 'eye', run: () => setView(p.id) },
+    { label: isPicked ? 'Unpick this plan' : 'Pick this plan', sub: isPicked ? 'Remove the star' : 'Star it as your choice', ico: 'star', run: () => pick(p.id) },
+    { label: 'Copy as text', sub: 'To paste into a message', ico: 'copy', run: () => copyText(planText(p)) },
+    '-',
+    { label: 'Delete plan', ico: 'trash', danger: true, run: () => delPlan(p.id) },
+  ];
+  return h('div', { class: 'btns' },
+    icoBtn('Edit route and costs', () => startBuilder(p.id), 'small primary', 'plan'),
+    btn('Rename', () => startRename(p.id, where), 'small'),
+    menuEl('More', items, { small: true, right: true }),
+    where === 'bar' ? h('button', { class: 'btn small icon', type: 'button', 'data-ico': 'close', title: 'Exit plan view', 'aria-label': 'Exit plan view', onclick: () => setView(null) }, 'Exit') : null);
 }
 function inspHead(title, color) {
   return h('div', { class: 'insp-head' },
@@ -1931,13 +2052,13 @@ function nodeInspector(box, n) {
   box.append(legList(`Legs leaving ${nodeName(n.id)}`, legsFrom(n.id), 'to'));
   box.append(legList(`Legs arriving at ${nodeName(n.id)}`, legsTo(n.id), 'from'));
   const i = S.order.indexOf(n.id), cnt = legsFrom(n.id).length + legsTo(n.id).length;
-  box.append(h('div', { class: 'actions' },
-    btn('+ Leg from here', () => newLeg({ from: n.id }), 'primary', 'A leg that leaves this place'),
-    btn('+ Leg into here', () => newLeg({ to: n.id }), '', 'A leg that arrives at this place'),
-    btn('Make a plan from here', () => startBuilder(null, n.id), '', 'Start a plan at this place'),
-    S.order.length > 1 ? btn('Move up', () => moveRow(n.id, -1), '', 'Move this row up', i === 0) : null,
-    S.order.length > 1 ? btn('Move down', () => moveRow(n.id, 1), '', 'Move this row down', i === S.order.length - 1) : null,
-    btn(cnt ? `Delete place and ${cnt} leg${cnt > 1 ? 's' : ''}` : 'Delete place', () => delNode(n.id), 'danger')));
+  setFoot(icoBtn('Add leg from here', () => newLeg({ from: n.id }), 'primary', 'leg', 'A leg that leaves this place'), [
+    { label: 'Add leg into here', sub: 'A leg that arrives at this place', ico: 'leg', run: () => newLeg({ to: n.id }) },
+    { label: 'Make a plan from here', sub: 'Start a plan at this place', ico: 'plan', run: () => startBuilder(null, n.id) },
+    S.order.length > 1 ? '-' : null,
+    S.order.length > 1 ? { label: 'Move row up', ico: 'up', disabled: i === 0, run: () => moveRow(n.id, -1) } : null,
+    S.order.length > 1 ? { label: 'Move row down', ico: 'down', disabled: i === S.order.length - 1, run: () => moveRow(n.id, 1) } : null,
+  ], icoBtn('Delete', () => delNode(n.id), 'danger', 'trash', cnt ? `Delete this place and its ${cnt} leg${cnt > 1 ? 's' : ''} (you can undo)` : 'Delete this place (you can undo)'));
 }
 function waitInspector(box, p, legId) {
   const w = waitInfo(p, legId), pi = PLBY[p.id];
@@ -1951,9 +2072,9 @@ function waitInspector(box, p, legId) {
     h('p', { class: 'live', text: `At ${nodeName(w.node)} · ${fmtDur(w.ms)}` }),
     h('p', { class: 'live', text: `From ${fmtDT(w.from)} to ${fmtDT(w.to)}` }),
     h('p', { class: 'live', text: `In plan “${p.name}”, before ${legLabel(legId)}` })));
-  box.append(h('div', { class: 'actions' },
-    h('button', { class: 'btn', type: 'button', id: 'waitReset', title: `Back to “${w.auto}”`, disabled: !w.custom, text: 'Use the default label', onclick: () => setWaitLabel(p.id, legId, '') }),
-    btn('Show this plan', () => { sel = null; setView(p.id); })));
+  setFoot(icoBtn('Show this plan', () => { sel = null; setView(p.id); }, 'primary', 'eye'), [
+    { id: 'waitReset', label: 'Use the default label', sub: `Back to “${w.auto}”`, ico: 'undo', disabled: !w.custom, run: () => setWaitLabel(p.id, legId, '') },
+  ], null);
 }
 function setWaitLabel(pid, legId, v) {
   const p = S.plans[pid]; if (!p) return;
@@ -2046,11 +2167,10 @@ function legInspector(box, l) {
   box.append(s);
   box.append(h('div', { id: 'liveTwin' }));
   box.append(h('div', { id: 'liveWarn' }));
-  box.append(h('div', { class: 'actions' },
-    btn(l.to ? `+ Next leg from ${nodeName(l.to)}` : '+ Next leg', () => newLeg({ from: l.to, mode: l.mode, after: T[l.id] ? T[l.id].arr : null }), 'primary', 'A leg that leaves where this one arrives', !l.to),
-    btn('Return leg', () => newLeg({ from: l.to, to: l.from, mode: l.mode }), '', 'The same trip back the other way', !(l.from && l.to)),
-    btn('Alternative', () => newLeg({ from: l.from, to: l.to, mode: l.mode, dep: l.dep, arr: l.arr }), '', 'Another way between the same two places'),
-    btn('Delete leg', () => delLeg(l.id), 'danger')));
+  setFoot(icoBtn(l.to ? `Next leg from ${nodeName(l.to)}` : 'Next leg', () => newLeg({ from: l.to, mode: l.mode, after: T[l.id] ? T[l.id].arr : null }), 'primary', 'leg', 'A leg that leaves where this one arrives', !l.to), [
+    { label: 'Return leg', sub: 'The same trip back the other way', ico: 'undo', disabled: !(l.from && l.to), run: () => newLeg({ from: l.to, to: l.from, mode: l.mode }) },
+    { label: 'Alternative leg', sub: 'Another way between the same two places', ico: 'leg', run: () => newLeg({ from: l.from, to: l.to, mode: l.mode, dep: l.dep, arr: l.arr }) },
+  ], icoBtn('Delete', () => delLeg(l.id), 'danger', 'trash', 'Delete this leg (you can undo)'));
 }
 function updateLive() {
   if (!sel) return;
@@ -2315,7 +2435,7 @@ function renderBuilder() {
   }
   const canBack = B.chosen.some((_, i) => !B.auto.has(i)) && !B.editing;
   if (!done) {
-    sec2.append(h('div', { class: 'brow' }, canBack ? btn('Back one choice', stepBack, 'small') : null, btn('Cancel', closeBuilder, 'small')));
+    sec2.append(h('div', { class: 'brow' }, canBack ? btn('Back one choice', stepBack, 'small') : null, h('span', { class: 'spacer' }), btn('Cancel', closeBuilder, 'small')));
     box.append(sec2);
     return;
   }
@@ -2364,6 +2484,7 @@ function renderBuilder() {
     btn(B.editing ? 'Save changes' : 'Save plan', savePlan, 'primary'),
     canBack ? btn('Back one choice', stepBack) : null,
     B.editing ? btn('Change route', () => { B.paths = null; B.chosen = []; B.auto = new Set(); runFind(); }) : null,
+    h('span', { class: 'spacer' }),
     btn('Cancel', closeBuilder)));
   box.append(sec3);
   updateBuilderTotal();
@@ -2454,13 +2575,7 @@ function renderDetail() {
   box.append(h('div', { class: 'detail-head' },
     h('div', null, renaming && renaming.id === p.id && renaming.where === 'detail' ? nameEditor(p.id, 'detail')
       : h('h3', null, h('span', { class: 'key', style: `--c:${p.color}` }), (isPicked ? '★ ' : '') + p.name), h('p', { text: p.route })),
-    h('div', { class: 'btns' },
-      btn('View', () => setView(p.id), 'small primary', 'Show only this plan on the timeline'),
-      btn('Rename', () => startRename(p.id, 'detail'), 'small'),
-      btn(isPicked ? 'Unpick' : '★ Pick this plan', () => pick(p.id), 'small'),
-      btn('Edit', () => startBuilder(p.id), 'small'),
-      btn('Copy as text', () => copyText(planText(p)), 'small'),
-      btn('Delete', () => delPlan(p.id), 'small danger'))));
+    planActions(p, 'detail')));
   if (p.issues.length) box.append(h('div', { class: 'warnbox' }, ...p.issues.map(s => h('p', { text: '⚠ ' + s }))));
   const tbl = h('table', { class: 'legs' });
   tbl.append(h('thead', null, h('tr', null, ...['Leaves', 'Arrives', 'From → to', 'How', 'Time'].map(s => h('th', { text: s })), h('th', { class: 'num', text: 'Cost' }))));
@@ -2698,11 +2813,7 @@ function renderPlanBar() {
   bar.append(h('span', { class: 'pb-route', text: p.route }),
     h('span', null, h('b', { text: money(p.cost) }), ' per head', budget > 0 ? h('span', { class: 'st ' + (p.cost > budget ? 'bad' : 'good'), text: p.cost > budget ? `  ✕ ${money(p.cost - budget)} over` : '  ✓ In budget' }) : null),
     h('span', { class: 'muted', text: `${fmtDT(p.start)} → ${fmtDT(p.end)} · ${fmtDur(p.dur)}` }),
-    h('span', { class: 'btns' },
-      btn('Rename', () => startRename(p.id, 'bar'), 'small'),
-      btn('Edit route and costs', () => startBuilder(p.id), 'small'),
-      btn('Details', () => togglePlan(p.id, true), 'small'),
-      btn('Exit plan view', () => setView(null), 'small')));
+    planActions(p, 'bar'));
 }
 function planPanel(p) {
   const box = h('div', { class: 'plan-panel' });
@@ -2724,10 +2835,7 @@ function planPanel(p) {
   if (p.p.extras.length) box.append(h('div', { class: 'sect' }, h('h3', { text: 'Other costs' }), ...p.p.extras.map(x => h('div', { class: 'exl' }, h('span', { text: x.label || 'Other cost' }), h('span', { text: x.amount === '' ? '—' : money(x.amount) })))));
   box.append(h('div', { class: 'tot' }, h('span', { text: 'Total per head' }), h('span', { text: money(p.cost) })));
   box.append(h('div', { class: 'summary' }, h('span', null, 'Door to door ', h('b', { text: fmtDur(p.dur) })), h('span', null, 'Waiting ', h('b', { text: fmtDur(p.wait) }))));
-  box.append(h('div', { class: 'actions' },
-    btn('Edit route and costs', () => startBuilder(p.id), 'primary'),
-    btn('Copy as text', () => copyText(planText(p))),
-    btn('Exit plan view', () => setView(null))));
+
   return box;
 }
 function setSide(open) {
@@ -2873,6 +2981,18 @@ function bind() {
     if (t.dataset.plan) togglePlan(t.dataset.plan); else select({ k: 'node', id: t.dataset.node });
   });
 
+  document.addEventListener('click', e => {
+    const t = e.target.closest('[data-menu-btn]');
+    if (t) {
+      const m = t.closest('.menu'), open = !m.classList.contains('open');
+      closeMenus(m);
+      m.classList.toggle('open', open);
+      m.querySelector('.menu-pop').hidden = !open;
+      t.setAttribute('aria-expanded', String(open));
+      return;
+    }
+    if (!e.target.closest('.menu-pop') || e.target.closest('[role=menuitem]')) closeMenus();
+  });
   const insp = $('#inspector');
   insp.addEventListener('focusin', e => { if (e.target.dataset && (e.target.dataset.f || e.target.dataset.waitLabel)) pendingSnap = JSON.stringify(S); });
   insp.addEventListener('input', e => {
@@ -2944,12 +3064,6 @@ function bind() {
     updateBuilderTotal();
   });
 
-  $('#moreBtn').addEventListener('click', () => {
-    const tb = $('#toolbar'), open = !tb.classList.contains('open');
-    tb.classList.toggle('open', open);
-    $('#moreBtn').setAttribute('aria-expanded', String(open));
-    $('#moreBtn').textContent = open ? 'Less' : 'More';
-  });
   $('#costBtn').addEventListener('click', () => { UI.costs = !UI.costs; saveUI(); syncCostBtn(); renderGraph(); });
   $('#sideBtn').addEventListener('click', () => setSide(!sideOpen));
   $('#sideHide').addEventListener('click', () => setSide(false));
@@ -2984,7 +3098,6 @@ function bind() {
   $('#emptyAdd').addEventListener('click', newNode);
   $('#addLeg').addEventListener('click', () => newLeg({}));
   $('#makePlan').addEventListener('click', () => startBuilder());
-  $('#makePlan2').addEventListener('click', () => startBuilder());
   $('#zoom').addEventListener('input', e => {
     const sc = $('#graphScroll');
     const cx = sc.scrollLeft + sc.clientWidth / 2;
@@ -3014,6 +3127,7 @@ function bind() {
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   });
   $('#importBtn').addEventListener('click', () => $('#importFile').click());
+  $('#menuImport').addEventListener('click', () => $('#importFile').click());
   $('#emptyImport').addEventListener('click', () => $('#importFile').click());
   if (VIEWQ && VIEWQ.addEventListener) VIEWQ.addEventListener('change', () => { applyViewOnly(); renderAll(); });
   $('#importFile').addEventListener('change', async e => {
@@ -3039,6 +3153,7 @@ function bind() {
   $('#exampleHide').addEventListener('click', () => { S.example = false; save(); renderGraph(); });
 
   document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.querySelector('.menu.open')) { const m = document.querySelector('.menu.open'); closeMenus(); const t = m && m.querySelector('[data-menu-btn]'); if (t) t.focus(); return; }
     if (viewOnly) return;
     const inField = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
     if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && !inField) { e.preventDefault(); undo(); }
