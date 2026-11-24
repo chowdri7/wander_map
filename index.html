@@ -430,9 +430,9 @@ body{overflow:hidden}
   --accent:#4a6470; --accent-ink:#fbfaf6; --accent-soft:rgba(74,100,112,.10); --brand-navy:#36404e;
   --good:#5e7b52; --bad:#a3573f; --warn-bg:#f4ecdb; --warn-ink:#765a22; --note-bg:#e9edec; --note-ink:#3b5560;
   --s1:#5d7e9a; --s2:#bf8656; --s3:#6f9682; --s4:#c3a252; --s5:#b07b8d; --s6:#808f5b; --s7:#7e719b; --s8:#a65f56; --s9:#9b968b;
-  --sun:#d8b25c; --moon:#ece6d3; --star:#f6f2e7; --sunpath:rgba(251,250,246,.75);
-  --sky-n:#3f475a; --sky-d:#d6aa8e; --sky-y:#cdd7da; --sky-k:#c8937c; --sky-a-n:.13; --sky-a-d:.11; --sky-a-y:.07; --sky-a-k:.11;
-  --night:rgba(63,71,90,.06); --twilight:rgba(200,147,124,.06);
+  --sun:#eab54d; --sun-glow:rgba(234,181,77,.65); --moon:#f3ecd6; --moon-glow:rgba(243,236,214,.5); --star:#fffaf0; --sunpath:rgba(255,252,244,.8); --gold:#d7a13f;
+  --sky-n:#28346a; --sky-d:#e6a07c; --sky-y:#cfe1e8; --sky-k:#db8a69; --sky-a-n:.2; --sky-a-d:.2; --sky-a-y:0; --sky-a-k:.2; --bstar:.55;
+  --night:rgba(43,53,87,.08); --twilight:rgba(219,138,105,.08);
   --shadow:none; --shadow-lg:0 14px 40px rgba(43,42,38,.14);
   --r-sm:7px; --r:9px; --r-lg:12px;
 }
@@ -442,9 +442,9 @@ body{overflow:hidden}
   --accent:#8eadb9; --accent-ink:#151513; --accent-soft:rgba(142,173,185,.14); --brand-navy:#b8c4d2;
   --good:#91b081; --bad:#d08b74; --warn-bg:#2a251b; --warn-ink:#d9bf8a; --note-bg:#1e2628; --note-ink:#b3c7cd;
   --s1:#87a3bb; --s2:#d19c71; --s3:#8fb39f; --s4:#d2b46c; --s5:#c69aa9; --s6:#a2af7d; --s7:#a296bf; --s8:#c78579; --s9:#7c776d;
-  --sun:#cdad63; --moon:#dcd5c1; --star:#e8e3d5; --sunpath:rgba(236,230,211,.45);
-  --sky-n:#0f1116; --sky-d:#79584a; --sky-y:#2c353a; --sky-k:#6a4a3d; --sky-a-n:.5; --sky-a-d:.18; --sky-a-y:.1; --sky-a-k:.18;
-  --night:rgba(10,12,18,.28); --twilight:rgba(121,88,74,.10);
+  --sun:#e2b45a; --sun-glow:rgba(226,180,90,.55); --moon:#ece5cf; --moon-glow:rgba(236,229,207,.42); --star:#f4efe0; --sunpath:rgba(240,232,210,.5); --gold:#caa04f;
+  --sky-n:#070a13; --sky-d:#915c41; --sky-y:#4d6573; --sky-k:#86492f; --sky-a-n:.62; --sky-a-d:.3; --sky-a-y:.12; --sky-a-k:.3; --bstar:.8;
+  --night:rgba(7,10,19,.32); --twilight:rgba(145,92,65,.12);
   --shadow:none; --shadow-lg:0 16px 44px rgba(0,0,0,.5);
 }}
 :root[data-theme="dark"]{
@@ -453,9 +453,9 @@ body{overflow:hidden}
   --accent:#8eadb9; --accent-ink:#151513; --accent-soft:rgba(142,173,185,.14); --brand-navy:#b8c4d2;
   --good:#91b081; --bad:#d08b74; --warn-bg:#2a251b; --warn-ink:#d9bf8a; --note-bg:#1e2628; --note-ink:#b3c7cd;
   --s1:#87a3bb; --s2:#d19c71; --s3:#8fb39f; --s4:#d2b46c; --s5:#c69aa9; --s6:#a2af7d; --s7:#a296bf; --s8:#c78579; --s9:#7c776d;
-  --sun:#cdad63; --moon:#dcd5c1; --star:#e8e3d5; --sunpath:rgba(236,230,211,.45);
-  --sky-n:#0f1116; --sky-d:#79584a; --sky-y:#2c353a; --sky-k:#6a4a3d; --sky-a-n:.5; --sky-a-d:.18; --sky-a-y:.1; --sky-a-k:.18;
-  --night:rgba(10,12,18,.28); --twilight:rgba(121,88,74,.10);
+  --sun:#e2b45a; --sun-glow:rgba(226,180,90,.55); --moon:#ece5cf; --moon-glow:rgba(236,229,207,.42); --star:#f4efe0; --sunpath:rgba(240,232,210,.5); --gold:#caa04f;
+  --sky-n:#070a13; --sky-d:#915c41; --sky-y:#4d6573; --sky-k:#86492f; --sky-a-n:.62; --sky-a-d:.3; --sky-a-y:.12; --sky-a-k:.3; --bstar:.8;
+  --night:rgba(7,10,19,.32); --twilight:rgba(145,92,65,.12);
   --shadow:none; --shadow-lg:0 16px 44px rgba(0,0,0,.5);
 }
 body{background:var(--page);color:var(--ink);font:14px/1.5 var(--font);letter-spacing:-.002em}
@@ -615,6 +615,22 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 #graph .scrubtxt{fill:var(--surface)}
 #graph .seg{stroke-width:3.5}
 #graph .nimgring{stroke:var(--border)}
+
+/* sky: sun, moon, stars, golden hours */
+#graph .sun line{stroke:var(--sun);stroke-width:1.6;stroke-linecap:round}
+#graph .sun circle.glow{fill:url(#sunglow);stroke:none}
+#graph .sun .disc{fill:var(--sun);stroke:color-mix(in srgb,var(--sun) 70%,#fff);stroke-width:1}
+#graph .halfsun{fill:var(--sun);opacity:1}
+#graph .moon{fill:var(--moon)}
+#graph .sunpath{fill:none;stroke:var(--sunpath);stroke-width:1.1;stroke-dasharray:1.5 3.5}
+#graph .star{fill:var(--star)}
+#graph .bstar{fill:var(--star)}
+#graph .goldline{stroke:var(--gold);stroke-width:1;stroke-dasharray:2 5;opacity:.55}
+#graph .skyframe{fill:none;stroke:color-mix(in srgb,var(--ink) 14%,transparent)}
+#graph .skybody,#graph .star,#graph .bstar,#graph .nohit,#graph .goldline,#graph .moong,#graph .sunpath{pointer-events:none}
+@keyframes twinkle{0%,100%{opacity:var(--o)}50%{opacity:calc(var(--o) * .2)}}
+#graph .tw{animation:twinkle 3.5s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){#graph .tw{animation:none}}
 
 /* icons */
 [data-ico="place"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 21s-6.5-5.8-6.5-11a6.5 6.5 0 0 1 13 0c0 5.2-6.5 11-6.5 11z%22/%3E%3Ccircle cx=%2212%22 cy=%2210%22 r=%222.3%22/%3E%3C/svg%3E")}
@@ -913,7 +929,7 @@ const MODE = Object.fromEntries(MODES.map(([k, label, color]) => [k, { label, co
 const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
 const SERIF = '"Iowan Old Style", Charter, "Bitstream Charter", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Noto Serif", "DejaVu Serif", serif';
 const F = { place: `600 12px ${FONT}`, small: `11px ${FONT}`, time: `600 11px ${FONT}`, dur: `600 10.5px ${FONT}`, cost: `700 11px ${FONT}`, root: `600 14px ${SERIF}`, badge: `600 12px ${FONT}` };
-const LAY = { top: 62, rowH: 96, right: 260 };
+const LAY = { top: 68, rowH: 96, right: 260 };
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const BUFS = [0, 15, 30, 60, 120, 180];
@@ -1633,10 +1649,17 @@ function rng(seed) { let x = (seed * 2654435761) >>> 0 || 1; return () => { x ^=
 function drawTimeAxis(g) {
   const { X, tmin, tmax, pph, height } = geo;
   const svg = $('#graph'), defs = el('defs', null, svg);
-  const yA = LAY.top + 8, sy = 27, sh = 24, x0 = X(tmin), x1 = X(tmax);
+  const yA = LAY.top + 8, sy = 25, sh = 34, x0 = X(tmin), x1 = X(tmax), hz = sy + sh;
+  const tip = (e, t) => { el('title', null, e).textContent = t; return e; };
+  // shared paint: glows for sun and moon, and a soft depth over the strip
+  const glow = (id, v) => { const rg = el('radialGradient', { id }, defs); el('stop', { offset: '0', style: `stop-color:var(${v});stop-opacity:1` }, rg); el('stop', { offset: '1', style: `stop-color:var(${v});stop-opacity:0` }, rg); };
+  glow('sunglow', '--sun-glow'); glow('moonglow', '--moon-glow');
+  const depth = el('linearGradient', { id: 'skydepth', x1: 0, x2: 0, y1: 0, y2: 1 }, defs);
+  [['0', 'rgba(8,10,24,.26)'], ['.55', 'rgba(8,10,24,0)'], ['1', 'rgba(255,255,255,.2)']].forEach(([o, c]) => el('stop', { offset: o, style: `stop-color:${c}` }, depth));
   const clip = el('clipPath', { id: 'skyclip' }, defs);
-  el('rect', { x: x0, y: sy, width: x1 - x0, height: sh, rx: 8 }, clip);
+  el('rect', { x: x0, y: sy, width: x1 - x0, height: sh, rx: 9 }, clip);
   const sky = el('g', { 'clip-path': 'url(#skyclip)' }, g);
+  const art = [];   // drawn over the strip's depth layer
   const d0 = new Date(tmin); d0.setHours(0, 0, 0, 0);
   let i = 0;
   for (let day = d0.getTime(); day < tmax; i++) {
@@ -1648,47 +1671,66 @@ function drawTimeAxis(g) {
     }
     const a = Math.max(tmin, day), b = Math.min(tmax, next);
     if (b > a) {
-      el('rect', { x: X(a), y: yA, width: X(b) - X(a), height: height - yA, fill: `url(#skyb${i})` }, g);
+      // the day's light across the whole chart
+      el('rect', { x: X(a), y: yA, width: X(b) - X(a), height: height - yA, fill: `url(#skyb${i})`, class: 'skybody' }, g);
       el('rect', { x: X(day), y: sy, width: X(next) - X(day), height: sh, fill: `url(#sky${i})` }, sky);
-      // stars in the night sky
-      const r = rng(day / H);
-      for (const [h0, h1] of [[0, 4.6], [19.4, 24]]) {
-        const n = Math.round((h1 - h0) * pph / 9);
-        for (let k = 0; k < n; k++) {
-          const t = day + (h0 + r() * (h1 - h0)) * H;
-          el('circle', { cx: X(t), cy: sy + 3 + r() * (sh - 6), r: .6 + r() * .8, class: 'star', style: `opacity:${(.45 + r() * .55).toFixed(2)}` }, sky);
+      const r = rng(day / H + 7);
+      // stars: in the night sky, and a few faint ones over the chart's night hours
+      for (const [h0, h1] of [[0, 4.4], [19.6, 24]]) {
+        const ta = Math.max(tmin, day + h0 * H), tb = Math.min(tmax, day + h1 * H);
+        if (tb <= ta) continue;
+        const w = X(tb) - X(ta);
+        for (let k = 0, n = Math.round(w / 7); k < n; k++) {
+          const big = r() < .12, o = (.5 + r() * .5).toFixed(2);
+          art.push(['circle', { cx: X(ta) + r() * w, cy: sy + 3 + r() * (sh - 12), r: big ? 1.4 : .5 + r() * .7, class: 'star tw', style: `--o:${o};opacity:${o};animation-delay:-${(r() * 4).toFixed(2)}s;animation-duration:${(2.4 + r() * 3).toFixed(2)}s` }]);
+        }
+        for (let k = 0, n = Math.round(w * (height - yA) / 5200); k < n; k++) {
+          const o = (.25 + r() * .45).toFixed(2);
+          el('circle', { cx: X(ta) + r() * w, cy: yA + 8 + r() * (height - yA - 16), r: .5 + r() * .6, class: 'bstar tw', style: `--o:calc(${o} * var(--bstar));opacity:calc(${o} * var(--bstar));animation-delay:-${(r() * 5).toFixed(2)}s;animation-duration:${(3 + r() * 3.5).toFixed(2)}s` }, g);
         }
       }
-      // the sun's path from sunrise to sunset
-      const xr = X(day + 6 * H), xs = X(day + 18 * H), xn = X(day + 12 * H);
-      el('path', { d: `M${xr} ${sy + sh - 2} Q${xn} ${sy - sh * .55} ${xs} ${sy + sh - 2}`, class: 'sunpath' }, sky);
-      const tip = (e, t) => { el('title', null, e).textContent = t; return e; };
-      const xm = X(day + 12 * H);
-      if (day + 12 * H >= tmin && day + 12 * H <= tmax) {
-        const sun = el('g', { class: 'sun' }, sky);
-        for (let k = 0; k < 8; k++) { const an = k * Math.PI / 4; el('line', { x1: xm + Math.cos(an) * 6.5, y1: sy + 9 + Math.sin(an) * 6.5, x2: xm + Math.cos(an) * 9, y2: sy + 9 + Math.sin(an) * 9 }, sun); }
-        el('circle', { cx: xm, cy: sy + 9, r: 4.6 }, sun);
-        tip(sun, 'Midday');
-      }
-      if (6 * pph >= 30) for (const [hr, name] of [[6, 'Sunrise, about 6 AM'], [18, 'Sunset, about 6 PM']]) {
+      // sunrise and sunset: a gold line down the chart, and a sun on the horizon
+      for (const [hr, name] of [[6, 'Sunrise, about 6 AM'], [18, 'Sunset, about 6 PM']]) {
         const t = day + hr * H; if (t < tmin || t > tmax) continue;
-        const x = X(t), by = sy + sh - 1;
-        tip(el('path', { d: `M${x - 6} ${by} A6 6 0 0 1 ${x + 6} ${by} Z`, class: 'halfsun' }, sky), name);
+        const x = X(t);
+        tip(el('line', { x1: x, x2: x, y1: yA, y2: height, class: 'goldline' }, g), name);
+        art.push(['circle', { cx: x, cy: hz, r: 13, fill: 'url(#sunglow)', class: 'nohit' }]);
+        art.push(['path', { d: `M${x - 6.5} ${hz} A6.5 6.5 0 0 1 ${x + 6.5} ${hz} Z`, class: 'halfsun' }, name]);
       }
-      if (day >= tmin && day <= tmax) {
-        const x = X(day), cy = sy + 12;
-        tip(el('path', { d: `M${x + 1.5} ${cy - 6} A6 6 0 1 0 ${x + 1.5} ${cy + 6} A4.6 4.6 0 1 1 ${x + 1.5} ${cy - 6} Z`, class: 'moon' }, sky), 'Midnight');
-      }
+      // the sun's arc, with the midday sun at its peak
+      const xr = X(day + 6 * H), xs = X(day + 18 * H), xn = X(day + 12 * H), peak = sy + 11;
+      art.push(['path', { d: `M${xr} ${hz - 1} Q${xn} ${peak * 2 - hz + 9} ${xs} ${hz - 1}`, class: 'sunpath' }]);
+      if (day + 12 * H >= tmin && day + 12 * H <= tmax) art.push(['sun', xn, peak]);
+      // the moon at midnight
+      if (day >= tmin && day <= tmax) art.push(['moon', X(day), sy + 15]);
     }
     day = next;
   }
-  el('rect', { x: x0, y: sy, width: x1 - x0, height: sh, rx: 8, class: 'skyframe' }, g);
+  el('rect', { x: x0, y: sy, width: x1 - x0, height: sh, fill: 'url(#skydepth)', class: 'nohit' }, sky);
+  for (const [kind, A, B, C] of art) {
+    if (kind === 'sun') {
+      const sun = el('g', { class: 'sun' }, sky);
+      el('circle', { cx: A, cy: B, r: 15, class: 'glow' }, sun);
+      for (let k = 0; k < 12; k++) { const an = k * Math.PI / 6, r1 = k % 2 ? 7.4 : 7, r2 = k % 2 ? 9.2 : 10.5; el('line', { x1: A + Math.cos(an) * r1, y1: B + Math.sin(an) * r1, x2: A + Math.cos(an) * r2, y2: B + Math.sin(an) * r2 }, sun); }
+      el('circle', { cx: A, cy: B, r: 5.2, class: 'disc' }, sun);
+      tip(sun, 'Midday');
+    } else if (kind === 'moon') {
+      const mg = el('g', { class: 'moong' }, sky);
+      el('circle', { cx: A, cy: B, r: 13, fill: 'url(#moonglow)' }, mg);
+      el('path', { d: `M${A + 1.8} ${B - 6.5} A6.5 6.5 0 1 0 ${A + 1.8} ${B + 6.5} A5 5 0 1 1 ${A + 1.8} ${B - 6.5} Z`, class: 'moon' }, mg);
+      tip(mg, 'Midnight');
+    } else {
+      const e = el(kind, A, sky);
+      if (B) tip(e, B);
+    }
+  }
+  el('rect', { x: x0, y: sy, width: x1 - x0, height: sh, rx: 9, class: 'skyframe' }, g);
   el('line', { x1: x0, x2: x1, y1: yA, y2: yA, class: 'axisline' }, g);
   const step = pph >= 40 ? 1 : pph >= 20 ? 3 : pph >= 9 ? 6 : 12;
   const dayPill = (x, t) => {
     const s = dayLbl(t), w = tw(s, `600 12px ${FONT}`) + 14;
-    el('rect', { x, y: 3, width: w, height: 20, rx: 10, class: 'daypill' }, g);
-    txt(g, x + 7, 17, s, 'daylbl');
+    el('rect', { x, y: 2, width: w, height: 20, rx: 10, class: 'daypill' }, g);
+    txt(g, x + 7, 16, s, 'daylbl');
   };
   let firstMid = null;
   for (let t = tmin; t <= tmax; t += H) {
@@ -1696,11 +1738,11 @@ function drawTimeAxis(g) {
     if (dt.getMinutes() !== 0) continue;
     if (hr === 0) {
       if (firstMid == null) firstMid = x;
-      el('line', { x1: x, x2: x, y1: sy + sh, y2: height, class: 'midnight' }, g);
+      el('line', { x1: x, x2: x, y1: hz, y2: height, class: 'midnight' }, g);
       dayPill(x + 4, t);
     } else if (hr % step === 0) {
       el('line', { x1: x, x2: x, y1: yA, y2: height, class: 'tick' + (hr === 12 ? ' noon' : '') }, g);
-      if (pph * step >= 34) txt(g, x, yA - 5, hm(t), 'hrlbl halo');
+      if (pph * step >= 34) txt(g, x, yA - 4, hm(t), 'hrlbl halo');
     }
   }
   if (firstMid == null || firstMid - X(tmin) > 110) dayPill(X(tmin) + 4, tmin);
