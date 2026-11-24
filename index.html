@@ -1419,13 +1419,14 @@ body.dock-dragging,body.dock-dragging *{cursor:ns-resize !important}
 .set-ctl .inpre #budget{flex:1 1 0;width:0;min-width:0}
 .inpre .stepper{padding:0;margin-left:auto}
 /* the moon over each night: a crescent with a soft glow, and one small cloud passing it */
-:root{--bmoon:#f7e2a0;--bmoon-glow:rgba(255,255,255,.95);--moon-edge:rgba(160,128,50,.55);--ncloud:rgba(255,255,255,.88);--nightmoon-o:1}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bmoon:var(--moon);--bmoon-glow:rgba(241,234,211,.32);--moon-edge:rgba(255,255,255,.14);--ncloud:rgba(196,210,236,.16);--nightmoon-o:.92}}
-:root[data-theme="dark"]{--bmoon:var(--moon);--bmoon-glow:rgba(241,234,211,.32);--moon-edge:rgba(255,255,255,.14);--ncloud:rgba(196,210,236,.16);--nightmoon-o:.92}
+:root{--bmoon:#f8dc72;--bmoon-glow:rgba(255,255,255,.7);--moon-edge:rgba(138,100,18,.75);--ncloud:rgba(255,255,255,.8);--nightmoon-o:1;--moon-shadow:drop-shadow(0 1px 1.2px rgba(30,38,96,.35))}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--moon-shadow:none;--bmoon:var(--moon);--bmoon-glow:rgba(241,234,211,.32);--moon-edge:rgba(255,255,255,.14);--ncloud:rgba(196,210,236,.16);--nightmoon-o:.92}}
+:root[data-theme="dark"]{--moon-shadow:none;--bmoon:var(--moon);--bmoon-glow:rgba(241,234,211,.32);--moon-edge:rgba(255,255,255,.14);--ncloud:rgba(196,210,236,.16);--nightmoon-o:.92}
 #graph .bodyart,#graph .bodyart *{pointer-events:none}
 #graph .nightmoon{opacity:var(--nightmoon-o)}
 #graph .nmglow{animation-duration:7s}
-#graph .nmdisc{fill:var(--bmoon);stroke:var(--moon-edge);stroke-width:1}
+#graph .nmdisc{fill:var(--bmoon);stroke:var(--moon-edge);stroke-width:1.1}
+#graph .nmcres{filter:var(--moon-shadow)}
 #graph .ncloud .cpuffs{fill:var(--ncloud)}
 </style>
 </head>
@@ -2251,10 +2252,11 @@ function renderGraph() {
   el('rect', { x: 0, y: 0, width: pw, height, class: 'pinbg' }, gPin);
   rows.forEach((r, i) => { if (i % 2 === 0) el('rect', { x: 0, y: r.top, width: pw, height: r.bot - r.top, class: 'rowband' }, gPin); });
   el('line', { x1: pw, x2: pw, y1: 0, y2: height, class: 'pinedge' }, gPin);
-  txt(gPin, 16, LAY.top + 4, 'PLACES', 'pinlbl');
+  const hy = LAY.top + (timeOn ? LAY.sky : 0);   // the header sits right above the first place
+  txt(gPin, 16, hy + 4, 'PLACES', 'pinlbl');
   const pb = el('g', { class: 'pinbtn', role: 'button', tabindex: '0', 'aria-label': 'Pin or unpin the place names' }, gPin);
-  el('rect', { x: pw - 34, y: LAY.top - 12, width: 26, height: 22, rx: 7, class: 'pinhit' }, pb);
-  el('path', { d: `M${pw - 24.5} ${LAY.top - 6.5}h7l-1.2 4.4 2.7 2.8v1.6h-10v-1.6l2.7-2.8z M${pw - 21} ${LAY.top + 2.3}v4.4`, class: 'pinico' }, pb);
+  el('rect', { x: pw - 34, y: hy - 12, width: 26, height: 22, rx: 7, class: 'pinhit' }, pb);
+  el('path', { d: `M${pw - 24.5} ${hy - 6.5}h7l-1.2 4.4 2.7 2.8v1.6h-10v-1.6l2.7-2.8z M${pw - 21} ${hy + 2.3}v4.4`, class: 'pinico' }, pb);
   el('title', null, pb);
   geo.pinW = pw;
   gScrub = el('g', { class: 'scrub' }, svg);
@@ -2562,16 +2564,16 @@ function drawTimeAxis(g) {
       // the moon high over the middle of the night, with one small cloud passing it
       if (pph >= 5 && day >= tmin && day <= tmax) {
         const cx = X(day), cy = yA + 25, R = 11.5 * k, mn = el('g', { class: 'nightmoon' }, bodyArt);
-        el('circle', { cx, cy, r: 32 * k, fill: 'url(#bmoonglow)', class: 'nmglow mglow' }, mn);
+        el('circle', { cx, cy, r: 24 * k, fill: 'url(#bmoonglow)', class: 'nmglow mglow' }, mn);
         // only the crescent: the disc, with an offset circle masked out of it
         const mk = el('mask', { id: `mmask${i}`, maskUnits: 'userSpaceOnUse', x: cx - R - 4, y: cy - R - 4, width: 2 * R + 8, height: 2 * R + 8 }, defs);
         el('circle', { cx, cy, r: R + 2, fill: '#fff' }, mk);
         el('circle', { cx: cx + R * .5, cy: cy - R * .22, r: R * .86, fill: '#000' }, mk);
-        el('circle', { cx, cy, r: R, class: 'nmdisc', mask: `url(#mmask${i})` }, mn);
+        el('circle', { cx, cy, r: R, class: 'nmdisc', mask: `url(#mmask${i})` }, el('g', { class: 'nmcres' }, mn));   // the shadow falls from the crescent itself
         moonGap.set(day, [cy - R - 3, cy + R + 3]);
         const nR = Math.min(X(tmax) - 6, X(Math.min(tmax, day + 4.5 * H))), dx = Math.max(4, Math.min(12, (nR - cx) * .1));
-        const f = fitCloud(cx + 24 * k, cy + 13 * k, 1.15 * k, cx - 4 * k, nR, dx);
-        if (f) drawCloud('skycloud ncloud', `--dx:${dx.toFixed(1)}px;animation-duration:38s`, f.cx, cy + 13 * k, f.w, false);
+        const f = fitCloud(cx + 34 * k, cy + 15 * k, 1.1 * k, cx + 8 * k, nR, dx);
+        if (f) drawCloud('skycloud ncloud', `--dx:${dx.toFixed(1)}px;animation-duration:38s`, f.cx, cy + 15 * k, f.w, false);
       }
       // daytime over the chart: a clear sky with a few big, soft clouds drifting slowly, each with a
       // faint shadow, in two layers that move at different speeds. Each keeps between sunrise and sunset.
