@@ -4316,8 +4316,7 @@ function planPanel(p) {
     onclick: () => { focusPlan = null; renderPlans(); applyHighlight(); renderInspector(); } }) : null;
   box.append(h('div', { class: 'insp-head pp-head' },
     h('span', { class: 'key-dot', style: `--c:${p.color}` }),
-    h('div', { class: 'pp-titles' }, h('h2', null, renaming && renaming.id === p.id && renaming.where === 'side' ? nameEditor(p.id) : nameTitle(p, 'side')),
-      h('p', { class: 'crumb', text: p.route })),
+    h('div', { class: 'pp-titles' }, h('h2', null, renaming && renaming.id === p.id && renaming.where === 'side' ? nameEditor(p.id) : nameTitle(p, 'side'))),
     planActions(p, 'side'), close));
   if (p.issues.length) box.append(h('div', { class: 'warnbox' }, ...p.issues.map(x => h('p', { text: '⚠ ' + x }))));
   const stat = (label, value, sub) => h('div', { class: 'it-stat' }, h('span', { class: 'it-lab', text: label }), h('b', { class: 'it-val', text: value }),
