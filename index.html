@@ -1374,10 +1374,10 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 .fabdock{position:relative;height:0;flex:none;z-index:8}
 .fab{position:absolute;right:22px;bottom:20px}
 .btn.primary.fabbtn{height:46px;padding:0 20px 0 15px;gap:8px;border-radius:15px;font-size:14px;font-weight:600;letter-spacing:.01em;
-  box-shadow:0 1px 2px rgba(16,24,40,.18),0 8px 22px -6px color-mix(in srgb,var(--accent) 60%,transparent);transition:box-shadow .15s,background .15s}
+  box-shadow:none;transition:background .15s}
 .fabbtn::before{width:20px;height:20px;transition:transform .2s ease}
 /* no hover effect: pointing at New leaves it exactly as it is */
-.btn.primary.fabbtn:hover:not(:disabled){background:var(--accent);border-color:var(--accent);color:var(--accent-ink);filter:none;box-shadow:0 1px 2px rgba(16,24,40,.18),0 8px 22px -6px color-mix(in srgb,var(--accent) 60%,transparent)}
+.btn.primary.fabbtn:hover:not(:disabled){background:var(--accent);border-color:var(--accent);color:var(--accent-ink);filter:none;box-shadow:none}
 .menu.open > .fabbtn{background:color-mix(in srgb,var(--accent) 86%,var(--ink)) !important;border-color:transparent !important;color:var(--accent-ink) !important}
 .menu.open > .fabbtn::before{transform:rotate(45deg)}
 .fab .menu-pop{min-width:270px}
