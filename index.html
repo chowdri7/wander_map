@@ -1289,6 +1289,41 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 #graph .pinbtn.on .pinico{fill:var(--accent);stroke:var(--accent)}
 #graph .pinbtn.on .pinhit{fill:color-mix(in srgb,var(--accent) 12%,transparent);stroke:color-mix(in srgb,var(--accent) 35%,transparent)}
 @media (prefers-reduced-motion:reduce){.addbtn{transition:none}}
+/* Settings: each section a card of rows, every control lined up on the right */
+.modal-card{width:min(600px,100%)}
+.modal-head{align-items:flex-start;padding:16px 20px 14px}
+.modal-sub{margin:2px 0 0;font-size:12px;color:var(--muted)}
+.modal-body{padding:6px 20px 20px;background:var(--surface2)}
+.set-sect{padding:16px 0 0;border:0}
+.set-sect h3{margin:0 0 8px 2px;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.set-card{border:1px solid var(--border);border-radius:10px;background:var(--surface);overflow:hidden}
+.set-card .set-row{display:grid;grid-template-columns:minmax(0,1fr) 190px;align-items:center;gap:16px;padding:12px 14px;margin:0}
+.set-card .set-row + .set-row{border-top:1px solid var(--border)}
+.set-lab b{font-size:13.5px;font-weight:600;color:var(--ink)}
+.set-lab small{margin-top:2px;font-size:12px;line-height:1.4;color:var(--muted)}
+.set-ctl{display:flex;justify-content:flex-end;align-items:center;min-width:0}
+.set-ctl select{width:100%}
+.set-ctl .btn.small{min-width:96px;justify-content:center}
+.set-ctl .seg{width:100%;display:grid;grid-auto-flow:column;grid-auto-columns:1fr}
+.set-ctl .seg button{padding:0 6px}
+.inpre{display:flex;align-items:center;width:100%;height:34px;border:1px solid var(--axis);border-radius:var(--r-sm);background:var(--surface);overflow:hidden}
+.inpre:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.inpre span{flex:none;padding:0 4px 0 10px;color:var(--muted);font-size:13px}
+.inpre input{flex:1;min-width:0;height:100%;border:0 !important;box-shadow:none !important;background:transparent;padding:0 10px 0 2px}
+.set-foot{margin:8px 2px 0;font-size:12px;color:var(--muted)}
+.set-card .set-keys{display:block}
+.set-keys .keys{margin:10px 0 2px;grid-template-columns:max-content 1fr;gap:8px 18px}
+.keys dt{display:flex;gap:4px;align-items:center}
+.keys dd{color:var(--ink2)}
+@media (max-width:560px){.set-card .set-row{grid-template-columns:1fr}.set-ctl{justify-content:flex-start}}
+/* the plan maker's route */
+.broute .bchain{margin-top:4px}
+.jn-step{display:flex;align-items:flex-start;gap:9px;margin:2px 0;padding:6px 8px;border-left:3px solid var(--c);border-radius:7px}
+.jn-n{flex:none;width:19px;height:19px;margin-top:1px;border-radius:50%;background:var(--surface);border:1.5px solid var(--c);color:var(--ink);font:700 10.5px/16px var(--font);text-align:center}
+.jn-cur .jn-n{background:var(--c);color:#fff;border-color:var(--c)}
+.jn-ask{border-style:dashed}
+.bend-note{margin-top:8px}
+.jn-go.hl{background:var(--surface);border-color:color-mix(in srgb,var(--accent) 45%,var(--border));border-left-color:var(--c)}
 </style>
 </head>
 <body>
@@ -1403,7 +1438,7 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
             <tbody id="plansBody"></tbody>
           </table>
         </div>
-        <p id="planEmpty" class="hint" hidden>No saved plans yet. Choose + and then Plan, pick where it starts and ends, and choose the way at each split.</p>
+        <p id="planEmpty" class="hint" hidden>No saved plans yet. Choose + and then Plan, click the leg you leave on, and take the way on at each place.</p>
         <div id="detail"></div>
       </div>
     </section>
@@ -1420,49 +1455,65 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 </div>
 <div class="modal" id="settings" role="dialog" aria-modal="true" aria-labelledby="setTitle" hidden>
   <div class="modal-card">
-    <div class="modal-head"><h2 id="setTitle">Settings</h2><button class="icon-btn" type="button" id="setClose" title="Close" aria-label="Close settings">×</button></div>
+    <div class="modal-head">
+      <div><h2 id="setTitle">Settings</h2><p class="modal-sub">Kept in this browser, for this device</p></div>
+      <button class="icon-btn" type="button" id="setClose" title="Close" aria-label="Close settings">×</button>
+    </div>
     <div class="modal-body">
-      <section class="set-sect">
-        <h3>Appearance</h3>
-        <div class="set-row"><div class="set-lab"><b>Theme</b><small>Light, dark, or the same as this device</small></div>
-          <div class="seg" id="setTheme" role="radiogroup" aria-label="Theme"><button type="button" role="radio" data-v="light">Light</button><button type="button" role="radio" data-v="dark">Dark</button><button type="button" role="radio" data-v="system">Device</button></div></div>
-        <div class="set-row"><div class="set-lab"><b>Sky on the timeline</b><small>Stars, clouds, sunbeams and birds, or only the colours of the day</small></div>
-          <div class="seg" id="setSky" role="radiogroup" aria-label="Sky on the timeline"><button type="button" role="radio" data-v="full">Full</button><button type="button" role="radio" data-v="simple">Simple</button></div></div>
-        <div class="set-row"><div class="set-lab"><b>Moving sky</b><small>Twinkling stars, drifting clouds and glowing choices</small></div>
-          <label class="switch"><input type="checkbox" id="setMotion" aria-label="Moving sky"><span aria-hidden="true"></span></label></div>
-        <div class="set-row"><div class="set-lab"><b>Pin place names</b><small>Keep them in view when the timeline scrolls sideways</small></div>
-          <label class="switch"><input type="checkbox" id="setPin" aria-label="Pin place names"><span aria-hidden="true"></span></label></div>
-        <div class="set-row"><div class="set-lab"><b>Fares on the timeline</b><small>Each leg’s fare on its line</small></div>
-          <label class="switch"><input type="checkbox" id="setCosts" aria-label="Fares on the timeline"><span aria-hidden="true"></span></label></div>
-      </section>
-      <section class="set-sect">
-        <h3>Trip</h3>
-        <div class="set-row"><div class="set-lab"><b>Currency</b><small>For every fare and cost</small></div>
-          <select id="currency" class="cursel" aria-label="Currency"></select></div>
-        <div class="set-row"><div class="set-lab"><b>Budget per head</b><small>Leave it empty for no budget</small></div>
-          <input id="budget" type="number" min="0" step="10" inputmode="numeric" placeholder="None" aria-label="Budget per head"></div>
-      </section>
-      <section class="set-sect">
-        <h3>Your data</h3>
-        <p class="set-note" id="setStore">Saved only in this browser.</p>
-        <div class="set-btns">
-          <button type="button" class="btn" id="export" data-ico="down">Export plans</button>
-          <button type="button" class="btn" id="menuImport" data-ico="up">Import plans</button>
-          <span class="spacer"></span>
-          <button type="button" class="btn danger" id="clear" data-ico="trash" title="You can undo this">Clear everything</button>
+      <section class="set-sect" aria-labelledby="setA">
+        <h3 id="setA">Appearance</h3>
+        <div class="set-card">
+          <div class="set-row"><div class="set-lab"><b>Theme</b><small>Light, dark, or the same as this device</small></div>
+            <div class="set-ctl"><div class="seg" id="setTheme" role="radiogroup" aria-label="Theme"><button type="button" role="radio" data-v="light">Light</button><button type="button" role="radio" data-v="dark">Dark</button><button type="button" role="radio" data-v="system">Device</button></div></div></div>
+          <div class="set-row"><div class="set-lab"><b>Moving sky</b><small>Twinkling stars, drifting clouds and glowing choices</small></div>
+            <div class="set-ctl"><label class="switch"><input type="checkbox" id="setMotion" aria-label="Moving sky"><span aria-hidden="true"></span></label></div></div>
         </div>
       </section>
-      <section class="set-sect">
-        <h3>Help</h3>
-        <div class="set-btns"><button type="button" class="btn" id="setTour" data-ico="compass">Take the tour</button></div>
-        <dl class="keys">
-          <dt><kbd>Ctrl</kbd> <kbd>Z</kbd></dt><dd>Undo</dd>
-          <dt><kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>Z</kbd></dt><dd>Redo</dd>
-          <dt><kbd>Ctrl</kbd> <kbd>S</kbd></dt><dd>Save what you are editing</dd>
-          <dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Previous or next leg</dd>
-          <dt><kbd>1</kbd>–<kbd>9</kbd></dt><dd>Take a numbered way on</dd>
-          <dt><kbd>Esc</kbd></dt><dd>Close or step back</dd>
-        </dl>
+      <section class="set-sect" aria-labelledby="setB">
+        <h3 id="setB">Timeline</h3>
+        <div class="set-card">
+          <div class="set-row"><div class="set-lab"><b>Pin place names</b><small>Keep them in view when the timeline scrolls sideways</small></div>
+            <div class="set-ctl"><label class="switch"><input type="checkbox" id="setPin" aria-label="Pin place names"><span aria-hidden="true"></span></label></div></div>
+          <div class="set-row"><div class="set-lab"><b>Fares on the timeline</b><small>Show each leg’s fare on its line</small></div>
+            <div class="set-ctl"><label class="switch"><input type="checkbox" id="setCosts" aria-label="Fares on the timeline"><span aria-hidden="true"></span></label></div></div>
+        </div>
+      </section>
+      <section class="set-sect" aria-labelledby="setC">
+        <h3 id="setC">Trip</h3>
+        <div class="set-card">
+          <div class="set-row"><div class="set-lab"><b>Currency</b><small>Used for every fare and cost</small></div>
+            <div class="set-ctl"><select id="currency" aria-label="Currency"></select></div></div>
+          <div class="set-row"><div class="set-lab"><b>Budget per head</b><small>Plans show what is left of it. Leave it empty for none.</small></div>
+            <div class="set-ctl"><div class="inpre"><span id="setCur" aria-hidden="true">₹</span><input id="budget" type="number" min="0" step="10" inputmode="numeric" placeholder="None" aria-label="Budget per head"></div></div></div>
+        </div>
+      </section>
+      <section class="set-sect" aria-labelledby="setD">
+        <h3 id="setD">Your data</h3>
+        <div class="set-card">
+          <div class="set-row"><div class="set-lab"><b>Export plans</b><small>Save everything to a file, to keep a copy or move it</small></div>
+            <div class="set-ctl"><button type="button" class="btn small" id="export" data-ico="down">Export</button></div></div>
+          <div class="set-row"><div class="set-lab"><b>Import plans</b><small>Load plans from a file you exported</small></div>
+            <div class="set-ctl"><button type="button" class="btn small" id="menuImport" data-ico="up">Import</button></div></div>
+          <div class="set-row"><div class="set-lab"><b>Clear everything</b><small>Remove every place, leg and plan. You can undo it.</small></div>
+            <div class="set-ctl"><button type="button" class="btn small danger" id="clear" data-ico="trash">Clear</button></div></div>
+        </div>
+        <p class="set-foot" id="setStore">Saved only in this browser.</p>
+      </section>
+      <section class="set-sect" aria-labelledby="setE">
+        <h3 id="setE">Help</h3>
+        <div class="set-card">
+          <div class="set-row"><div class="set-lab"><b>Guided tour</b><small>A one-minute walk through a sample trip</small></div>
+            <div class="set-ctl"><button type="button" class="btn small" id="setTour" data-ico="compass">Start</button></div></div>
+          <div class="set-row set-keys"><div class="set-lab"><b>Keyboard shortcuts</b></div>
+            <dl class="keys">
+              <dt><kbd>Ctrl</kbd><kbd>Z</kbd></dt><dd>Undo</dd>
+              <dt><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>Z</kbd></dt><dd>Redo</dd>
+              <dt><kbd>Ctrl</kbd><kbd>S</kbd></dt><dd>Save what you are editing</dd>
+              <dt><kbd>←</kbd><kbd>→</kbd></dt><dd>Previous or next leg, or back and on while making a plan</dd>
+              <dt><kbd>1</kbd>–<kbd>9</kbd></dt><dd>Take a numbered way on</dd>
+              <dt><kbd>Esc</kbd></dt><dd>Close, or step back</dd>
+            </dl></div>
+        </div>
       </section>
     </div>
   </div>
@@ -1510,13 +1561,14 @@ let edit = null;                    // the form of the saved place, leg or wait 
 let focusPlan = null, hoverPlan = null, hoverLeg = null, scrubT = null, pinned = false;
 let geo = null, gScrub = null, focusNext = null, pendingSnap = null;
 let B = null;                       // the plan being made (not saved until "Save plan")
-let scrubY = null;
-let guideHover = null;               // the leg under the pointer while making a plan                  // pointer height in the timeline, for the hover card
+let scrubY = null;                  // pointer height in the timeline, for the hover card
+let guideHover = null;              // the leg under the pointer while making a plan
 let viewPlan = null;                // plan view mode: only this plan's nodes and legs
 let renaming = null;                // { id, where } while a plan name is being edited
 const UIKEY = 'wander-map.ui', OLD_UIKEY = 'route-branch-planner.ui';
 let UI = { side: true, drawer: false, theme: null, costs: false, view: false };
 try { Object.assign(UI, JSON.parse(localStorage.getItem(UIKEY) || localStorage.getItem(OLD_UIKEY) || '{}')); } catch (e) { /* ignore */ }
+delete UI.sky; // the sky is always drawn in full now
 let sideOpen = true;
 const VIEWQ = window.matchMedia ? matchMedia('(max-width: 700px)') : null;
 let viewOnly = !!(VIEWQ && VIEWQ.matches);
@@ -1948,26 +2000,16 @@ function findRoutes(start, end, startT, endT, startLeg, endLeg, allow) {
   if (start && end) rec(start, [], null);
   return { paths: out, capped };
 }
-function builderRemaining() {
-  if (!B || !B.paths) return [];
-  const c = B.chosen;
-  return B.paths.filter(p => p.length >= c.length && c.every((id, i) => p[i] === id));
-}
-function builderDone() { const r = builderRemaining(); return r.length > 0 && r.every(p => p.length === B.chosen.length); }
+// The plan maker builds a route leg by leg from where you leave: at each place it offers every leg
+// you can take next (leaving after you get there), the same way the Journey card does.
+function bNext(id) { return nextLegs(id).filter(x => T[x].complete); }
 function builderOptions() {
-  const i = B.chosen.length, seen = [];
-  builderRemaining().forEach(p => { if (p[i] && !seen.includes(p[i])) seen.push(p[i]); });
-  return seen.sort(byDep);
+  if (!B) return [];
+  const last = B.chosen[B.chosen.length - 1];
+  if (last) return bNext(last);
+  return B.start ? legsFrom(B.start).filter(x => T[x].complete && T[x].timed) : [];
 }
-// Take a leg automatically only when it is the one and only way on.
-function builderAdvance() {
-  for (let guard = 0; guard < 60 && !builderDone(); guard++) {
-    const o = builderOptions();
-    if (o.length !== 1) break;
-    B.auto.add(B.chosen.length);
-    B.chosen.push(o[0]);
-  }
-}
+function builderDone() { return !!B && B.finished && B.chosen.length > 0; }
 
 /* ---------- status at a moment ---------- */
 function statusAt(pi, t) {
@@ -2369,7 +2411,7 @@ function drawTimeAxis(g) {
       { const tn = day + 12 * H; if (tn > tmin - 7 * H && tn < tmax + 7 * H) el('ellipse', { cx: X(tn), cy: yA, rx: 6.2 * pph, ry: Math.max(160, (height - yA) * .95), fill: 'url(#daylight)', class: 'nohit' }, g); }
       // daytime over the chart, the counterpart of the night's stars: soft sunbeams from the
       // midday sun, a few clouds drifting by and birds far off. All of it stays behind the legs.
-      if (UI.sky !== 'simple') {
+      {
         const ta = Math.max(tmin, day + 7 * H), tb = Math.min(tmax, day + 17 * H);
         if (tb > ta) {
           const top = yA, deep = height - yA, xn = X(day + 12 * H), w = X(tb) - X(ta), rr = rng(day / H + 31);
@@ -2394,13 +2436,13 @@ function drawTimeAxis(g) {
         }
       }
       // soft clouds drifting across the daytime sky
-      if (UI.sky !== 'simple' && 6 * pph >= 36) for (const [hc, dy] of [[8.7 + r() * 1.6, 9 + r() * 4], [13.6 + r() * 1.8, 13 + r() * 4]]) {
+      if (6 * pph >= 36) for (const [hc, dy] of [[8.7 + r() * 1.6, 9 + r() * 4], [13.6 + r() * 1.8, 13 + r() * 4]]) {
         const t = day + hc * H; if (t < tmin || t > tmax) continue;
         const cx = X(t), cy = sy + dy, sc_ = .75 + r() * .45;
         art.push(['cloud', cx, cy, sc_, (r() * 12).toFixed(1)]);
       }
       // stars: in the night sky, and a few faint ones over the chart's night hours
-      for (const [h0, h1] of UI.sky === 'simple' ? [] : [[0, 4.4], [19.6, 24]]) {
+      for (const [h0, h1] of [[0, 4.4], [19.6, 24]]) {
         const ta = Math.max(tmin, day + h0 * H), tb = Math.min(tmax, day + h1 * H);
         if (tb <= ta) continue;
         const w = X(tb) - X(ta);
@@ -2513,9 +2555,9 @@ function applyHighlight() {
   let legSet = null, planId = null, chosen = null, navSet = null;
   const ph = guidePhase();
   if (ph) {
-    if (ph === 'end') { legSet = reach(); chosen = new Set(B.startLeg ? [B.startLeg] : []); }
-    else if (ph === 'route' || ph === 'done') { legSet = new Set(); builderRemaining().forEach(p => p.forEach(id => legSet.add(id))); chosen = new Set(B.chosen); }
-    if (hoverLeg) legSet = new Set([hoverLeg, ...B.chosen, ...(B.startLeg ? [B.startLeg] : [])]);
+    chosen = new Set(B.chosen);
+    if (ph !== 'start') navSet = new Set([...B.chosen, ...(ph === 'route' ? builderOptions() : [])]);
+    if (hoverLeg) { legSet = new Set([hoverLeg, ...B.chosen]); navSet = null; }
   } else if (hoverLeg) legSet = new Set([hoverLeg]);
   else if (!hoverPlan && sel && sel.k === 'leg' && S.legs[sel.id]) navSet = new Set([sel.id, ...nextLegs(sel.id), ...prevLegs(sel.id)]);
   else {
@@ -2528,7 +2570,7 @@ function applyHighlight() {
     e.classList.toggle('navdim', !!navSet && (e.dataset.plan || !(navSet.has(e.dataset.leg) || (e.dataset.also && e.dataset.also.split(' ').some(x => navSet.has(x))))));
     if (e.classList.contains('edge')) e.classList.toggle('chosen', !!chosen && chosen.has(e.dataset.leg));
   });
-  document.querySelectorAll('#builder .opt[data-opt]').forEach(b => b.classList.toggle('hl', b.dataset.opt === (hoverLeg || guideHover)));
+  document.querySelectorAll('#builder .jn-go[data-nav]').forEach(b => b.classList.toggle('hl', b.dataset.nav === (hoverLeg || guideHover)));
 }
 /* ---------- moving along legs ---------- */
 // The legs you can take after a leg (leaving its arrival place once you are there) and the legs that
@@ -2578,7 +2620,7 @@ function navPrev() {
   flashJourney('.jn-prev');
   toast(`${pv.length} legs can bring you to ${nodeName(S.legs[id].from)}: choose one`);
 }
-function flashJourney(q) { const e = $(`#inspector ${q}`); if (!e) return; e.classList.remove('jn-flash'); void e.offsetWidth; e.classList.add('jn-flash'); e.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+function flashJourney(q, root) { const e = $(`${root || '#inspector'} ${q}`); if (!e) return; e.classList.remove('jn-flash'); void e.offsetWidth; e.classList.add('jn-flash'); e.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
 // Bring a leg into view, centred, with its nearest connections when they fit. The timeline zooms out
 // only when the leg itself would not fit.
 function frameLeg(id) {
@@ -2600,6 +2642,42 @@ function frameLeg(id) {
   const pw = pinW();
   sc.scrollTo({ left: Math.max(0, cx - pw - (sc.clientWidth - pw) / 2), top: Math.max(0, cy - sc.clientHeight / 2), behavior: 'smooth' });
 }
+// Rows shared by the Journey card and the plan maker: a leg, the plans it is in, and a line of detail.
+function jnPlans(x) {
+  const ps = LEGPLANS[x] || [];
+  return ps.length ? h('span', { class: 'jn-plans', title: 'In ' + ps.map(p => S.plans[p].name).join(', ') }, ...ps.map(p => h('i', { style: `--c:${PLBY[p] ? PLBY[p].color : 'var(--s9)'}` }))) : null;
+}
+function jnRow(x, mark, sub, onGo) {
+  const lx = S.legs[x], m = MODE[lx.mode] || MODE.other;
+  return h('button', { type: 'button', class: 'jn-go', style: `--c:${legColor(x)}`, 'data-nav': x, onclick: onGo,
+    onmouseenter: () => { hoverLeg = x; applyHighlight(); }, onmouseleave: () => { hoverLeg = null; applyHighlight(); } },
+    mark, h('span', { class: 'jn-txt' }, h('b', null, legLabel(x), jnPlans(x)), h('small', { text: `${m.label} · ${sub}` })));
+}
+// The ways on from a point, as a tree you can unfold branch by branch. `next` gives a leg's ways on,
+// `go` is called with the leg and the chain of legs that leads to it (the first item is the root).
+function branchTree(ids, parentArr, depth, path, next, go) {
+  const box = h('div', { class: 'jn-branches' + (depth ? ' sub' : '') }), cap = depth ? 5 : 8;
+  ids.slice(0, cap).forEach((x, k) => {
+    const kids = depth < 5 ? next(x) : [], key = `${path}>${x}`;
+    const mark = depth ? h('span', { class: 'jn-dot', 'aria-hidden': 'true' }) : ids.length > 1 ? h('span', { class: 'jn-num', text: String(k + 1) }) : h('span', { class: 'jn-dot next', 'aria-hidden': 'true' });
+    const sub = `${shortDT(T[x].dep)} → ${shortDT(T[x].arrSched)}${parentArr != null ? ` · after ${fmtDur(T[x].dep - parentArr)}` : ''}`;
+    const r = h('div', { class: 'jn-row' }, jnRow(x, mark, sub, () => go(x, key.split('>'))));
+    let subBox = null;
+    if (kids.length) {
+      const tg = h('button', { type: 'button', class: 'jn-unfold', 'aria-expanded': String(navOpen.has(key)), title: `${kids.length} way${kids.length > 1 ? 's go' : ' goes'} on from ${nodeName(S.legs[x].to)}` }, h('span', { class: 'chev', 'aria-hidden': 'true' }), String(kids.length));
+      tg.addEventListener('click', () => {
+        const open = tg.getAttribute('aria-expanded') !== 'true';
+        tg.setAttribute('aria-expanded', String(open));
+        if (open) { navOpen.add(key); subBox = branchTree(kids, T[x].arr, depth + 1, key, next, go); r.after(subBox); } else { navOpen.delete(key); if (subBox) subBox.remove(); subBox = null; }
+      });
+      r.append(tg);
+    } else r.append(h('span', { class: 'jn-end', title: `No leg leaves ${nodeName(S.legs[x].to)} after this one`, text: 'end' }));
+    box.append(r);
+    if (kids.length && navOpen.has(key)) { subBox = branchTree(kids, T[x].arr, depth + 1, key, next, go); box.append(subBox); }
+  });
+  if (ids.length > cap) box.append(h('p', { class: 'jn-more-note', text: `and ${ids.length - cap} more` }));
+  return box;
+}
 // The journey around the selected leg: where it can come from, the leg itself, and every way it goes
 // on, as a tree you can unfold branch by branch. Click any leg to go there.
 function journeyCard(l) {
@@ -2609,48 +2687,16 @@ function journeyCard(l) {
     icoBtn('Previous', navPrev, 'small', 'prev', pv.length ? 'The leg before this one (←)' : 'No leg comes before this one', !pv.length),
     icoBtn('Next', navNext, 'small ico-after', 'next', nx.length ? 'The leg after this one (→)' : 'No leg goes on from here', !nx.length)));
   if (!t || !t.timed) { card.append(h('p', { class: 'hint', text: 'Add both times to see which legs connect to this one.' })); return card; }
-  const plansOf = x => { const ps = LEGPLANS[x] || []; return ps.length ? h('span', { class: 'jn-plans', title: 'In ' + ps.map(p => S.plans[p].name).join(', ') }, ...ps.map(p => h('i', { style: `--c:${PLBY[p] ? PLBY[p].color : 'var(--s9)'}` }))) : null; };
-  const row = (x, mark, sub, onGo) => {
-    const lx = S.legs[x], m = MODE[lx.mode] || MODE.other;
-    return h('button', { type: 'button', class: 'jn-go', style: `--c:${legColor(x)}`, 'data-nav': x, onclick: onGo,
-      onmouseenter: () => { hoverLeg = x; applyHighlight(); }, onmouseleave: () => { hoverLeg = null; applyHighlight(); } },
-      mark, h('span', { class: 'jn-txt' }, h('b', null, legLabel(x), plansOf(x)), h('small', { text: `${m.label} · ${sub}` })));
-  };
-  // before
   const prev = h('div', { class: 'jn-sect jn-prev' }, h('p', { class: 'jn-lab', text: pv.length > 1 ? `Can come from · ${pv.length} legs` : pv.length ? 'Comes from' : 'Starts here: no leg arrives before it' }));
-  pv.slice(0, 6).forEach(x => prev.append(h('div', { class: 'jn-row' }, row(x, h('span', { class: 'jn-dot' + (navBack[id] === x ? ' came' : ''), 'aria-hidden': 'true' }),
+  pv.slice(0, 6).forEach(x => prev.append(h('div', { class: 'jn-row' }, jnRow(x, h('span', { class: 'jn-dot' + (navBack[id] === x ? ' came' : ''), 'aria-hidden': 'true' }),
     `${shortDT(T[x].dep)} → ${shortDT(T[x].arrSched)} · ${fmtDur(t.dep - T[x].arr)} before`, () => navTo(x, 'back')))));
   if (pv.length > 6) prev.append(h('p', { class: 'jn-more-note', text: `and ${pv.length - 6} more` }));
   card.append(prev);
-  // this leg
   const m = MODE[l.mode] || MODE.other;
   card.append(h('div', { class: 'jn-cur', style: `--c:${legColor(id)}` }, h('span', { class: 'jn-here', 'aria-hidden': 'true' }),
     h('span', { class: 'jn-txt' }, h('b', { text: legLabel(id) }), h('small', { text: `${m.label} · ${shortDT(t.dep)} → ${shortDT(t.arrSched)} · this leg` }))));
-  // after, as a tree
   const next = h('div', { class: 'jn-sect jn-next' }, h('p', { class: 'jn-lab', text: nx.length > 1 ? `Goes on · ${nx.length} ways` : nx.length ? 'Goes on' : `Ends here: no leg leaves ${nodeName(l.to)} after it` }));
-  const tree = (ids, parent, depth, path) => {
-    const box = h('div', { class: 'jn-branches' + (depth ? ' sub' : '') }), cap = depth ? 5 : 8;
-    ids.slice(0, cap).forEach((x, k) => {
-      const kids = depth < 5 ? nextLegs(x) : [], key = `${path}>${x}`;
-      const mark = depth ? h('span', { class: 'jn-dot', 'aria-hidden': 'true' }) : ids.length > 1 ? h('span', { class: 'jn-num', text: String(k + 1) }) : h('span', { class: 'jn-dot next', 'aria-hidden': 'true' });
-      const r = h('div', { class: 'jn-row' }, row(x, mark, `${shortDT(T[x].dep)} → ${shortDT(T[x].arrSched)} · after ${fmtDur(T[x].dep - T[parent].arr)}`, () => navTo(x, null, key.split('>'))));
-      let subBox = null;
-      if (kids.length) {
-        const tg = h('button', { type: 'button', class: 'jn-unfold', 'aria-expanded': String(navOpen.has(key)), title: `${kids.length} way${kids.length > 1 ? 's go' : ' goes'} on from ${nodeName(S.legs[x].to)}` }, h('span', { class: 'chev', 'aria-hidden': 'true' }), String(kids.length));
-        tg.addEventListener('click', () => {
-          const open = tg.getAttribute('aria-expanded') !== 'true';
-          tg.setAttribute('aria-expanded', String(open));
-          if (open) { navOpen.add(key); subBox = tree(kids, x, depth + 1, key); r.after(subBox); } else { navOpen.delete(key); if (subBox) subBox.remove(); subBox = null; }
-        });
-        r.append(tg);
-      } else r.append(h('span', { class: 'jn-end', title: `No leg leaves ${nodeName(S.legs[x].to)} after this one`, text: 'end' }));
-      box.append(r);
-      if (kids.length && navOpen.has(key)) { subBox = tree(kids, x, depth + 1, key); box.append(subBox); }
-    });
-    if (ids.length > cap) box.append(h('p', { class: 'jn-more-note', text: `and ${ids.length - cap} more` }));
-    return box;
-  };
-  if (nx.length) next.append(tree(nx, id, 0, id));
+  if (nx.length) next.append(branchTree(nx, t.arr, 0, id, nextLegs, (x, chain) => navTo(x, null, chain)));
   card.append(next);
   return card;
 }
@@ -2664,7 +2710,8 @@ function drawNav() {
   nx.slice(0, 9).forEach((id, k) => {
     const L = geo.legs[id]; if (!L) return;
     const tag = svg.querySelector(`.durtag[data-leg="${id}"] rect`);
-    const cx = tag ? +tag.getAttribute('x') - 13 : (L.s0 + L.xS) / 2, cy = tag ? +tag.getAttribute('y') + 8 : (L.yd + L.yk) / 2;
+    let cx = tag ? +tag.getAttribute('x') - 13 : (L.s0 + L.xS) / 2; const cy = tag ? +tag.getAttribute('y') + 8 : (L.yd + L.yk) / 2;
+    if (tag && cx - 10 < (geo.pinW || geo.left) + 6) cx = +tag.getAttribute('x') + +tag.getAttribute('width') + 13;
     const n = el('g', { class: 'nnum', 'data-leg': id }, g);
     el('circle', { cx, cy, r: 9.5 }, n);
     txt(n, cx, cy + 4, String(k + 1), 'nnumtxt');
@@ -3399,9 +3446,9 @@ function renderLegend() {
 
 /* ---------- plan maker ---------- */
 /* ---------- making a plan: the timeline is the guide ---------- */
-// The plan maker sits in the side panel and the timeline guides each step: click the leg you leave
-// on, then the leg you arrive on, then one of the numbered legs at every split. The lists in the
-// panel do the same from the keyboard. Nothing is chosen for you where routes split.
+// The plan maker sits in the side panel and works like the Journey card: pick the leg you leave on
+// (or the place), then take the way on at each place, leg by leg, and finish where the trip ends.
+// The timeline numbers the ways on, and ←, → and 1 to 9 work too.
 function startBuilder(planId, startNode) {
   if (!canEdit() || !canLeave()) return;
   if (B) { toast('Finish or cancel the plan you are making first'); return; }
@@ -3409,9 +3456,9 @@ function startBuilder(planId, startNode) {
   const dockWas = UI.drawer;
   if (planId && S.plans[planId]) {
     const p = S.plans[planId], legs = p.legs.filter(id => S.legs[id]);
-    B = { start: p.start, end: p.end, startLeg: legs[0] || '', endLeg: legs[legs.length - 1] || '', startT: p.startT, endT: p.endT, paths: [legs], chosen: legs.slice(), auto: new Set(), name: p.name, extras: p.extras.map(x => Object.assign({}, x)), waits: Object.assign({}, p.waits), editing: p.id, capped: false, dockWas };
+    B = { start: legs.length ? S.legs[legs[0]].from : p.start, chosen: legs.slice(), finished: legs.length > 0, name: p.name, extras: p.extras.map(x => Object.assign({}, x)), waits: Object.assign({}, p.waits), editing: p.id, dockWas };
   } else {
-    B = { start: startNode || '', end: '', startLeg: '', endLeg: '', startT: '', endT: '', paths: null, chosen: [], auto: new Set(), name: '', extras: [], waits: {}, editing: null, capped: false, dockWas };
+    B = { start: startNode || '', chosen: [], finished: false, name: '', extras: [], waits: {}, editing: null, dockWas };
   }
   sel = null; edit = null; renaming = null; guideHover = null;
   viewPlan = null; focusPlan = null; hoverPlan = null; hoverLeg = null; // every leg has to be in view
@@ -3421,19 +3468,12 @@ function startBuilder(planId, startNode) {
   focusGuide();
   setTimeout(() => { const i = $('#bName'); if (i && B && !B.editing) i.focus({ preventScroll: true }); }, 60);
 }
+// An undo can take away legs, places or the plan the plan maker was using: keep the route to what is left.
 function checkBuilder() {
   if (B.editing && !S.plans[B.editing]) B.editing = null;
-  if (B.start && !S.nodes[B.start]) { B.start = ''; B.startLeg = ''; }
-  if (B.end && !S.nodes[B.end]) { B.end = ''; B.endLeg = ''; }
-  if (B.startLeg && !S.legs[B.startLeg]) B.startLeg = '';
-  if (B.endLeg && !S.legs[B.endLeg]) B.endLeg = '';
-  if (B.paths && B.paths.some(p => p.some(id => !S.legs[id]))) B.paths = null;
-  if (B.start && B.end && !B.paths) {
-    const r = findRoutes(B.start, B.end, '', '', B.startLeg, B.endLeg);
-    B.paths = r.paths; B.capped = r.capped; B.chosen = []; B.auto = new Set(); builderAdvance();
-  }
-  if (!B.start || !B.end) { B.paths = null; B.chosen = []; B.auto = new Set(); }
-  B.reach = null;
+  if (B.start && !S.nodes[B.start]) B.start = '';
+  const cut = B.chosen.findIndex(id => !S.legs[id]);
+  if (cut >= 0) { B.chosen = B.chosen.slice(0, cut); B.finished = false; }
 }
 function closeBuilder() {
   if (!B) return;
@@ -3444,33 +3484,10 @@ function closeBuilder() {
 }
 function guidePhase() {
   if (!B) return null;
-  if (!B.start) return 'start';
-  if (!B.end || !B.paths) return 'end';
-  if (!B.paths.length) return 'none';
-  return builderDone() ? 'done' : 'route';
+  if (!B.start && !B.chosen.length) return 'start';
+  return B.finished && B.chosen.length ? 'done' : 'route';
 }
-// Every complete leg you can take after leaving the start, keeping to the clock: a leg counts when
-// it leaves after the earliest time you can be at its place.
-function reach() {
-  const key = `${B.start}|${B.startLeg}`;
-  if (B.reachKey === key && B.reach) return B.reach;
-  const live = new Set(), at = {};
-  if (B.startLeg && T[B.startLeg] && T[B.startLeg].complete) { live.add(B.startLeg); at[S.legs[B.startLeg].to] = T[B.startLeg].arr; }
-  else if (!B.startLeg) at[B.start] = -Infinity;
-  const legs = Object.keys(S.legs).filter(id => T[id].complete && id !== B.startLeg).sort(byDep);
-  for (let pass = 0, grew = true; grew && pass < 8; pass++) {
-    grew = false;
-    for (const id of legs) {
-      if (live.has(id)) continue;
-      const l = S.legs[id], t0 = at[l.from];
-      if (t0 == null || T[id].dep < t0 - MIN) continue;
-      live.add(id); grew = true;
-      if (at[l.to] == null || T[id].arr < at[l.to]) at[l.to] = T[id].arr;
-    }
-  }
-  B.reachKey = key; B.reach = live;
-  return live;
-}
+function builderHere() { const last = B.chosen[B.chosen.length - 1]; return last ? S.legs[last].to : B.start; }
 // A click on the timeline while a plan is being made.
 function guideClick(e) {
   if (e.target.closest('[data-wait], .badge')) return false;
@@ -3482,67 +3499,65 @@ function guideClick(e) {
 function guideLeg(id) {
   const ph = guidePhase(), l = S.legs[id]; if (!l) return;
   if (!T[id].complete) { toast(`${legLabel(id)} is incomplete, so it can’t be in a plan yet: ${T[id].problems[0].msg}`); return; }
-  if (ph === 'start') { B.start = l.from; B.startLeg = id; afterEnds(); }
-  else if (ph === 'end') {
-    if (!reach().has(id)) { toast(`You can’t reach that leg from ${nodeName(B.start)} in time`); return; }
-    B.end = l.to; B.endLeg = id; afterEnds();
-  }
-  else if (ph === 'route') {
-    if (builderOptions().includes(id)) choose(id);
-    else if (B.chosen.includes(id)) toast('That leg is already in your route');
-    else followBranch(id);
-  }
-  else if (ph === 'done') toast(B.chosen.includes(id) ? 'That leg is in your route' : 'The route is complete. To change it, use the panel: change the start or the end, or go back a choice.');
-  else toast('No route connects the start and the end. Change one of them in the panel.');
+  if (ph === 'start') { B.start = l.from; builderTake([id]); return; }
+  if (ph === 'done') { toast(B.chosen.includes(id) ? 'That leg is in your route' : 'The route is finished. Choose Change in the panel to go on.'); return; }
+  if (B.chosen.includes(id)) { toast('That leg is already in your route'); return; }
+  if (builderOptions().includes(id)) { builderTake([id]); return; }
+  followBranch(id);
 }
-// A leg further along one of the bright branches: take the way that leads to it, as far as every
-// such way agrees. Where the ways to it still split, say which numbered legs lead there.
+// A leg further along: take the way that leads to it, as far as every such way agrees.
 function followBranch(id) {
-  const at = B.chosen.length, rem = builderRemaining().filter(p => p.indexOf(id) >= at);
-  if (!rem.length) { toast('That leg is not on any of the routes left'); return; }
-  const pre = rem.map(p => p.slice(at, p.indexOf(id) + 1));
+  const opts = builderOptions(), chains = [];
+  const walk = (x, chain, d) => {
+    if (chains.length > 40) return;
+    if (x === id) { chains.push(chain); return; }
+    if (d >= 6) return;
+    bNext(x).forEach(y => { if (!chain.includes(y)) walk(y, chain.concat(y), d + 1); });
+  };
+  opts.forEach(x => walk(x, [x], 1));
+  if (!chains.length) { toast(`You can’t get to that leg from ${nodeName(builderHere())} in time`); return; }
   let n = 0;
-  while (n < pre[0].length && pre.every(q => q[n] === pre[0][n])) n++;
+  while (n < chains[0].length && chains.every(c => c[n] === chains[0][n])) n++;
   if (!n) {
-    const opts = builderOptions(), nums = [...new Set(pre.map(q => opts.indexOf(q[0]) + 1))].sort((a, b) => a - b);
+    const nums = [...new Set(chains.map(c => opts.indexOf(c[0]) + 1))].sort((a, b) => a - b);
     toast(`${nums.length} ways lead to that leg: first take ${nums.slice(0, -1).join(', ')} or ${nums[nums.length - 1]}`);
     return;
   }
-  hoverLeg = null;
-  pre[0].slice(0, n).forEach(x => B.chosen.push(x));
-  builderAdvance(); renderBuilder(); applyHighlight(); focusGuide();
+  builderTake(chains[0].slice(0, n));
 }
 function guidePlace(node) {
-  const ph = guidePhase();
-  if (ph === 'start') { B.start = node; B.startLeg = ''; afterEnds(); }
-  else if (ph === 'end') { B.end = node; B.endLeg = ''; afterEnds(); }
-  else toast('To change where the plan starts or ends, choose Change in the panel');
+  if (guidePhase() === 'start') { B.start = node; renderBuilder(); applyHighlight(); focusGuide(); return; }
+  toast('To start somewhere else, go back to the start with Back');
 }
-function afterEnds() {
-  hoverLeg = null;
-  B.paths = null; B.chosen = []; B.auto = new Set();
-  if (B.start && B.end) runFind(); else { renderBuilder(); applyHighlight(); focusGuide(); }
+// Add legs to the route: one, or a chain picked further along the tree.
+function builderTake(chain) {
+  if (!B || !chain.length) return;
+  if (!B.start) B.start = S.legs[chain[0]].from;
+  chain.forEach(x => B.chosen.push(x));
+  B.finished = false; hoverLeg = null;
+  renderBuilder(); applyHighlight(); frameLeg(chain[chain.length - 1]);
 }
-function clearEnd(which) {
-  if (which === 'start') { B.start = ''; B.startLeg = ''; } else { B.end = ''; B.endLeg = ''; }
-  afterEnds();
-}
-function runFind() {
-  if (!B || !B.start || !B.end) return;
-  const r = findRoutes(B.start, B.end, '', '', B.startLeg, B.endLeg);
-  B.paths = r.paths; B.capped = r.capped; B.chosen = []; B.auto = new Set();
-  builderAdvance();
-  renderBuilder(); applyHighlight(); focusGuide();
-}
-function changeRoute() { B.paths = null; B.chosen = []; B.auto = new Set(); runFind(); }
-function choose(id) { hoverLeg = null; B.chosen.push(id); builderAdvance(); renderBuilder(); applyHighlight(); focusGuide(); }
 function stepBack() {
-  while (B.chosen.length) {
-    const i = B.chosen.length - 1, wasAuto = B.auto.has(i);
-    B.chosen.pop(); B.auto.delete(i);
-    if (!wasAuto) break;
-  }
-  hoverLeg = null; renderBuilder(); applyHighlight(); focusGuide();
+  if (!B) return;
+  if (B.finished) B.finished = false;
+  else if (B.chosen.length) B.chosen.pop();
+  else B.start = '';
+  hoverLeg = null; renderBuilder(); applyHighlight();
+  const last = B.chosen[B.chosen.length - 1];
+  if (last) frameLeg(last); else focusGuide();
+}
+function finishRoute() {
+  if (!B) return;
+  if (!B.chosen.length) { toast('Take at least one leg first'); return; }
+  B.finished = true; renderBuilder(); applyHighlight();
+}
+function builderNext() {
+  if (!B) return;
+  const ph = guidePhase(), o = builderOptions();
+  if (ph !== 'route') return;
+  if (o.length === 1) builderTake([o[0]]);
+  else if (!o.length) { if (B.chosen.length) finishRoute(); }
+  else { flashJourney('.jn-next', '#builder'); toast(`${o.length} ways go on from ${nodeName(builderHere())}: choose one, or press its number`); }
 }
 function legRowCells(id) {
   const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
@@ -3559,10 +3574,8 @@ function hoverRow(tr, id) {
 }
 const BSTEP = {
   start: 'Step 1 of 3: where you leave from',
-  end: 'Step 2 of 3: where you arrive',
-  route: 'Step 3 of 3: the way at each split',
-  none: 'No route between these yet',
-  done: 'Last step: check the costs, then save',
+  route: 'Step 2 of 3: the way on, leg by leg',
+  done: 'Step 3 of 3: costs, then save',
 };
 function renderBuilder() {
   const box = $('#builder');
@@ -3574,20 +3587,12 @@ function renderBuilder() {
   const ph = guidePhase();
   box.append(h('div', { class: 'insp-head' },
     h('span', { class: 'key-dot', style: '--c:var(--accent)' }),
-    h('div', null, h('h2', { text: B.editing ? `Edit ${S.plans[B.editing].name}` : 'Make a plan' }), h('p', { class: 'crumb', text: B.editing && ph === 'done' ? 'Check the route and costs, then save' : BSTEP[ph] })),
+    h('div', null, h('h2', { text: B.editing ? `Edit ${S.plans[B.editing].name}` : 'Make a plan' }), h('p', { class: 'crumb', text: BSTEP[ph] })),
     h('button', { class: 'icon-btn', type: 'button', title: 'Close', 'aria-label': 'Close the plan maker', text: '×', onclick: () => closeBuilder() })));
   const nm = h('input', { type: 'text', 'data-pf': 'name', id: 'bName', placeholder: 'e.g. Weekend by train', maxlength: '80', required: true, 'aria-required': 'true', autocomplete: 'off' });
   nm.value = B.name;
   box.append(h('div', { class: 'bname' }, fld('Plan name (required)', nm), h('p', { class: 'fielderr', id: 'bNameErr', hidden: true })));
-  box.append(h('div', { class: 'bends' }, endCard('start', ph), endCard('end', ph)));
-  box.append(builderLists());
-  if (ph === 'none') {
-    const outs = legsFrom(B.start).length, ins = legsTo(B.end).length;
-    box.append(h('div', { class: 'warnbox' },
-      h('p', { text: `No chain of legs goes from ${nodeName(B.start)} to ${nodeName(B.end)}${B.startLeg || B.endLeg ? ' using the departure and arrival you picked' : ''}.` }),
-      h('p', { style: 'margin-top:4px', text: `${outs} leg${outs === 1 ? ' leaves' : 's leave'} ${nodeName(B.start)} and ${ins} arrive${ins === 1 ? 's' : ''} at ${nodeName(B.end)}. Change the start or the end, or add the missing legs: each one has to leave after the one before it arrives.` })));
-  }
-  if (ph === 'route' || ph === 'done') box.append(routeSection(ph));
+  box.append(routeCard(ph));
   if (ph === 'done') box.append(costSection());
   builderFoot(ph);
   renderGuideNote(); drawGuide();
@@ -3595,91 +3600,43 @@ function renderBuilder() {
   const step = ph + B.chosen.length;
   if (B.shown !== step) {
     B.shown = step;
-    const target = ph === 'route' ? box.querySelector('.ask') : ph === 'done' && !B.editing ? box.querySelector('.bcosts') : null;
+    const target = ph === 'route' ? box.querySelector('.jn-next') : ph === 'done' && !B.editing ? box.querySelector('.bcosts') : null;
     if (target) requestAnimationFrame(() => target.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
   }
 }
-// The start or the end of the plan: what you picked, or what to click next.
-function endCard(which, ph) {
-  const isStart = which === 'start', node = isStart ? B.start : B.end, legId = isStart ? B.startLeg : B.endLeg, lab = isStart ? 'Start' : 'End';
-  if (!node) {
-    const now = ph === which;
-    return h('div', { class: 'bend todo' + (now ? ' cur' : '') }, h('span', { class: 'bend-lab', text: lab }),
-      h('span', { class: 'bend-txt' }, now ? h('b', { text: isStart ? 'Click the leg you leave on' : 'Click the leg you arrive on' }) : null,
-        h('small', { text: now ? 'in the timeline, or the name of a place' : 'after the start' })));
+// The route as it grows: where it starts, every leg taken so far, and the ways on from where it has
+// got to, as the same tree the Journey card shows.
+function routeCard(ph) {
+  const opts = ph === 'route' ? builderOptions() : [], last = B.chosen[B.chosen.length - 1], here = builderHere();
+  const card = h('section', { class: 'journey broute', 'aria-label': 'Route' });
+  card.append(h('div', { class: 'jn-head' }, h('h4', { text: 'Route' }),
+    icoBtn('Back', stepBack, 'small', 'prev', 'Take back the last step (←)', ph === 'start'),
+    ph === 'done' ? icoBtn('Change', () => { B.finished = false; renderBuilder(); applyHighlight(); }, 'small', 'edit', 'Go on with the route')
+      : icoBtn('Next', builderNext, 'small ico-after', 'next', 'Take the only way on, or finish when there is none (→)', ph === 'start')));
+  if (ph === 'start') {
+    card.append(h('div', { class: 'jn-cur jn-ask' }, h('span', { class: 'jn-here', 'aria-hidden': 'true' }),
+      h('span', { class: 'jn-txt' }, h('b', { text: 'Click the leg you leave on' }), h('small', { text: 'in the timeline, or the name of the place you start from' }))));
+    return card;
   }
-  const l = legId && S.legs[legId], t = legId && T[legId], m = l && (MODE[l.mode] || MODE.other);
-  const sub = l ? (isStart ? `${fmtDT(t.dep)} · ${m.label} to ${nodeName(l.to)}` : `${fmtDT(t.arrSched)} · ${m.label} from ${nodeName(l.from)}`) : (isStart ? 'Any departure' : 'Any arrival');
-  return h('div', { class: 'bend' }, h('span', { class: 'bend-lab', text: lab }),
-    h('span', { class: 'bend-txt' }, h('b', { text: nodeName(node) }), h('small', { text: sub })),
-    h('button', { type: 'button', class: 'linkbtn', text: 'Change', 'aria-label': `Change the ${lab.toLowerCase()}`, onclick: () => clearEnd(which) }));
-}
-// The same choices from lists, for the keyboard.
-function builderLists() {
-  const nodeSel = key => {
-    const s = h('select', { 'data-bf': key });
-    s.append(h('option', { value: '', text: 'Choose a place…' }));
-    S.order.forEach(id => s.append(h('option', { value: id, text: nodeName(id) })));
-    s.value = B[key] || '';
-    return s;
-  };
-  const legPick = (key, ids, arr) => {
-    const s = h('select', { 'data-bf': key });
-    s.append(h('option', { value: '', text: ids.length ? (arr ? 'Any arrival' : 'Any departure') : (arr ? 'No legs arrive here yet' : 'No legs leave here yet') }));
-    ids.forEach(id => {
-      const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
-      s.append(h('option', { value: id, text: `${fmtDT(arr ? t.arrSched : t.dep)} · ${m.label} ${arr ? 'from' : 'to'} ${nodeName(l[arr ? 'from' : 'to'])} · ${money(l.cost)}` }));
-    });
-    s.value = ids.includes(B[key]) ? B[key] : '';
-    s.disabled = !ids.length;
-    return s;
-  };
-  const sDep = B.startLeg && T[B.startLeg] ? T[B.startLeg].dep : null;
-  const outs = B.start ? legsFrom(B.start).filter(id => T[id].complete) : [];
-  const ins = B.end ? legsTo(B.end).filter(id => T[id].complete && (sDep == null || T[id].arr > sDep)).sort((a, b) => T[a].arr - T[b].arr) : [];
-  const d = h('details', { class: 'blists' }, h('summary', { text: 'Or choose from lists' }),
-    fld('Start place', nodeSel('start')), fld('Leaves at', legPick('startLeg', outs, false)),
-    fld('End place', nodeSel('end')), fld('Arrives at', legPick('endLeg', ins, true)));
-  d.open = !!B.listsOpen;
-  d.addEventListener('toggle', () => { if (B) B.listsOpen = d.open; });
-  return d;
-}
-function routeSection(ph) {
-  const rem = builderRemaining(), sec = h('div', { class: 'bsec' }, h('h4', { text: 'Your route' }));
-  if (ph === 'route' && !B.editing) {
-    const used = new Set(); rem.forEach(p => p.forEach(id => used.add(id)));
-    sec.append(h('p', { class: 'bsum', text: `${rem.length}${B.capped ? '+' : ''} possible route${rem.length === 1 ? '' : 's'} using ${used.size} leg${used.size === 1 ? '' : 's'}, shown bright on the timeline.` }));
-  }
-  const ol = h('ol', { class: 'steps' });
+  const chain = h('div', { class: 'jn-sect bchain' }, h('p', { class: 'jn-lab', text: `Starts at ${nodeName(B.start)}` }));
+  if (!B.chosen.length) chain.append(h('div', { class: 'jn-cur' }, h('span', { class: 'jn-here', 'aria-hidden': 'true' }),
+    h('span', { class: 'jn-txt' }, h('b', { text: nodeName(B.start) }), h('small', { text: 'Choose the leg you leave on' }))));
   B.chosen.forEach((id, i) => {
-    const l = S.legs[id], t = T[id];
-    ol.append(h('li', null, h('span', { class: 'key', style: `--c:${legColor(id)}` }),
-      h('span', { class: 'sbody' }, h('b', { text: legLabel(id) }), h('small', { text: `${(MODE[l.mode] || MODE.other).tag} · ${shortDT(t.dep)} → ${shortDT(t.arrSched)}` })),
-      B.editing ? null : h('span', { class: 'tag', text: (i === 0 && B.startLeg === id) || (i === B.chosen.length - 1 && B.endLeg === id && builderDone()) ? 'you picked' : B.auto.has(i) ? 'only way' : 'your choice' })));
+    const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other, wait = i > 0 && T[B.chosen[i - 1]].arr != null ? t.dep - T[B.chosen[i - 1]].arr : 0;
+    chain.append(h('div', { class: (i === B.chosen.length - 1 ? 'jn-cur' : 'jn-step'), style: `--c:${legColor(id)}` },
+      h('span', { class: 'jn-n', text: String(i + 1) }),
+      h('span', { class: 'jn-txt' }, h('b', null, legLabel(id), jnPlans(id)), h('small', { text: `${m.label} · ${shortDT(t.dep)} → ${shortDT(t.arrSched)}${wait > MIN ? ` · after ${fmtDur(wait)}` : ''}` }))));
   });
-  if (!B.chosen.length) ol.append(h('li', { class: 'muted', text: `Starting at ${nodeName(B.start)}.` }));
-  sec.append(ol);
-  if (ph !== 'route') return sec;
-  const at = B.chosen.length ? S.legs[B.chosen[B.chosen.length - 1]].to : B.start;
-  const lastT = B.chosen.length ? T[B.chosen[B.chosen.length - 1]].arr : null;
-  const opts = builderOptions(), i = B.chosen.length;
-  const ask = h('div', { class: 'ask' }, h('p', { text: `${B.chosen.length ? 'The routes split' : 'Routes leave'} at ${nodeName(at)}${lastT != null ? ` (you are there from ${shortDT(lastT)})` : ''}. Click a numbered leg on the timeline, or choose here:` }));
-  const list = h('div', { class: 'opts' });
-  opts.forEach((id, k) => {
-    const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
-    const n = rem.filter(p => p[i] === id).length, wait = lastT != null ? t.dep - lastT : null;
-    const b = h('button', { class: 'opt', type: 'button', style: `--c:${legColor(id)}`, 'data-opt': id, onclick: () => choose(id) },
-      h('span', { class: 'onum', text: String(k + 1), 'aria-hidden': 'true' }),
-      h('span', { class: 'obody' }, h('b', { text: `${m.label} to ${nodeName(l.to)}` }), ` · ${money(l.cost)}`,
-        h('small', { text: `${fmtDT(t.dep)} → ${fmtDT(t.arrSched)}` }),
-        h('small', { text: [l.info, wait != null && wait > MIN ? `wait ${fmtDur(wait)} first` : null, n > 1 ? `${n} routes go on from here` : 'one route goes on from here'].filter(Boolean).join(' · ') })));
-    b.addEventListener('mouseenter', () => { hoverLeg = id; applyHighlight(); });
-    b.addEventListener('mouseleave', () => { hoverLeg = null; applyHighlight(); });
-    list.append(b);
-  });
-  ask.append(list);
-  sec.append(ask);
-  return sec;
+  card.append(chain);
+  if (ph === 'done') {
+    const t0 = T[B.chosen[0]], t1 = T[last];
+    card.append(h('p', { class: 'jn-lab bend-note', text: `Ends at ${nodeName(here)} · ${B.chosen.length} leg${B.chosen.length > 1 ? 's' : ''} · ${fmtDur(t1.arr - t0.dep)} door to door` }));
+    return card;
+  }
+  const next = h('div', { class: 'jn-sect jn-next' }, h('p', { class: 'jn-lab', text: opts.length > 1 ? `Goes on from ${nodeName(here)} · ${opts.length} ways` : opts.length ? `Goes on from ${nodeName(here)}` : `No leg leaves ${nodeName(here)} after this. Finish here, or go back.` }));
+  if (opts.length) next.append(branchTree(opts, last ? T[last].arr : null, 0, last || 'start', bNext, (x, keys) => builderTake(keys.slice(1))));
+  card.append(next);
+  return card;
 }
 // Fares for the chosen legs, labels for the waits, and this plan's own other costs.
 function costSection() {
@@ -3727,13 +3684,12 @@ function costSection() {
 // Save and the other plan maker buttons, kept in view at the bottom of the panel.
 function builderFoot(ph) {
   if (!B) return;
-  const canBack = B.chosen.some((_, i) => !B.auto.has(i)) && !B.editing;
   const cancel = btn('Cancel', () => closeBuilder(), '', 'Close the plan maker without saving');
   if (ph === 'done') setFoot(icoBtn(B.editing ? 'Save changes' : 'Save plan', savePlan, 'primary', 'plan'), [
-    canBack ? { label: 'Back one choice', sub: 'Undo the last split you chose', ico: 'undo', run: stepBack } : null,
-    B.editing ? { label: 'Change route', sub: 'Choose the way again', ico: 'leg', run: changeRoute } : null,
+    { label: 'Change the route', sub: 'Go on from where it ends, or step back', ico: 'leg', run: () => { B.finished = false; renderBuilder(); applyHighlight(); } },
   ], cancel);
-  else setFoot(canBack ? icoBtn('Back one choice', stepBack, '', 'undo') : null, [], cancel);
+  else if (ph === 'route') setFoot(icoBtn(`Finish at ${nodeName(builderHere())}`, finishRoute, 'primary', 'check', 'End the route here, then check the costs', !B.chosen.length), [], cancel);
+  else setFoot(null, [], cancel);
 }
 // One line above the timeline saying what to click.
 function renderGuideNote() {
@@ -3741,18 +3697,14 @@ function renderGuideNote() {
   const ph = guidePhase();
   box.hidden = !ph;
   if (!ph) return;
-  const at = B.chosen.length ? S.legs[B.chosen[B.chosen.length - 1]].to : B.start;
   const text = {
     start: 'Making a plan: click the leg you leave on, or the name of the place you start from.',
-    end: `Now click the leg you arrive on, or the place you are going to. Faded legs can’t be reached from ${nodeName(B.start)} in time.`,
-    route: `The routes split at ${nodeName(at)}: click a numbered leg, or any leg further along a bright branch.`,
-    none: 'No route connects the start and the end. Change one of them in the panel.',
+    route: `Choose how the plan goes on from ${nodeName(builderHere())}: click a numbered leg, or any leg further along. Finish when you get there.`,
     done: 'The route is complete. Check the costs in the panel, then save.',
   }[ph];
   box.replaceChildren(h('span', { class: 'gn-dot', 'aria-hidden': 'true' }), h('span', { text }));
 }
-// On the timeline: the choices at the current split glow and carry the numbers of the buttons in
-// the panel, and the chosen start and end are flagged.
+// On the timeline: the ways on glow and carry the numbers shown in the panel; start and end are flagged.
 function drawGuide() {
   const svg = $('#graph');
   svg.querySelectorAll('.guide').forEach(e => e.remove());
@@ -3762,15 +3714,17 @@ function drawGuide() {
   if (opts.length) {
     const glow = el('g', { class: 'guide' }); geo.gEdge.insertBefore(glow, geo.gEdge.firstChild);
     const nums = el('g', { class: 'guide' }, svg);
-    opts.forEach((id, k) => {
+    opts.slice(0, 9).forEach((id, k) => {
       const seg = svg.querySelector(`.edge[data-leg="${id}"] .seg`), L = geo.legs[id]; if (!seg || !L) return;
       el('path', { d: seg.getAttribute('d'), class: 'gglow' }, glow);
+      if (opts.length < 2) return;
       const tag = svg.querySelector(`.durtag[data-leg="${id}"] rect`);
-      const cx = tag ? +tag.getAttribute('x') - 13 : (L.s0 + L.xS) / 2, cy = tag ? +tag.getAttribute('y') + 8 : (L.yd + L.yk) / 2;
+      let cx = tag ? +tag.getAttribute('x') - 13 : (L.s0 + L.xS) / 2; const cy = tag ? +tag.getAttribute('y') + 8 : (L.yd + L.yk) / 2;
+      if (tag && cx - 10 < (geo.pinW || geo.left) + 6) cx = +tag.getAttribute('x') + +tag.getAttribute('width') + 13;
       const g = el('g', { class: 'gnum', 'data-leg': id }, nums);
       el('circle', { cx, cy, r: 10 }, g);
       txt(g, cx, cy + 4, String(k + 1), 'gnumtxt');
-      el('title', null, g).textContent = `Option ${k + 1}: ${legLabel(id)}. Click to take it.`;
+      el('title', null, g).textContent = `Way on ${k + 1}: ${legLabel(id)}. Click to take it.`;
     });
   }
   const flags = el('g', { class: 'guide' }, svg), font = `700 10px ${FONT}`;
@@ -3779,21 +3733,21 @@ function drawGuide() {
     el('rect', { x: x0, y: y - 8, width: w, height: 16, rx: 8 }, g);
     txt(g, x0 + w / 2, y + 3.5, s.toUpperCase(), 'gflagtxt');
   };
-  if (B.startLeg && geo.legs[B.startLeg]) flag(geo.legs[B.startLeg].s0, geo.legs[B.startLeg].yd, 'Start', false);
-  if (B.endLeg && B.paths && geo.legs[B.endLeg]) flag(geo.legs[B.endLeg].xA, geo.legs[B.endLeg].yk, 'End', true);
+  const first = B.chosen[0], last = B.chosen[B.chosen.length - 1];
+  if (first && geo.legs[first]) flag(geo.legs[first].s0, geo.legs[first].yd, 'Start', false);
+  if (ph === 'done' && last && geo.legs[last]) flag(geo.legs[last].xA, geo.legs[last].yk, 'End', true);
 }
-// Bring the legs to click into view when they are scrolled away.
+// Bring the ways on into view when they are scrolled away.
 function focusGuide() {
   const ph = guidePhase(), sc = $('#graphScroll');
-  if (!ph || !geo || !geo.time || !sc) return;
-  const ids = ph === 'route' ? builderOptions() : ph === 'end' ? [...reach()] : [];
-  const Ls = ids.map(id => geo.legs[id]).filter(Boolean);
+  if (ph !== 'route' || !geo || !geo.time || !sc) return;
+  const Ls = builderOptions().map(id => geo.legs[id]).filter(Boolean);
   if (!Ls.length) return;
   const x0 = Math.min(...Ls.map(L => L.s0)), y0 = Math.min(...Ls.map(L => Math.min(L.yd, L.yk))), y1 = Math.max(...Ls.map(L => Math.max(L.yd, L.yk)));
   const inX = x0 >= sc.scrollLeft + Math.max(pinW(), geo.left - 20) && x0 <= sc.scrollLeft + sc.clientWidth - 80;
   const inY = y0 >= sc.scrollTop + LAY.top && y0 <= sc.scrollTop + sc.clientHeight - 40;
   if (inX && inY) return;
-  sc.scrollTo({ left: inX ? sc.scrollLeft : Math.max(0, x0 - geo.left - 60), top: inY ? sc.scrollTop : Math.max(0, Math.min(y0 - LAY.top - 30, y1 - sc.clientHeight + 60)), behavior: 'smooth' });
+  sc.scrollTo({ left: inX ? sc.scrollLeft : Math.max(0, x0 - pinW() - 60), top: inY ? sc.scrollTop : Math.max(0, Math.min(y0 - LAY.top - 30, y1 - sc.clientHeight + 60)), behavior: 'smooth' });
 }
 // A fare typed in the plan maker, if it is a usable number; otherwise the leg's saved fare.
 function fareOf(id) { const v = B && B.fares && id in B.fares ? num(B.fares[id]) : null; return v != null && v >= 0 ? v : S.legs[id].cost; }
@@ -3816,10 +3770,13 @@ function builderProblems() {
   const out = [];
   const nameErr = planNameError(B.name, B.editing);
   if (nameErr) out.push({ msg: nameErr, sel: '#bName' });
-  if (!builderDone()) out.push({ msg: 'Finish choosing the route.' });
-  B.chosen.forEach(id => {
-    if (!S.legs[id]) out.push({ msg: 'A leg in this route was deleted. Choose the route again.' });
-    else if (!T[id].complete) out.push({ msg: `${legLabel(id)} is incomplete: ${T[id].problems[0].msg} Fix that leg first.` });
+  if (!B.chosen.length) out.push({ msg: 'Take at least one leg for the route.' });
+  else if (!B.finished) out.push({ msg: 'Finish the route first.' });
+  B.chosen.forEach((id, i) => {
+    if (!S.legs[id]) { out.push({ msg: 'A leg in this route was deleted. Change the route.' }); return; }
+    if (!T[id].complete) out.push({ msg: `${legLabel(id)} is incomplete: ${T[id].problems[0].msg} Fix that leg first.` });
+    const pr = B.chosen[i - 1];
+    if (pr && S.legs[pr] && (S.legs[pr].to !== S.legs[id].from || (T[pr].arr != null && T[id].dep != null && T[id].dep < T[pr].arr - MIN))) out.push({ msg: `${legLabel(id)} does not follow on from ${legLabel(pr)}. Change the route.` });
   });
   document.querySelectorAll('#builder [data-fare]').forEach(i => { if (!fareOk(i)) out.push({ msg: `Add the fare for ${legLabel(i.dataset.fare)}. Use 0 if it is free.`, el: i }); });
   B.extras.forEach((x, i) => {
@@ -3858,7 +3815,7 @@ function savePlan() {
   const data = {
     name, legs: B.chosen.slice(), pending: [], waits: Object.fromEntries(Object.entries(B.waits).filter(([k, v]) => B.chosen.includes(k) && String(v).trim()).map(([k, v]) => [k, String(v).trim()])),
     extras: B.extras.filter(x => String(x.label || '').trim() || x.amount !== '').map(x => ({ label: x.label.trim(), amount: +x.amount })),
-    start: B.start, end: B.end,
+    start: S.legs[B.chosen[0]].from, end: S.legs[B.chosen[B.chosen.length - 1]].to,
     startT: B.chosen.length && T[B.chosen[0]].dep != null ? toLocal(T[B.chosen[0]].dep) : '',
     endT: B.chosen.length && T[B.chosen[B.chosen.length - 1]].arr != null ? toLocal(T[B.chosen[B.chosen.length - 1]].arr) : '',
   };
@@ -3879,7 +3836,7 @@ function renderPlans() {
   const tb = $('#plansBody'); tb.replaceChildren();
   const plans = PL.slice();
   $('#planEmpty').hidden = plans.length > 0;
-  $('#planEmpty').textContent = canEdit() ? 'No saved plans yet. Choose + and then Plan, pick where it starts and ends, and choose the way at each split.' : 'No saved plans yet.';
+  $('#planEmpty').textContent = canEdit() ? 'No saved plans yet. Choose + and then Plan, click the leg you leave on, and take the way on at each place.' : 'No saved plans yet.';
   $('#plansTable').hidden = !plans.length;
   const key = S.sort;
   const val = p => key === 'cost' ? p.cost : key === 'start' ? p.start : key === 'end' ? p.end : key === 'dur' ? p.dur : null;
@@ -4274,9 +4231,8 @@ function effectiveTheme() {
 }
 // The settings panel: what it shows comes from the current state each time it opens.
 function syncSettings() {
-  const th = UI.theme === 'light' || UI.theme === 'dark' ? UI.theme : 'system', sky = UI.sky === 'simple' ? 'simple' : 'full';
+  const th = UI.theme === 'light' || UI.theme === 'dark' ? UI.theme : 'system';
   document.querySelectorAll('#setTheme [data-v]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.v === th)));
-  document.querySelectorAll('#setSky [data-v]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.v === sky)));
   $('#setMotion').checked = UI.motion !== false;
   $('#setCosts').checked = !!UI.costs;
   $('#setPin').checked = pinOn();
@@ -4285,7 +4241,8 @@ function syncSettings() {
   $('#menuImport').disabled = $('#clear').disabled = !ed;
   $('#export').disabled = !!TOUR;
   let kb = 0; try { kb = Math.max(1, Math.round(((localStorage.getItem(STORE) || '').length * 2) / 1024)); } catch (e) { /* storage unavailable */ }
-  $('#setStore').textContent = TOUR ? 'A sample trip is open: nothing here is saved.' : `Saved only in this browser, about ${kb} KB. Export keeps a copy as a file, and Import loads one on another device.`;
+  $('#setStore').textContent = TOUR ? 'A sample trip is open: nothing here is saved.' : `Your plans are saved only in this browser (about ${kb} KB). Export them to keep a copy.`;
+  $('#setCur').textContent = curSym();
 }
 function openSettings(focusSel) {
   if (viewOnly) return;
@@ -4484,15 +4441,6 @@ function bind() {
   insp.addEventListener('keydown', e => { if (e.target.id === 'newNodeName' && e.key === 'Enter') { e.preventDefault(); addNodeFromLeg(); } });
 
   const bld = $('#builder');
-  bld.addEventListener('change', e => {
-    const k = e.target.dataset && e.target.dataset.bf;
-    if (!k || !B) return;
-    B[k] = e.target.value;
-    if (k === 'start') B.startLeg = '';
-    if (k === 'end') B.endLeg = '';
-    if ((k === 'start' || k === 'startLeg') && B.endLeg && B.startLeg && T[B.endLeg] && T[B.startLeg] && T[B.endLeg].arr != null && T[B.startLeg].dep != null && T[B.endLeg].arr <= T[B.startLeg].dep) B.endLeg = '';
-    afterEnds();
-  });
   bld.addEventListener('input', e => {
     if (!B) return;
     const d = e.target.dataset || {};
@@ -4516,7 +4464,6 @@ function bind() {
   $('#settings').addEventListener('click', e => { if (e.target.id === 'settings') closeSettings(); });
   $('#settings').addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeSettings(); } });
   $('#setTheme').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; UI.theme = b.dataset.v === 'system' ? null : b.dataset.v; saveUI(); applyTheme(); syncSettings(); });
-  $('#setSky').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; UI.sky = b.dataset.v; saveUI(); syncSettings(); renderGraph(); });
   $('#setMotion').addEventListener('change', e => { UI.motion = e.target.checked; saveUI(); applyMotion(); });
   $('#setCosts').addEventListener('change', e => { UI.costs = e.target.checked; saveUI(); syncCostBtn(); renderGraph(); });
   $('#setPin').addEventListener('change', e => { if (e.target.checked !== pinOn()) togglePin(); });
@@ -4647,6 +4594,11 @@ function bind() {
     if (mod && key === 's') { e.preventDefault(); if (draft) saveDraft(); else if (edit && editDirty()) saveEdit(); else if (B && guidePhase() === 'done') savePlan(); return; }
     if (mod && !e.shiftKey && key === 'z' && !inField) { if (canEdit()) { e.preventDefault(); undo(); } }
     else if (mod && ((e.shiftKey && key === 'z') || (!e.shiftKey && key === 'y')) && !inField) { if (canEdit()) { e.preventDefault(); redo(); } }
+    else if (!inField && B && !mod && !e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || /^[1-9]$/.test(e.key)) && !e.target.closest('.menu, [role=tablist], #dockSplit, .modal')) {
+      e.preventDefault();
+      if (e.key === 'ArrowLeft') stepBack(); else if (e.key === 'ArrowRight') builderNext();
+      else if (guidePhase() === 'route') { const x = builderOptions()[+e.key - 1]; if (x) builderTake([x]); }
+    }
     else if (!inField && !B && sel && sel.k === 'leg' && !mod && !e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || /^[1-9]$/.test(e.key)) && !e.target.closest('.menu, [role=tablist], #dockSplit')) {
       e.preventDefault();
       if (e.key === 'ArrowRight') navNext(); else if (e.key === 'ArrowLeft') navPrev();
@@ -4670,7 +4622,7 @@ const TOUR_STEPS = [
   { target: () => $('#graphScroll'), title: 'Read the timeline', body: 'Move the pointer across it and a card shows where each plan is at that moment. Night, sunrise, day and sunset run along the top.' },
   { target: () => $('#viewTabs'), title: 'One tab for each plan', body: 'A plan is one complete way from start to finish. Choose its tab to see only that plan.' },
   { target: () => $('.dock-bar'), title: 'Compare plans', body: 'Pull this bar up to compare the plans and to read any plan’s itinerary and costs.', before: () => { if (UI.drawer) setDrawer(false); } },
-  { target: () => $('#createGroup'), title: 'Add, and make plans', body: 'Choose + to add a place, a leg or a plan. For a plan, click the leg you leave on, then the leg you arrive on, then a numbered leg wherever the routes split.' },
+  { target: () => $('#createGroup'), title: 'Add, and make plans', body: 'Choose + to add a place, a leg or a plan. For a plan, click the leg you leave on, then take the way on at each place until you get there.' },
   { target: () => $('#modeSeg'), title: 'Edit, or just view', body: 'Switch to View to look at everything without changing anything.' },
   { target: () => $('#settingsBtn'), title: 'Settings', body: 'The theme, the sky, your currency and budget, and Export and Import to keep a copy or move your plans to another device.' },
   { title: 'You’re ready', body: 'Try the sample for yourself, or go back to your own plans. You can take it again any time from Settings.', last: true },
