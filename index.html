@@ -1765,7 +1765,7 @@ html.glass .modal{-webkit-backdrop-filter:none;backdrop-filter:none}
 .gwrap.swap{animation:wmFade .3s ease}
 /* the details panel opens and closes by its width, and keeps its content still while it moves */
 @media (min-width:901px){
-  .side{flex:0 0 clamp(15vw,var(--side-w,min(25%,460px)),25vw) !important;min-width:0 !important;max-width:25vw !important;container:side / inline-size;animation:none !important;position:relative;
+  .side{flex:0 0 clamp(15vw,var(--side-w,min(25%,460px)),25vw) !important;min-width:0 !important;max-width:25vw !important;container:side / inline-size;top:0 !important;max-height:none !important;animation:none !important;position:relative;
     transition:flex-basis .34s var(--ease-out),opacity .24s ease,border-color .34s,visibility 0s}
   .side > :not(.side-split){min-width:var(--side-px,15vw)}
   .main.side-hidden .side{display:flex !important;flex-basis:0 !important;opacity:0;visibility:hidden;border-color:transparent !important;
@@ -1817,8 +1817,8 @@ html.glass .btn.small.primary.icon{border-radius:50%}
 /* the header's tools sit together in one glass capsule */
 html.glass .topbar .tgroup{padding:2px;border-radius:999px;background:var(--g-inner2);border:1px solid var(--g-edge);box-shadow:var(--g-hi)}
 html.glass .topbar .btn.icon:not(.primary){border-radius:50%}
-html.glass .topbar #themeBtn,html.glass .topbar #settingsBtn{background:var(--g-inner2) !important;border:1px solid var(--g-edge) !important;box-shadow:var(--g-hi) !important;border-radius:50%}
-html.glass .topbar #themeBtn:hover,html.glass .topbar #settingsBtn:hover{background:var(--g-strong) !important}
+html.glass .topbar #themeBtn,html.glass .topbar #settingsBtn,html.glass .topbar #helpBtn{background:var(--g-inner2) !important;border:1px solid var(--g-edge) !important;box-shadow:var(--g-hi) !important;border-radius:50%}
+html.glass .topbar #themeBtn:hover,html.glass .topbar #settingsBtn:hover,html.glass .topbar #helpBtn:hover{background:var(--g-strong) !important}
 html.glass .tb-sep{background:var(--g-line)}
 /* switches and segmented controls: a glass track with a bright, raised thumb */
 html.glass .modeseg{background:var(--g-inner2) !important;border:1px solid var(--g-edge) !important;box-shadow:var(--g-hi)}
@@ -1896,6 +1896,8 @@ html.glass .side-split::after{background:var(--g-field)}
 /* the details panel opening or closing: the timeline's frame narrows or widens without a scrollbar flashing in,
    then the old drawing fades out over the new one */
 .side-moving .graph-scroll,.side-dragging .graph-scroll,.settling .graph-scroll{overflow-x:hidden !important}
+/* one Close for the details panel, at its top; the header of what is in it has none of its own */
+#inspector .insp-head > .icon-btn{display:none}
 /* a narrow details panel: fields one under the other */
 @container side (max-width:280px){
   .row2{grid-template-columns:1fr}
@@ -2082,11 +2084,11 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
     <span class="tb-sep vsep"></span>
     <button id="themeBtn" class="btn icon" type="button" data-ico="moon" aria-pressed="false" aria-label="Dark mode" title="Switch to dark mode">Theme</button>
     <button id="settingsBtn" class="btn icon" type="button" data-ico="gear" aria-haspopup="dialog" aria-controls="settings" title="Settings: theme, sky, currency, budget, your data and the tour">Settings</button>
-    <div class="menu" id="helpMenu"><button id="helpBtn" class="btn icon" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="help" title="How it works">Help</button><div class="menu-pop right helppop" role="dialog" aria-label="How it works" hidden></div></div>
     <div class="modeseg" id="modeSeg" role="group" aria-label="Mode">
       <button id="modeEdit" type="button" data-ico="edit" aria-pressed="true" aria-label="Edit" title="Edit: add and change places, legs and plans">Edit</button>
       <button id="modeView" type="button" data-ico="eye" aria-pressed="false" aria-label="View only" title="View only: look at everything without changing anything">View</button>
     </div>
+    <div class="menu" id="helpMenu"><button id="helpBtn" class="btn icon" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="help" title="How it works">Help</button><div class="menu-pop right helppop" role="dialog" aria-label="How it works" hidden></div></div>
     <button id="importBtn" class="btn phone-import" type="button" data-ico="up" title="Import plans from a file">Import</button>
     <input id="importFile" type="file" accept="application/json,.json" hidden>
   </div>
@@ -5603,7 +5605,8 @@ function settleGraph() {
     const pd = () => { pb.cancel(); pinGhost.remove(); }; pa.finished.then(pd, pd); setTimeout(pd, opts.duration + 200);
   }
 }
-// The plans panel is a sheet: drag its bar up (to at most 35% of the window's height, at least 15%) or down to close it.
+// The plans panel is a sheet: drag its bar up (to at most 35% of the window's height with its bar; the panel itself at
+// least 15%) or well down to close it.
 const DOCK_MAX = .35, DOCK_MIN = .15;
 // the details panel: from 15% to 25% of the window's width
 const SIDE_MIN = .15, SIDE_MAX = .25;
@@ -5611,7 +5614,7 @@ function dockLimits() {
   // everything from the bar's top edge to the bottom of the window (the bar and the page margin under it);
   // the sheet floats above the bar, so its top never rises past the limit
   const d = $('#drawer'), r = d && d.getBoundingClientRect(), bar = (r && r.height ? innerHeight - r.top : 0) || ($('.dock-bar') && $('.dock-bar').offsetHeight) || 44, col = $('.maincol') ? $('.maincol').clientHeight : innerHeight;
-  const min = Math.max(64, Math.round(innerHeight * DOCK_MIN - bar));
+  const min = Math.max(64, Math.round(innerHeight * DOCK_MIN)); // the panel itself, not counting its bar
   return { min, max: Math.max(min + 30, Math.min(innerHeight * DOCK_MAX - bar, col - bar - 110)) };
 }
 function setDockH(px) {
@@ -6892,7 +6895,7 @@ function bind() {
   const dockDrag = e => {
     delete dockBar.dataset.dragged;
     if (e.button !== 0 || e.target.closest('input, select, label, .dock-field, .dock-sort, .cursel, button:not(#drawerTab)')) return;
-    const y0 = e.clientY, h0 = UI.drawer ? dockBody.getBoundingClientRect().height : 0, max = dockLimits().max, from = e.target, pid = e.pointerId;
+    const y0 = e.clientY, h0 = UI.drawer ? dockBody.getBoundingClientRect().height : 0, { min, max } = dockLimits(), from = e.target, pid = e.pointerId;
     let dragging = false, want = h0, raf = 0;
     const paint = () => { raf = 0; dock.style.setProperty('--dock-h', want + 'px'); };
     const move = ev => {
@@ -6903,7 +6906,8 @@ function bind() {
         dragging = true; dock.classList.add('resizing', 'open'); document.body.classList.add('dock-dragging');
         try { from.setPointerCapture(pid); } catch (err) { /* the window still hears the moves */ }
       }
-      want = Math.max(0, Math.min(max, h0 + dy));
+      want = Math.min(max, h0 + dy);
+      if (want < min) want = want < min / 2 ? Math.max(0, want) : min; // it holds at its smallest size; well below that it is closing
       if (!raf) raf = requestAnimationFrame(paint);
     };
     const up = ev => {
@@ -6916,7 +6920,7 @@ function bind() {
       dockBar.dataset.dragged = '1'; setTimeout(() => { delete dockBar.dataset.dragged; }, 0);
       dock.classList.remove('resizing'); document.body.classList.remove('dock-dragging');
       const hh = want;
-      if (hh < 80) { if (UI.dockH) fitDockH(); else dock.style.setProperty('--dock-h', '0px'); setDrawer(false); }
+      if (hh < min / 2) { if (UI.dockH) fitDockH(); else dock.style.setProperty('--dock-h', '0px'); setDrawer(false); }
       else { setDockH(hh); setDrawer(true); }
       saveUI();
     };
@@ -6929,7 +6933,7 @@ function bind() {
     e.preventDefault();
     if (!UI.drawer) { if (e.key === 'ArrowUp') setDrawer(true); return; }
     const hh = dockBody.getBoundingClientRect().height + (e.key === 'ArrowUp' ? 40 : -40);
-    if (hh < 80) setDrawer(false); else { setDockH(hh); saveUI(); renderGraph(); }
+    if (hh < dockLimits().min - 20) setDrawer(false); else { setDockH(hh); saveUI(); renderGraph(); }
   });
   if (window.ResizeObserver) {
     // The timeline redraws when its height changes. A height that keeps flipping between the same two values
