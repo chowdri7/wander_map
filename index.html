@@ -115,102 +115,102 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-
 .muted{color:var(--muted)}
 
 /* graph */
-#graph text{font-family:var(--font)}
-#graph .hit{fill:transparent}
-#graph .night{fill:var(--night)}
-#graph .twilight{fill:var(--twilight)}
-#graph .tod{stroke:none}
-#graph .tod.night{fill:var(--tod-night)}
-#graph .tod.dawn{fill:var(--tod-dawn)}
-#graph .tod.day{fill:var(--tod-day)}
-#graph .tod.dusk{fill:var(--tod-dusk)}
-#graph .todlbl{font-size:10.5px;font-weight:600;text-anchor:middle;pointer-events:none}
-#graph .todlbl.night{fill:var(--tod-night-ink)}
-#graph .todlbl.dawn,#graph .todlbl.day,#graph .todlbl.dusk{fill:var(--tod-ink)}
-#graph .daypill{fill:var(--surface);stroke:var(--axis);stroke-width:1}
-#graph .tick.noon{stroke:var(--axis);stroke-dasharray:2 3}
-#graph .star{fill:var(--star)}
-#graph .sunpath{fill:none;stroke:var(--sunpath);stroke-width:1.25;stroke-dasharray:2 3}
-#graph .skyico{font-size:13px;text-anchor:middle}
-#graph .skyframe{fill:none;stroke:var(--border);stroke-width:1}
-#graph .midnight{stroke:var(--axis);stroke-width:1.25}
-#graph .midnight{stroke:var(--axis);stroke-width:1}
-#graph .tick{stroke:var(--grid);stroke-width:1}
-#graph .axisline{stroke:var(--axis);stroke-width:1}
-#graph .sep{stroke:var(--grid);stroke-width:1;stroke-dasharray:2 4}
-#graph .daylbl{font-size:12px;font-weight:700;fill:var(--ink)}
-#graph .hrlbl{font-size:10.5px;font-weight:600;fill:var(--ink2);text-anchor:middle}
-#graph .edge{cursor:pointer}
-#graph .seg{fill:none;stroke:var(--c);stroke-width:4;stroke-linecap:round}
-#graph .seg.est{opacity:.45}
-#graph .edge:hover .seg{stroke-width:6}
-#graph .elbow{fill:none;stroke:var(--c);stroke-width:2.5;opacity:.85}
-#graph .dwell{stroke:var(--c);stroke-width:2;opacity:.38}
-#graph .seghit{stroke:transparent;stroke-width:18}
-#graph .node{cursor:pointer;outline:none}
-#graph .nhit{fill:transparent}
-#graph .node .dot{fill:var(--surface);stroke:var(--c);stroke-width:3}
-#graph .node.root .dot,#graph .node.leaf .dot{fill:var(--c);stroke:var(--surface);stroke-width:2}
-#graph .node:hover .dot,#graph .node:focus-visible .dot{stroke-width:4}
-#graph .node:focus-visible .nhit{stroke:var(--accent);stroke-width:2;fill:none}
-#graph .ring{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-dasharray:3 3}
-#graph .warnDot{fill:var(--bad)}
-#graph .warnTxt{font-size:9px;font-weight:700;fill:var(--surface);text-anchor:middle}
-#graph .halo{paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round;stroke-opacity:.92}
-#graph .pl{font-size:12px;font-weight:600;fill:var(--ink);text-anchor:middle}
-#graph .tl{font-size:11px;font-weight:600;fill:var(--ink);text-anchor:middle}
-#graph .tm{cursor:pointer}
-#graph .tmlead{stroke:var(--c);stroke-width:1;opacity:.6}
-#graph .durtag{cursor:pointer}
-#graph .durtag rect{fill:var(--c);opacity:.16}
-#graph .durtag:hover rect{opacity:.28}
-#graph .durtxt{font-size:10.5px;font-weight:600;fill:var(--ink);text-anchor:middle;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round}
-#graph .costtag{cursor:pointer}
-#graph .costtag rect{fill:var(--surface);stroke:var(--c);stroke-width:1.5}
-#graph .costtxt{font-size:11px;font-weight:700;fill:var(--ink);text-anchor:middle}
-#graph .sun circle{fill:var(--sun)}
-#graph .sun line{stroke:var(--sun);stroke-width:1.5;stroke-linecap:round}
-#graph .halfsun{fill:var(--sun);opacity:.9}
-#graph .moon{fill:var(--moon)}
+:is(#graph,#axisSvg) text{font-family:var(--font)}
+:is(#graph,#axisSvg) .hit{fill:transparent}
+:is(#graph,#axisSvg) .night{fill:var(--night)}
+:is(#graph,#axisSvg) .twilight{fill:var(--twilight)}
+:is(#graph,#axisSvg) .tod{stroke:none}
+:is(#graph,#axisSvg) .tod.night{fill:var(--tod-night)}
+:is(#graph,#axisSvg) .tod.dawn{fill:var(--tod-dawn)}
+:is(#graph,#axisSvg) .tod.day{fill:var(--tod-day)}
+:is(#graph,#axisSvg) .tod.dusk{fill:var(--tod-dusk)}
+:is(#graph,#axisSvg) .todlbl{font-size:10.5px;font-weight:600;text-anchor:middle;pointer-events:none}
+:is(#graph,#axisSvg) .todlbl.night{fill:var(--tod-night-ink)}
+:is(#graph,#axisSvg) .todlbl.dawn,:is(#graph,#axisSvg) .todlbl.day,:is(#graph,#axisSvg) .todlbl.dusk{fill:var(--tod-ink)}
+:is(#graph,#axisSvg) .daypill{fill:var(--surface);stroke:var(--axis);stroke-width:1}
+:is(#graph,#axisSvg) .tick.noon{stroke:var(--axis);stroke-dasharray:2 3}
+:is(#graph,#axisSvg) .star{fill:var(--star)}
+:is(#graph,#axisSvg) .sunpath{fill:none;stroke:var(--sunpath);stroke-width:1.25;stroke-dasharray:2 3}
+:is(#graph,#axisSvg) .skyico{font-size:13px;text-anchor:middle}
+:is(#graph,#axisSvg) .skyframe{fill:none;stroke:var(--border);stroke-width:1}
+:is(#graph,#axisSvg) .midnight{stroke:var(--axis);stroke-width:1.25}
+:is(#graph,#axisSvg) .midnight{stroke:var(--axis);stroke-width:1}
+:is(#graph,#axisSvg) .tick{stroke:var(--grid);stroke-width:1}
+:is(#graph,#axisSvg) .axisline{stroke:var(--axis);stroke-width:1}
+:is(#graph,#axisSvg) .sep{stroke:var(--grid);stroke-width:1;stroke-dasharray:2 4}
+:is(#graph,#axisSvg) .daylbl{font-size:12px;font-weight:700;fill:var(--ink)}
+:is(#graph,#axisSvg) .hrlbl{font-size:10.5px;font-weight:600;fill:var(--ink2);text-anchor:middle}
+:is(#graph,#axisSvg) .edge{cursor:pointer}
+:is(#graph,#axisSvg) .seg{fill:none;stroke:var(--c);stroke-width:4;stroke-linecap:round}
+:is(#graph,#axisSvg) .seg.est{opacity:.45}
+:is(#graph,#axisSvg) .edge:hover .seg{stroke-width:6}
+:is(#graph,#axisSvg) .elbow{fill:none;stroke:var(--c);stroke-width:2.5;opacity:.85}
+:is(#graph,#axisSvg) .dwell{stroke:var(--c);stroke-width:2;opacity:.38}
+:is(#graph,#axisSvg) .seghit{stroke:transparent;stroke-width:18}
+:is(#graph,#axisSvg) .node{cursor:pointer;outline:none}
+:is(#graph,#axisSvg) .nhit{fill:transparent}
+:is(#graph,#axisSvg) .node .dot{fill:var(--surface);stroke:var(--c);stroke-width:3}
+:is(#graph,#axisSvg) .node.root .dot,:is(#graph,#axisSvg) .node.leaf .dot{fill:var(--c);stroke:var(--surface);stroke-width:2}
+:is(#graph,#axisSvg) .node:hover .dot,:is(#graph,#axisSvg) .node:focus-visible .dot{stroke-width:4}
+:is(#graph,#axisSvg) .node:focus-visible .nhit{stroke:var(--accent);stroke-width:2;fill:none}
+:is(#graph,#axisSvg) .ring{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-dasharray:3 3}
+:is(#graph,#axisSvg) .warnDot{fill:var(--bad)}
+:is(#graph,#axisSvg) .warnTxt{font-size:9px;font-weight:700;fill:var(--surface);text-anchor:middle}
+:is(#graph,#axisSvg) .halo{paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round;stroke-opacity:.92}
+:is(#graph,#axisSvg) .pl{font-size:12px;font-weight:600;fill:var(--ink);text-anchor:middle}
+:is(#graph,#axisSvg) .tl{font-size:11px;font-weight:600;fill:var(--ink);text-anchor:middle}
+:is(#graph,#axisSvg) .tm{cursor:pointer}
+:is(#graph,#axisSvg) .tmlead{stroke:var(--c);stroke-width:1;opacity:.6}
+:is(#graph,#axisSvg) .durtag{cursor:pointer}
+:is(#graph,#axisSvg) .durtag rect{fill:var(--c);opacity:.16}
+:is(#graph,#axisSvg) .durtag:hover rect{opacity:.28}
+:is(#graph,#axisSvg) .durtxt{font-size:10.5px;font-weight:600;fill:var(--ink);text-anchor:middle;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round}
+:is(#graph,#axisSvg) .costtag{cursor:pointer}
+:is(#graph,#axisSvg) .costtag rect{fill:var(--surface);stroke:var(--c);stroke-width:1.5}
+:is(#graph,#axisSvg) .costtxt{font-size:11px;font-weight:700;fill:var(--ink);text-anchor:middle}
+:is(#graph,#axisSvg) .sun circle{fill:var(--sun)}
+:is(#graph,#axisSvg) .sun line{stroke:var(--sun);stroke-width:1.5;stroke-linecap:round}
+:is(#graph,#axisSvg) .halfsun{fill:var(--sun);opacity:.9}
+:is(#graph,#axisSvg) .moon{fill:var(--moon)}
 .btn.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
-#graph .ll{font-size:11px;font-weight:600;fill:var(--ink2);text-anchor:middle}
-#graph .modeico{cursor:pointer}
-#graph .modeico circle{fill:var(--surface);stroke:var(--c);stroke-width:2}
-#graph .modeico .ico{font-size:12.5px;text-anchor:middle;pointer-events:none}
-#graph .modeico:hover circle{stroke-width:3}
-#graph .dl{font-size:11px;fill:var(--ink2);text-anchor:middle}
-#graph .rl{font-size:13px;font-weight:600;fill:var(--ink)}
-#graph .rl .rlab{fill:var(--muted);font-weight:700}
-#graph .badge{cursor:pointer;outline:none}
-#graph .badge rect{fill:var(--surface);stroke:var(--c);stroke-width:1.5}
-#graph .badge:hover rect,#graph .badge:focus-visible rect{fill:var(--surface2)}
-#graph .badge.picked rect{stroke-width:3}
-#graph .badge.add rect{stroke-dasharray:4 3}
-#graph .badge .bt{font-size:12px;font-weight:600;fill:var(--ink)}
-#graph .badge.add .bt{fill:var(--ink2);font-weight:500}
-#graph .dim{opacity:.13}
-#graph .scrub{pointer-events:none}
-#graph .scrubline{stroke:var(--ink);stroke-width:1;stroke-dasharray:3 3;opacity:.7}
-#graph .scrubline.pinned{stroke-dasharray:none;opacity:.9}
-#graph .scrubpill{fill:var(--ink)}
-#graph .scrubtxt{font-size:11px;font-weight:600;fill:var(--surface);text-anchor:middle}
-#graph .mark{stroke:var(--surface);stroke-width:2.5}
-#graph .mark.move{fill:var(--c)}
-#graph .mark.wait{fill:var(--surface);stroke:var(--c);stroke-width:3}
-#graph .mark.buf{fill:var(--c);opacity:.65}
-#graph .bufband{stroke:var(--c);stroke-width:12;opacity:.2;stroke-linecap:round}
-#graph .bufline{stroke:var(--c);stroke-width:2.5;stroke-dasharray:2 3;stroke-linecap:round}
+:is(#graph,#axisSvg) .ll{font-size:11px;font-weight:600;fill:var(--ink2);text-anchor:middle}
+:is(#graph,#axisSvg) .modeico{cursor:pointer}
+:is(#graph,#axisSvg) .modeico circle{fill:var(--surface);stroke:var(--c);stroke-width:2}
+:is(#graph,#axisSvg) .modeico .ico{font-size:12.5px;text-anchor:middle;pointer-events:none}
+:is(#graph,#axisSvg) .modeico:hover circle{stroke-width:3}
+:is(#graph,#axisSvg) .dl{font-size:11px;fill:var(--ink2);text-anchor:middle}
+:is(#graph,#axisSvg) .rl{font-size:13px;font-weight:600;fill:var(--ink)}
+:is(#graph,#axisSvg) .rl .rlab{fill:var(--muted);font-weight:700}
+:is(#graph,#axisSvg) .badge{cursor:pointer;outline:none}
+:is(#graph,#axisSvg) .badge rect{fill:var(--surface);stroke:var(--c);stroke-width:1.5}
+:is(#graph,#axisSvg) .badge:hover rect,:is(#graph,#axisSvg) .badge:focus-visible rect{fill:var(--surface2)}
+:is(#graph,#axisSvg) .badge.picked rect{stroke-width:3}
+:is(#graph,#axisSvg) .badge.add rect{stroke-dasharray:4 3}
+:is(#graph,#axisSvg) .badge .bt{font-size:12px;font-weight:600;fill:var(--ink)}
+:is(#graph,#axisSvg) .badge.add .bt{fill:var(--ink2);font-weight:500}
+:is(#graph,#axisSvg) .dim{opacity:.13}
+:is(#graph,#axisSvg) .scrub{pointer-events:none}
+:is(#graph,#axisSvg) .scrubline{stroke:var(--ink);stroke-width:1;stroke-dasharray:3 3;opacity:.7}
+:is(#graph,#axisSvg) .scrubline.pinned{stroke-dasharray:none;opacity:.9}
+:is(#graph,#axisSvg) .scrubpill{fill:var(--ink)}
+:is(#graph,#axisSvg) .scrubtxt{font-size:11px;font-weight:600;fill:var(--surface);text-anchor:middle}
+:is(#graph,#axisSvg) .mark{stroke:var(--surface);stroke-width:2.5}
+:is(#graph,#axisSvg) .mark.move{fill:var(--c)}
+:is(#graph,#axisSvg) .mark.wait{fill:var(--surface);stroke:var(--c);stroke-width:3}
+:is(#graph,#axisSvg) .mark.buf{fill:var(--c);opacity:.65}
+:is(#graph,#axisSvg) .bufband{stroke:var(--c);stroke-width:12;opacity:.2;stroke-linecap:round}
+:is(#graph,#axisSvg) .bufline{stroke:var(--c);stroke-width:2.5;stroke-dasharray:2 3;stroke-linecap:round}
 /* places view: one row per place, every plan that visits it runs through it */
-#graph path.seghit{fill:none}
+:is(#graph,#axisSvg) path.seghit{fill:none}
 #graph.places .seg{stroke-width:3.5}
-#graph .rowband{fill:var(--surface2);opacity:.55}
-#graph .rowline{stroke:var(--axis);stroke-width:1;stroke-dasharray:1 5}
-#graph .nimgring{fill:none;stroke:var(--axis);stroke-width:1}
-#graph .rowlbl{font-size:13px;font-weight:600;fill:var(--ink)}
-#graph .rowsub{font-size:11px;fill:var(--muted)}
-#graph .station{fill:var(--surface);stroke:var(--ink);stroke-width:1.75}
-#graph .node.mini .dot{fill:var(--c);stroke:var(--surface);stroke-width:1.5}
-#graph .leader{stroke:var(--c);stroke-width:1.25;opacity:.7;fill:none}
+:is(#graph,#axisSvg) .rowband{fill:var(--surface2);opacity:.55}
+:is(#graph,#axisSvg) .rowline{stroke:var(--axis);stroke-width:1;stroke-dasharray:1 5}
+:is(#graph,#axisSvg) .nimgring{fill:none;stroke:var(--axis);stroke-width:1}
+:is(#graph,#axisSvg) .rowlbl{font-size:13px;font-weight:600;fill:var(--ink)}
+:is(#graph,#axisSvg) .rowsub{font-size:11px;fill:var(--muted)}
+:is(#graph,#axisSvg) .station{fill:var(--surface);stroke:var(--ink);stroke-width:1.75}
+:is(#graph,#axisSvg) .node.mini .dot{fill:var(--c);stroke:var(--surface);stroke-width:1.5}
+:is(#graph,#axisSvg) .leader{stroke:var(--c);stroke-width:1.25;opacity:.7;fill:none}
 
 /* inspector */
 .side{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;padding:14px 16px 16px}
@@ -295,21 +295,21 @@ table.legs tr.total td{font-weight:700;border-bottom:0;border-top:1px solid var(
   .row2{grid-template-columns:1fr}
 }
 /* ---------- nodes + legs ---------- */
-#graph .rowhead{cursor:pointer;outline:none}
-#graph .rowhit{fill:transparent}
-#graph .rowhead:hover .rowhit,#graph .rowhead:focus-visible .rowhit{fill:var(--surface2)}
-#graph .rowhead.sel .rowhit{fill:var(--surface2);stroke:var(--accent);stroke-width:1.5}
-#graph .pt{cursor:pointer}
-#graph .pt .dot{fill:var(--c);stroke:var(--surface);stroke-width:2}
-#graph .station{cursor:pointer}
-#graph .edge.sel .seg,#graph .edge.chosen .seg{stroke-width:6}
-#graph .edge.pend .seg{stroke-dasharray:6 5;opacity:.75}
+:is(#graph,#axisSvg) .rowhead{cursor:pointer;outline:none}
+:is(#graph,#axisSvg) .rowhit{fill:transparent}
+:is(#graph,#axisSvg) .rowhead:hover .rowhit,:is(#graph,#axisSvg) .rowhead:focus-visible .rowhit{fill:var(--surface2)}
+:is(#graph,#axisSvg) .rowhead.sel .rowhit{fill:var(--surface2);stroke:var(--accent);stroke-width:1.5}
+:is(#graph,#axisSvg) .pt{cursor:pointer}
+:is(#graph,#axisSvg) .pt .dot{fill:var(--c);stroke:var(--surface);stroke-width:2}
+:is(#graph,#axisSvg) .station{cursor:pointer}
+:is(#graph,#axisSvg) .edge.sel .seg,:is(#graph,#axisSvg) .edge.chosen .seg{stroke-width:6}
+:is(#graph,#axisSvg) .edge.pend .seg{stroke-dasharray:6 5;opacity:.75}
 .planbar .pend-note{flex-basis:100%;color:var(--warn-ink);background:var(--warn-bg);border-radius:6px;padding:5px 8px;font-size:12.5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-#graph .wait{cursor:pointer}
-#graph .wait .dwell{stroke-width:3;opacity:.5}
-#graph .wait .waithit{stroke:transparent;stroke-width:16}
-#graph .wait:hover .dwell,#graph .wait.sel .dwell{stroke-width:5;opacity:.8}
-#graph .dl{cursor:pointer}
+:is(#graph,#axisSvg) .wait{cursor:pointer}
+:is(#graph,#axisSvg) .wait .dwell{stroke-width:3;opacity:.5}
+:is(#graph,#axisSvg) .wait .waithit{stroke:transparent;stroke-width:16}
+:is(#graph,#axisSvg) .wait:hover .dwell,:is(#graph,#axisSvg) .wait.sel .dwell{stroke-width:5;opacity:.8}
+:is(#graph,#axisSvg) .dl{cursor:pointer}
 .leglist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 .legbtn{display:flex;gap:8px;align-items:baseline;width:100%;text-align:left;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:6px 8px;font:inherit;font-size:12.5px;cursor:pointer}
 .legbtn:hover{background:var(--surface2)}
@@ -590,51 +590,51 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 .guide-note{color:var(--muted)}
 
 /* timeline drawing */
-#graph .rowlbl{font-family:var(--serif);font-size:14px;font-weight:600;fill:var(--ink)}
-#graph .rowsub{fill:var(--muted)}
-#graph .rowband{fill:var(--surface2);opacity:.55}
-#graph .rowline{stroke:var(--axis)}
-#graph .daypill{fill:var(--surface);stroke:var(--border)}
-#graph .daylbl{font-family:var(--serif);font-weight:600;fill:var(--ink)}
-#graph .hrlbl{fill:var(--muted);font-weight:500}
-#graph .skyframe{stroke:var(--border)}
-#graph .station{fill:var(--surface);stroke:var(--ink2);stroke-width:1.25}
-#graph .badge rect{fill:var(--surface);stroke:var(--c);stroke-width:1.25}
-#graph .badge .bt{font-weight:600;fill:var(--ink)}
-#graph .badge.picked rect{stroke-width:2.25}
-#graph .durtag rect{opacity:.2}
-#graph .costtag rect{fill:var(--surface);stroke:var(--c);stroke-width:1.25}
-#graph .tick.noon{stroke:var(--axis)}
-#graph .midnight{stroke:var(--axis)}
-#graph .scrubpill{fill:var(--ink)}
-#graph .scrubtxt{fill:var(--surface)}
-#graph .seg{stroke-width:4}
-#graph .pt .dot{stroke-width:2.25}
-#graph .nimgring{stroke:var(--border)}
+:is(#graph,#axisSvg) .rowlbl{font-family:var(--serif);font-size:14px;font-weight:600;fill:var(--ink)}
+:is(#graph,#axisSvg) .rowsub{fill:var(--muted)}
+:is(#graph,#axisSvg) .rowband{fill:var(--surface2);opacity:.55}
+:is(#graph,#axisSvg) .rowline{stroke:var(--axis)}
+:is(#graph,#axisSvg) .daypill{fill:var(--surface);stroke:var(--border)}
+:is(#graph,#axisSvg) .daylbl{font-family:var(--serif);font-weight:600;fill:var(--ink)}
+:is(#graph,#axisSvg) .hrlbl{fill:var(--muted);font-weight:500}
+:is(#graph,#axisSvg) .skyframe{stroke:var(--border)}
+:is(#graph,#axisSvg) .station{fill:var(--surface);stroke:var(--ink2);stroke-width:1.25}
+:is(#graph,#axisSvg) .badge rect{fill:var(--surface);stroke:var(--c);stroke-width:1.25}
+:is(#graph,#axisSvg) .badge .bt{font-weight:600;fill:var(--ink)}
+:is(#graph,#axisSvg) .badge.picked rect{stroke-width:2.25}
+:is(#graph,#axisSvg) .durtag rect{opacity:.2}
+:is(#graph,#axisSvg) .costtag rect{fill:var(--surface);stroke:var(--c);stroke-width:1.25}
+:is(#graph,#axisSvg) .tick.noon{stroke:var(--axis)}
+:is(#graph,#axisSvg) .midnight{stroke:var(--axis)}
+:is(#graph,#axisSvg) .scrubpill{fill:var(--ink)}
+:is(#graph,#axisSvg) .scrubtxt{fill:var(--surface)}
+:is(#graph,#axisSvg) .seg{stroke-width:4}
+:is(#graph,#axisSvg) .pt .dot{stroke-width:2.25}
+:is(#graph,#axisSvg) .nimgring{stroke:var(--border)}
 
 /* sky: sun, moon, stars, golden hours */
-#graph .sun line{stroke:var(--sun);stroke-width:1.6;stroke-linecap:round}
-#graph .sun circle.glow{fill:url(#sunglow);stroke:none}
-#graph .sun .disc{fill:var(--sun);stroke:color-mix(in srgb,var(--sun) 70%,#fff);stroke-width:1}
-#graph .halfsun{fill:var(--sun);opacity:1}
-#graph .moon{fill:var(--moon)}
-#graph .sunpath{fill:none;stroke:var(--sunpath);stroke-width:1.1;stroke-dasharray:1.5 3.5}
-#graph .star{fill:var(--star)}
-#graph .bstar{fill:var(--bstar-c)}
-#graph .cloud{fill:var(--cloud);stroke:var(--cloud-edge);stroke-width:.6}
-#graph .cloudg{pointer-events:none}
+:is(#graph,#axisSvg) .sun line{stroke:var(--sun);stroke-width:1.6;stroke-linecap:round}
+:is(#graph,#axisSvg) .sun circle.glow{fill:url(#sunglow);stroke:none}
+:is(#graph,#axisSvg) .sun .disc{fill:var(--sun);stroke:color-mix(in srgb,var(--sun) 70%,#fff);stroke-width:1}
+:is(#graph,#axisSvg) .halfsun{fill:var(--sun);opacity:1}
+:is(#graph,#axisSvg) .moon{fill:var(--moon)}
+:is(#graph,#axisSvg) .sunpath{fill:none;stroke:var(--sunpath);stroke-width:1.1;stroke-dasharray:1.5 3.5}
+:is(#graph,#axisSvg) .star{fill:var(--star)}
+:is(#graph,#axisSvg) .bstar{fill:var(--bstar-c)}
+:is(#graph,#axisSvg) .cloud{fill:var(--cloud);stroke:var(--cloud-edge);stroke-width:.6}
+:is(#graph,#axisSvg) .cloudg{pointer-events:none}
 @keyframes drift{0%{transform:translateX(-7px)}100%{transform:translateX(7px)}}
-#graph .drift{animation:drift 9s ease-in-out infinite alternate}
+:is(#graph,#axisSvg) .drift{animation:drift 9s ease-in-out infinite alternate}
 @keyframes spin{to{transform:rotate(360deg)}}
-#graph .rays{transform-box:fill-box;transform-origin:center;animation:spin 48s linear infinite}
+:is(#graph,#axisSvg) .rays{transform-box:fill-box;transform-origin:center;animation:spin 48s linear infinite}
 @keyframes breathe{0%,100%{opacity:.75}50%{opacity:1}}
-#graph .mglow{animation:breathe 5s ease-in-out infinite}
-#graph .goldline{stroke:var(--gold);stroke-width:1;stroke-dasharray:2 5;opacity:.55}
-#graph .skyframe{fill:none;stroke:color-mix(in srgb,var(--ink) 14%,transparent)}
-#graph .skybody,#graph .star,#graph .bstar,#graph .nohit,#graph .goldline,#graph .moong,#graph .sunpath{pointer-events:none}
+:is(#graph,#axisSvg) .mglow{animation:breathe 5s ease-in-out infinite}
+:is(#graph,#axisSvg) .goldline{stroke:var(--gold);stroke-width:1;stroke-dasharray:2 5;opacity:.55}
+:is(#graph,#axisSvg) .skyframe{fill:none;stroke:color-mix(in srgb,var(--ink) 14%,transparent)}
+:is(#graph,#axisSvg) .skybody,:is(#graph,#axisSvg) .star,:is(#graph,#axisSvg) .bstar,:is(#graph,#axisSvg) .nohit,:is(#graph,#axisSvg) .goldline,:is(#graph,#axisSvg) .moong,:is(#graph,#axisSvg) .sunpath{pointer-events:none}
 @keyframes twinkle{0%,100%{opacity:var(--o)}50%{opacity:calc(var(--o) * .2)}}
-#graph .tw{animation:twinkle 3.5s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){#graph .tw,#graph .drift,#graph .rays,#graph .mglow{animation:none}}
+:is(#graph,#axisSvg) .tw{animation:twinkle 3.5s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){:is(#graph,#axisSvg) .tw,:is(#graph,#axisSvg) .drift,:is(#graph,#axisSvg) .rays,:is(#graph,#axisSvg) .mglow{animation:none}}
 
 /* a thin sky stripe along the top of the app */
 .topbar{position:relative}
@@ -742,7 +742,7 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 #noTimeHint{background:var(--warn-bg);color:var(--warn-ink);border-color:color-mix(in srgb,var(--warn-ink) 22%,transparent)}
 #noTimeHint .btn{display:inline-block;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:26px;background:transparent;color:inherit;border-color:color-mix(in srgb,var(--warn-ink) 35%,transparent)}
 #noTimeHint .btn:hover{background:color-mix(in srgb,var(--warn-ink) 8%,transparent)}
-#graph .edge.broken .seg{stroke-dasharray:2 6}
+:is(#graph,#axisSvg) .edge.broken .seg{stroke-dasharray:2 6}
 
 /* the Edit | View switch */
 .modeseg{display:inline-flex;align-items:center;gap:2px;padding:2px;border:1px solid var(--border);border-radius:10px;background:var(--surface2)}
@@ -820,19 +820,19 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 .gn-dot{width:8px;height:8px;margin-top:6px;border-radius:50%;background:var(--accent);flex:none;animation:gndot 1.6s ease-in-out infinite}
 @keyframes gndot{0%,100%{opacity:.45}50%{opacity:1}}
 /* the guide on the timeline */
-#graph .gglow{fill:none;stroke:var(--accent);stroke-width:16;stroke-linecap:round;pointer-events:none;animation:gpulse 1.6s ease-in-out infinite}
+:is(#graph,#axisSvg) .gglow{fill:none;stroke:var(--accent);stroke-width:16;stroke-linecap:round;pointer-events:none;animation:gpulse 1.6s ease-in-out infinite}
 @keyframes gpulse{0%,100%{opacity:.12}50%{opacity:.36}}
-#graph .gnum{cursor:pointer}
-#graph .gnum circle{fill:var(--accent);stroke:var(--surface);stroke-width:2.5}
-#graph .gnum:hover circle{stroke-width:4}
-#graph .gnumtxt{font:700 11px var(--font);fill:var(--accent-ink);text-anchor:middle;pointer-events:none}
-#graph .gflag{pointer-events:none}
-#graph .gflag rect{fill:var(--ink)}
-#graph .gflagtxt{font:700 10px var(--font);fill:var(--surface);text-anchor:middle;letter-spacing:.05em}
-.building #graph .edge,.building #graph .rowhead,.building #graph .station{cursor:pointer}
+:is(#graph,#axisSvg) .gnum{cursor:pointer}
+:is(#graph,#axisSvg) .gnum circle{fill:var(--accent);stroke:var(--surface);stroke-width:2.5}
+:is(#graph,#axisSvg) .gnum:hover circle{stroke-width:4}
+:is(#graph,#axisSvg) .gnumtxt{font:700 11px var(--font);fill:var(--accent-ink);text-anchor:middle;pointer-events:none}
+:is(#graph,#axisSvg) .gflag{pointer-events:none}
+:is(#graph,#axisSvg) .gflag rect{fill:var(--ink)}
+:is(#graph,#axisSvg) .gflagtxt{font:700 10px var(--font);fill:var(--surface);text-anchor:middle;letter-spacing:.05em}
+.building :is(#graph,#axisSvg) .edge,.building :is(#graph,#axisSvg) .rowhead,.building :is(#graph,#axisSvg) .station{cursor:pointer}
 /* on narrow screens the panel would cover the timeline while you pick legs: share the width instead */
 @media (max-width:900px) and (min-width:701px){.building .main:not(.side-hidden) .maincol{padding-right:min(380px,92vw)}}
-@media (prefers-reduced-motion:reduce){#graph .gglow{animation:none;opacity:.25}.gn-dot{animation:none}}
+@media (prefers-reduced-motion:reduce){:is(#graph,#axisSvg) .gglow{animation:none;opacity:.25}.gn-dot{animation:none}}
 
 /* brighter transport and plan colours, still tuned to the paper background */
 :root{--frame:#e8e4da;--s1:#2f7fe0;--s2:#f07a2c;--s3:#12a67c;--s4:#e0a106;--s5:#e2508d;--s6:#5aa836;--s7:#7d5bea;--s8:#e5483e;--s9:#8f8b80}
@@ -857,24 +857,24 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 @media (prefers-reduced-motion:reduce){.modeseg::before{transition:none}}
 
 /* quieter labels on the timeline: the lines carry the colour, the text stays calm */
-#graph .tl{font-size:10.5px;font-weight:500;fill:var(--ink2)}
-#graph .tm:hover .tl{fill:var(--ink);font-weight:600}
-#graph .tmlead{opacity:.35}
-#graph .durtag rect{opacity:.11}
-#graph .durtxt{font-weight:500;fill:var(--ink2)}
-#graph .durtag:hover .durtxt{fill:var(--ink)}
-#graph .dl{font-size:10.5px;font-style:italic;fill:var(--ink2)}
+:is(#graph,#axisSvg) .tl{font-size:10.5px;font-weight:500;fill:var(--ink2)}
+:is(#graph,#axisSvg) .tm:hover .tl{fill:var(--ink);font-weight:600}
+:is(#graph,#axisSvg) .tmlead{opacity:.35}
+:is(#graph,#axisSvg) .durtag rect{opacity:.11}
+:is(#graph,#axisSvg) .durtxt{font-weight:500;fill:var(--ink2)}
+:is(#graph,#axisSvg) .durtag:hover .durtxt{fill:var(--ink)}
+:is(#graph,#axisSvg) .dl{font-size:10.5px;font-style:italic;fill:var(--ink2)}
 /* daytime over the chart */
 :root{--beam:rgba(255,210,110,.42);--bcloud:rgba(255,255,255,.62);--bird:rgba(64,66,84,.42)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--beam:rgba(255,214,140,.07);--bcloud:rgba(205,220,236,.06);--bird:rgba(214,220,232,.28)}}
 :root[data-theme="dark"]{--beam:rgba(255,214,140,.07);--bcloud:rgba(205,220,236,.06);--bird:rgba(214,220,232,.28)}
-#graph .beam{opacity:.4;animation:beam 7s ease-in-out infinite alternate}
+:is(#graph,#axisSvg) .beam{opacity:.4;animation:beam 7s ease-in-out infinite alternate}
 @keyframes beam{0%{opacity:.18}100%{opacity:.5}}
-#graph .bcloud{fill:var(--bcloud)}
-#graph .bird{fill:none;stroke:var(--bird);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;transform-box:fill-box;transform-origin:center;animation:flap 1.5s ease-in-out infinite}
+:is(#graph,#axisSvg) .bcloud{fill:var(--bcloud)}
+:is(#graph,#axisSvg) .bird{fill:none;stroke:var(--bird);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;transform-box:fill-box;transform-origin:center;animation:flap 1.5s ease-in-out infinite}
 @keyframes flap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.45)}}
-#graph .nohit{pointer-events:none}
-@media (prefers-reduced-motion:reduce){#graph .beam,#graph .bird,#graph .bcloudg,#graph .birdg{animation:none}}
+:is(#graph,#axisSvg) .nohit{pointer-events:none}
+@media (prefers-reduced-motion:reduce){:is(#graph,#axisSvg) .beam,:is(#graph,#axisSvg) .bird,:is(#graph,#axisSvg) .bcloudg,:is(#graph,#axisSvg) .birdg{animation:none}}
 
 /* the budget meter */
 .bmeter{display:inline-flex;align-items:center;gap:7px;margin-left:8px;padding:2px 9px 2px 7px;border-radius:999px;background:color-mix(in srgb,var(--good) 12%,transparent);color:var(--good);font-size:12px;font-weight:600;white-space:nowrap;vertical-align:middle;line-height:18px}
@@ -908,6 +908,7 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 [data-ico="paste"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%228%22 y=%222%22 width=%228%22 height=%224%22 rx=%221%22/%3E%3Cpath d=%22M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2%22/%3E%3C/svg%3E")}
 [data-ico="minus"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M5 12h14%22/%3E%3C/svg%3E")}
 [data-ico="select"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M5 3h2M11 3h2M17 3h2M21 5v2M21 11v2M21 17v2M19 21h-2M13 21h-2M7 21H5M3 19v-2M3 13v-2M3 7V5%22/%3E%3C/svg%3E")}
+[data-ico="help"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%229.5%22/%3E%3Cpath d=%22M9.2 9.3a2.9 2.9 0 0 1 5.6 1c0 1.9-2.8 2.5-2.8 4.2%22/%3E%3Cpath d=%22M12 17.6h.01%22/%3E%3C/svg%3E")}
 [data-ico="cal"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223.5%22 y=%225%22 width=%2217%22 height=%2216%22 rx=%222.5%22/%3E%3Cpath d=%22M3.5 10h17M8 3v4M16 3v4%22/%3E%3C/svg%3E")}
 [data-ico="move"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3%22/%3E%3C/svg%3E")}
 [data-ico="dup"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%228%22 y=%228%22 width=%2213%22 height=%2213%22 rx=%222.5%22/%3E%3Cpath d=%22M16 8V5.5A2.5 2.5 0 0 0 13.5 3h-8A2.5 2.5 0 0 0 3 5.5v8A2.5 2.5 0 0 0 5.5 16H8M14.5 11.5v6M11.5 14.5h6%22/%3E%3C/svg%3E")}
@@ -998,8 +999,8 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 .viewonly .topbar .toolbar{background:none;border:0;box-shadow:none;padding:0}
 .viewonly .topbar{align-items:center}
 .viewonly .topbar h1{margin:0}
-.viewonly #graph *{cursor:default !important}
-.viewonly #graph .badge,.viewonly #graph .badge *{cursor:pointer !important}
+.viewonly :is(#graph,#axisSvg) *{cursor:default !important}
+.viewonly :is(#graph,#axisSvg) .badge,.viewonly :is(#graph,#axisSvg) .badge *{cursor:pointer !important}
 .viewonly .planbar{gap:4px 12px}
 .mlist{display:none}
 .viewonly #graph{display:none !important}
@@ -1178,11 +1179,11 @@ table.itin tr.it-budget.over td{color:var(--bad)}
 .jn-more-note{margin:4px 0 0 12px;font-size:11.5px;color:var(--muted)}
 .jn-flash{animation:jnflash .8s ease 2}
 @keyframes jnflash{50%{background:color-mix(in srgb,var(--accent) 16%,transparent);border-radius:8px}}
-#graph .navdim{opacity:.3}
-#graph .nnum{cursor:pointer}
-#graph .nnum circle{fill:var(--accent);stroke:var(--surface);stroke-width:2.5}
-#graph .nnum:hover circle{stroke-width:4}
-#graph .nnumtxt{font:700 11px var(--font);fill:var(--accent-ink);text-anchor:middle;pointer-events:none}
+:is(#graph,#axisSvg) .navdim{opacity:.3}
+:is(#graph,#axisSvg) .nnum{cursor:pointer}
+:is(#graph,#axisSvg) .nnum circle{fill:var(--accent);stroke:var(--surface);stroke-width:2.5}
+:is(#graph,#axisSvg) .nnum:hover circle{stroke-width:4}
+:is(#graph,#axisSvg) .nnumtxt{font:700 11px var(--font);fill:var(--accent-ink);text-anchor:middle;pointer-events:none}
 @media (prefers-reduced-motion:reduce){.jn-flash{animation:none}}
 /* Edit | View: icons only (the tooltip and the label say which is which) */
 .modeseg button{min-width:0;width:36px;padding:0;font-size:0;gap:0}
@@ -1228,7 +1229,7 @@ table.itin tr.it-budget.over td{color:var(--bad)}
 .keys dd{margin:0}
 kbd{display:inline-block;min-width:20px;padding:1px 6px;border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;background:var(--surface2);color:var(--ink);font:600 11px var(--font);text-align:center}
 /* a still sky when motion is off */
-.still #graph .tw,.still #graph .drift,.still #graph .rays,.still #graph .mglow,.still #graph .beam,.still #graph .bird,.still #graph .bcloudg,.still #graph .birdg,.still #graph .gglow,.still .gn-dot{animation:none !important}
+.still :is(#graph,#axisSvg) .tw,.still :is(#graph,#axisSvg) .drift,.still :is(#graph,#axisSvg) .rays,.still :is(#graph,#axisSvg) .mglow,.still :is(#graph,#axisSvg) .beam,.still :is(#graph,#axisSvg) .bird,.still :is(#graph,#axisSvg) .bcloudg,.still :is(#graph,#axisSvg) .birdg,.still :is(#graph,#axisSvg) .gglow,.still .gn-dot{animation:none !important}
 /* the itinerary, tighter */
 .dock-body #detail{padding:14px 18px 18px}
 #detail .detail-head{margin-bottom:10px}
@@ -1273,21 +1274,21 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
   --night:rgba(90,104,214,.06); --twilight:rgba(255,160,120,.08); --bstar-c:#c29330; --gold:#d39b2b; --sun:#f6b73c; --sun-glow:rgba(250,190,70,.62);
   --shadow-lg:0 14px 40px rgba(20,26,36,.14);
 }
-#graph .rowband{opacity:.7}
+:is(#graph,#axisSvg) .rowband{opacity:.7}
 #modeSeg{margin-left:6px}
 /* pinned place names */
-#graph .pinbg{fill:var(--surface)}
-#graph .pinedge{stroke:var(--border);stroke-width:1}
-#graph .pincol.lifted .pinedge{stroke:var(--axis)}
-#graph .pincol.lifted{filter:drop-shadow(4px 0 6px rgba(0,0,0,.08))}
-#graph .pinlbl{font:700 10px var(--font);letter-spacing:.09em;fill:var(--muted)}
-#graph .pinbtn{cursor:pointer;outline:none}
-#graph .pinhit{fill:transparent;stroke:var(--border);stroke-width:1}
-#graph .pinbtn:hover .pinhit,#graph .pinbtn:focus-visible .pinhit{fill:var(--surface2);stroke:var(--axis)}
-#graph .pinbtn:focus-visible .pinhit{stroke:var(--accent);stroke-width:1.5}
-#graph .pinico{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-linejoin:round;stroke-linecap:round}
-#graph .pinbtn.on .pinico{fill:var(--accent);stroke:var(--accent)}
-#graph .pinbtn.on .pinhit{fill:color-mix(in srgb,var(--accent) 12%,transparent);stroke:color-mix(in srgb,var(--accent) 35%,transparent)}
+:is(#graph,#axisSvg) .pinbg{fill:var(--surface)}
+:is(#graph,#axisSvg) .pinedge{stroke:var(--border);stroke-width:1}
+:is(#graph,#axisSvg) .pincol.lifted .pinedge{stroke:var(--axis)}
+:is(#graph,#axisSvg) .pincol.lifted{filter:drop-shadow(4px 0 6px rgba(0,0,0,.08))}
+:is(#graph,#axisSvg) .pinlbl{font:700 10px var(--font);letter-spacing:.09em;fill:var(--muted)}
+:is(#graph,#axisSvg) .pinbtn{cursor:pointer;outline:none}
+:is(#graph,#axisSvg) .pinhit{fill:transparent;stroke:var(--border);stroke-width:1}
+:is(#graph,#axisSvg) .pinbtn:hover .pinhit,:is(#graph,#axisSvg) .pinbtn:focus-visible .pinhit{fill:var(--surface2);stroke:var(--axis)}
+:is(#graph,#axisSvg) .pinbtn:focus-visible .pinhit{stroke:var(--accent);stroke-width:1.5}
+:is(#graph,#axisSvg) .pinico{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-linejoin:round;stroke-linecap:round}
+:is(#graph,#axisSvg) .pinbtn.on .pinico{fill:var(--accent);stroke:var(--accent)}
+:is(#graph,#axisSvg) .pinbtn.on .pinhit{fill:color-mix(in srgb,var(--accent) 12%,transparent);stroke:color-mix(in srgb,var(--accent) 35%,transparent)}
 /* Settings: each section a card of rows, every control lined up on the right */
 .modal-card{width:min(600px,100%)}
 .modal-head{align-items:flex-start;padding:16px 20px 14px}
@@ -1354,13 +1355,13 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 :root{--sky-y:#cfe6fb;--sky-a-y:.34;--sky-d:#ffd0b3;--sky-k:#ffbda0;--daylight:rgba(255,255,255,.55);--cloudf:#ffffff;--cloud-shade:rgba(70,110,160,.16)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--sky-y:#5a87a6;--sky-a-y:.16;--sky-d:#b05f3c;--sky-k:#a24c2c;--daylight:rgba(170,200,235,.07);--cloudf:rgba(200,215,235,.10);--cloud-shade:rgba(0,0,0,.18)}}
 :root[data-theme="dark"]{--sky-y:#5a87a6;--sky-a-y:.16;--sky-d:#b05f3c;--sky-k:#a24c2c;--daylight:rgba(170,200,235,.07);--cloudf:rgba(200,215,235,.10);--cloud-shade:rgba(0,0,0,.18)}
-#graph .skycloud{animation:cloudpass 52s ease-in-out infinite alternate}
-#graph .skycloud.far{opacity:.75}
-#graph .cpuffs{fill:var(--cloudf);filter:url(#cloudsoft)}
-#graph .cshade{fill:var(--cloud-shade);filter:url(#cloudshade)}
+:is(#graph,#axisSvg) .skycloud{animation:cloudpass 52s ease-in-out infinite alternate}
+:is(#graph,#axisSvg) .skycloud.far{opacity:.75}
+:is(#graph,#axisSvg) .cpuffs{fill:var(--cloudf);filter:url(#cloudsoft)}
+:is(#graph,#axisSvg) .cshade{fill:var(--cloud-shade);filter:url(#cloudshade)}
 @keyframes cloudpass{0%{transform:translateX(calc(-1 * var(--dx,46px)))}100%{transform:translateX(var(--dx,46px))}}
-.still #graph .skycloud{animation:none !important}
-@media (prefers-reduced-motion:reduce){#graph .skycloud{animation:none}}
+.still :is(#graph,#axisSvg) .skycloud{animation:none !important}
+@media (prefers-reduced-motion:reduce){:is(#graph,#axisSvg) .skycloud{animation:none}}
 /* light mode: day and night read apart at a glance. Day is a clear, bright sky; night a deep dusk-blue
    veil that its gold stars show on; dawn and dusk glow warm between them. Dark mode keeps its own sky
    (its rules are more specific than these). */
@@ -1368,12 +1369,12 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--daysun-o:.62}}
 :root[data-theme="dark"]{--daysun-o:.62}
 /* the midday sun over each day, behind the chart and its clouds */
-#graph .daysun{opacity:var(--daysun-o);pointer-events:none}
-#graph .dshalo{opacity:.6}
-#graph .dsrays{stroke:var(--sun);stroke-width:2.2;stroke-linecap:round;transform-box:fill-box;transform-origin:center;animation:spin 90s linear infinite}
-#graph .dsdisc{fill:var(--sun);stroke:color-mix(in srgb,var(--sun) 55%,#fff);stroke-width:1.5}
-.still #graph .dsrays{animation:none}
-@media (prefers-reduced-motion:reduce){#graph .dsrays{animation:none}}
+:is(#graph,#axisSvg) .daysun{opacity:var(--daysun-o);pointer-events:none}
+:is(#graph,#axisSvg) .dshalo{opacity:.6}
+:is(#graph,#axisSvg) .dsrays{stroke:var(--sun);stroke-width:2.2;stroke-linecap:round;transform-box:fill-box;transform-origin:center;animation:spin 90s linear infinite}
+:is(#graph,#axisSvg) .dsdisc{fill:var(--sun);stroke:color-mix(in srgb,var(--sun) 55%,#fff);stroke-width:1.5}
+.still :is(#graph,#axisSvg) .dsrays{animation:none}
+@media (prefers-reduced-motion:reduce){:is(#graph,#axisSvg) .dsrays{animation:none}}
 /* New: a floating button at the bottom right of the timeline, where apps keep theirs. It rests on a
    zero-height shelf just above the status bar, so it never covers the times there. */
 .fabdock{position:relative;height:0;flex:none;z-index:8}
@@ -1417,12 +1418,12 @@ body.dock-dragging,body.dock-dragging *{cursor:ns-resize !important}
 :root{--bmoon:#f8dc72;--bmoon-glow:rgba(255,255,255,.7);--moon-edge:rgba(138,100,18,.75);--ncloud:rgba(255,255,255,.8);--nightmoon-o:1;--moon-shadow:drop-shadow(0 1px 1.2px rgba(30,38,96,.35))}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--moon-shadow:none;--bmoon:var(--moon);--bmoon-glow:rgba(241,234,211,.32);--moon-edge:rgba(255,255,255,.14);--ncloud:rgba(196,210,236,.16);--nightmoon-o:.92}}
 :root[data-theme="dark"]{--moon-shadow:none;--bmoon:var(--moon);--bmoon-glow:rgba(241,234,211,.32);--moon-edge:rgba(255,255,255,.14);--ncloud:rgba(196,210,236,.16);--nightmoon-o:.92}
-#graph .bodyart,#graph .bodyart *{pointer-events:none}
-#graph .nightmoon{opacity:var(--nightmoon-o)}
-#graph .nmglow{animation-duration:7s}
-#graph .nmdisc{fill:var(--bmoon);stroke:var(--moon-edge);stroke-width:1.1}
-#graph .nmcres{filter:var(--moon-shadow)}
-#graph .ncloud .cpuffs{fill:var(--ncloud)}
+:is(#graph,#axisSvg) .bodyart,:is(#graph,#axisSvg) .bodyart *{pointer-events:none}
+:is(#graph,#axisSvg) .nightmoon{opacity:var(--nightmoon-o)}
+:is(#graph,#axisSvg) .nmglow{animation-duration:7s}
+:is(#graph,#axisSvg) .nmdisc{fill:var(--bmoon);stroke:var(--moon-edge);stroke-width:1.1}
+:is(#graph,#axisSvg) .nmcres{filter:var(--moon-shadow)}
+:is(#graph,#axisSvg) .ncloud .cpuffs{fill:var(--ncloud)}
 /* a plan in the details panel */
 .plan-panel .pp-head{display:flex;align-items:flex-start;gap:8px}
 .plan-panel .pp-head .key-dot{margin-top:9px;flex:none}
@@ -1532,7 +1533,7 @@ body.dock-dragging,body.dock-dragging *{cursor:ns-resize !important}
 /* ---------- audit fixes ---------- */
 /* settings: With Moving sky off, the glow on a highlighted choice becomes a solid 16px band */
 /* with motion off, the glow on a choice stays soft instead of turning into a solid band */
-.still #graph .gglow{opacity:.25}
+.still :is(#graph,#axisSvg) .gglow{opacity:.25}
 /* a11y: Selected view tab shows no focus ring, so keyboard focus is invisible on the tab you land  */
 /* the selected view tab keeps its underline and also shows the focus ring */
 
@@ -1789,7 +1790,7 @@ body.side-dragging,body.side-dragging *{cursor:ew-resize !important}
 .dock-toggle .chev{transition:transform .3s var(--ease-out)}
 @media (prefers-reduced-motion:reduce){.dock-body,.side,.main.side-hidden .side,.vt-ind,.vtab,.dock-toggle .chev{transition:none !important}.gwrap.swap{animation:none}}
 /* highlights on the timeline ease in and out */
-#graph .edge,#graph .node,#graph .station,#graph .badge,#graph .wait,#graph .waitlbl,#graph .durtag,#graph .rowhead{transition:opacity .22s var(--ease)}
+:is(#graph,#axisSvg) .edge,:is(#graph,#axisSvg) .node,:is(#graph,#axisSvg) .station,:is(#graph,#axisSvg) .badge,:is(#graph,#axisSvg) .wait,:is(#graph,#axisSvg) .waitlbl,:is(#graph,#axisSvg) .durtag,:is(#graph,#axisSvg) .rowhead{transition:opacity .22s var(--ease)}
 /* Auto-fit pressed */
 #fit[aria-pressed="true"],#arrangeBtn[aria-pressed="true"]{background:var(--accent-soft) !important;border-color:color-mix(in srgb,var(--accent) 45%,transparent) !important;color:var(--accent) !important}
 /* the colour line across the top follows the header's own corners */
@@ -1895,6 +1896,34 @@ html.glass .side-split::after{background:var(--g-field)}
 /* the details panel opening or closing: the timeline's frame narrows or widens without a scrollbar flashing in,
    then the old drawing fades out over the new one */
 .side-moving .graph-scroll,.side-dragging .graph-scroll,.settling .graph-scroll{overflow-x:hidden !important}
+/* the time header stays at the top while the places scroll under it, like a spreadsheet's frozen row */
+#axisSvg{display:block;position:sticky;top:0;z-index:4;overflow:hidden;user-select:none;-webkit-user-select:none}
+#axisSvg .headbg{fill:transparent}
+#axisSvg.lifted .headbg{fill:var(--g-pin,var(--surface))}
+html.glass #axisSvg.lifted{-webkit-backdrop-filter:blur(16px) saturate(170%);backdrop-filter:blur(16px) saturate(170%)}
+.axiscorner{display:block;position:sticky;top:0;z-index:6;pointer-events:none;box-sizing:border-box;border-right:1px solid var(--border);background:var(--g-pin,var(--surface))}
+.axiscorner.pinleft{left:0}
+.axiscorner.lifted{border-right-color:var(--axis);box-shadow:5px 0 8px rgba(0,0,0,.07)}
+html.glass .axiscorner{-webkit-backdrop-filter:blur(16px) saturate(170%);backdrop-filter:blur(16px) saturate(170%)}
+.viewonly #axisSvg,.viewonly .axiscorner{display:none !important}
+/* the time under the pointer while arranging */
+#graph .hoverline{stroke:var(--accent);stroke-width:1;stroke-dasharray:3 3;opacity:.65;pointer-events:none}
+/* dates typed as dd/mm/yyyy, with a calendar to pick from */
+.fld > span.dtfield{display:flex;gap:6px;align-items:center;font-size:inherit;color:inherit;margin:0}
+.datebox{position:relative;display:flex;align-items:center;flex:1 1 auto;min-width:0}
+.datebox .dtdate{width:100%;padding-right:36px}
+.datebox .dtcal{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:28px;height:28px;display:grid;place-items:center;border:0;border-radius:7px;background:none;color:var(--ink2);cursor:pointer;font-size:0;padding:0}
+.datebox .dtcal:hover{background:var(--surface2);color:var(--ink)}
+.datebox .dtpick{position:absolute;right:0;bottom:0;width:1px;height:1px;padding:0;border:0;opacity:0;pointer-events:none}
+.dtfield .dttime{flex:0 0 auto;width:118px}
+.dtfield:has(.dtdate.bad) .dttime{border-color:var(--bad)}
+#dayMenu .datebox{width:100%}
+/* How it works, behind the ? button */
+.helppop{width:min(460px,calc(100vw - 24px));padding:16px 18px 14px !important}
+.helppop:not([hidden]){display:block !important}
+.helppop .help h2{margin-top:0}
+.helppop .help li{font-size:13px}
+.empty-help .btn{margin-top:4px}
 /* right-click menus: the same look as every other menu, at the pointer, with the keys for each action */
 .ctx-menu{position:fixed;left:0;top:0;width:0;height:0;z-index:95}
 .ctx-pop{position:fixed;min-width:236px;max-width:360px;z-index:95}
@@ -1903,24 +1932,24 @@ html.glass .side-split::after{background:var(--g-field)}
 .ctx-pop .cm-head{padding:6px 10px 5px;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 /* dragging the timeline to scroll it */
 body.panning,body.panning *{cursor:grabbing !important;-webkit-user-select:none !important;user-select:none !important}
-.space-pan #graph,.space-pan #graph *,.space-pan #pinSvg,.space-pan #pinSvg *{cursor:grab !important}
+.space-pan #graph,.space-pan :is(#graph,#axisSvg) *,.space-pan #pinSvg,.space-pan #pinSvg *{cursor:grab !important}
 /* the selection while arranging */
-#graph .edge.picked .seghit{stroke:color-mix(in srgb,var(--accent) 22%,transparent)}
-#graph .edge.picked .seg{stroke-width:5.5}
-#graph .pt.picked .dot{stroke:var(--accent);stroke-width:2.5}
+:is(#graph,#axisSvg) .edge.picked .seghit{stroke:color-mix(in srgb,var(--accent) 22%,transparent)}
+:is(#graph,#axisSvg) .edge.picked .seg{stroke-width:5.5}
+:is(#graph,#axisSvg) .pt.picked .dot{stroke:var(--accent);stroke-width:2.5}
 #pinSvg .rowhead.picked .rowhit{fill:color-mix(in srgb,var(--accent) 12%,transparent);stroke:color-mix(in srgb,var(--accent) 55%,transparent);stroke-width:1.5}
 .marquee{position:fixed;left:0;top:0;z-index:85;pointer-events:none;border:1px dashed var(--accent);border-radius:4px;background:color-mix(in srgb,var(--accent) 9%,transparent)}
-#graph .pickframe{fill:color-mix(in srgb,var(--accent) 5%,transparent);stroke:color-mix(in srgb,var(--accent) 60%,transparent);stroke-width:1.2;stroke-dasharray:6 4}
-.arranging #graph .pickframe,.arranging #graph[data-grab="frame"] *{cursor:move}
-#graph .linkhint{pointer-events:none}
-#graph .linkhint circle{fill:var(--surface);stroke:var(--accent);stroke-width:2}
-#graph .linkhint path{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round}
+:is(#graph,#axisSvg) .pickframe{fill:color-mix(in srgb,var(--accent) 5%,transparent);stroke:color-mix(in srgb,var(--accent) 60%,transparent);stroke-width:1.2;stroke-dasharray:6 4}
+.arranging :is(#graph,#axisSvg) .pickframe,.arranging #graph[data-grab="frame"] *{cursor:move}
+:is(#graph,#axisSvg) .linkhint{pointer-events:none}
+:is(#graph,#axisSvg) .linkhint circle{fill:var(--surface);stroke:var(--accent);stroke-width:2}
+:is(#graph,#axisSvg) .linkhint path{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round}
 .arranging #graph[data-grab="link"],.arranging #graph[data-grab="link"] *{cursor:crosshair}
-#graph .draftleg{pointer-events:none}
-#graph .draftleg .seg{stroke-dasharray:8 6}
-#graph .draftleg .dot{fill:var(--surface);stroke:var(--c);stroke-width:3}
-#graph .nowline{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:3 4;opacity:.75;pointer-events:none}
-#graph .nowlbl{font:700 10px var(--font);letter-spacing:.06em;fill:var(--accent);pointer-events:none}
+:is(#graph,#axisSvg) .draftleg{pointer-events:none}
+:is(#graph,#axisSvg) .draftleg .seg{stroke-dasharray:8 6}
+:is(#graph,#axisSvg) .draftleg .dot{fill:var(--surface);stroke:var(--c);stroke-width:3}
+:is(#graph,#axisSvg) .nowline{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:3 4;opacity:.75;pointer-events:none}
+:is(#graph,#axisSvg) .nowlbl{font:700 10px var(--font);letter-spacing:.06em;fill:var(--accent);pointer-events:none}
 .graph-card{position:relative}
 .pickbar{position:absolute;left:50%;top:var(--pb-top,120px);transform:translateX(-50%);z-index:6;display:flex;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-lg);font-size:12.5px;white-space:nowrap;max-width:calc(100% - 24px)}
 .pickbar[hidden]{display:none}
@@ -1935,19 +1964,19 @@ html.glass .pickbar{background:var(--g-strong);border-color:var(--g-edge);-webki
 #dayBtn.on{border-color:color-mix(in srgb,var(--accent) 45%,transparent);color:var(--accent)}
 /* Arrange: places and legs can be dragged only while it is on */
 .arranging #pinSvg .rowhead{cursor:grab}
-.arranging #graph .edge,.arranging #graph .pt,.arranging #graph .tm,.arranging #graph .durtag{cursor:grab}
+.arranging :is(#graph,#axisSvg) .edge,.arranging :is(#graph,#axisSvg) .pt,.arranging :is(#graph,#axisSvg) .tm,.arranging :is(#graph,#axisSvg) .durtag{cursor:grab}
 .arranging #graph[data-grab="end"] .edge,.arranging #graph[data-grab="end"] .pt,.arranging #graph[data-grab="end"] .tm{cursor:move}
-.arranging #graph .edge,.arranging #graph .pt,.arranging #graph .tm,.arranging #graph .durtag,.arranging #pinSvg .rowhead{touch-action:none}
+.arranging :is(#graph,#axisSvg) .edge,.arranging :is(#graph,#axisSvg) .pt,.arranging :is(#graph,#axisSvg) .tm,.arranging :is(#graph,#axisSvg) .durtag,.arranging #pinSvg .rowhead{touch-action:none}
 body.dragging,body.dragging *{cursor:grabbing !important;-webkit-user-select:none !important;user-select:none !important}
 #graph.dragging .edge:not(.drag),#graph.dragging .pt:not(.drag),#graph.dragging .tm:not(.drag),#graph.dragging .durtag:not(.drag),#graph.dragging .wait,#graph.dragging .badge,#graph.dragging .station{opacity:.22}
-#graph .drag.ghosted{opacity:.3 !important}
-#graph .picked,#graph .drag{opacity:1 !important}
-#graph .drag.settle,#pinSvg .rowhead.settle{transition:transform .2s var(--ease),opacity .22s var(--ease)}
-#graph .dragband{fill:var(--accent);opacity:.08;pointer-events:none}
-#graph .dragprev{pointer-events:none}
-#graph .dragprev .seg{stroke-dasharray:8 6;stroke-width:4}
-#graph .dragprev .dot{fill:var(--surface);stroke:var(--c);stroke-width:3}
-#graph .dragprev.bad .seg,#graph .dragprev.bad .dot{stroke:var(--bad)}
+:is(#graph,#axisSvg) .drag.ghosted{opacity:.3 !important}
+:is(#graph,#axisSvg) .picked,:is(#graph,#axisSvg) .drag{opacity:1 !important}
+:is(#graph,#axisSvg) .drag.settle,#pinSvg .rowhead.settle{transition:transform .2s var(--ease),opacity .22s var(--ease)}
+:is(#graph,#axisSvg) .dragband{fill:var(--accent);opacity:.08;pointer-events:none}
+:is(#graph,#axisSvg) .dragprev{pointer-events:none}
+:is(#graph,#axisSvg) .dragprev .seg{stroke-dasharray:8 6;stroke-width:4}
+:is(#graph,#axisSvg) .dragprev .dot{fill:var(--surface);stroke:var(--c);stroke-width:3}
+:is(#graph,#axisSvg) .dragprev.bad .seg,:is(#graph,#axisSvg) .dragprev.bad .dot{stroke:var(--bad)}
 #pinSvg.sorting .rowhead:not(.lifted){transition:transform .18s var(--ease)}
 #pinSvg .rowhead.lifted .rowhit{fill:var(--surface);stroke:var(--accent);stroke-width:1.5}
 #pinSvg .rowhead.lifted{filter:drop-shadow(0 6px 14px rgba(0,0,0,.18))}
@@ -2046,6 +2075,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
     <span class="tb-sep vsep"></span>
     <button id="themeBtn" class="btn icon" type="button" data-ico="moon" aria-pressed="false" aria-label="Dark mode" title="Switch to dark mode">Theme</button>
     <button id="settingsBtn" class="btn icon" type="button" data-ico="gear" aria-haspopup="dialog" aria-controls="settings" title="Settings: theme, sky, currency, budget, your data and the tour">Settings</button>
+    <div class="menu" id="helpMenu"><button id="helpBtn" class="btn icon" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="help" title="How it works">Help</button><div class="menu-pop right helppop" role="dialog" aria-label="How it works" hidden></div></div>
     <div class="modeseg" id="modeSeg" role="group" aria-label="Mode">
       <button id="modeEdit" type="button" data-ico="edit" aria-pressed="true" aria-label="Edit" title="Edit: add and change places, legs and plans">Edit</button>
       <button id="modeView" type="button" data-ico="eye" aria-pressed="false" aria-label="View only" title="View only: look at everything without changing anything">View</button>
@@ -2063,7 +2093,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
           <button id="costBtn" class="btn small" type="button" data-ico="coin" aria-pressed="false" title="Show the cost of each leg on the timeline">Costs: off</button>
           <span class="zoomgrp"><span class="tb-label">Zoom</span><input id="zoom" type="range" min="3" max="60" step="1" aria-label="Zoom timeline"></span>
           <button id="fit" class="btn small icon" type="button" data-ico="fit" title="Fit the whole timeline on screen">Fit</button>
-          <div class="menu" id="dayMenu"><button class="btn small" id="dayBtn" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="cal" title="Choose the day the timeline shows">Day</button><div class="menu-pop right daypop" role="dialog" aria-label="The day the timeline shows" hidden><div class="dp-head">Day on the timeline</div><input type="date" id="dayPick" aria-label="Day" min="1900-01-01" max="2199-12-31"><div class="dp-btns"><button type="button" class="btn small" id="dayToday">Today</button><button type="button" class="btn small" id="dayAuto" title="The timeline starts at your first leg, or today when there are none">From the first leg</button></div><p class="dp-note">With no legs yet the timeline shows today. A day you choose is added to the timeline and kept with this trip, so you can start planning right there.</p></div></div>
+          <div class="menu" id="dayMenu"><button class="btn small" id="dayBtn" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="cal" title="Choose the day the timeline shows">Day</button><div class="menu-pop right daypop" role="dialog" aria-label="The day the timeline shows" hidden><div class="dp-head">Day on the timeline</div><span id="dayBox"></span><div class="dp-btns"><button type="button" class="btn small" id="dayToday">Today</button><button type="button" class="btn small" id="dayAuto" title="The timeline starts at your first leg, or today when there are none">From the first leg</button></div><p class="dp-note">With no legs yet the timeline shows today. A day you choose is added to the timeline and kept with this trip, so you can start planning right there.</p></div></div>
           <button id="arrangeBtn" class="btn small" type="button" data-ico="move" aria-pressed="false" title="Arrange: drag a place name up or down, a leg sideways to move its times, or a leg’s end dot to another time or place (hold Shift for 5-minute steps). Off, nothing moves when you scroll or click.">Arrange</button>
           <div class="menu" id="keyMenu"><button class="btn small" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="key" title="What the colours and lines mean">Key</button><div class="menu-pop right keypop" role="dialog" aria-label="Colour key" hidden><div class="legend" id="legend"></div></div></div>
         </div>
@@ -2081,6 +2111,8 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
       <div id="graphScroll" class="graph-scroll">
         <div id="scrubTip" class="scrubtip" hidden></div>
         <div class="gwrap" id="gwrap">
+          <div id="axisCorner" class="axiscorner" aria-hidden="true"></div>
+          <svg id="axisSvg" class="axissvg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
           <svg id="pinSvg" class="pinsvg" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Places"></svg>
           <svg id="graph" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Places and legs"></svg>
         </div>
@@ -3107,9 +3139,9 @@ function renderGraph() {
   const legIds = (vp ? vp.legs.concat(vpPend) : Object.keys(S.legs)).filter(id => T[id].ok).sort(byDep);
   const timeOn = true; // time always runs along the timeline: from your first leg, the day you choose, or today
   renderFixNote();
-  const pinSvg = $('#pinSvg');
-  pinSvg.replaceChildren();
-  if (!has) { svg.style.display = 'none'; pinSvg.style.display = 'none'; $('#gwrap').style.width = ''; geo = null; return; }
+  const pinSvg = $('#pinSvg'), head = $('#axisSvg'), corner = $('#axisCorner');
+  pinSvg.replaceChildren(); head.replaceChildren();
+  if (!has) { svg.style.display = 'none'; pinSvg.style.display = 'none'; head.style.display = 'none'; corner.style.display = 'none'; $('#gwrap').style.width = ''; geo = null; return; }
   svg.style.display = ''; pinSvg.style.display = '';
 
   const phone = window.matchMedia && matchMedia('(max-width: 700px)').matches;
@@ -3123,7 +3155,7 @@ function renderGraph() {
     let lo = Infinity, hi = -Infinity;
     for (const id of legIds) { const t = T[id]; if (!t.timed) continue; /* only legs that are drawn set the span */ for (const v of [t.dep, t.arr]) if (v != null) { if (v < lo) lo = v; if (v > hi) hi = v; } }
     const pd = dayMs(S.day); if (pd != null) { lo = Math.min(lo, pd); hi = Math.max(hi, pd + 24 * H); }
-    if (draft && draft.k === 'leg') for (const v of [ts(draft.obj.dep), ts(draft.obj.arr)]) if (v != null) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
+    if (draft && draft.k === 'leg') { const da = ts(draft.obj.arr); for (const v of [ts(draft.obj.dep), da, da != null ? da + Math.max(0, +draft.obj.buf || 0) * MIN : null]) if (v != null) { lo = Math.min(lo, v); hi = Math.max(hi, v); } }
     if (lo === Infinity) { lo = todayMs(); hi = lo + 24 * H; } // nothing timed yet: today
     tmin = floorHour(lo) - H; tmax = floorHour(hi) + 2 * H;
     // auto-fit keeps a smaller margin after the last hour, just room for the end labels, so the timeline fills the frame
@@ -3150,10 +3182,15 @@ function renderGraph() {
   const gPin = pinSvg, pw = left - 14;
   pinSvg.setAttribute('width', pw); pinSvg.setAttribute('height', height); pinSvg.setAttribute('viewBox', `0 0 ${pw} ${height}`);
   pinSvg.style.marginBottom = `-${height}px`;
+  // the time header (dates, the sky strip, the hours) is its own layer that stays at the top while the places scroll
+  const hh = timeOn ? LAY.top + 9 : 0;
+  head.setAttribute('width', width); head.setAttribute('height', hh || 1); head.setAttribute('viewBox', `0 0 ${width} ${hh || 1}`);
+  head.style.marginBottom = `-${hh || 1}px`; head.style.display = hh ? '' : 'none';
+  Object.assign(corner.style, { width: `${pw}px`, height: `${hh}px`, marginBottom: `-${hh}px`, display: hh ? '' : 'none' });
   $('#gwrap').style.width = viewOnly ? '' : width + 'px'; // phones show the list, not the chart
-  el('rect', { x: 0, y: 0, width: pw, height: height + LAY.deep, class: 'pinbg' }, gPin);
+  el('rect', { x: 0, y: hh, width: pw, height: height + LAY.deep - hh, class: 'pinbg' }, gPin); // above it, the corner of the frozen header
   rows.forEach((r, i) => { if (i % 2 === 0) el('rect', { x: 0, y: r.top, width: pw, height: r.bot - r.top, class: 'rowband' }, gPin); });
-  el('line', { x1: pw, x2: pw, y1: 0, y2: height, class: 'pinedge' }, gPin);
+  el('line', { x1: pw, x2: pw, y1: hh, y2: height, class: 'pinedge' }, gPin);
   const hy = LAY.top + (timeOn ? LAY.sky : 0);   // the header sits right above the first place
   txt(gPin, 16, hy + 4, 'PLACES', 'pinlbl');
   const pb = el('g', { class: 'pinbtn', role: 'button', tabindex: '0', 'aria-label': 'Pin or unpin the place names' }, gPin);
@@ -3166,6 +3203,11 @@ function renderGraph() {
   rows.forEach((r, i) => { if (i % 2 === 0) el('rect', { x: 0, y: r.top, width: width + LAY.deep, height: r.bot - r.top, class: 'rowband' }, gBg); });
   if (timeOn) {
     drawTimeAxis(gBg);
+    // the header's parts move to its own layer; the day and night under the places stay with the chart
+    el('rect', { x: 0, y: 0, width, height: hh, class: 'headbg' }, head);
+    gBg.querySelectorAll('.midnight').forEach(m => { const y1 = +m.getAttribute('y1'); if (y1 < hh) el('line', { x1: m.getAttribute('x1'), x2: m.getAttribute('x2'), y1, y2: hh, class: 'midnight' }, head); });
+    gBg.querySelectorAll('[clip-path="url(#skyclip)"], .skyframe, .axisline, .daypill, .daylbl, .hrlbl').forEach(n => head.append(n));
+    geo.gHead = el('g', { class: 'scrub' }, head);
     // where now is, when it is on the timeline
     const now = Date.now();
     if (now > tmin && now < tmax) { const xn = X(now); el('line', { x1: xn, x2: xn, y1: LAY.top + 8, y2: height + LAY.deep, class: 'nowline' }, gBg); txt(gBg, xn + 5, LAY.top + 20, 'Now', 'nowlbl halo'); }
@@ -3223,9 +3265,11 @@ function renderGraph() {
     if (rowY[o.from] != null && rowY[o.to] != null && o.from !== o.to && d != null && a != null && a > d) {
       const g = el('g', { class: 'edge draftleg', 'aria-hidden': 'true' }, gEdge);
       g.style.setProperty('--c', (MODE[o.mode] || MODE.other).color);
-      el('path', { d: curve(X(d), rowY[o.from], X(a), rowY[o.to]), class: 'seg' }, g);
+      const bf = Math.max(0, +o.buf || 0) * MIN, ya = rowY[o.to];
+      el('path', { d: curve(X(d), rowY[o.from], X(a), ya), class: 'seg' }, g);
+      if (bf) { el('line', { x1: X(a), y1: ya, x2: X(a + bf), y2: ya, class: 'bufband' }, g); el('line', { x1: X(a), y1: ya, x2: X(a + bf), y2: ya, class: 'bufline' }, g); }
       el('circle', { cx: X(d), cy: rowY[o.from], r: 6, class: 'dot' }, g);
-      el('circle', { cx: X(a), cy: rowY[o.to], r: 6, class: 'dot' }, g);
+      el('circle', { cx: X(a + bf), cy: ya, r: 6, class: 'dot' }, g);
     }
   }
   // waiting at a node, for each saved plan
@@ -3295,7 +3339,7 @@ function renderGraph() {
   // the start and end time of every leg, always shown: arrivals above the row line, departures below
   rows.forEach(r => r.cl.forEach(k => { const shown = {}; k.items.forEach(q => {
     const t = T[q.leg];
-    const s = q.arr ? hm(t.arrSched) : hm(t.dep);
+    const s = q.arr ? hm(t.arrSched) + (t.buf ? ` +${fmtDur(t.buf)}` : '') : hm(t.dep); // a buffer shows beside the arrival
     const same = shown[(q.arr ? 'a' : 'd') + s];
     if (same) { same.dataset.also = ((same.dataset.also || '') + ' ' + q.leg).trim(); return; }
     const w = tw(s, F.time), levels = q.arr ? [-15, -27, -39] : [22, 34, 46];
@@ -3321,7 +3365,7 @@ function renderGraph() {
   for (const j of legJobs) {
     const t = T[j.id];
     if (t.dep == null || t.arrSched == null) continue;
-    const s = fmtDur(t.arrSched - t.dep), w = tw(s, F.dur) + 12;
+    const dur = fmtDur(t.arrSched - t.dep), s = dur + (t.buf ? ` +${fmtDur(t.buf)}` : ''), w = tw(s, F.dur) + 12;
     let pos = null;
     for (const dy of [0, -13, 13, -26, 26]) {
       for (const dx of [0, -(w / 2 + 8), w / 2 + 8]) {
@@ -3336,7 +3380,7 @@ function renderGraph() {
     g.style.setProperty('--c', j.c);
     el('rect', { x: pos[0] - w / 2, y: pos[1] - 8, width: w, height: 16, rx: 8 }, g);
     txt(g, pos[0], pos[1] + 3.8, s, 'durtxt');
-    el('title', null, g).textContent = `Travel time ${s}${t.buf ? ` + ${fmtDur(t.buf)} buffer` : ''}\n${legTitle(j.id)}`;
+    el('title', null, g).textContent = `Travel time ${dur}${t.buf ? ` + ${fmtDur(t.buf)} buffer` : ''}\n${legTitle(j.id)}`;
   }
 
   // plan badges at the end of each saved plan
@@ -3613,13 +3657,15 @@ function drawTimeAxis(g) {
 function drawScrub() {
   if (!gScrub) return;
   gScrub.replaceChildren();
+  if (geo && geo.gHead) geo.gHead.replaceChildren();
   if (!geo || !geo.time || scrubT == null) return;
   const x = geo.X(scrubT);
   el('line', { x1: x, x2: x, y1: LAY.top + 8, y2: geo.height, class: 'scrubline' + (pinned ? ' pinned' : '') }, gScrub);
   const s = fmtDT(scrubT), w = tw(s, `600 11px ${FONT}`) + 16;
   const px = Math.min(Math.max(x, w / 2 + 2), geo.width - w / 2 - 2);
-  el('rect', { x: px - w / 2, y: 26, width: w, height: 20, rx: 10, class: 'scrubpill' }, gScrub);
-  txt(gScrub, px, 40, s, 'scrubtxt');
+  const pg = geo.gHead || gScrub; // in the frozen header, so it stays in view
+  el('rect', { x: px - w / 2, y: 26, width: w, height: 20, rx: 10, class: 'scrubpill' }, pg);
+  txt(pg, px, 40, s, 'scrubtxt');
   const seen = new Set();
   for (const pi of (viewPlan && PLBY[viewPlan] ? [PLBY[viewPlan]] : PL)) {
     const st = statusAt(pi, scrubT);
@@ -3820,6 +3866,9 @@ function placePin() {
   const on = pinOn();
   g.classList.toggle('sticky', on);
   g.classList.toggle('lifted', on && sc.scrollLeft > 2);
+  const head = $('#axisSvg'), corner = $('#axisCorner');
+  if (head) head.classList.toggle('lifted', sc.scrollTop > 2);
+  if (corner) { corner.classList.toggle('pinleft', on); corner.classList.toggle('lifted', on && sc.scrollLeft > 2); }
   const b = g.querySelector('.pinbtn');
   if (b) {
     b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
@@ -3894,7 +3943,7 @@ function renderInspector() {
   box.hidden = !!B;
   if (B) { builderFoot(guidePhase()); return; }
   if (draft) draftInspector(box);
-  else if (!sel) { const pp = (focusPlan && PLBY[focusPlan]) || (viewPlan && PLBY[viewPlan]); box.append(pp ? planPanel(pp) : canEdit() ? helpPanel() : viewHelp()); }
+  else if (!sel) { const pp = (focusPlan && PLBY[focusPlan]) || (viewPlan && PLBY[viewPlan]); box.append(pp ? planPanel(pp) : emptyPanel()); }
   else if (!canEdit()) readOnlyInspector(box);
   else if (sel.k === 'node') nodeInspector(box, S.nodes[sel.id]);
   else if (sel.k === 'wait') waitInspector(box, S.plans[sel.plan], sel.id);
@@ -4182,7 +4231,7 @@ function legFields(box, o, isDraft) {
     text: b ? '+' + fmtDur(b * MIN) : 'None', onclick: () => pickBuf(b),
   })));
   const when = fgroup('Schedule',
-    fld('Leaves', input(o, 'dep', 'datetime-local', { id: 'fDep', required: true })), fld('Arrives', input(o, 'arr', 'datetime-local', { id: 'fArr', required: true })),
+    fld('Leaves', dtField(o, 'dep', 'fDep')), fld('Arrives', dtField(o, 'arr', 'fArr')),
     h('p', { class: 'live', id: 'liveDur' }),
     h('div', { class: 'fld' },
       h('span', { text: 'Buffer for traffic or delays' }),
@@ -4191,6 +4240,54 @@ function legFields(box, o, isDraft) {
         isDraft ? null : h('button', { type: 'button', class: 'linkbtn', text: 'Use this on every bus and cab leg', onclick: () => applyBufRoad(formValues().buf) }))));
   box.append(route, how, when);
 }
+/* dates are typed as dd/mm/yyyy (the browser's own date box follows its language, often mm/dd/yyyy) */
+function isoToDMY(iso) { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ''); return m ? `${m[3]}/${m[2]}/${m[1]}` : ''; }
+function dmyToIso(v) {
+  const m = /^\s*(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})\s*$/.exec(v || ''); if (!m) return '';
+  const d = +m[1], mo = +m[2], y = +m[3]; if (y < 1900 || y > 2199 || mo < 1 || mo > 12 || d < 1) return '';
+  const dt = new Date(y, mo - 1, d); if (dt.getMonth() !== mo - 1 || dt.getDate() !== d) return '';
+  return `${y}-${pad(mo)}-${pad(d)}`;
+}
+// a dd/mm/yyyy box: the slashes come by themselves as you type, and the calendar button opens the browser's picker
+function dateBox(iso, attrs, onPick) {
+  const i = h('input', Object.assign({ type: 'text', inputmode: 'numeric', placeholder: 'dd/mm/yyyy', maxlength: '10', autocomplete: 'off', spellcheck: 'false', class: 'dtdate' }, attrs || {}));
+  i.value = isoToDMY(iso);
+  i.addEventListener('input', e => {
+    let v = i.value.replace(/[.-]/g, '/').replace(/[^\d/]/g, '').replace(/\/{2,}/g, '/');
+    if (e.inputType === 'insertText' && /^(\d{2}|\d{1,2}\/\d{2})$/.test(v)) v += '/';
+    if (v !== i.value) i.value = v;
+  });
+  i.addEventListener('blur', () => { const x = dmyToIso(i.value); if (x) i.value = isoToDMY(x); });
+  const pick = h('input', { type: 'date', class: 'dtpick', tabindex: '-1', 'aria-hidden': 'true', min: '1900-01-01', max: '2199-12-31' });
+  const cal = h('button', { type: 'button', class: 'dtcal', 'data-ico': 'cal', title: 'Pick on a calendar', 'aria-label': 'Pick on a calendar' });
+  cal.addEventListener('click', e => {
+    e.preventDefault();
+    pick.value = dmyToIso(i.value) || iso || toLocal(todayMs()).slice(0, 10);
+    try { pick.showPicker(); } catch (_) { pick.style.pointerEvents = 'auto'; pick.focus(); }
+  });
+  pick.addEventListener('change', () => {
+    if (!pick.value) return;
+    i.value = isoToDMY(pick.value);
+    i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true }));
+    if (onPick) onPick(pick.value);
+    i.focus();
+  });
+  return { wrap: h('span', { class: 'datebox' }, i, cal, pick), input: i };
+}
+// a leg's leave or arrive time: the day as dd/mm/yyyy, then the time
+function dtField(o, f, id) {
+  const v = String(o[f] || '');
+  const db = dateBox(v.slice(0, 10), { 'data-f': f, 'data-dt': '1', id, required: true, 'aria-label': f === 'dep' ? 'Leaves on, dd/mm/yyyy' : 'Arrives on, dd/mm/yyyy' });
+  const tm = h('input', { type: 'time', class: 'dttime', 'data-dtpart': f, 'aria-label': f === 'dep' ? 'Leaves at' : 'Arrives at' });
+  tm.value = v.slice(11, 16);
+  return h('span', { class: 'dtfield' }, db.wrap, tm);
+}
+// what a date and time field holds, as the form stores it; half filled in counts as missing
+function dtValue(i) {
+  const box = i.closest('.dtfield'), tm = box && box.querySelector('.dttime'), t = tm ? tm.value : '', raw = i.value.trim(), iso = dmyToIso(raw);
+  if (!raw && !t) return '';
+  return iso && t ? `${iso}T${t}` : `?${raw} ${t}`;
+}
 // The travel time line under the times, for whatever the form says now.
 function durText(o) {
   const d = ts(o.dep), a = ts(o.arr);
@@ -4198,7 +4295,7 @@ function durText(o) {
   if (a <= d) return '';
   const buf = Math.max(0, +o.buf || 0) * MIN;
   const before = o.from && S.nodes[o.from] ? legsTo(o.from).filter(id => id !== o.id).map(id => T[id].arr).filter(x => x != null && x <= d) : [];
-  return `Travel time ${fmtDur(a - d)}${buf ? ` + ${fmtDur(buf)} buffer` : ''}${before.length ? `  ·  ${fmtDur(d - Math.max(...before))} after the latest arrival at ${nodeName(o.from)}` : ''}`;
+  return `Travel time ${fmtDur(a - d)}${buf ? ` + ${fmtDur(buf)} buffer, so it counts as arriving ${shortDT(a + buf)}` : ''}${before.length ? `  ·  ${fmtDur(d - Math.max(...before))} after the latest arrival at ${nodeName(o.from)}` : ''}`;
 }
 function syncBufChips() {
   const i = $('#inspector [data-f=buf]'), v = i ? (+i.value || 0) : 0;
@@ -4215,6 +4312,7 @@ function pickBuf(b) {
 function formValues() {
   const v = {}, box = $('#inspector');
   box.querySelectorAll('[data-f]').forEach(i => {
+    if (i.dataset.dt) { v[i.dataset.f] = dtValue(i); return; }
     const f = i.dataset.f, raw = i.value;
     v[f] = f === 'cost' || f === 'buf' ? (i.validity && i.validity.badInput ? NaN : String(raw).trim() === '' ? '' : (num(raw) ?? NaN)) : raw;
   });
@@ -4413,7 +4511,7 @@ function draftInput(target) {
   Object.assign(d.obj, formValues());
   if (target && target.tagName === 'SELECT') d.touched.add(target.dataset.f || target.dataset.end);
   showDraft();
-  if (d.k === 'leg' && target && ['from', 'to', 'dep', 'arr', 'mode'].includes(target.dataset.f || target.dataset.end)) renderGraph();
+  if (d.k === 'leg' && target && ['from', 'to', 'dep', 'arr', 'mode', 'buf'].includes(target.dataset.f || target.dataset.end)) renderGraph();
 }
 function saveDraft() {
   const d = draft; if (!d) return;
@@ -4520,13 +4618,14 @@ function viewHelp() {
       h('li', null, 'Choose a plan above the timeline to see only that plan, or click one under ', h('b', { text: 'Plans' }), ' at the bottom to read its full itinerary and costs here.')),
     h('p', { class: 'hint', text: 'To change anything, choose Edit at the top.' }));
 }
+// With nothing selected, the details panel says what it is for; How it works is behind the ? button at the top.
+function emptyPanel() {
+  return h('div', { class: 'help empty-help' },
+    h('h2', { text: 'Details' }),
+    h('p', { class: 'hint', text: canEdit() ? 'Click a place, a leg or a plan to see and change it here.' : 'Click a place, a leg or a plan to see its details here.' }),
+    h('button', { type: 'button', class: 'btn small', 'data-ico': 'help', text: 'How it works', onclick: e => { e.stopPropagation(); setTimeout(() => { const b = $('#helpBtn'); if (b) b.click(); }, 0); } }));
+}
 function helpPanel() {
-  const lg = h('div', { class: 'lg' });
-  MODES.forEach(([k, label, color]) => lg.append(modeSwatch(color, 34), h('span', { text: label })));
-  lg.append(lineSwatch(), h('span', { text: 'Thin line: waiting at a place in a saved plan, with its label and how long. Click it to rename the wait.' }));
-  lg.append(durSwatch(), h('span', { text: 'Tag on a leg: its travel time' }));
-  lg.append(todSwatch(), h('span', { text: 'Sky above the timeline: night with stars and the moon, sunrise, day with the sun’s path, sunset. The same sky is shaded faintly behind the legs.' }));
-  lg.append(bufSwatch(), h('span', { text: 'Shaded end: buffer for traffic or delays' }));
   return h('div', { class: 'help' },
     h('h2', { text: 'How it works' }),
     h('ol', null,
@@ -4539,8 +4638,7 @@ function helpPanel() {
       h('li', null, h('b', { text: 'Arrange' }), ': turn it on above the timeline, then drag a place name up or down, a leg sideways to move its times, or a leg’s end dot to another time or place. Drag from a place’s line to another place to draw a new leg. Shift-click, or drag a box over empty space or the place names, to select several, then drag any of them (or inside their dashed frame) to move them together; the arrow keys nudge them. Undo puts it back.'),
       h('li', null, h('b', { text: 'Right-click' }), ' a leg, a place, a plan or the timeline for what you can do with it. Esc cancels a new place, leg or plan, or unsaved changes (Undo brings them back), and Enter saves. Drag an empty part of the timeline to scroll it; double-click a place’s row for a new leg there.'),
       h('li', null, h('b', { text: 'Copy and paste' }), ': select a leg and press Ctrl+C then Ctrl+V (⌘ on a Mac), or Ctrl+D, for a copy a little later, in no plan, ready to drag. Hold Ctrl and scroll, or press + and −, over the timeline to zoom it; 0 fits it again. The day button above the timeline picks the day it shows.')),
-    h('div', { class: 'sect' }, h('h3', { text: 'Transport colours' }), lg),
-    h('p', { class: 'hint', style: 'margin-top:12px', text: 'Your work saves automatically in this browser. Use Export in Settings to keep a copy or share it.' }));
+    h('p', { class: 'hint', style: 'margin-top:12px', text: 'What the colours and lines mean is under Key, above the timeline. Your work saves automatically in this browser; use Export in Settings to keep a copy or share it.' }));
 }
 function modeSwatch(color, w) {
   const s = el('svg', { width: w, height: 10, viewBox: `0 0 ${w} 10`, 'aria-hidden': 'true' });
@@ -5445,10 +5543,12 @@ function settleGraph() {
   const tOld = `translateX(${geo.left - was.left + dx}px) scaleX(${k})`, tNew = `translateX(${was.left - geo.left - dx / k}px) scaleX(${1 / k})`;
   const a = ghost.animate([{ transform: 'none', opacity: 1 }, { transform: tOld, opacity: 0 }], { ...opts, fill: 'forwards' });
   const b = g.animate([{ transform: tNew, opacity: rowsSame ? .35 : 0 }, { transform: 'none', opacity: 1 }], opts);
+  const hd = $('#axisSvg'); let hb = null;
+  if (hd && hd.style.display !== 'none' && hd.animate) { hd.style.transformOrigin = `${geo.left}px 0`; hb = hd.animate([{ transform: tNew }, { transform: 'none' }], opts); }
   let ended = false;
   const done = () => {
     if (ended) return; ended = true;
-    b.cancel(); // finished already, or held up (a tab in the background): either way the drawing ends where it belongs
+    b.cancel(); if (hb) hb.cancel(); // finished already, or held up (a tab in the background): either way the drawing ends where it belongs
     ghost.remove(); document.body.classList.remove('settling');
     const sc = $('#graphScroll'); if (geo && sc && Math.abs(sc.clientHeight - (geo.fh || 0)) > 2) renderGraph(); // only if the frame really changed
   };
@@ -5637,7 +5737,7 @@ function syncArrangeBtn() {
   document.body.classList.toggle('arranging', arranging);
   if (!arranging) {
     const g = $('#graph'); if (g) delete g.dataset.grab;
-    hideLinkHint();
+    hideLinkHint(); hideArrangeTime();
     if (pickLegs.size || pickNodes.size) { pickLegs.clear(); pickNodes.clear(); applyPick(); }
   }
   syncPickBar();
@@ -5756,6 +5856,18 @@ function showLinkHint(x, y) {
   linkHint.setAttribute('transform', `translate(${x} ${y})`); linkHint.style.display = '';
 }
 function hideLinkHint() { if (linkHint) linkHint.style.display = 'none'; }
+// While arranging, the pointer shows the moment it is on, with a line down the timeline, so a time is easy to pick.
+let hoverLine = null;
+function arrangeTime(e, p, leg, node) {
+  if (!geo || !geo.time || p.x < geo.left - 4) { hideArrangeTime(); return; }
+  const t = Math.max(geo.tmin, Math.min(geo.tmax, roundTo(timeAtX(p.x), dragStep(e)))), x = geo.X(t), svg = $('#graph');
+  if (!hoverLine || !hoverLine.isConnected) { hoverLine = el('line', { class: 'hoverline' }); svg.insertBefore(hoverLine, geo.gEdge || null); }
+  hoverLine.setAttribute('x1', x); hoverLine.setAttribute('x2', x); hoverLine.setAttribute('y1', LAY.top + 8); hoverLine.setAttribute('y2', geo.height);
+  hoverLine.style.display = '';
+  dragTip(e, [h('b', { text: `${dayLbl(t)}, ${hm(t)}` }),
+    leg ? h('small', { text: legLabel(leg) }) : node ? h('small', { text: `Drag to another place for a new leg from ${nodeName(node)}` }) : null]);
+}
+function hideArrangeTime() { if (hoverLine) hoverLine.style.display = 'none'; if (!drag) { const t = $('#dragTip'); if (t) t.hidden = true; } }
 function dragTip(e, kids, bad) {
   let t = $('#dragTip');
   if (!t) { t = h('div', { id: 'dragTip', class: 'dragtip', role: 'status', 'aria-live': 'polite' }); document.body.append(t); }
@@ -5796,7 +5908,7 @@ function startDrag() {
   const d = drag, svg = $('#graph');
   d.started = true; d.geo = geo;
   document.body.classList.add('dragging');
-  closeMenus(); hideLinkHint();
+  closeMenus(); hideLinkHint(); if (hoverLine) hoverLine.style.display = 'none';
   if (d.kind === 'row') {
     const pin = $('#pinSvg');
     d.heads = [...pin.querySelectorAll('.rowhead')];
@@ -6138,10 +6250,10 @@ function syncDayBtn() {
   b.setAttribute('aria-label', `Day: ${dayLbl(shown)}`);
   b.title = t != null ? `The timeline shows ${fmtDay(t)}. Choose another day` : 'Choose a day to show on the timeline';
   b.classList.toggle('on', t != null);
-  if (i && document.activeElement !== i) i.value = toLocal(shown).slice(0, 10);
+  if (i && document.activeElement !== i) i.value = isoToDMY(toLocal(shown).slice(0, 10));
   const c = $('#dayAuto'); if (c) c.disabled = t == null;
 }
-function fmtDay(t) { return new Date(t).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); }
+function fmtDay(t) { const d = new Date(t); return `${DAYS[d.getDay()]} ${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`; }
 
 /* ---------- zoom with Ctrl or ⌘ and the wheel, a pinch, or the + and − keys over the timeline ---------- */
 // The timeline zooms, not the page, and the moment under the pointer stays under it.
@@ -6397,14 +6509,16 @@ function bind() {
   svg.addEventListener('pointermove', e => {
     if (arranging) { // no hover card while arranging; the pointer shows what a drag would do
       if (!drag && geo && geo.time) {
-        const g = e.target.closest('[data-leg]'), p = svgXY(svg, e);
-        if (g && !g.dataset.wait) { svg.dataset.grab = (pickLegs.has(g.dataset.leg) && pickLegs.size > 1) || legPart(g.dataset.leg, p) === 'body' ? 'body' : 'end'; hideLinkHint(); }
+        const g = e.target.closest('[data-leg]'), p = svgXY(svg, e), leg = g && !g.dataset.wait ? g.dataset.leg : null;
+        let node = null;
+        if (leg) { svg.dataset.grab = (pickLegs.has(leg) && pickLegs.size > 1) || legPart(leg, p) === 'body' ? 'body' : 'end'; hideLinkHint(); }
         else if (e.target.closest('.pickframe')) { svg.dataset.grab = 'frame'; hideLinkHint(); }
         else {
-          const node = e.target.closest('.badge, [data-wait]') ? null : onRowLine(p);
+          node = e.target.closest('.badge, [data-wait]') ? null : onRowLine(p);
           if (node) { svg.dataset.grab = 'link'; showLinkHint(geo.X(Math.max(geo.tmin, roundTo(timeAtX(p.x), dragStep(e)))), geo.rowY[node]); }
           else { delete svg.dataset.grab; hideLinkHint(); }
         }
+        arrangeTime(e, p, leg, node);
       }
       return;
     }
@@ -6435,7 +6549,7 @@ function bind() {
     if (node) dragDown(e, 'link', null, null, { node0: node, t0: Math.max(geo.tmin, roundTo(timeAtX(p.x), dragStep(e))) });
     else dragDown(e, 'box', null, null, { add });
   });
-  svg.addEventListener('pointerleave', () => hideLinkHint());
+  svg.addEventListener('pointerleave', () => { hideLinkHint(); hideArrangeTime(); });
   $('#pinSvg').addEventListener('pointerdown', e => {
     if (!arranging || e.button !== 0 || spaceDown || e.target.closest('.pinbtn')) return;
     if (MAC && e.ctrlKey) return; // Control-click on a Mac is a right-click
@@ -6495,13 +6609,20 @@ function bind() {
   addEventListener('keyup', e => { if (e.key === ' ' && spaceDown) { spaceDown = false; document.body.classList.remove('space-pan'); } });
   addEventListener('blur', () => { spaceDown = false; document.body.classList.remove('space-pan'); });
   // the day the timeline shows
-  $('#dayPick').addEventListener('change', e => setDay(e.target.value, true));
+  {
+    const db = dateBox('', { id: 'dayPick', 'aria-label': 'Day, dd/mm/yyyy' }, v => setDay(v, true));
+    $('#dayBox').replaceWith(db.wrap);
+    db.input.addEventListener('input', () => { const v = dmyToIso(db.input.value); if (v && /\d{4}$/.test(db.input.value)) setDay(v, true); });
+    db.input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); const v = dmyToIso(db.input.value); if (v) setDay(v); } });
+  }
   $('#dayToday').addEventListener('click', () => setDay(toLocal(todayMs()).slice(0, 10)));
   $('#dayAuto').addEventListener('click', () => setDay(''));
   // the click that ends a drag does nothing else
   // (only on the timeline: a button elsewhere, such as Undo in a note, works at once)
   document.addEventListener('click', e => { if (performance.now() < noClickUntil && e.target instanceof Element && e.target.closest('#graphScroll')) { noClickUntil = 0; e.stopPropagation(); e.preventDefault(); } }, true);
   $('#arrangeBtn').addEventListener('click', () => setArrange(!arranging));
+  // the ? button: How it works, for editing or for viewing, filled as it opens
+  $('#helpBtn').addEventListener('click', () => { const pop = $('#helpMenu .menu-pop'); if (pop) pop.replaceChildren(canEdit() ? helpPanel() : viewHelp()); });
   // Ctrl or ⌘ with the wheel (or a pinch on a touchpad) zooms the timeline, never the page
   const card = $('.graph-card');
   card.addEventListener('wheel', e => {
@@ -6599,15 +6720,17 @@ function bind() {
   insp.addEventListener('focusin', e => { const d = e.target.dataset || {}; if (d.end) e.target.dataset.prev = e.target.value; });
   // a new item shows what a field still needs once you leave that field
   insp.addEventListener('focusout', e => {
-    const d = e.target.dataset || {}, f = d.f || d.end;
+    const d = e.target.dataset || {}, f = d.f || d.end || d.dtpart;
     if (draft && f) { draft.touched.add(f); showDraft(); }
   });
   insp.addEventListener('input', e => {
     if (e.target.dataset && e.target.dataset.waitLabel && sel && sel.k === 'wait') { editInput(e.target); return; }
-    const f = e.target.dataset && e.target.dataset.f;
+    let tg = e.target;
+    if (tg.dataset && tg.dataset.dtpart) tg = tg.closest('.dtfield').querySelector('[data-f]') || tg; // the time goes with its day
+    const f = tg.dataset && tg.dataset.f;
     if (!f) return;
-    if (draft) { draftInput(e.target); return; }
-    if (sel) editInput(e.target);
+    if (draft) { draftInput(tg); return; }
+    if (sel) editInput(tg);
   });
   insp.addEventListener('change', e => {
     const side = e.target.dataset && e.target.dataset.end;
