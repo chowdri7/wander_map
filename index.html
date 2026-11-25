@@ -1912,23 +1912,16 @@ html.glass .side-split::after{background:var(--g-field)}
 .vtabs-wrap.can-left{--fl:36px}
 .vtabs-wrap.can-right{--fr:36px}
 /* the controls, in their own place at the end, on the strip's own background */
-.vt-ctrls{flex:none;display:flex;align-items:center;gap:8px;padding:6px 12px 0 6px;background:var(--surface2);border-bottom:1px solid var(--border)}
+.vt-ctrls{flex:none;display:flex;align-items:center;gap:8px;padding:6px 12px 0 8px;background:var(--surface2);border-bottom:1px solid var(--border)}
 html.glass .vt-ctrls{background:var(--g-inner2);border-bottom-color:var(--g-line)}
 .vt-ctrls[hidden]{display:none}
-.vt-nav{display:inline-flex;align-items:center;gap:1px;padding:2px;border-radius:999px;background:var(--surface);border:1px solid var(--border)}
-html.glass .vt-nav{background:var(--g-inner);border-color:var(--g-edge);box-shadow:var(--g-hi)}
-.vt-step,.vt-list{display:grid;place-items:center;padding:0;border:0;background:none;color:var(--ink2);cursor:pointer;font-size:0;transition:background-color .15s,color .15s,opacity .15s}
-.vt-step{width:26px;height:26px;border-radius:999px}
-.vt-step::before{width:14px;height:14px}
-.vt-step:hover:not(:disabled){background:var(--surface2);color:var(--ink)}
-html.glass .vt-step:hover:not(:disabled){background:var(--g-strong)}
-.vt-step:disabled{opacity:.32;cursor:default}
+.vt-list{display:grid;place-items:center;padding:0;border:0;background:none;color:var(--ink2);cursor:pointer;font-size:0;transition:background-color .15s,color .15s,opacity .15s}
 .vt-list{width:32px;height:32px;border-radius:50%;background:var(--surface);border:1px solid var(--border)}
 .vt-list::before{width:15px;height:15px}
 html.glass .vt-list{background:var(--g-inner);border-color:var(--g-edge);box-shadow:var(--g-hi)}
 .vt-list:hover,.vt-all.open .vt-list{color:var(--ink);background:var(--surface2)}
 html.glass .vt-list:hover,html.glass .vt-all.open .vt-list{background:var(--g-strong)}
-.vt-step:focus-visible,.vt-list:focus-visible{outline:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 55%,transparent)}
+.vt-list:focus-visible{outline:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 55%,transparent)}
 .vt-all .menu-pop{max-width:320px}
 /* the hover card: several plans on one line */
 .scrubtip .st-dots{display:grid;grid-template-columns:repeat(2,6px);gap:2px;margin-top:4px;flex:none}
@@ -2162,7 +2155,6 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
       <div class="vtabs-wrap" id="vtabsWrap">
         <div class="viewtabs" id="viewTabs" role="tablist" aria-label="View"></div>
         <div class="vt-ctrls" id="vtCtrls" hidden>
-          <span class="vt-nav" role="group" aria-label="Scroll the plan tabs"><button class="vt-step" id="vtLeft" type="button" data-ico="prev" aria-label="Earlier tabs" title="Earlier tabs"></button><button class="vt-step" id="vtRight" type="button" data-ico="next" aria-label="Later tabs" title="Later tabs"></button></span>
           <div class="menu vt-all" id="vtAll"><button class="vt-list" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" data-ico="list" title="Every plan" aria-label="Every plan"></button><div class="menu-pop right" role="menu" aria-label="Every plan" hidden></div></div>
         </div>
       </div>
@@ -3616,6 +3608,16 @@ function renderGraph() {
       }
       if (done) break;
     }
+  }
+  // plan tags and labels set below the last place: the timeline grows to hold them, so they can be scrolled to
+  const need = Math.ceil(Math.max(0, ...boxes.map(b => b[3]))) + 16;
+  if (need > height) {
+    svg.setAttribute('height', need); svg.setAttribute('viewBox', `0 0 ${width} ${need}`);
+    pinSvg.setAttribute('height', need); pinSvg.setAttribute('viewBox', `0 0 ${pw} ${need}`); pinSvg.style.marginBottom = `-${need}px`;
+    const hit = gBg.querySelector('.hit'), edge = pinSvg.querySelector('.pinedge');
+    if (hit) hit.setAttribute('height', need);
+    if (edge) edge.setAttribute('y2', need);
+    geo.height = need;
   }
   drawScrub();
   renderTip(); // the card beside the line follows it to its new place
@@ -5601,8 +5603,8 @@ function placeTabInd() {
   ind.style.opacity = '1'; ind.style.width = t.offsetWidth + 'px'; ind.style.transform = `translateX(${t.offsetLeft}px)`;
   if (first) { void ind.offsetWidth; ind.style.transition = ''; ind.dataset.placed = '1'; }
 }
-// More plans than fit: the strip scrolls (with the arrows at its ends, the wheel or a swipe), shows which way
-// there are more, and the list button at its end has every plan.
+// More plans than fit: the strip scrolls (with the wheel or a swipe), fades at an edge where there are more, and
+// the list button at its end has every plan.
 function syncTabScroll() {
   const box = $('#viewTabs'), wrap = $('#vtabsWrap'); if (!box || !wrap) return;
   // the controls take room from the strip, so the strip is measured as it would be without them
@@ -5611,7 +5613,6 @@ function syncTabScroll() {
   const left = over && box.scrollLeft > 2, right = over && box.scrollLeft < box.scrollWidth - box.clientWidth - 2;
   wrap.classList.toggle('over', over); wrap.classList.toggle('can-left', left); wrap.classList.toggle('can-right', right);
   ctl.hidden = !over;
-  $('#vtLeft').disabled = !left; $('#vtRight').disabled = !right;
 }
 // the chosen tab is always in view, clear of the arrows and the list button
 function showChosenTab(smooth) {
@@ -6883,8 +6884,6 @@ function bind() {
       if (!d) return;
       e.preventDefault(); box.scrollLeft += d;
     }, { passive: false });
-    $('#vtLeft').addEventListener('click', () => box.scrollBy({ left: -Math.max(120, box.clientWidth * .7), behavior: scrollMode() }));
-    $('#vtRight').addEventListener('click', () => box.scrollBy({ left: Math.max(120, box.clientWidth * .7), behavior: scrollMode() }));
     $('#vtAll [data-menu-btn]').addEventListener('click', () => {
       const ids = [...(viewOnly ? [] : [null]), ...PL.map(p => p.id)];
       $('#vtAll .menu-pop').replaceChildren(...ids.map(id => {
