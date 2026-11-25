@@ -905,6 +905,7 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 [data-ico="place"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 21s-6.5-5.8-6.5-11a6.5 6.5 0 0 1 13 0c0 5.2-6.5 11-6.5 11z%22/%3E%3Ccircle cx=%2212%22 cy=%2210%22 r=%222.3%22/%3E%3C/svg%3E")}
 [data-ico="leg"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%225.5%22 cy=%2218.5%22 r=%222.2%22/%3E%3Ccircle cx=%2218.5%22 cy=%225.5%22 r=%222.2%22/%3E%3Cpath d=%22M7.7 18.5H15a3.3 3.3 0 0 0 0-6.6H9a3.3 3.3 0 0 1 0-6.6h7.3%22/%3E%3C/svg%3E")}
 [data-ico="plan"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4z%22/%3E%3Cpath d=%22M9 4v14M15 6v14%22/%3E%3C/svg%3E")}
+[data-ico="cal"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223.5%22 y=%225%22 width=%2217%22 height=%2216%22 rx=%222.5%22/%3E%3Cpath d=%22M3.5 10h17M8 3v4M16 3v4%22/%3E%3C/svg%3E")}
 [data-ico="move"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3%22/%3E%3C/svg%3E")}
 [data-ico="dup"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%228%22 y=%228%22 width=%2213%22 height=%2213%22 rx=%222.5%22/%3E%3Cpath d=%22M16 8V5.5A2.5 2.5 0 0 0 13.5 3h-8A2.5 2.5 0 0 0 3 5.5v8A2.5 2.5 0 0 0 5.5 16H8M14.5 11.5v6M11.5 14.5h6%22/%3E%3C/svg%3E")}
 [data-ico="fit"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5%22/%3E%3C/svg%3E")}
@@ -1883,11 +1884,41 @@ html.glass .side-split::after{background:var(--g-field)}
 .card-head .now .hint{margin:0;font-size:12px;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card-head .now strong{color:var(--ink) !important;font-weight:600}
 /* narrower windows: Arrange shows its icon only, and the hint gives way before it is squeezed to nothing */
-@media (max-width:1100px){#arrangeBtn{width:30px;padding:0;font-size:0;gap:0}}
-@media (max-width:860px){.card-head .now{display:none}}
+@media (max-width:1100px){#arrangeBtn,#dayBtn{width:30px;padding:0;font-size:0;gap:0}}
+/* the hint takes only the room the title and the tools leave, and steps aside before it is squeezed to nothing */
+.graph-card .card-head{container-type:inline-size}
+@container (max-width:830px){.card-head .now{display:none}}
+@media (min-width:1101px){@container (max-width:960px){.card-head .now{display:none}}}
 /* the details panel opening or closing: the timeline's frame narrows or widens without a scrollbar flashing in,
    then the old drawing fades out over the new one */
 .side-moving .graph-scroll,.side-dragging .graph-scroll,.settling .graph-scroll{overflow-x:hidden !important}
+/* the selection while arranging */
+#graph .edge.picked .seghit{stroke:color-mix(in srgb,var(--accent) 22%,transparent)}
+#graph .edge.picked .seg{stroke-width:5.5}
+#graph .pt.picked .dot{stroke:var(--accent);stroke-width:2.5}
+#pinSvg .rowhead.picked .rowhit{fill:color-mix(in srgb,var(--accent) 12%,transparent);stroke:color-mix(in srgb,var(--accent) 55%,transparent);stroke-width:1.5}
+#graph .marquee{fill:color-mix(in srgb,var(--accent) 9%,transparent);stroke:var(--accent);stroke-width:1;stroke-dasharray:4 3;pointer-events:none}
+#graph .linkhint{pointer-events:none}
+#graph .linkhint circle{fill:var(--surface);stroke:var(--accent);stroke-width:2}
+#graph .linkhint path{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round}
+.arranging #graph[data-grab="link"],.arranging #graph[data-grab="link"] *{cursor:crosshair}
+#graph .draftleg{pointer-events:none}
+#graph .draftleg .seg{stroke-dasharray:8 6}
+#graph .draftleg .dot{fill:var(--surface);stroke:var(--c);stroke-width:3}
+#graph .nowline{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:3 4;opacity:.75;pointer-events:none}
+#graph .nowlbl{font:700 10px var(--font);letter-spacing:.06em;fill:var(--accent);pointer-events:none}
+.graph-card{position:relative}
+.pickbar{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:6;display:flex;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-lg);font-size:12.5px;white-space:nowrap;max-width:calc(100% - 24px)}
+.pickbar[hidden]{display:none}
+.pickbar .pb-count{font-weight:650;color:var(--ink)}
+.pickbar .pb-hint{color:var(--muted);overflow:hidden;text-overflow:ellipsis;min-width:0}
+html.glass .pickbar{background:var(--g-strong);border-color:var(--g-edge);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%)}
+.daypop{min-width:250px;padding:12px !important;display:flex;flex-direction:column;gap:9px}
+.daypop .dp-head{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.daypop input[type=date]{height:34px;padding:0 10px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit}
+.daypop .dp-btns{display:flex;gap:6px}
+.daypop .dp-note{margin:0;font-size:11.5px;line-height:1.45;color:var(--muted);white-space:normal}
+#dayBtn.on{border-color:color-mix(in srgb,var(--accent) 45%,transparent);color:var(--accent)}
 /* Arrange: places and legs can be dragged only while it is on */
 .arranging #pinSvg .rowhead{cursor:grab}
 .arranging #graph .edge,.arranging #graph .pt,.arranging #graph .tm,.arranging #graph .durtag{cursor:grab}
@@ -1895,7 +1926,8 @@ html.glass .side-split::after{background:var(--g-field)}
 .arranging #graph .edge,.arranging #graph .pt,.arranging #graph .tm,.arranging #graph .durtag,.arranging #pinSvg .rowhead{touch-action:none}
 body.dragging,body.dragging *{cursor:grabbing !important;-webkit-user-select:none !important;user-select:none !important}
 #graph.dragging .edge:not(.drag),#graph.dragging .pt:not(.drag),#graph.dragging .tm:not(.drag),#graph.dragging .durtag:not(.drag),#graph.dragging .wait,#graph.dragging .badge,#graph.dragging .station{opacity:.22}
-#graph .drag.ghosted{opacity:.3}
+#graph .drag.ghosted{opacity:.3 !important}
+#graph .picked,#graph .drag{opacity:1 !important}
 #graph .drag.settle,#pinSvg .rowhead.settle{transition:transform .2s var(--ease),opacity .22s var(--ease)}
 #graph .dragband{fill:var(--accent);opacity:.08;pointer-events:none}
 #graph .dragprev{pointer-events:none}
@@ -2017,6 +2049,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
           <button id="costBtn" class="btn small" type="button" data-ico="coin" aria-pressed="false" title="Show the cost of each leg on the timeline">Costs: off</button>
           <span class="zoomgrp"><span class="tb-label">Zoom</span><input id="zoom" type="range" min="3" max="60" step="1" aria-label="Zoom timeline"></span>
           <button id="fit" class="btn small icon" type="button" data-ico="fit" title="Fit the whole timeline on screen">Fit</button>
+          <div class="menu" id="dayMenu"><button class="btn small" id="dayBtn" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="cal" title="Choose the day the timeline shows">Day</button><div class="menu-pop right daypop" role="dialog" aria-label="The day the timeline shows" hidden><div class="dp-head">Day on the timeline</div><input type="date" id="dayPick" aria-label="Day" min="1900-01-01" max="2199-12-31"><div class="dp-btns"><button type="button" class="btn small" id="dayToday">Today</button><button type="button" class="btn small" id="dayAuto" title="The timeline starts at your first leg, or today when there are none">From the first leg</button></div><p class="dp-note">With no legs yet the timeline shows today. A day you choose is added to the timeline and kept with this trip, so you can start planning right there.</p></div></div>
           <button id="arrangeBtn" class="btn small" type="button" data-ico="move" aria-pressed="false" title="Arrange: drag a place name up or down, a leg sideways to move its times, or a leg’s end dot to another time or place (hold Shift for 5-minute steps). Off, nothing moves when you scroll or click.">Arrange</button>
           <div class="menu" id="keyMenu"><button class="btn small" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="key" title="What the colours and lines mean">Key</button><div class="menu-pop right keypop" role="dialog" aria-label="Colour key" hidden><div class="legend" id="legend"></div></div></div>
         </div>
@@ -2030,6 +2063,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
       </div>
       <div class="notice" id="noTimeHint" hidden></div>
       <div class="notice" id="guideNote" role="status" hidden></div>
+      <div class="pickbar" id="pickBar" role="toolbar" aria-label="Selection" hidden></div>
       <div id="graphScroll" class="graph-scroll">
         <div id="scrubTip" class="scrubtip" hidden></div>
         <div class="gwrap" id="gwrap">
@@ -2439,7 +2473,7 @@ function canEdit() { return !viewOnly && !UI.view; }
 function fld(label, input, hint) { return h('label', { class: 'fld' }, h('span', { text: label }), input, hint ? h('small', { text: hint }) : null); }
 
 /* ---------- state lifecycle ---------- */
-function blank() { return { v: 3, currency: DEFAULT_CURRENCY, budget: 0, pph: null, sort: 'made', nodes: {}, order: [], legs: {}, plans: {}, planOrder: [], picked: null, seq: 1, example: false }; }
+function blank() { return { v: 3, currency: DEFAULT_CURRENCY, budget: 0, pph: null, day: '', sort: 'made', nodes: {}, order: [], legs: {}, plans: {}, planOrder: [], picked: null, seq: 1, example: false }; }
 function uid(p) { let id; do { id = p + (S.seq++).toString(36) + Math.random().toString(36).slice(2, 5); } while (S.nodes[id] || S.legs[id] || S.plans[id] || placeIdElsewhere(id)); return id; }
 function addNode(name) { const id = uid('n'); S.nodes[id] = { id, name: name || '', note: '' }; S.order.push(id); return id; }
 function findNode(name, except) { const k = normName(name); if (!k) return null; return S.order.find(id => id !== except && normName(S.nodes[id].name) === k) || null; }
@@ -2474,6 +2508,7 @@ function normalize(d) {
   // zoom stays within the slider's range (3 to 60 px an hour), so a file cannot make the timeline huge or inside out
   const pph = num(d.pph);
   out.pph = pph ? Math.max(3, Math.min(60, pph)) : null;
+  out.day = typeof d.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.day) ? d.day : '';
   out.sort = SORTS.includes(d.sort) ? d.sort : 'made';
   out.example = !!d.example;
   out.seq = Math.max(1, num(d.seq) || 1);
@@ -3056,7 +3091,7 @@ function renderGraph() {
   const vpNodes = vp ? new Set([...vp.nodes, ...vpPend.flatMap(id => [S.legs[id].from, S.legs[id].to])]) : null;
   const order = vp ? S.order.filter(id => vpNodes.has(id)) : S.order;
   const legIds = (vp ? vp.legs.concat(vpPend) : Object.keys(S.legs)).filter(id => T[id].ok).sort(byDep);
-  const timeOn = legIds.some(id => T[id].timed);
+  const timeOn = true; // time always runs along the timeline: from your first leg, the day you choose, or today
   renderFixNote();
   const pinSvg = $('#pinSvg');
   pinSvg.replaceChildren();
@@ -3073,6 +3108,9 @@ function renderGraph() {
   if (timeOn) {
     let lo = Infinity, hi = -Infinity;
     for (const id of legIds) { const t = T[id]; if (!t.timed) continue; /* only legs that are drawn set the span */ for (const v of [t.dep, t.arr]) if (v != null) { if (v < lo) lo = v; if (v > hi) hi = v; } }
+    const pd = dayMs(S.day); if (pd != null) { lo = Math.min(lo, pd); hi = Math.max(hi, pd + 24 * H); }
+    if (draft && draft.k === 'leg') for (const v of [ts(draft.obj.dep), ts(draft.obj.arr)]) if (v != null) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
+    if (lo === Infinity) { lo = todayMs(); hi = lo + 24 * H; } // nothing timed yet: today
     tmin = floorHour(lo) - H; tmax = floorHour(hi) + 2 * H;
     // auto-fit keeps a smaller margin after the last hour, just room for the end labels, so the timeline fills the frame
     const right = autoFitOn() ? 130 : LAY.right;
@@ -3112,7 +3150,12 @@ function renderGraph() {
   gScrub = el('g', { class: 'scrub' }, svg);
   el('rect', { x: 0, y: 0, width, height, class: 'hit' }, gBg);
   rows.forEach((r, i) => { if (i % 2 === 0) el('rect', { x: 0, y: r.top, width: width + LAY.deep, height: r.bot - r.top, class: 'rowband' }, gBg); });
-  if (timeOn) drawTimeAxis(gBg);
+  if (timeOn) {
+    drawTimeAxis(gBg);
+    // where now is, when it is on the timeline
+    const now = Date.now();
+    if (now > tmin && now < tmax) { const xn = X(now); el('line', { x1: xn, x2: xn, y1: LAY.top + 8, y2: height + LAY.deep, class: 'nowline' }, gBg); txt(gBg, xn + 5, LAY.top + 20, 'Now', 'nowlbl halo'); }
+  }
   const meets = {};
   plist.forEach(pi => pi.nodes.forEach(n => { (meets[n] || (meets[n] = new Set())).add(pi.id); }));
   rows.forEach(r => {
@@ -3159,6 +3202,17 @@ function renderGraph() {
     el('title', null, hit).textContent = legTitle(id);
     legs[id] = { s0, yd, xS, yk, xA };
     legJobs.push({ id, x: (s0 + xS) / 2, y: (yd + yk) / 2, mode: m.label, c: m.color, cost: l.cost });
+  }
+  // a new leg being made, drawn dashed until it is saved
+  if (draft && draft.k === 'leg') {
+    const o = draft.obj, d = ts(o.dep), a = ts(o.arr);
+    if (rowY[o.from] != null && rowY[o.to] != null && o.from !== o.to && d != null && a != null && a > d) {
+      const g = el('g', { class: 'edge draftleg', 'aria-hidden': 'true' }, gEdge);
+      g.style.setProperty('--c', (MODE[o.mode] || MODE.other).color);
+      el('path', { d: curve(X(d), rowY[o.from], X(a), rowY[o.to]), class: 'seg' }, g);
+      el('circle', { cx: X(d), cy: rowY[o.from], r: 6, class: 'dot' }, g);
+      el('circle', { cx: X(a), cy: rowY[o.to], r: 6, class: 'dot' }, g);
+    }
   }
   // waiting at a node, for each saved plan
   const waitStack = {};
@@ -3331,6 +3385,7 @@ function renderGraph() {
   drawGuide();
   drawNav();
   placePin();
+  applyPick();
 }
 function curveY(L, x) {
   if (Math.abs(L.yk - L.yd) < .5 || L.xS - L.s0 < 1) return x >= L.xS ? L.yk : L.yd;
@@ -3783,7 +3838,7 @@ function renderNow() {
   if (!S.order.length) return;
   if (!geo || !geo.time) { box.append(h('p', { class: 'hint', text: 'Add times to your legs to use the timeline.' })); return; }
   if (!PL.some(p => p.legs.length)) { box.append(h('p', { class: 'hint', text: 'Save a plan, then move the pointer across the timeline to see where each plan is at that moment.' })); return; }
-  if (scrubT == null) { renderTip(); box.append(h('p', { class: 'hint', text: arranging ? 'Arrange is on: drag a place name up or down, or a leg or its end dot. Esc or Arrange again to stop.' : TOUCH ? 'Tap the timeline to see where every saved plan is at that moment. Tap again to release.' : 'Move the pointer across the timeline to see where every saved plan is at that moment. Click to pin it.' })); return; }
+  if (scrubT == null) { renderTip(); box.append(h('p', { class: 'hint', text: arranging ? 'Arrange is on: drag places and legs to move them, from a place’s line to another place to add a leg, or across empty space to select several. Esc to stop.' : TOUCH ? 'Tap the timeline to see where every saved plan is at that moment. Tap again to release.' : 'Move the pointer across the timeline to see where every saved plan is at that moment. Click to pin it.' })); return; }
   box.append(h('p', { class: 'hint' }, h('strong', { text: fmtDT(scrubT), style: 'color:var(--ink)' }),
     pinned ? (TOUCH ? '  ·  pinned here, tap the timeline to release' : '  ·  pinned here, click the timeline to release') : '  ·  click to pin this moment'));
   renderTip();
@@ -4084,6 +4139,7 @@ function legInspector(box, l) {
   ed.normalFoot = () => setFoot(icoBtn(l.to ? `Add leg from ${nodeName(l.to)}` : 'Add the next leg', () => newLeg({ from: l.to, mode: l.mode, after: T[l.id] ? T[l.id].arr : null }), 'primary', 'leg', 'A leg that leaves where this one arrives', !l.to), [
     { label: 'Return leg', sub: 'The same trip back the other way', ico: 'undo', disabled: !(l.from && l.to), run: () => newLeg({ from: l.to, to: l.from, mode: l.mode }) },
     { label: 'Alternative leg', sub: 'Another way between the same two places', ico: 'leg', run: () => newLeg({ from: l.from, to: l.to, mode: l.mode, dep: l.dep, arr: l.arr }) },
+    { label: 'Duplicate leg', sub: 'A copy a little later, in no plan, to drag elsewhere (Ctrl+D)', ico: 'dup', run: () => duplicateLegs([l.id]) },
   ], icoBtn('Delete', () => delLeg(l.id), 'danger', 'trash', 'Delete this leg (you can undo)'));
   showSaved('leg', l);
 }
@@ -4342,6 +4398,7 @@ function draftInput(target) {
   Object.assign(d.obj, formValues());
   if (target && target.tagName === 'SELECT') d.touched.add(target.dataset.f || target.dataset.end);
   showDraft();
+  if (d.k === 'leg' && target && ['from', 'to', 'dep', 'arr', 'mode'].includes(target.dataset.f || target.dataset.end)) renderGraph();
 }
 function saveDraft() {
   const d = draft; if (!d) return;
@@ -4464,7 +4521,8 @@ function helpPanel() {
       h('li', null, h('b', { text: 'Make a plan' }), ': choose New, then Plan. Click the leg you leave on in the timeline, then take the way on at each place (when there is more than one, they are numbered) until you get there, and choose Finish.'),
       h('li', null, 'Name the plan and add its own other costs (stay, food), then save. Travel fares belong to the legs, so a fare is the same in every plan. Compare saved plans below and star the one you pick.'),
       h('li', null, h('b', { text: 'Trips' }), ': each trip has its own legs, plans, budget and currency. Open another or add one from the trip name at the top. A place is in every trip unless you keep it to one.'),
-      h('li', null, h('b', { text: 'Arrange' }), ': turn it on above the timeline, then drag a place name up or down, a leg sideways to move its times, or a leg’s end dot to another time or place. Undo puts it back. Hold Ctrl (⌘ on a Mac) and scroll, or press + and −, over the timeline to zoom it; 0 fits it again.')),
+      h('li', null, h('b', { text: 'Arrange' }), ': turn it on above the timeline, then drag a place name up or down, a leg sideways to move its times, or a leg’s end dot to another time or place. Drag from a place’s line to another place to draw a new leg. Shift-click, or drag a box over empty space, to select several and drag them together. Undo puts it back.'),
+      h('li', null, h('b', { text: 'Copy and paste' }), ': select a leg and press Ctrl+C then Ctrl+V (⌘ on a Mac), or Ctrl+D, for a copy a little later, in no plan, ready to drag. Hold Ctrl and scroll, or press + and −, over the timeline to zoom it; 0 fits it again. The day button above the timeline picks the day it shows.')),
     h('div', { class: 'sect' }, h('h3', { text: 'Transport colours' }), lg),
     h('p', { class: 'hint', style: 'margin-top:12px', text: 'Your work saves automatically in this browser. Use Export in Settings to keep a copy or share it.' }));
 }
@@ -5049,9 +5107,11 @@ function newLeg(props) {
     if (base == null) for (const id in S.legs) if (S.legs[id].to === p.from && T[id] && T[id].arr != null) base = Math.max(base ?? -Infinity, T[id].arr);
     if (base != null) { const d = roundTo(base + H, 30 * MIN); p.dep = toLocal(d); p.arr = toLocal(d + 2 * H); }
   }
-  delete p.after;
+  // nothing to follow: it starts on the day the timeline shows, when you chose one
+  if (!p.dep && dayMs(S.day) != null) { const d = dayMs(S.day) + 9 * H; p.dep = toLocal(d); p.arr = toLocal(d + 2 * H); }
+  const focus = p.focus; delete p.after; delete p.focus;
   const o = Object.assign({}, LEGF, p);
-  openDraft('leg', o, !o.from ? '#fFrom' : !o.to ? '#fTo' : '#fDep');
+  openDraft('leg', o, focus || (!o.from ? '#fFrom' : !o.to ? '#fTo' : '#fDep'));
 }
 function addNodeFromLeg() {
   const row = $('#newNodeRow'), name = $('#newNodeName').value.trim(), side = row.dataset.side;
@@ -5514,8 +5574,9 @@ function joinPending() {
 function syncToolbar() {
   $('#zoom').value = autoFitOn() && geo && geo.time ? geo.pph : (S.pph || 14);
   syncFitBtn();
-  $('#zoom').disabled = !hasTime; $('#fit').disabled = !hasTime;
-  syncArrangeBtn();
+  const tl = !!(geo && geo.time);
+  $('#zoom').disabled = !tl; $('#fit').disabled = !tl;
+  syncArrangeBtn(); syncDayBtn();
   if (document.activeElement !== $('#budget')) $('#budget').value = S.budget || '';
   $('#currency').value = S.currency;
   $('#setCur').textContent = curSym(); // the budget's currency sign in Settings follows the currency at once
@@ -5548,6 +5609,8 @@ function toast(msg, undoable) {
    drags along its row to change that time, or onto another place's row to leave from or arrive there.
    Every drop goes through the same checks as editing the leg, and Undo puts it back. */
 let arranging = false, drag = null, noClickUntil = 0;
+// the selection while arranging: several legs and places that move together
+const pickLegs = new Set(), pickNodes = new Set();
 function canArrange() { return canEdit() && !B && S.order.length > 0; }
 function syncArrangeBtn() {
   const b = $('#arrangeBtn'); if (!b) return;
@@ -5556,17 +5619,56 @@ function syncArrangeBtn() {
   b.disabled = !S.order.length;
   b.setAttribute('aria-pressed', String(arranging));
   document.body.classList.toggle('arranging', arranging);
-  if (!arranging) { const g = $('#graph'); if (g) delete g.dataset.grab; }
+  if (!arranging) {
+    const g = $('#graph'); if (g) delete g.dataset.grab;
+    hideLinkHint();
+    if (pickLegs.size || pickNodes.size) { pickLegs.clear(); pickNodes.clear(); applyPick(); }
+  }
+  syncPickBar();
 }
-function setArrange(on) {
+function setArrange(on, quiet) {
   on = !!on;
   if (on === arranging || (on && !canArrange())) return;
   if (!on && drag) dropDrag(false);
   arranging = on;
-  if (on && (scrubT != null || pinned)) { scrubT = null; pinned = false; drawScrub(); renderNow(); } // the hover card steps aside
+  if (on && (scrubT != null || pinned)) { scrubT = null; pinned = false; drawScrub(); } // the hover card steps aside
   syncArrangeBtn(); renderNow();
-  toast(on ? 'Arrange is on: drag a place name up or down, a leg sideways to move its times, or a leg’s end dot to another time or place. Esc ends it.' : 'Arrange is off: the timeline only scrolls');
+  if (!quiet) toast(on ? 'Arrange is on: drag places and legs to move them, drag from a place’s line to another place to add a leg, or drag across empty space to select several. Esc ends it.' : 'Arrange is off: the timeline only scrolls');
 }
+
+/* the selection */
+function applyPick() {
+  for (const id of [...pickLegs]) if (!S.legs[id]) pickLegs.delete(id);
+  for (const id of [...pickNodes]) if (!S.nodes[id]) pickNodes.delete(id);
+  const svg = $('#graph'), pin = $('#pinSvg');
+  if (svg) {
+    svg.querySelectorAll('.picked').forEach(e => e.classList.remove('picked'));
+    pickLegs.forEach(id => svg.querySelectorAll(`[data-leg="${id}"]:not([data-wait])`).forEach(e => e.classList.add('picked')));
+  }
+  if (pin) {
+    pin.querySelectorAll('.rowhead.picked').forEach(e => e.classList.remove('picked'));
+    pickNodes.forEach(id => { const r = pin.querySelector(`.rowhead[data-node="${id}"]`); if (r) r.classList.add('picked'); });
+  }
+  syncPickBar();
+}
+function setPick(legs, nodes) { pickLegs.clear(); pickNodes.clear(); (legs || []).forEach(id => pickLegs.add(id)); (nodes || []).forEach(id => pickNodes.add(id)); applyPick(); }
+function clearPick() { setPick(); }
+function togglePick(set, id) { if (set.has(id)) set.delete(id); else set.add(id); applyPick(); }
+function syncPickBar() {
+  const b = $('#pickBar'); if (!b) return;
+  const nl = pickLegs.size, nn = pickNodes.size;
+  b.hidden = !arranging || !(nl + nn);
+  if (b.hidden) { b.replaceChildren(); return; }
+  const what = [nl ? `${nl} leg${nl > 1 ? 's' : ''}` : null, nn ? `${nn} place${nn > 1 ? 's' : ''}` : null].filter(Boolean).join(' and ');
+  b.replaceChildren(...[
+    h('span', { class: 'pb-count', text: `${what} selected` }),
+    h('span', { class: 'pb-hint', text: nl > 1 || nn > 1 ? 'Drag one to move them together' : 'Shift-click, or drag a box, to add more' }),
+    nl ? icoBtn('Duplicate', () => duplicateLegs([...pickLegs]), 'small', 'dup', 'A copy of each a little later, in no plan (Ctrl+D)') : null,
+    nl ? icoBtn('Delete', () => delLegs([...pickLegs]), 'small danger', 'trash', 'Delete the selected legs (you can undo)') : null,
+    icoBtn('Clear', () => clearPick(), 'small icon', 'close', 'Clear the selection (Esc)')].filter(Boolean));
+}
+
+/* geometry */
 function curvePath(x0, y0, x1, y1) {
   if (Math.abs(y1 - y0) < .5) return `M${x0} ${y0} L${x1} ${y1}`;
   const k = Math.max(0, (x1 - x0) / 2);
@@ -5577,6 +5679,7 @@ function svgXY(svg, e) {
   const kx = vb && vb.width && r.width ? vb.width / r.width : 1, ky = vb && vb.height && r.height ? vb.height / r.height : 1;
   return { x: (e.clientX - r.left) * kx, y: (e.clientY - r.top) * ky };
 }
+function timeAtX(x) { return geo.tmin + (x - geo.left) / geo.pph * H; }
 // Which part of a leg the pointer is on: its start, its end (the buffer counts as the end) or the line itself.
 function legPart(id, p) {
   const L = geo && geo.legs[id]; if (!L) return null;
@@ -5585,13 +5688,26 @@ function legPart(id, p) {
   if (Math.hypot(p.x - xe, p.y - L.yk) <= 14) return 'to';
   return 'body';
 }
+// Does any part of a drawn leg fall inside a box?
+function legInBox(id, b) {
+  const L = geo.legs[id]; if (!L) return false;
+  const k = Math.max(0, (L.xS - L.s0) / 2), xs = [L.s0, L.s0 + k, L.xS - k, L.xS], ys = [L.yd, L.yd, L.yk, L.yk];
+  for (let i = 0; i <= 20; i++) {
+    const t = i / 20, u = 1 - t, c = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
+    const x = c[0] * xs[0] + c[1] * xs[1] + c[2] * xs[2] + c[3] * xs[3], y = c[0] * ys[0] + c[1] * ys[1] + c[2] * ys[2] + c[3] * ys[3];
+    if (x >= b.x0 && x <= b.x1 && y >= b.y0 && y <= b.y1) return true;
+  }
+  return L.xA > L.xS && L.yk >= b.y0 && L.yk <= b.y1 && L.xA >= b.x0 && L.xS <= b.x1; // the buffer
+}
 // A dragged time moves in steps of at least about 4px at this zoom (5, 10, 15, 30 or 60 minutes), 5 minutes
 // with Shift. It stays put until moved half a step, then lands on the step, so times come out round.
+function dragStep(e) {
+  if (e && e.shiftKey) return 5 * MIN;
+  for (const m of [5, 10, 15, 30, 60]) if (m / 60 * geo.pph >= 4) return m * MIN;
+  return 60 * MIN;
+}
 function dragTime(t0, dx, e) {
-  let step = 60 * MIN;
-  if (e && e.shiftKey) step = 5 * MIN;
-  else for (const m of [5, 10, 15, 30, 60]) if (m / 60 * geo.pph >= 4) { step = m * MIN; break; }
-  const raw = dx / geo.pph * H;
+  const step = dragStep(e), raw = dx / geo.pph * H;
   return Math.abs(raw) < step / 2 ? t0 : roundTo(t0 + raw, step);
 }
 function rowAtY(y) {
@@ -5599,6 +5715,15 @@ function rowAtY(y) {
   for (const id in geo.rowY) { const d = Math.abs(geo.rowY[id] - y); if (d < bd) { bd = d; best = id; } }
   return best;
 }
+// on a place's line, away from any leg, a drag draws a new leg from there
+function onRowLine(p) { const node = rowAtY(p.y); return node && Math.abs(p.y - geo.rowY[node]) <= 16 && p.x >= geo.left - 4 ? node : null; }
+let linkHint = null;
+function showLinkHint(x, y) {
+  const svg = $('#graph'); if (!svg) return;
+  if (!linkHint || !linkHint.isConnected) { linkHint = el('g', { class: 'linkhint', 'aria-hidden': 'true' }, svg); el('circle', { r: 7 }, linkHint); el('path', { d: 'M-3.5 0h7M0 -3.5v7' }, linkHint); }
+  linkHint.setAttribute('transform', `translate(${x} ${y})`); linkHint.style.display = '';
+}
+function hideLinkHint() { if (linkHint) linkHint.style.display = 'none'; }
 function dragTip(e, kids, bad) {
   let t = $('#dragTip');
   if (!t) { t = h('div', { id: 'dragTip', class: 'dragtip', role: 'status', 'aria-live': 'polite' }); document.body.append(t); }
@@ -5609,9 +5734,11 @@ function dragTip(e, kids, bad) {
   if (y + hh > innerHeight - 8) y = e.clientY - hh - 14;
   t.style.transform = `translate(${Math.max(8, x)}px, ${Math.max(8, y)}px)`;
 }
-function dragDown(e, kind, id, part) {
+
+/* dragging: a place name (row), a leg (leg), a new leg from a place's line (link) or a selection box (box) */
+function dragDown(e, kind, id, part, extra) {
   if (drag) dropDrag(false);
-  drag = { kind, id, part, sx: e.clientX, sy: e.clientY, last: e, started: false, pid: e.pointerId };
+  drag = Object.assign({ kind, id, part, sx: e.clientX, sy: e.clientY, last: e, started: false, pid: e.pointerId }, extra || {});
   addEventListener('pointermove', dragMove); addEventListener('pointerup', dragUp); addEventListener('pointercancel', dragCancel);
 }
 function dragMove(e) {
@@ -5620,76 +5747,101 @@ function dragMove(e) {
   if (!d.started) {
     if (Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < 5) return; // a click stays a click
     const hadForm = !!(draft || edit);
-    if (!geo || !geo.time && d.kind === 'leg' || !canArrange() || !canLeave()) { dropDrag(false); return; }
+    if (!geo || (!geo.time && d.kind !== 'row') || !canArrange() || (d.kind !== 'box' && !canLeave())) { dropDrag(false); return; }
     if (hadForm && !draft && !edit) renderInspector();
     startDrag();
     if (!drag) return;
   }
   if (geo !== d.geo) { dropDrag(false); return; } // the timeline was drawn again under the drag
-  if (d.kind === 'row') moveRowDrag(e); else moveLegDrag(e);
+  if (d.kind === 'row') moveRowDrag(e); else if (d.kind === 'leg') moveLegDrag(e); else if (d.kind === 'link') moveLinkDrag(e); else moveBoxDrag(e);
+}
+function bandAt(svg, y) {
+  const r = el('rect', { x: 0, y: y - 50, width: geo.width, height: LAY.rowH, class: 'dragband' });
+  svg.insertBefore(r, geo.gEdge || null);
+  return r;
 }
 function startDrag() {
   const d = drag, svg = $('#graph');
   d.started = true; d.geo = geo;
   document.body.classList.add('dragging');
-  closeMenus();
+  closeMenus(); hideLinkHint();
   if (d.kind === 'row') {
     const pin = $('#pinSvg');
     d.heads = [...pin.querySelectorAll('.rowhead')];
     d.ids = d.heads.map(g => g.dataset.node);
-    d.from = d.to = d.ids.indexOf(d.id);
+    d.from = d.ids.indexOf(d.id);
     if (d.from < 0) { dropDrag(false); return; }
-    d.g = d.heads[d.from]; d.g.classList.add('lifted');
+    // a place in a selection of several moves them all, as one block
+    d.block = pickNodes.has(d.id) && pickNodes.size > 1 ? d.ids.filter(x => pickNodes.has(x)) : [d.id];
+    d.rest = d.ids.filter(x => !d.block.includes(x));
+    d.gi = d.block.indexOf(d.id);
+    d.order = d.ids.slice();
+    d.g = d.heads[d.from];
+    d.heads.forEach((g, i) => { if (d.block.includes(d.ids[i])) g.classList.add('lifted'); });
     d.y0 = svgXY(pin, { clientX: d.sx, clientY: d.sy }).y;
     pin.classList.add('sorting');
-    // a band across the chart goes with the place being moved
-    d.band = el('rect', { x: 0, y: geo.rowY[d.id] - 50, width: geo.width, height: LAY.rowH, class: 'dragband' });
-    if (geo.gEdge) svg.insertBefore(d.band, geo.gEdge); else svg.append(d.band);
-  } else {
+    d.band = bandAt(svg, geo.rowY[d.id]); // a band across the chart goes with the place being moved
+  } else if (d.kind === 'leg') {
     const t = T[d.id], L = geo.legs[d.id];
     if (!t || !L || !t.timed) { dropDrag(false); return; }
     d.t = { dep: t.dep, arr: t.arrSched }; d.L = L;
-    d.els = [...svg.querySelectorAll(`[data-leg="${d.id}"]:not([data-wait])`)];
+    // a leg in a selection of several moves them all
+    d.group = d.part === 'body' && pickLegs.has(d.id) && pickLegs.size > 1 ? [...pickLegs].filter(id => geo.legs[id] && T[id] && T[id].timed) : [d.id];
+    d.span = [Math.min(...d.group.map(id => T[id].dep)), Math.max(...d.group.map(id => T[id].arrSched))];
+    d.els = d.group.flatMap(id => [...svg.querySelectorAll(`[data-leg="${id}"]:not([data-wait])`)]);
     svg.classList.add('dragging');
     d.els.forEach(x => x.classList.add('drag'));
     d.x0 = svgXY(svg, { clientX: d.sx, clientY: d.sy }).x;
     if (d.part !== 'body') {
       d.els.forEach(x => x.classList.add('ghosted'));
-      d.band = el('rect', { x: 0, y: (d.part === 'from' ? L.yd : L.yk) - 50, width: geo.width, height: LAY.rowH, class: 'dragband' });
-      if (geo.gEdge) svg.insertBefore(d.band, geo.gEdge); else svg.append(d.band);
+      d.band = bandAt(svg, d.part === 'from' ? L.yd : L.yk);
       d.prev = el('g', { class: 'dragprev' }, svg);
       d.prev.style.setProperty('--c', legColor(d.id));
       d.path = el('path', { class: 'seg' }, d.prev);
       d.dot = el('circle', { r: 7, class: 'dot' }, d.prev);
     }
+  } else if (d.kind === 'link') {
+    d.band = bandAt(svg, geo.rowY[d.node0]);
+    d.prev = el('g', { class: 'dragprev' }, svg);
+    d.prev.style.setProperty('--c', 'var(--accent)');
+    d.path = el('path', { class: 'seg' }, d.prev);
+    el('circle', { cx: geo.X(d.t0), cy: geo.rowY[d.node0], r: 6, class: 'dot' }, d.prev);
+    d.dot = el('circle', { r: 7, class: 'dot' }, d.prev);
+  } else {
+    d.p0 = svgXY(svg, { clientX: d.sx, clientY: d.sy });
+    d.was = { legs: [...pickLegs], nodes: [...pickNodes] };
+    d.base = d.add ? new Set(pickLegs) : new Set();
+    if (!d.add) pickNodes.clear();
+    d.rect = el('rect', { class: 'marquee', x: d.p0.x, y: d.p0.y, width: 0, height: 0 }, svg);
   }
   d.raf = requestAnimationFrame(dragAuto);
 }
 function moveRowDrag(e) {
-  const d = drag, pin = $('#pinSvg'), rh = LAY.rowH, n = d.ids.length;
-  const dy = Math.max(-d.from * rh - 24, Math.min((n - 1 - d.from) * rh + 24, svgXY(pin, e).y - d.y0));
+  const d = drag, rh = LAY.rowH;
+  const lo = (d.gi - d.from) * rh - 24, hi = (d.gi + d.rest.length - d.from) * rh + 24;
+  const dy = Math.max(lo, Math.min(hi, svgXY($('#pinSvg'), e).y - d.y0));
   d.g.style.transform = `translate(0px, ${dy}px)`;
   if (d.band) d.band.setAttribute('transform', `translate(0 ${dy})`);
-  const to = Math.max(0, Math.min(n - 1, d.from + Math.round(dy / rh)));
-  if (to !== d.to) {
-    d.to = to;
+  const k = Math.max(0, Math.min(d.rest.length, Math.round((d.from * rh + dy) / rh) - d.gi));
+  const order = [...d.rest.slice(0, k), ...d.block, ...d.rest.slice(k)];
+  if (order.join() !== d.order.join()) {
+    d.order = order;
     // the other names make room, as in a list
-    d.heads.forEach((g, i) => {
-      if (i === d.from) return;
-      const s = d.from < to && i > d.from && i <= to ? -rh : d.from > to && i >= to && i < d.from ? rh : 0;
-      g.style.transform = s ? `translate(0px, ${s}px)` : '';
-    });
+    d.heads.forEach((g, i) => { if (i === d.from) return; const sh = (order.indexOf(d.ids[i]) - i) * rh; g.style.transform = sh ? `translate(0px, ${sh}px)` : ''; });
   }
-  dragTip(e, [h('b', { text: nodeName(d.id) }), h('span', { text: d.to === d.from ? 'Drop here to keep its row' : `${d.to < d.from ? 'Above' : 'Below'} ${nodeName(d.ids[d.to])}` })]);
+  const above = order[order.indexOf(d.block[0]) - 1];
+  dragTip(e, [h('b', { text: d.block.length > 1 ? `${d.block.length} places` : nodeName(d.id) }),
+    h('span', { text: order.join() === d.ids.join() ? 'Drop here to keep the order' : above ? `Below ${nodeName(above)}` : 'To the top' })]);
 }
 function moveLegDrag(e) {
   const d = drag, p = svgXY($('#graph'), e), dx = p.x - d.x0, X = geo.X;
   if (d.part === 'body') {
-    const dt = dragTime(d.t.dep, dx, e) - d.t.dep, px = dt / H * geo.pph;
+    const dt = dragTime(d.t.dep, dx, e) - d.t.dep, px = dt / H * geo.pph, many = d.group.length > 1;
     d.dt = dt;
     d.els.forEach(x => { x.style.transform = px ? `translate(${px}px, 0px)` : ''; });
-    dragTip(e, [h('b', { text: legLabel(d.id) }), h('span', { text: `${shortDT(d.t.dep + dt)} → ${shortDT(d.t.arr + dt)}` }),
-      h('small', { text: dt ? `${fmtDur(Math.abs(dt))} ${dt > 0 ? 'later' : 'earlier'}` : 'Drag sideways to move both times' })]);
+    dragTip(e, [h('b', { text: many ? `${d.group.length} legs` : legLabel(d.id) }),
+      h('span', { text: many ? `${shortDT(d.span[0] + dt)} → ${shortDT(d.span[1] + dt)}` : `${shortDT(d.t.dep + dt)} → ${shortDT(d.t.arr + dt)}` }),
+      h('small', { text: dt ? `${fmtDur(Math.abs(dt))} ${dt > 0 ? 'later' : 'earlier'}` : many ? 'Drag sideways to move them all' : 'Drag sideways to move both times' })]);
     return;
   }
   const l = S.legs[d.id], isFrom = d.part === 'from';
@@ -5709,13 +5861,35 @@ function moveLegDrag(e) {
   dragTip(e, [h('b', { text: `${isFrom ? 'Leaves' : 'Arrives at'} ${nodeName(node)}` }), h('span', { text: shortDT(t) }),
     h('small', { text: bad || (moved ? `Was ${nodeName(isFrom ? l.from : l.to)}` : 'Drag onto another row to change the place') })], bad);
 }
+function moveLinkDrag(e) {
+  const d = drag, p = svgXY($('#graph'), e), X = geo.X;
+  const t = Math.max(geo.tmin, roundTo(timeAtX(p.x), dragStep(e)));
+  const node = rowAtY(p.y) || d.node0, yy = geo.rowY[node], same = node === d.node0;
+  d.t1 = t; d.node = node;
+  d.path.setAttribute('d', curvePath(X(d.t0), geo.rowY[d.node0], X(t), yy));
+  d.dot.setAttribute('cx', X(t)); d.dot.setAttribute('cy', yy);
+  d.band.setAttribute('y', yy - 50);
+  const bad = !same && t <= d.t0 ? 'It has to arrive after it leaves: drag to the right' : null;
+  d.prev.classList.toggle('bad', !!bad);
+  dragTip(e, [h('b', { text: `New leg: ${nodeName(d.node0)} → ${same ? '…' : nodeName(node)}` }), h('span', { text: `${shortDT(d.t0)} → ${shortDT(t)}` }),
+    h('small', { text: bad || (same ? 'Drag onto another place to arrive there' : 'Let go, then choose how you travel and the fare') })], bad);
+}
+function moveBoxDrag(e) {
+  const d = drag, p = svgXY($('#graph'), e);
+  const b = { x0: Math.min(d.p0.x, p.x), y0: Math.min(d.p0.y, p.y), x1: Math.max(d.p0.x, p.x), y1: Math.max(d.p0.y, p.y) };
+  d.rect.setAttribute('x', b.x0); d.rect.setAttribute('y', b.y0); d.rect.setAttribute('width', b.x1 - b.x0); d.rect.setAttribute('height', b.y1 - b.y0);
+  const hits = Object.keys(geo.legs).filter(id => legInBox(id, b));
+  pickLegs.clear(); d.base.forEach(id => pickLegs.add(id)); hits.forEach(id => pickLegs.add(id));
+  applyPick();
+  dragTip(e, [h('b', { text: hits.length ? `${hits.length} leg${hits.length > 1 ? 's' : ''}` : 'Drag over legs to select them' }), d.add ? h('small', { text: 'Adding to the selection' }) : null]);
+}
 // Near an edge of the timeline, a drag scrolls it along.
 function dragAuto() {
   const d = drag; if (!d || !d.started) return;
   const sc = $('#graphScroll'), r = sc.getBoundingClientRect(), e = d.last, edge = 40;
   const sp = dist => Math.min(24, Math.ceil((edge - dist) / edge * 14));
   let vx = 0, vy = 0;
-  if (d.kind === 'leg') { const lx = r.left + pinW(); if (e.clientX < lx + edge) vx = -sp(e.clientX - lx); else if (e.clientX > r.right - edge) vx = sp(r.right - e.clientX); }
+  if (d.kind !== 'row') { const lx = r.left + pinW(); if (e.clientX < lx + edge) vx = -sp(e.clientX - lx); else if (e.clientX > r.right - edge) vx = sp(r.right - e.clientX); }
   if (e.clientY < r.top + edge) vy = -sp(e.clientY - r.top); else if (e.clientY > r.bottom - edge) vy = sp(r.bottom - e.clientY);
   if (vx || vy) {
     const l0 = sc.scrollLeft, t0 = sc.scrollTop;
@@ -5726,8 +5900,11 @@ function dragAuto() {
 }
 function dragUp(e) {
   if (!drag || (e.pointerId != null && e.pointerId !== drag.pid)) return;
-  if (drag.started) noClickUntil = performance.now() + 400; // the click that ends a drag does nothing else
-  dropDrag(drag.started);
+  const d = drag;
+  if (d.started) noClickUntil = performance.now() + 400; // the click that ends a drag does nothing else
+  dropDrag(d.started);
+  // a plain click while arranging picks just that item; the click still opens it, as always
+  if (!d.started && arranging && !d.add) { if (d.kind === 'leg') setPick([d.id]); else if (d.kind === 'row') setPick([], [d.id]); else clearPick(); }
 }
 function dragCancel() { if (drag) dropDrag(false); }
 function dropDrag(commit) {
@@ -5738,9 +5915,10 @@ function dropDrag(commit) {
   const tip = $('#dragTip'); if (tip) tip.hidden = true;
   document.body.classList.remove('dragging');
   if (!d.started) return;
-  if (d.band) d.band.remove();
-  if (d.prev) d.prev.remove();
+  [d.band, d.prev, d.rect].forEach(x => { if (x) x.remove(); });
   $('#graph').classList.remove('dragging');
+  if (d.kind === 'box') { if (!commit) setPick(d.was.legs, d.was.nodes); return; } // Esc puts the old selection back
+  if (d.kind === 'link') { if (commit && geo === d.geo) dropLink(d); return; }
   if (commit && geo === d.geo && (d.kind === 'row' ? dropRow(d) : dropLeg(d))) { const pin = $('#pinSvg'); if (pin) pin.classList.remove('sorting'); return; }
   // nothing changed: everything glides back to where it was
   const els = d.kind === 'row' ? d.heads || [] : d.els || [];
@@ -5748,46 +5926,150 @@ function dropDrag(commit) {
   setTimeout(() => { els.forEach(x => x.classList.remove('settle', 'drag', 'lifted')); const pin = $('#pinSvg'); if (pin) pin.classList.remove('sorting'); }, 240);
 }
 function dropRow(d) {
-  if (d.to === d.from) return false;
-  const vis = d.ids.filter(x => x !== d.id); vis.splice(d.to, 0, d.id);
-  const next = vis[d.to + 1], prev = vis[d.to - 1];
-  const ord = S.order.filter(x => x !== d.id);
-  ord.splice(next ? ord.indexOf(next) : ord.indexOf(prev) + 1, 0, d.id);
+  if (d.order.join() === d.ids.join()) return false;
+  // the places shown keep the slots they had in the full order, now filled in the new order
+  const shown = new Set(d.ids), ord = S.order.slice();
+  let j = 0;
+  ord.forEach((id, i) => { if (shown.has(id)) ord[i] = d.order[j++]; });
   checkpoint();
   S.order = ord;
   renderAllGlide();
-  toast(`Moved ${nodeName(d.id)} ${d.to < d.from ? 'up' : 'down'}`, true);
+  toast(`Moved ${d.block.length > 1 ? `${d.block.length} places` : nodeName(d.id)}`, true);
   return true;
 }
 function dropLeg(d) {
   if (!S.legs[d.id]) return false;
-  let ch;
-  if (d.part === 'body') { if (!d.dt) return false; ch = { dep: toLocal(d.t.dep + d.dt), arr: toLocal(d.t.arr + d.dt) }; }
-  else {
-    if (d.t1 == null) return false;
-    if (d.bad) { toast(`Not moved: ${d.bad}.`); return false; }
-    ch = d.part === 'from' ? { from: d.node, dep: toLocal(d.t1) } : { to: d.node, arr: toLocal(d.t1) };
+  if (d.part === 'body') {
+    if (!d.dt) return false;
+    const chs = {};
+    d.group.forEach(id => { const l = S.legs[id]; if (l) chs[id] = { dep: l.dep ? toLocal(ts(l.dep) + d.dt) : l.dep, arr: l.arr ? toLocal(ts(l.arr) + d.dt) : l.arr }; });
+    return applyLegsChange(chs, d.group.length > 1 ? `Moved ${d.group.length} legs ${fmtDur(Math.abs(d.dt))} ${d.dt > 0 ? 'later' : 'earlier'}` : null);
   }
-  return applyLegDrag(d.id, ch);
+  if (d.t1 == null) return false;
+  if (d.bad) { toast(`Not moved: ${d.bad}.`); return false; }
+  return applyLegsChange({ [d.id]: d.part === 'from' ? { from: d.node, dep: toLocal(d.t1) } : { to: d.node, arr: toLocal(d.t1) } });
 }
-// A dragged leg is saved just as an edit in the panel would be: the same checks, one step to undo.
-function applyLegDrag(id, ch) {
-  const base = S.legs[id], changed = diffKeys(base, ch);
-  if (!changed.length) return false;
-  const cand = Object.assign({}, base, ch);
-  const had = new Set(legProblems(base, id).map(p => p.msg));
-  const probs = legProblems(cand, id).filter(p => ['from', 'to', 'dep', 'arr'].includes(p.f) && !had.has(p.msg));
-  if (probs.length) { toast(`Not moved: ${probs[0].msg}`); return false; }
-  const hurt = legBreaksPlan(id, cand);
+function dropLink(d) {
+  if (!d.node || d.node === d.node0) return;
+  if (d.t1 <= d.t0) { toast('Not added: it has to arrive after it leaves. Drag to the right.'); return; }
+  newLeg({ from: d.node0, to: d.node, dep: toLocal(d.t0), arr: toLocal(d.t1), focus: '#inspector [data-f="mode"]' });
+}
+// Moved legs are saved just as edits in the panel would be: the same checks, one step to undo.
+function applyLegsChange(chs, label) {
+  const ids = Object.keys(chs).filter(id => S.legs[id] && diffKeys(S.legs[id], chs[id]).length);
+  if (!ids.length) return false;
+  const keep = {}, before = new Set(BROKEN.plans);
+  let msg = null, hurt = null;
+  ids.forEach(id => { keep[id] = S.legs[id]; S.legs[id] = Object.assign({}, keep[id], chs[id], { id }); });
+  try {
+    for (const id of ids) { // each leg is checked with the others already moved
+      const had = new Set(legProblems(keep[id], id).map(q => q.msg));
+      const pr = legProblems(S.legs[id], id).filter(q => ['from', 'to', 'dep', 'arr'].includes(q.f) && !had.has(q.msg));
+      if (pr.length) { msg = ids.length > 1 ? `${legLabel(id)}: ${pr[0].msg}` : pr[0].msg; break; }
+    }
+    if (!msg) { compute(); hurt = PL.find(q => q.warn && !before.has(q.id) && q.legs.some(x => ids.includes(x))) || null; }
+  } finally { ids.forEach(id => { S.legs[id] = keep[id]; }); compute(); }
+  if (msg) { toast(`Not moved: ${msg}`); return false; }
   if (hurt) { toast(`Not moved: the plan “${hurt.name}” would no longer work. ${hurt.issues[0]}`); return false; }
   checkpoint();
-  applyEdit('leg', id, cand, changed);
+  ids.forEach(id => { const cand = Object.assign({}, S.legs[id], chs[id]); applyEdit('leg', id, cand, diffKeys(S.legs[id], chs[id])); });
   renderAllGlide();
-  toast(`Moved ${legLabel(id)}: ${shortDT(ts(cand.dep))} → ${shortDT(ts(cand.arr))}`, true);
+  const one = S.legs[ids[0]];
+  toast(label || `Moved ${legLabel(ids[0])}: ${shortDT(ts(one.dep))} → ${shortDT(ts(one.arr))}`, true);
   return true;
 }
+function delLegs(ids) {
+  ids = (ids || []).filter(id => S.legs[id]); if (!ids.length || !canEdit()) return;
+  if (ids.length === 1) { delLeg(ids[0]); return; }
+  if (edit && ids.includes(edit.id)) edit = null;
+  checkpoint();
+  const plans = new Set(ids.flatMap(id => LEGPLANS[id] || []));
+  ids.forEach(id => { delete S.legs[id]; pickLegs.delete(id); });
+  if (sel && sel.k === 'leg' && !S.legs[sel.id]) sel = null;
+  renderAll();
+  toast(`Deleted ${ids.length} legs${plans.size ? `. ${plans.size} saved plan${plans.size > 1 ? 's' : ''} used them and now need${plans.size > 1 ? '' : 's'} editing.` : ''}`, true);
+}
+
+/* copy, paste and duplicate legs: the copies land a little later, in no plan, ready to drag */
+let CLIP = null;
+function chosenLegs() {
+  if (arranging && pickLegs.size) return [...pickLegs].filter(id => S.legs[id]);
+  return sel && sel.k === 'leg' && S.legs[sel.id] ? [sel.id] : [];
+}
+function copyLegs(ids, quiet) {
+  ids = (ids || chosenLegs()).filter(id => S.legs[id]); if (!ids.length) return false;
+  CLIP = { legs: ids.map(id => JSON.parse(JSON.stringify(S.legs[id]))), n: 0 };
+  if (!quiet) toast(`Copied ${ids.length > 1 ? `${ids.length} legs` : legLabel(ids[0])}. Press Ctrl+V (⌘V on a Mac) to paste a copy a little later.`);
+  return true;
+}
+function pasteLegs() {
+  if (!CLIP || !CLIP.legs.length || !canEdit()) return;
+  if (B) { toast('Finish or cancel the plan you are making first'); return; }
+  if (!canLeave()) return;
+  const live = CLIP.legs.filter(l => S.nodes[l.from] && S.nodes[l.to]);
+  if (!live.length) { toast('The places of the copied legs are gone'); return; }
+  // far enough apart to tell them apart at this zoom: at least an hour
+  const stepH = Math.max(1, Math.ceil(28 / (geo && geo.time ? geo.pph : (S.pph || 14))));
+  const shift = (v, off) => (v && ts(v) != null ? toLocal(ts(v) + off) : v);
+  let cands = null, off = 0;
+  for (let k = CLIP.n + 1, n = 0; n < 60; k++, n++) { // each paste lands a step after the last, never on a leg that is already there
+    off = k * stepH * H;
+    const cs = live.map(l => Object.assign({}, l, { dep: shift(l.dep, off), arr: shift(l.arr, off) }));
+    if (cs.every(c => !legProblems(c, '').some(q => /already exists/.test(q.msg)))) { cands = cs; CLIP.n = k; break; }
+  }
+  if (!cands) { toast('There is no free time for the copies'); return; }
+  checkpoint();
+  const ids = cands.map(c => { const id = uid('l'); S.legs[id] = Object.assign(c, { id }); return id; });
+  S.example = false;
+  if (viewPlan) viewPlan = null; // the copies are in no plan, so all legs are shown
+  sel = ids.length === 1 ? { k: 'leg', id: ids[0] } : null; edit = null;
+  if (canArrange() && !arranging) setArrange(true, true);
+  pickLegs.clear(); pickNodes.clear(); ids.forEach(id => pickLegs.add(id));
+  renderAll();
+  const it = ids.length > 1 ? 'them' : 'it';
+  toast(`Pasted ${ids.length > 1 ? `${ids.length} legs` : legLabel(ids[0])}, ${fmtDur(off)} later and in no plan. Drag ${it} where you need ${it}.`, true);
+}
+function duplicateLegs(ids) { if (copyLegs(ids, true)) pasteLegs(); }
+
 // renderAll, with the timeline gliding to its new span instead of jumping
 function renderAllGlide() { compute(); joinPending(); renderViewTabs(); renderPlanBar(); settleGraph(); renderInspector(); renderBuilder(); refreshRest(); }
+
+/* ---------- the day the timeline shows: your first leg, a day you choose, or today ---------- */
+function dayMs(v) { if (!/^\d{4}-\d{2}-\d{2}$/.test(v || '')) return null; const y = +v.slice(0, 4); if (y < 1900 || y > 2199) return null; const t = new Date(v + 'T00:00').getTime(); return isNaN(t) ? null : t; }
+function todayMs() { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); }
+function setDay(v, keepOpen) {
+  const t = dayMs(v); v = t == null ? '' : v;
+  if (!keepOpen) closeMenus();
+  const changed = v !== (S.day || ''), sc = $('#graphScroll');
+  if (changed) { S.day = v; save(); }
+  // a day far from your legs would be squeezed to a sliver by auto-fit: the timeline zooms to show that day whole
+  let lo = t, hi = t + 24 * H;
+  if (t != null) for (const id in S.legs) { const x = T[id]; if (x && x.ok && x.timed) { lo = Math.min(lo, x.dep); hi = Math.max(hi, x.arr); } }
+  const zoom = t != null && sc && autoFitOn() && hi - lo > 40 * H;
+  if (zoom) {
+    UI.autoFit = false; saveUI();
+    S.pph = Math.max(3, Math.min(60, Math.floor((sc.clientWidth - pinW() - 48) / 26)));
+    save(); renderGraph();
+  } else if (changed) settleGraph();
+  syncToolbar();
+  if (!sc || !geo || !geo.time) return;
+  // the day comes into view, just after the place names
+  sc.scrollTo({ left: t != null ? Math.max(0, geo.X(t) - pinW() - 24) : 0, behavior: zoom ? 'auto' : scrollMode() });
+}
+function syncDayBtn() {
+  const b = $('#dayBtn'), i = $('#dayPick'); if (!b) return;
+  const t = dayMs(S.day);
+  let first = todayMs();
+  if (geo && geo.time) { const d = new Date(geo.tmin + H); d.setHours(0, 0, 0, 0); first = d.getTime(); }
+  const shown = t != null ? t : first;
+  b.textContent = dayLbl(shown);
+  b.setAttribute('aria-label', `Day: ${dayLbl(shown)}`);
+  b.title = t != null ? `The timeline shows ${fmtDay(t)}. Choose another day` : 'Choose a day to show on the timeline';
+  b.classList.toggle('on', t != null);
+  if (i && document.activeElement !== i) i.value = toLocal(shown).slice(0, 10);
+  const c = $('#dayAuto'); if (c) c.disabled = t == null;
+}
+function fmtDay(t) { return new Date(t).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); }
 
 /* ---------- zoom with Ctrl or ⌘ and the wheel, a pinch, or the + and − keys over the timeline ---------- */
 // The timeline zooms, not the page, and the moment under the pointer stays under it.
@@ -5844,8 +6126,16 @@ function bind() {
   const svg = $('#graph');
   const trackY = e => { const sc = $('#graphScroll'); scrubY = e.clientY - sc.getBoundingClientRect().top + sc.scrollTop; };
   svg.addEventListener('pointermove', e => {
-    if (arranging) { // no hover card while arranging; the pointer shows what a drag would move
-      if (!drag) { const g = e.target.closest('[data-leg]'), part = g && !g.dataset.wait && geo ? legPart(g.dataset.leg, svgXY(svg, e)) : null; if (part) svg.dataset.grab = part === 'body' ? 'body' : 'end'; else delete svg.dataset.grab; }
+    if (arranging) { // no hover card while arranging; the pointer shows what a drag would do
+      if (!drag && geo && geo.time) {
+        const g = e.target.closest('[data-leg]'), p = svgXY(svg, e);
+        if (g && !g.dataset.wait) { svg.dataset.grab = legPart(g.dataset.leg, p) === 'body' ? 'body' : 'end'; hideLinkHint(); }
+        else {
+          const node = e.target.closest('.badge, [data-wait]') ? null : onRowLine(p);
+          if (node) { svg.dataset.grab = 'link'; showLinkHint(geo.X(Math.max(geo.tmin, roundTo(timeAtX(p.x), dragStep(e)))), geo.rowY[node]); }
+          else { delete svg.dataset.grab; hideLinkHint(); }
+        }
+      }
       return;
     }
     if (!geo || !geo.time || pinned || e.pointerType === 'touch') return;
@@ -5854,19 +6144,34 @@ function bind() {
     if (t !== scrubT) { scrubT = t; drawScrub(); renderNow(); }
     else if (Math.abs((y0 || 0) - scrubY) > 2) renderTip();
   });
+  // while arranging: Shift (or Ctrl, ⌘) and a click adds to the selection or takes out of it; a drag on a leg
+  // moves it, on a place's line draws a new leg, and on empty space draws a box that selects the legs in it
   svg.addEventListener('pointerdown', e => {
-    if (!arranging || e.button !== 0 || !geo || !geo.time) return;
-    const g = e.target.closest('[data-leg]'); if (!g || g.dataset.wait) return;
-    const id = g.dataset.leg; if (!geo.legs[id] || !S.legs[id]) return;
+    if (!arranging || e.button !== 0 || !geo || !geo.time || e.target.closest('.badge, [data-wait]')) return;
+    const add = e.shiftKey || e.ctrlKey || e.metaKey, p = svgXY(svg, e), g = e.target.closest('[data-leg]');
     e.preventDefault();
-    dragDown(e, 'leg', id, legPart(id, svgXY(svg, e)));
+    if (g) {
+      const id = g.dataset.leg; if (!geo.legs[id] || !S.legs[id]) return;
+      if (add) { togglePick(pickLegs, id); noClickUntil = performance.now() + 600; return; }
+      dragDown(e, 'leg', id, legPart(id, p));
+      return;
+    }
+    const node = add ? null : onRowLine(p);
+    if (node) dragDown(e, 'link', null, null, { node0: node, t0: Math.max(geo.tmin, roundTo(timeAtX(p.x), dragStep(e))) });
+    else dragDown(e, 'box', null, null, { add });
   });
+  svg.addEventListener('pointerleave', () => hideLinkHint());
   $('#pinSvg').addEventListener('pointerdown', e => {
     if (!arranging || e.button !== 0) return;
     const rh = e.target.closest('.rowhead'); if (!rh) return;
     e.preventDefault();
+    if (e.shiftKey || e.ctrlKey || e.metaKey) { togglePick(pickNodes, rh.dataset.node); noClickUntil = performance.now() + 600; return; }
     dragDown(e, 'row', rh.dataset.node);
   });
+  // the day the timeline shows
+  $('#dayPick').addEventListener('change', e => setDay(e.target.value, true));
+  $('#dayToday').addEventListener('click', () => setDay(toLocal(todayMs()).slice(0, 10)));
+  $('#dayAuto').addEventListener('click', () => setDay(''));
   // the click that ends a drag does nothing else
   document.addEventListener('click', e => { if (performance.now() < noClickUntil) { noClickUntil = 0; e.stopPropagation(); e.preventDefault(); } }, true);
   $('#arrangeBtn').addEventListener('click', () => setArrange(!arranging));
@@ -6349,6 +6654,12 @@ function bind() {
       if (e.key === '0') fitAgain(); else stepZoom(e.key === '+' || e.key === '=' ? 1.25 : 0.8, overGraph ? graphPX : null);
       return;
     }
+    if (mod && !e.shiftKey && !e.altKey && !inField && canEdit() && !B) {
+      if (key === 'c' && !String(getSelection() || '') && chosenLegs().length) { e.preventDefault(); copyLegs(); return; }
+      if (key === 'v' && CLIP) { e.preventDefault(); pasteLegs(); return; }
+      if (key === 'd' && chosenLegs().length) { e.preventDefault(); duplicateLegs(); return; }
+      if (key === 'a' && arranging && geo && geo.legs) { e.preventDefault(); setPick(Object.keys(geo.legs), [...pickNodes]); return; }
+    }
     if (mod && key === 's') { e.preventDefault(); if (draft) saveDraft(); else if (edit && editDirty()) saveEdit(); else if (B && guidePhase() === 'done') savePlan(); return; }
     if (mod && !e.shiftKey && key === 'z' && !inField) { if (canEdit()) { e.preventDefault(); undo(); } }
     else if (mod && ((e.shiftKey && key === 'z') || (!e.shiftKey && key === 'y')) && !inField) { if (canEdit()) { e.preventDefault(); redo(); } }
@@ -6364,7 +6675,9 @@ function bind() {
     }
     else if (e.key === 'Escape' && !inField && draft) { if (draftDirty()) toast(`Choose Cancel to drop the new ${draft.k === 'node' ? 'place' : 'leg'}`); else cancelDraft(); }
     else if (e.key === 'Escape' && !inField && sel) { if (canLeave()) { sel = null; renderInspector(); renderGraph(); } }
+    else if (e.key === 'Escape' && !inField && arranging && (pickLegs.size || pickNodes.size)) clearPick();
     else if (e.key === 'Escape' && !inField && arranging) setArrange(false);
+    else if (e.key === 'Delete' && !inField && arranging && pickLegs.size > 1 && canEdit()) delLegs([...pickLegs]);
     else if (e.key === 'Escape' && !inField && focusPlan && !B) { focusPlan = null; renderPlans(); applyHighlight(); renderInspector(); }
     else if (e.key === 'Escape' && !inField && UI.drawer) setDrawer(false);
     else if (e.key === 'Delete' && !inField && sel && sel.k !== 'wait' && canEdit()) { if (sel.k === 'node') delNode(sel.id); else delLeg(sel.id); }
