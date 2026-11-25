@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="glass">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1567,7 +1567,7 @@ body.dock-dragging,body.dock-dragging *{cursor:ns-resize !important}
   ::view-transition-old(root),::view-transition-new(root){animation:none}
 }
 
-/* ================= Liquid glass: an optional look (Settings > Liquid glass) =================
+/* ================= Liquid glass: the look of the whole app =================
    Only surfaces, colours and spacing change: frosted, see-through panels over a soft colour
    backdrop, with a bright edge. Panels that sit straight on the backdrop are see-through without
    blur (the backdrop is soft already, so it costs nothing to draw); things that float over moving
@@ -2004,8 +2004,6 @@ html.glass .side-split::after{background:var(--g-field)}
             <div class="set-ctl"><div class="seg" id="setTheme" role="radiogroup" aria-label="Theme"><button type="button" role="radio" data-v="light">Light</button><button type="button" role="radio" data-v="dark">Dark</button><button type="button" role="radio" data-v="system">Device</button></div></div></div>
           <div class="set-row"><div class="set-lab"><b>Moving sky</b><small>Twinkling stars, drifting clouds and glowing choices</small></div>
             <div class="set-ctl"><label class="switch"><input type="checkbox" id="setMotion" aria-label="Moving sky"><span aria-hidden="true"></span></label></div></div>
-          <div class="set-row"><div class="set-lab"><b>Liquid glass</b><small>Frosted, see-through panels over a soft colour backdrop</small></div>
-            <div class="set-ctl"><label class="switch"><input type="checkbox" id="setGlass" aria-label="Liquid glass"><span aria-hidden="true"></span></label></div></div>
         </div>
       </section>
       <section class="set-sect" aria-labelledby="setB">
@@ -2110,6 +2108,7 @@ const UIKEY = 'wander-map.ui', OLD_UIKEY = 'route-branch-planner.ui';
 let UI = { side: true, drawer: false, theme: null, costs: false, view: false };
 try { Object.assign(UI, JSON.parse(localStorage.getItem(UIKEY) || localStorage.getItem(OLD_UIKEY) || '{}')); } catch (e) { /* ignore */ }
 delete UI.sky; // the sky is always drawn in full now
+delete UI.glass; // Liquid glass is the only look now, so there is no switch to remember
 let sideOpen = true;
 const VIEWQ = window.matchMedia ? matchMedia('(max-width: 700px)') : null;
 let viewOnly = !!(VIEWQ && VIEWQ.matches);
@@ -4968,7 +4967,6 @@ function syncSettings() {
   const th = UI.theme === 'light' || UI.theme === 'dark' ? UI.theme : 'system';
   document.querySelectorAll('#setTheme [data-v]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.v === th)));
   $('#setMotion').checked = UI.motion !== false;
-  $('#setGlass').checked = !!UI.glass;
   $('#setCosts').checked = !!UI.costs;
   $('#setPin').checked = pinOn();
   const ed = canEdit() && !TOUR;
@@ -5002,7 +5000,6 @@ function applyMotion() { document.body.classList.toggle('still', UI.motion === f
 function applyTheme() {
   if (UI.theme === 'light' || UI.theme === 'dark') document.documentElement.dataset.theme = UI.theme;
   else delete document.documentElement.dataset.theme;
-  document.documentElement.classList.toggle('glass', !!UI.glass);   // the Liquid glass look
   syncThemeBtn();
 }
 // The header's light and dark switch shows the mode it leads to, and always agrees with Settings.
@@ -5241,11 +5238,10 @@ function bind() {
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   });
-  // changing the theme or the look cross-fades the whole page where the browser can, instead of snapping
-  const fadeSwap = fn => { if (document.startViewTransition && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.startViewTransition(fn); else fn(); };
+  // changing the theme cross-fades the whole page where the browser can, instead of snapping
+  const fadeSwap = fn => { if (document.startViewTransition && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) { const vt = document.startViewTransition(fn); vt.ready.catch(() => {}); /* a skipped fade (a hidden tab) is fine */ } else fn(); };
   $('#themeBtn').addEventListener('click', () => fadeSwap(() => { UI.theme = effectiveTheme() === 'dark' ? 'light' : 'dark'; saveUI(); applyTheme(); syncSettings(); }));
   $('#setTheme').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; fadeSwap(() => { UI.theme = b.dataset.v === 'system' ? null : b.dataset.v; saveUI(); applyTheme(); syncSettings(); }); });
-  $('#setGlass').addEventListener('change', e => { const on = e.target.checked; fadeSwap(() => { UI.glass = on; saveUI(); applyTheme(); }); });
   $('#setMotion').addEventListener('change', e => { UI.motion = e.target.checked; saveUI(); applyMotion(); });
   $('#setCosts').addEventListener('change', e => { UI.costs = e.target.checked; saveUI(); syncCostBtn(); renderGraph(); });
   $('#setPin').addEventListener('change', e => { if (e.target.checked !== pinOn()) togglePin(); });
@@ -5336,8 +5332,24 @@ function bind() {
     if (hh < 80) setDrawer(false); else { setDockH(hh); saveUI(); renderGraph(); }
   });
   if (window.ResizeObserver) {
-    let lastH = 0, roHits = [];
-    new ResizeObserver(() => { if (viewOnly) return; const hh = $('#graphScroll').clientHeight; $('.graph-card').classList.toggle('cramped', hh < 150); if (dock.classList.contains('resizing')) return; if (Math.abs(hh - lastH) > 2) { lastH = hh; const now = performance.now(); roHits = roHits.filter(t => now - t < 1500); roHits.push(now); if (roHits.length > 6) return; /* a size flipping back and forth is not chased for ever */ clearTimeout(bind._ro); bind._ro = setTimeout(renderGraph, 60); } }).observe($('#graphScroll'));
+    // The timeline redraws when its height changes. A height that keeps flipping between the same two values
+    // (a scrollbar coming and going) is not chased for ever; one that moves one way (a panel being pulled,
+    // opening or closing) always is, so the timeline never stays drawn at an old, shorter height.
+    let lastH = 0, prevH = 0, flips = 0;
+    new ResizeObserver(() => {
+      if (viewOnly) return;
+      const hh = $('#graphScroll').clientHeight;
+      $('.graph-card').classList.toggle('cramped', hh < 150);
+      if (dock.classList.contains('resizing')) return;
+      if (Math.abs(hh - lastH) <= 2) return;
+      flips = Math.abs(hh - prevH) <= 2 ? flips + 1 : 0;
+      prevH = lastH; lastH = hh;
+      if (flips > 4) return;
+      clearTimeout(bind._ro); bind._ro = setTimeout(renderGraph, 60);
+    }).observe($('#graphScroll'));
+    // and once more when a panel has finished moving, whatever happened on the way
+    $('#drawerBody').addEventListener('transitionend', e => { if (e.target === e.currentTarget && e.propertyName === 'height') { flips = 0; renderGraph(); } });
+    $('#side').addEventListener('transitionend', e => { if (e.target === e.currentTarget && (e.propertyName === 'flex-basis' || e.propertyName === 'transform')) { flips = 0; renderGraph(); } });
   }
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
   // Wander Map open in more than one tab: when another tab saves, this one takes that copy at once,
@@ -5365,7 +5377,7 @@ function bind() {
       toast('Updated with the changes made in another tab.');
     } else if (e.key === UIKEY && e.newValue) {
       let u = null; try { u = JSON.parse(e.newValue); } catch (err) { return; }
-      const pinWas = pinOn(), costsWas = !!UI.costs, keys = ['theme', 'costs', 'pinPlaces', 'motion', 'glass', 'autoFit'], fitWas = autoFitOn();
+      const pinWas = pinOn(), costsWas = !!UI.costs, keys = ['theme', 'costs', 'pinPlaces', 'motion', 'autoFit'], fitWas = autoFitOn();
       for (const k of keys) if (k in u) UI[k] = u[k];
       // during the tour, keep them for when your own plans come back too, so ending it does not write older ones back
       if (TOUR) { try { const t = JSON.parse(TOUR.ui); for (const k of keys) if (k in u) t[k] = u[k]; TOUR.ui = JSON.stringify(t); } catch (err) { /* keep what is there */ } }
