@@ -1901,7 +1901,7 @@ html.glass .side-split::after{background:var(--g-field)}
 /* one Close for the details panel, at its top; the header of what is in it has none of its own */
 #inspector .insp-head > .icon-btn{display:none}
 /* more plans than the tab strip has room for: arrows at its ends, the wheel scrolls it, and a list of every plan */
-.vtabs-wrap{position:relative;flex:none;--vt-bg:var(--surface)}
+.vtabs-wrap{position:relative;z-index:8;flex:none;--vt-bg:var(--surface)} /* its list opens over the frozen dates below */
 .vtabs-wrap[hidden]{display:none}
 .vt-scroll{position:absolute;top:calc(50% + 3px);z-index:3;width:28px;height:28px;margin-top:-14px;display:grid;place-items:center;padding:0;font-size:0;color:var(--ink);cursor:pointer;
   border:1px solid var(--border);border-radius:50%;background:var(--vt-bg);box-shadow:0 0 0 6px color-mix(in srgb,var(--vt-bg) 70%,transparent),0 2px 8px rgba(0,0,0,.22)}
@@ -1914,6 +1914,10 @@ html.glass .side-split::after{background:var(--g-field)}
 .vt-all[hidden]{display:none}
 .vtabs-wrap.over .viewtabs{padding-right:88px !important}
 .vt-all .menu-pop{max-width:320px}
+/* the hover card: several plans on one line */
+.scrubtip .st-dots{display:grid;grid-template-columns:repeat(2,6px);gap:2px;margin-top:4px;flex:none}
+.scrubtip .st-dots i{width:6px;height:6px;border-radius:50%;background:var(--c)}
+.scrubtip .st-more{margin-top:6px;font-size:11.5px;color:var(--muted)}
 .vt-all .menu-pop [role=menuitem] .key{justify-self:center;width:9px;height:9px;border-radius:50%;background:var(--c,transparent);border:1px solid color-mix(in srgb,var(--c,var(--ink)) 70%,transparent)}
 .vt-all .menu-pop [role=menuitem][aria-current="true"]{font-weight:650;background:var(--surface2)}
 /* a narrow details panel: fields one under the other */
@@ -3360,7 +3364,8 @@ function renderGraph() {
       const x0 = X(ta.arr), x1 = X(tb.dep);
       if (x1 <= x0 + 1) continue;
       const sk = waitStack[`${S.legs[b].from}|${Math.round(x0)}|${Math.round(x1)}`] || [pi.id];
-      const yy = rowY[S.legs[b].from] + (sk.indexOf(pi.id) - (sk.length - 1) / 2) * 4;
+      const gap = sk.length > 1 ? Math.min(4, 10 / (sk.length - 1)) : 0; // however many plans wait here, the lines keep to 10px
+      const yy = rowY[S.legs[b].from] + (sk.indexOf(pi.id) - (sk.length - 1) / 2) * gap;
       const g = el('g', { class: 'wait' + (sel && sel.k === 'wait' && sel.id === b && sel.plan === pi.id ? ' sel' : ''), 'data-plan': pi.id, 'data-leg': b, 'data-wait': b }, gEdge);
       g.style.setProperty('--c', pi.color);
       el('line', { x1: x0, x2: x1, y1: yy, y2: yy, class: 'dwell' }, g);
@@ -3454,25 +3459,40 @@ function renderGraph() {
     el('title', null, g).textContent = `Travel time ${dur}${t.buf ? ` + ${fmtDur(t.buf)} buffer` : ''}\n${legTitle(j.id)}`;
   }
 
-  // plan badges at the end of each saved plan
+  // plan badges at the end of each saved plan; where more than three end at the same spot, the chosen (★) and
+  // the focused one keep their own and one tag stands for the rest
+  const endAt = {};
   plist.forEach(pi => {
     if (!pi.legs.length) return;
     const last = pi.legs[pi.legs.length - 1], t = T[last];
     if (!t.timed || !t.ok) return;
+    const k = `${S.legs[last].to}|${Math.round(X(t.arr))}`;
+    (endAt[k] || (endAt[k] = [])).push(pi.id);
+  });
+  const endGroups = [];
+  Object.values(endAt).forEach(ids => {
+    if (ids.length <= 3) { ids.forEach(id => endGroups.push({ ids: [id] })); return; }
+    const own = ids.filter(id => id === S.picked || id === focusPlan || id === viewPlan);
+    own.forEach(id => endGroups.push({ ids: [id] }));
+    endGroups.push({ ids: ids.filter(id => !own.includes(id)), more: own.length > 0 });
+  });
+  endGroups.forEach(({ ids, more }) => {
+    const pi = PLBY[ids[0]], many = ids.length > 1;
+    const last = pi.legs[pi.legs.length - 1], t = T[last];
     const node = S.legs[last].to, x = X(t.arr), yy = rowY[node];
     const r = rows.find(q => q.id === node); if (!r) return; // its place is not on this view
     const k = r.cl.find(c => x >= c.x0 - .5 && x <= c.x1 + .5);
-    const s = `${S.picked === pi.id ? '★ ' : ''}${pi.name}${UI.costs ? ' · ' + money(pi.cost) : ''}`;
+    const s = many ? `${ids.length} ${more ? 'more ' : ''}plans end here` : `${S.picked === pi.id ? '★ ' : ''}${pi.name}${UI.costs ? ' · ' + money(pi.cost) : ''}`;
     const w = tw(s, F.badge) + 22, bx = (k ? k.x1 : x) + 20;
     let dy = 0;
     for (const o of [0, 28, -28, 56, -56, 84, -84, 112]) if (free(bx, yy + o - 12, bx + w, yy + o + 12)) { dy = o; break; }
     boxes.push([bx, yy + dy - 12, bx + w, yy + dy + 12]);
-    const g = el('g', { class: 'badge' + (S.picked === pi.id ? ' picked' : ''), 'data-plan': pi.id, tabindex: '0', role: 'button' }, gBadge);
-    g.style.setProperty('--c', pi.color);
+    const g = el('g', { class: 'badge' + (many ? ' group' : S.picked === pi.id ? ' picked' : ''), 'data-plan': many ? null : pi.id, tabindex: '0', role: 'button' }, gBadge);
+    g.style.setProperty('--c', many ? 'var(--ink2)' : pi.color);
     if (dy) el('path', { d: `M${x + 6} ${yy} C${bx - 6} ${yy} ${bx - 10} ${yy + dy} ${bx} ${yy + dy}`, class: 'leader' }, g);
     el('rect', { x: bx, y: yy + dy - 12, width: w, height: 24, rx: 12 }, g);
     txt(g, bx + 11, yy + dy + 4.5, s, 'bt');
-    el('title', null, g).textContent = `${pi.name}: ${pi.route} · ${money(pi.cost)}. Click to show this plan.`;
+    el('title', null, g).textContent = many ? `${ids.map(id => PLBY[id].name).join(', ')}. Click to see them all in Plans.` : `${pi.name}: ${pi.route} · ${money(pi.cost)}. Click to show this plan.`;
   });
 
   // fare of each leg, only when "Costs" is switched on
@@ -3995,12 +4015,24 @@ function renderTip() {
   const tip = $('#scrubTip'); if (!tip) return;
   const plans = viewOnly || scrubT == null || !geo || !geo.time ? [] : (viewPlan && PLBY[viewPlan] ? [PLBY[viewPlan]] : PL).filter(p => p.legs.length);
   if (!plans.length) { tip.hidden = true; return; }
-  tip.replaceChildren(h('div', { class: 'st-head' }, h('b', { text: fmtDT(scrubT) }), pinned ? h('span', { class: 'st-pin', text: 'Pinned' }) : null),
-    ...plans.map(pi => {
-      const st = statusAt(pi, scrubT) || { text: 'Not travelling', sub: '' };
-      return h('div', { class: 'st-row' }, h('span', { class: 'key-dot', style: `--c:${pi.color}` }),
-        h('div', { class: 'st-body' }, h('div', { class: 'st-plan', text: pi.name }), h('div', { class: 'st-text', text: st.text }), st.sub ? h('div', { class: 'st-sub', text: st.sub }) : null));
-    }));
+  // plans doing the same thing at this moment share one line, so many plans make a short card
+  const groups = [];
+  for (const pi of plans) {
+    const st = statusAt(pi, scrubT) || { text: 'Not travelling', sub: '' }, key = `${st.text}|${st.sub || ''}`;
+    let g = groups.find(x => x.key === key);
+    if (!g) groups.push(g = { key, st, plans: [] });
+    g.plans.push(pi);
+  }
+  const MAXG = 5, shown = groups.slice(0, MAXG);
+  tip.replaceChildren(...[h('div', { class: 'st-head' }, h('b', { text: fmtDT(scrubT) }), pinned ? h('span', { class: 'st-pin', text: 'Pinned' }) : null),
+    ...shown.map(g => {
+      const n = g.plans.length, who = n === 1 ? g.plans[0].name : n <= 3 ? listJoin(g.plans.map(x => x.name)) : `${n} plans`;
+      const dots = n === 1 ? h('span', { class: 'key-dot', style: `--c:${g.plans[0].color}` })
+        : h('span', { class: 'st-dots', 'aria-hidden': 'true' }, ...g.plans.slice(0, 4).map(x => h('i', { style: `--c:${x.color}` })));
+      return h('div', { class: 'st-row' }, dots,
+        h('div', { class: 'st-body' }, h('div', { class: 'st-plan', text: who, title: n > 3 ? g.plans.map(x => x.name).join(', ') : null }), h('div', { class: 'st-text', text: g.st.text }), g.st.sub ? h('div', { class: 'st-sub', text: g.st.sub }) : null));
+    }),
+    groups.length > MAXG ? h('div', { class: 'st-more', text: `and ${groups.length - MAXG} more` }) : null].filter(Boolean));
   tip.hidden = false;
   const sc = $('#graphScroll'), x = geo.X(scrubT), w = tip.offsetWidth, hh = tip.offsetHeight;
   let left = x + 16;
@@ -5506,7 +5538,7 @@ function renderViewTabs() {
     const b = h('button', { class: 'vtab', type: 'button', role: 'tab', 'data-plan': id || null, 'aria-selected': String((viewPlan || null) === id),
       title: id ? (canEdit() ? 'Show only this plan. Double-click to rename.' : 'Show only this plan') : 'Show every place and leg', onclick: () => { setView(id); const t = $('#viewTabs [aria-selected="true"]'); if (t && (!document.activeElement || document.activeElement === document.body)) t.focus({ preventScroll: true }); } },
       color ? h('span', { class: 'key', style: `--c:${color}` }) : null, label);
-    if (id && canEdit()) b.addEventListener('dblclick', () => { setView(id); startRename(id, 'bar'); });
+    if (id && canEdit()) b.addEventListener('dblclick', () => { setView(id); startRename(id, 'side'); });
     return b;
   };
   if (!viewOnly) box.append(tab(null, 'All places and legs'));
@@ -5518,7 +5550,8 @@ function renderViewTabs() {
   if (renderViewTabs.chosen !== chosen) { showChosenTab(renderViewTabs.chosen !== undefined); renderViewTabs.chosen = chosen; renderViewTabs.at = performance.now(); syncTabScroll(); }
 }
 function renderPlanBar() {
-  const bar = $('#planBar'); bar.replaceChildren();
+  // the plan in view is named by its tab, and its costs, times and actions are in the details panel: no bar repeats them
+  const bar = $('#planBar'); bar.replaceChildren(); bar.hidden = true; return;
   const p = viewPlan && PLBY[viewPlan];
   bar.hidden = !p;
   if (!p) return;
@@ -6581,7 +6614,7 @@ function planCtx(id) {
     { label: 'Copy as text', ico: 'copy', run: () => copyText(planText(p)) },
     ed ? '-' : null,
     ed ? { label: 'Edit route and costs', ico: 'edit', run: () => startBuilder(id) } : null,
-    ed ? { label: 'Rename', ico: 'edit', key: 'F2', run: () => { setView(id); startRename(id, 'bar'); } } : null,
+    ed ? { label: 'Rename', ico: 'edit', key: 'F2', run: () => { setView(id); startRename(id, 'side'); } } : null,
     ed ? { label: 'Duplicate plan', ico: 'dup', run: () => duplicatePlan(id) } : null,
     ed ? { label: S.picked === id ? 'Unmark as the chosen plan' : 'Mark as the chosen plan', ico: 'star', run: () => pick(id) } : null,
     ed ? '-' : null,
@@ -6812,7 +6845,7 @@ function bind() {
   svg.addEventListener('click', e => {
     if (viewOnly) {
       const b = e.target.closest('.badge');
-      if (b) { setView(b.dataset.plan); return; }
+      if (b) { if (b.dataset.plan) setView(b.dataset.plan); else setDrawer(true); return; }
       if (geo && geo.time) { trackY(e); scrubT = tAt(e); pinned = !pinned; drawScrub(); renderNow(); }
       return;
     }
@@ -6824,7 +6857,7 @@ function bind() {
     const wait = e.target.closest('[data-wait]');
     if (wait) { select({ k: 'wait', id: wait.dataset.wait, plan: wait.dataset.plan }, '#fWait'); return; }
     const badge = e.target.closest('.badge');
-    if (badge) { togglePlan(badge.dataset.plan); return; }
+    if (badge) { if (badge.dataset.plan) togglePlan(badge.dataset.plan); else setDrawer(true); return; }
     const node = e.target.closest('[data-node]');
     if (node) { select({ k: 'node', id: node.dataset.node }); return; }
     const leg = e.target.closest('[data-leg]');
@@ -6844,7 +6877,7 @@ function bind() {
     if (!t) return;
     e.preventDefault();
     if (B) { if (t.dataset.node) guidePlace(t.dataset.node); return; }
-    if (t.dataset.plan) togglePlan(t.dataset.plan); else select({ k: 'node', id: t.dataset.node });
+    if (t.dataset.plan) togglePlan(t.dataset.plan); else if (t.classList.contains('badge')) setDrawer(true); else select({ k: 'node', id: t.dataset.node });
   });
 
   document.addEventListener('click', e => {
@@ -7303,7 +7336,7 @@ function bind() {
       const pid = viewPlan || focusPlan;
       if (sel && sel.k === 'node') { const f = $('#inspector [data-f="name"]'); if (f) { f.focus(); f.select(); } }
       else if (sel && sel.k === 'wait') { const f = $('#fWait'); if (f) { f.focus(); f.select(); } }
-      else if (pid && S.plans[pid]) { setView(pid); startRename(pid, 'bar'); }
+      else if (pid && S.plans[pid]) { setView(pid); startRename(pid, 'side'); }
     }
     else if ((e.key === 'Home' || e.key === 'End') && !inField && !mod && overGraph && geo && geo.time) { e.preventDefault(); const sc = $('#graphScroll'); sc.scrollTo({ left: e.key === 'Home' ? 0 : sc.scrollWidth, behavior: scrollMode() }); }
     else if (e.key === 'Escape' && !inField && focusPlan && !B) { focusPlan = null; renderPlans(); applyHighlight(); renderInspector(); }
