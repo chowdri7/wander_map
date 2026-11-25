@@ -905,6 +905,8 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 [data-ico="place"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 21s-6.5-5.8-6.5-11a6.5 6.5 0 0 1 13 0c0 5.2-6.5 11-6.5 11z%22/%3E%3Ccircle cx=%2212%22 cy=%2210%22 r=%222.3%22/%3E%3C/svg%3E")}
 [data-ico="leg"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%225.5%22 cy=%2218.5%22 r=%222.2%22/%3E%3Ccircle cx=%2218.5%22 cy=%225.5%22 r=%222.2%22/%3E%3Cpath d=%22M7.7 18.5H15a3.3 3.3 0 0 0 0-6.6H9a3.3 3.3 0 0 1 0-6.6h7.3%22/%3E%3C/svg%3E")}
 [data-ico="plan"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4z%22/%3E%3Cpath d=%22M9 4v14M15 6v14%22/%3E%3C/svg%3E")}
+[data-ico="move"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3%22/%3E%3C/svg%3E")}
+[data-ico="dup"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%228%22 y=%228%22 width=%2213%22 height=%2213%22 rx=%222.5%22/%3E%3Cpath d=%22M16 8V5.5A2.5 2.5 0 0 0 13.5 3h-8A2.5 2.5 0 0 0 3 5.5v8A2.5 2.5 0 0 0 5.5 16H8M14.5 11.5v6M11.5 14.5h6%22/%3E%3C/svg%3E")}
 [data-ico="fit"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5%22/%3E%3C/svg%3E")}
 [data-ico="coin"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%228.5%22/%3E%3Cpath d=%22M14.8 9.2c-.5-.8-1.5-1.2-2.8-1.2-1.6 0-2.7.8-2.7 2s1.1 1.7 2.7 2 2.7.8 2.7 2-1.1 2-2.7 2c-1.3 0-2.3-.4-2.8-1.2M12 6.5V8M12 16v1.5%22/%3E%3C/svg%3E")}
 [data-ico="undo"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M9 14 4 9l5-5%22/%3E%3Cpath d=%22M4 9h10.5a5.5 5.5 0 0 1 0 11H11%22/%3E%3C/svg%3E")}
@@ -1785,7 +1787,7 @@ body.side-dragging,body.side-dragging *{cursor:ew-resize !important}
 /* highlights on the timeline ease in and out */
 #graph .edge,#graph .node,#graph .station,#graph .badge,#graph .wait,#graph .waitlbl,#graph .durtag,#graph .rowhead{transition:opacity .22s var(--ease)}
 /* Auto-fit pressed */
-#fit[aria-pressed="true"]{background:var(--accent-soft) !important;border-color:color-mix(in srgb,var(--accent) 45%,transparent) !important;color:var(--accent) !important}
+#fit[aria-pressed="true"],#arrangeBtn[aria-pressed="true"]{background:var(--accent-soft) !important;border-color:color-mix(in srgb,var(--accent) 45%,transparent) !important;color:var(--accent) !important}
 /* the colour line across the top follows the header's own corners */
 .topbar::before{inset:0 !important;height:auto !important;border-radius:inherit;background:linear-gradient(90deg,var(--strip-n) 0%,var(--strip-d) 22%,var(--strip-y) 45%,var(--strip-y) 58%,var(--strip-k) 78%,var(--strip-n) 100%) top/100% 3px no-repeat !important;pointer-events:none}
 /* glass: the tab strip and the chosen tab */
@@ -1794,7 +1796,7 @@ html.glass .vt-ind{background:var(--g-chart);border-color:var(--g-edge);box-shad
 html.glass .vt-ind::before{background:radial-gradient(circle at 0 0,transparent 9.5px,var(--g-chart) 10px)}
 html.glass .vt-ind::after{background:radial-gradient(circle at 100% 0,transparent 9.5px,var(--g-chart) 10px)}
 html.glass .vtab + .vtab::after{background:var(--g-field)}
-html.glass #fit[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 16%,var(--g-inner)) !important}
+html.glass #fit[aria-pressed="true"],html.glass #arrangeBtn[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 16%,var(--g-inner)) !important}
 /* ================= Liquid glass, all the way through: controls, not only panels ================= */
 /* a soft sheen across the top of every glass panel, as light falls on curved glass */
 html.glass .topbar,html.glass .graph-card,html.glass .dock,html.glass .side,html.glass .rail,html.glass .modal-card,html.glass .tour-card,html.glass .menu-pop{background-image:linear-gradient(180deg,var(--g-sheen),transparent 46%) !important}
@@ -1880,9 +1882,36 @@ html.glass .side-split::after{background:var(--g-field)}
 .card-head .now{flex:1 1 0;min-width:0;height:auto !important;min-height:0;margin:0 14px 0 16px;padding:0 !important;border:0 !important;background:none !important;overflow:hidden;font-size:12px;line-height:1.35;color:var(--muted)}
 .card-head .now .hint{margin:0;font-size:12px;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card-head .now strong{color:var(--ink) !important;font-weight:600}
+/* narrower windows: Arrange shows its icon only, and the hint gives way before it is squeezed to nothing */
+@media (max-width:1100px){#arrangeBtn{width:30px;padding:0;font-size:0;gap:0}}
+@media (max-width:860px){.card-head .now{display:none}}
 /* the details panel opening or closing: the timeline's frame narrows or widens without a scrollbar flashing in,
    then the old drawing fades out over the new one */
 .side-moving .graph-scroll,.side-dragging .graph-scroll,.settling .graph-scroll{overflow-x:hidden !important}
+/* Arrange: places and legs can be dragged only while it is on */
+.arranging #pinSvg .rowhead{cursor:grab}
+.arranging #graph .edge,.arranging #graph .pt,.arranging #graph .tm,.arranging #graph .durtag{cursor:grab}
+.arranging #graph[data-grab="end"] .edge,.arranging #graph[data-grab="end"] .pt,.arranging #graph[data-grab="end"] .tm{cursor:move}
+.arranging #graph .edge,.arranging #graph .pt,.arranging #graph .tm,.arranging #graph .durtag,.arranging #pinSvg .rowhead{touch-action:none}
+body.dragging,body.dragging *{cursor:grabbing !important;-webkit-user-select:none !important;user-select:none !important}
+#graph.dragging .edge:not(.drag),#graph.dragging .pt:not(.drag),#graph.dragging .tm:not(.drag),#graph.dragging .durtag:not(.drag),#graph.dragging .wait,#graph.dragging .badge,#graph.dragging .station{opacity:.22}
+#graph .drag.ghosted{opacity:.3}
+#graph .drag.settle,#pinSvg .rowhead.settle{transition:transform .2s var(--ease),opacity .22s var(--ease)}
+#graph .dragband{fill:var(--accent);opacity:.08;pointer-events:none}
+#graph .dragprev{pointer-events:none}
+#graph .dragprev .seg{stroke-dasharray:8 6;stroke-width:4}
+#graph .dragprev .dot{fill:var(--surface);stroke:var(--c);stroke-width:3}
+#graph .dragprev.bad .seg,#graph .dragprev.bad .dot{stroke:var(--bad)}
+#pinSvg.sorting .rowhead:not(.lifted){transition:transform .18s var(--ease)}
+#pinSvg .rowhead.lifted .rowhit{fill:var(--surface);stroke:var(--accent);stroke-width:1.5}
+#pinSvg .rowhead.lifted{filter:drop-shadow(0 6px 14px rgba(0,0,0,.18))}
+.dragtip{position:fixed;left:0;top:0;z-index:90;pointer-events:none;display:flex;flex-direction:column;gap:2px;max-width:300px;padding:7px 10px;border-radius:10px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-lg);font-size:12px;color:var(--ink2);white-space:nowrap}
+.dragtip[hidden]{display:none}
+.dragtip b{font-family:var(--serif);font-size:13px;font-weight:600;color:var(--ink)}
+.dragtip small{font-size:11px;color:var(--muted)}
+.dragtip.bad{border-color:color-mix(in srgb,var(--bad) 55%,transparent)}
+.dragtip.bad small{color:var(--bad)}
+html.glass .dragtip{background:var(--g-strong);border-color:var(--g-edge);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%)}
 .graph-ghost{position:absolute;z-index:2;overflow:visible;pointer-events:none;animation:wmGhost .26s ease forwards}
 @keyframes wmGhost{to{opacity:0}}
 @media (prefers-reduced-motion:reduce){.graph-ghost{display:none}}
@@ -1988,6 +2017,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
           <button id="costBtn" class="btn small" type="button" data-ico="coin" aria-pressed="false" title="Show the cost of each leg on the timeline">Costs: off</button>
           <span class="zoomgrp"><span class="tb-label">Zoom</span><input id="zoom" type="range" min="3" max="60" step="1" aria-label="Zoom timeline"></span>
           <button id="fit" class="btn small icon" type="button" data-ico="fit" title="Fit the whole timeline on screen">Fit</button>
+          <button id="arrangeBtn" class="btn small" type="button" data-ico="move" aria-pressed="false" title="Arrange: drag a place name up or down, a leg sideways to move its times, or a leg’s end dot to another time or place (hold Shift for 5-minute steps). Off, nothing moves when you scroll or click.">Arrange</button>
           <div class="menu" id="keyMenu"><button class="btn small" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="key" title="What the colours and lines mean">Key</button><div class="menu-pop right keypop" role="dialog" aria-label="Colour key" hidden><div class="legend" id="legend"></div></div></div>
         </div>
       </div>
@@ -3112,11 +3142,7 @@ function renderGraph() {
     txt(gLab, x, yy, s, cls + ' halo', attrs || null);
     return true;
   };
-  const curve = (x0, y0, x1, y1) => {
-    if (Math.abs(y1 - y0) < .5) return `M${x0} ${y0} L${x1} ${y1}`;
-    const k = Math.max(0, (x1 - x0) / 2);
-    return `M${x0} ${y0} C${x0 + k} ${y0} ${x1 - k} ${y1} ${x1} ${y1}`;
-  };
+  const curve = curvePath;
 
   const legJobs = [], dwellJobs = [];
   for (const id of legIds) {
@@ -3757,7 +3783,7 @@ function renderNow() {
   if (!S.order.length) return;
   if (!geo || !geo.time) { box.append(h('p', { class: 'hint', text: 'Add times to your legs to use the timeline.' })); return; }
   if (!PL.some(p => p.legs.length)) { box.append(h('p', { class: 'hint', text: 'Save a plan, then move the pointer across the timeline to see where each plan is at that moment.' })); return; }
-  if (scrubT == null) { renderTip(); box.append(h('p', { class: 'hint', text: TOUCH ? 'Tap the timeline to see where every saved plan is at that moment. Tap again to release.' : 'Move the pointer across the timeline to see where every saved plan is at that moment. Click to pin it.' })); return; }
+  if (scrubT == null) { renderTip(); box.append(h('p', { class: 'hint', text: arranging ? 'Arrange is on: drag a place name up or down, or a leg or its end dot. Esc or Arrange again to stop.' : TOUCH ? 'Tap the timeline to see where every saved plan is at that moment. Tap again to release.' : 'Move the pointer across the timeline to see where every saved plan is at that moment. Click to pin it.' })); return; }
   box.append(h('p', { class: 'hint' }, h('strong', { text: fmtDT(scrubT), style: 'color:var(--ink)' }),
     pinned ? (TOUCH ? '  ·  pinned here, tap the timeline to release' : '  ·  pinned here, click the timeline to release') : '  ·  click to pin this moment'));
   renderTip();
@@ -3873,6 +3899,7 @@ function planActions(p, where) {
     where === 'bar' ? { label: 'Open itinerary', sub: 'Every leg, wait and cost', ico: 'list', run: () => togglePlan(p.id, true) }
                     : { label: 'Show on the timeline', sub: 'Only this plan', ico: 'eye', run: () => setView(p.id) },
     { label: 'Copy as text', sub: 'To paste into a message', ico: 'copy', run: () => copyText(planText(p)) },
+    { label: 'Duplicate plan', sub: 'A copy to change without losing this one', ico: 'dup', run: () => duplicatePlan(p.id) },
     '-',
     { label: 'Delete plan', ico: 'trash', danger: true, run: () => delPlan(p.id) },
   ];
@@ -4436,7 +4463,8 @@ function helpPanel() {
       h('li', null, 'Legs that touch the same place ', h('b', { text: 'meet on its row' }), '. Legs there at about the same time share one station.'),
       h('li', null, h('b', { text: 'Make a plan' }), ': choose New, then Plan. Click the leg you leave on in the timeline, then take the way on at each place (when there is more than one, they are numbered) until you get there, and choose Finish.'),
       h('li', null, 'Name the plan and add its own other costs (stay, food), then save. Travel fares belong to the legs, so a fare is the same in every plan. Compare saved plans below and star the one you pick.'),
-      h('li', null, h('b', { text: 'Trips' }), ': each trip has its own legs, plans, budget and currency. Open another or add one from the trip name at the top. A place is in every trip unless you keep it to one.')),
+      h('li', null, h('b', { text: 'Trips' }), ': each trip has its own legs, plans, budget and currency. Open another or add one from the trip name at the top. A place is in every trip unless you keep it to one.'),
+      h('li', null, h('b', { text: 'Arrange' }), ': turn it on above the timeline, then drag a place name up or down, a leg sideways to move its times, or a leg’s end dot to another time or place. Undo puts it back. Hold Ctrl (⌘ on a Mac) and scroll, or press + and −, over the timeline to zoom it; 0 fits it again.')),
     h('div', { class: 'sect' }, h('h3', { text: 'Transport colours' }), lg),
     h('p', { class: 'hint', style: 'margin-top:12px', text: 'Your work saves automatically in this browser. Use Export in Settings to keep a copy or share it.' }));
 }
@@ -4970,6 +4998,24 @@ function delPlan(id) {
   renderAll();
   toast(`Deleted plan “${p.name}”`, true);
 }
+// A copy of a plan, right after it, named “… (copy)”: the same legs, waits and extra costs, its own colour.
+function duplicatePlan(id) {
+  const p = S.plans[id]; if (!p || !canEdit()) return;
+  if (B) { toast('Finish or cancel the plan you are making first'); return; }
+  if (!canLeave()) return;
+  const stem = `${String(p.name).replace(/\s*\(copy(?: \d+)?\)\s*$/i, '')} (copy`;
+  let name = stem + ')', n = 2;
+  while (planNameError(name)) name = `${stem} ${n++})`;
+  checkpoint();
+  const nid = uid('p'), copy = JSON.parse(JSON.stringify(p));
+  delete copy.cslot; copy.id = nid; copy.name = name;
+  S.plans[nid] = copy;
+  S.planOrder.splice(S.planOrder.indexOf(id) + 1, 0, nid);
+  assignSlots();
+  focusPlan = nid;
+  renderAll();
+  toast(`Made “${name}”, a copy of “${p.name}”. Click its name to rename it.`, true);
+}
 
 /* ---------- edits ---------- */
 function select(s, focusSel) {
@@ -5469,6 +5515,7 @@ function syncToolbar() {
   $('#zoom').value = autoFitOn() && geo && geo.time ? geo.pph : (S.pph || 14);
   syncFitBtn();
   $('#zoom').disabled = !hasTime; $('#fit').disabled = !hasTime;
+  syncArrangeBtn();
   if (document.activeElement !== $('#budget')) $('#budget').value = S.budget || '';
   $('#currency').value = S.currency;
   $('#setCur').textContent = curSym(); // the budget's currency sign in Settings follows the currency at once
@@ -5495,6 +5542,297 @@ function toast(msg, undoable) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 6000);
 }
 
+/* ---------- Arrange: drag places and legs ----------
+   Only while Arrange is on, so scrolling, clicking and reading the timeline never move anything by accident.
+   A place name drags up or down to reorder the rows. A leg drags sideways to move both its times; either end
+   drags along its row to change that time, or onto another place's row to leave from or arrive there.
+   Every drop goes through the same checks as editing the leg, and Undo puts it back. */
+let arranging = false, drag = null, noClickUntil = 0;
+function canArrange() { return canEdit() && !B && S.order.length > 0; }
+function syncArrangeBtn() {
+  const b = $('#arrangeBtn'); if (!b) return;
+  if (arranging && !canArrange()) { if (drag) dropDrag(false); arranging = false; }
+  b.hidden = !canEdit() || !!B;
+  b.disabled = !S.order.length;
+  b.setAttribute('aria-pressed', String(arranging));
+  document.body.classList.toggle('arranging', arranging);
+  if (!arranging) { const g = $('#graph'); if (g) delete g.dataset.grab; }
+}
+function setArrange(on) {
+  on = !!on;
+  if (on === arranging || (on && !canArrange())) return;
+  if (!on && drag) dropDrag(false);
+  arranging = on;
+  if (on && (scrubT != null || pinned)) { scrubT = null; pinned = false; drawScrub(); renderNow(); } // the hover card steps aside
+  syncArrangeBtn(); renderNow();
+  toast(on ? 'Arrange is on: drag a place name up or down, a leg sideways to move its times, or a leg’s end dot to another time or place. Esc ends it.' : 'Arrange is off: the timeline only scrolls');
+}
+function curvePath(x0, y0, x1, y1) {
+  if (Math.abs(y1 - y0) < .5) return `M${x0} ${y0} L${x1} ${y1}`;
+  const k = Math.max(0, (x1 - x0) / 2);
+  return `M${x0} ${y0} C${x0 + k} ${y0} ${x1 - k} ${y1} ${x1} ${y1}`;
+}
+function svgXY(svg, e) {
+  const r = svg.getBoundingClientRect(), vb = svg.viewBox && svg.viewBox.baseVal;
+  const kx = vb && vb.width && r.width ? vb.width / r.width : 1, ky = vb && vb.height && r.height ? vb.height / r.height : 1;
+  return { x: (e.clientX - r.left) * kx, y: (e.clientY - r.top) * ky };
+}
+// Which part of a leg the pointer is on: its start, its end (the buffer counts as the end) or the line itself.
+function legPart(id, p) {
+  const L = geo && geo.legs[id]; if (!L) return null;
+  if (Math.hypot(p.x - L.s0, p.y - L.yd) <= 14) return 'from';
+  const xe = Math.max(L.xS, Math.min(L.xA, p.x));
+  if (Math.hypot(p.x - xe, p.y - L.yk) <= 14) return 'to';
+  return 'body';
+}
+// A dragged time moves in steps of at least about 4px at this zoom (5, 10, 15, 30 or 60 minutes), 5 minutes
+// with Shift. It stays put until moved half a step, then lands on the step, so times come out round.
+function dragTime(t0, dx, e) {
+  let step = 60 * MIN;
+  if (e && e.shiftKey) step = 5 * MIN;
+  else for (const m of [5, 10, 15, 30, 60]) if (m / 60 * geo.pph >= 4) { step = m * MIN; break; }
+  const raw = dx / geo.pph * H;
+  return Math.abs(raw) < step / 2 ? t0 : roundTo(t0 + raw, step);
+}
+function rowAtY(y) {
+  let best = null, bd = Infinity;
+  for (const id in geo.rowY) { const d = Math.abs(geo.rowY[id] - y); if (d < bd) { bd = d; best = id; } }
+  return best;
+}
+function dragTip(e, kids, bad) {
+  let t = $('#dragTip');
+  if (!t) { t = h('div', { id: 'dragTip', class: 'dragtip', role: 'status', 'aria-live': 'polite' }); document.body.append(t); }
+  t.replaceChildren(...kids.filter(Boolean)); t.classList.toggle('bad', !!bad); t.hidden = false;
+  const w = t.offsetWidth, hh = t.offsetHeight;
+  let x = e.clientX + 16, y = e.clientY + 18;
+  if (x + w > innerWidth - 8) x = e.clientX - w - 16;
+  if (y + hh > innerHeight - 8) y = e.clientY - hh - 14;
+  t.style.transform = `translate(${Math.max(8, x)}px, ${Math.max(8, y)}px)`;
+}
+function dragDown(e, kind, id, part) {
+  if (drag) dropDrag(false);
+  drag = { kind, id, part, sx: e.clientX, sy: e.clientY, last: e, started: false, pid: e.pointerId };
+  addEventListener('pointermove', dragMove); addEventListener('pointerup', dragUp); addEventListener('pointercancel', dragCancel);
+}
+function dragMove(e) {
+  const d = drag; if (!d || (e.pointerId != null && e.pointerId !== d.pid)) return;
+  d.last = e;
+  if (!d.started) {
+    if (Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < 5) return; // a click stays a click
+    const hadForm = !!(draft || edit);
+    if (!geo || !geo.time && d.kind === 'leg' || !canArrange() || !canLeave()) { dropDrag(false); return; }
+    if (hadForm && !draft && !edit) renderInspector();
+    startDrag();
+    if (!drag) return;
+  }
+  if (geo !== d.geo) { dropDrag(false); return; } // the timeline was drawn again under the drag
+  if (d.kind === 'row') moveRowDrag(e); else moveLegDrag(e);
+}
+function startDrag() {
+  const d = drag, svg = $('#graph');
+  d.started = true; d.geo = geo;
+  document.body.classList.add('dragging');
+  closeMenus();
+  if (d.kind === 'row') {
+    const pin = $('#pinSvg');
+    d.heads = [...pin.querySelectorAll('.rowhead')];
+    d.ids = d.heads.map(g => g.dataset.node);
+    d.from = d.to = d.ids.indexOf(d.id);
+    if (d.from < 0) { dropDrag(false); return; }
+    d.g = d.heads[d.from]; d.g.classList.add('lifted');
+    d.y0 = svgXY(pin, { clientX: d.sx, clientY: d.sy }).y;
+    pin.classList.add('sorting');
+    // a band across the chart goes with the place being moved
+    d.band = el('rect', { x: 0, y: geo.rowY[d.id] - 50, width: geo.width, height: LAY.rowH, class: 'dragband' });
+    if (geo.gEdge) svg.insertBefore(d.band, geo.gEdge); else svg.append(d.band);
+  } else {
+    const t = T[d.id], L = geo.legs[d.id];
+    if (!t || !L || !t.timed) { dropDrag(false); return; }
+    d.t = { dep: t.dep, arr: t.arrSched }; d.L = L;
+    d.els = [...svg.querySelectorAll(`[data-leg="${d.id}"]:not([data-wait])`)];
+    svg.classList.add('dragging');
+    d.els.forEach(x => x.classList.add('drag'));
+    d.x0 = svgXY(svg, { clientX: d.sx, clientY: d.sy }).x;
+    if (d.part !== 'body') {
+      d.els.forEach(x => x.classList.add('ghosted'));
+      d.band = el('rect', { x: 0, y: (d.part === 'from' ? L.yd : L.yk) - 50, width: geo.width, height: LAY.rowH, class: 'dragband' });
+      if (geo.gEdge) svg.insertBefore(d.band, geo.gEdge); else svg.append(d.band);
+      d.prev = el('g', { class: 'dragprev' }, svg);
+      d.prev.style.setProperty('--c', legColor(d.id));
+      d.path = el('path', { class: 'seg' }, d.prev);
+      d.dot = el('circle', { r: 7, class: 'dot' }, d.prev);
+    }
+  }
+  d.raf = requestAnimationFrame(dragAuto);
+}
+function moveRowDrag(e) {
+  const d = drag, pin = $('#pinSvg'), rh = LAY.rowH, n = d.ids.length;
+  const dy = Math.max(-d.from * rh - 24, Math.min((n - 1 - d.from) * rh + 24, svgXY(pin, e).y - d.y0));
+  d.g.style.transform = `translate(0px, ${dy}px)`;
+  if (d.band) d.band.setAttribute('transform', `translate(0 ${dy})`);
+  const to = Math.max(0, Math.min(n - 1, d.from + Math.round(dy / rh)));
+  if (to !== d.to) {
+    d.to = to;
+    // the other names make room, as in a list
+    d.heads.forEach((g, i) => {
+      if (i === d.from) return;
+      const s = d.from < to && i > d.from && i <= to ? -rh : d.from > to && i >= to && i < d.from ? rh : 0;
+      g.style.transform = s ? `translate(0px, ${s}px)` : '';
+    });
+  }
+  dragTip(e, [h('b', { text: nodeName(d.id) }), h('span', { text: d.to === d.from ? 'Drop here to keep its row' : `${d.to < d.from ? 'Above' : 'Below'} ${nodeName(d.ids[d.to])}` })]);
+}
+function moveLegDrag(e) {
+  const d = drag, p = svgXY($('#graph'), e), dx = p.x - d.x0, X = geo.X;
+  if (d.part === 'body') {
+    const dt = dragTime(d.t.dep, dx, e) - d.t.dep, px = dt / H * geo.pph;
+    d.dt = dt;
+    d.els.forEach(x => { x.style.transform = px ? `translate(${px}px, 0px)` : ''; });
+    dragTip(e, [h('b', { text: legLabel(d.id) }), h('span', { text: `${shortDT(d.t.dep + dt)} → ${shortDT(d.t.arr + dt)}` }),
+      h('small', { text: dt ? `${fmtDur(Math.abs(dt))} ${dt > 0 ? 'later' : 'earlier'}` : 'Drag sideways to move both times' })]);
+    return;
+  }
+  const l = S.legs[d.id], isFrom = d.part === 'from';
+  const t = dragTime(isFrom ? d.t.dep : d.t.arr, dx, e);
+  const node = rowAtY(p.y) || (isFrom ? l.from : l.to), yy = geo.rowY[node];
+  d.t1 = t; d.node = node;
+  const xm = X(t);
+  d.path.setAttribute('d', isFrom ? curvePath(xm, yy, d.L.xS, d.L.yk) : curvePath(d.L.s0, d.L.yd, xm, yy));
+  d.dot.setAttribute('cx', xm); d.dot.setAttribute('cy', yy);
+  d.band.setAttribute('y', yy - 50);
+  const dep = isFrom ? t : d.t.dep, arr = isFrom ? d.t.arr : t;
+  const bad = node === (isFrom ? l.to : l.from) ? (isFrom ? 'It has to leave from somewhere other than where it arrives' : 'It has to arrive somewhere other than where it leaves')
+    : arr <= dep ? 'It has to arrive after it leaves' : null;
+  d.bad = bad;
+  d.prev.classList.toggle('bad', !!bad);
+  const moved = node !== (isFrom ? l.from : l.to);
+  dragTip(e, [h('b', { text: `${isFrom ? 'Leaves' : 'Arrives at'} ${nodeName(node)}` }), h('span', { text: shortDT(t) }),
+    h('small', { text: bad || (moved ? `Was ${nodeName(isFrom ? l.from : l.to)}` : 'Drag onto another row to change the place') })], bad);
+}
+// Near an edge of the timeline, a drag scrolls it along.
+function dragAuto() {
+  const d = drag; if (!d || !d.started) return;
+  const sc = $('#graphScroll'), r = sc.getBoundingClientRect(), e = d.last, edge = 40;
+  const sp = dist => Math.min(24, Math.ceil((edge - dist) / edge * 14));
+  let vx = 0, vy = 0;
+  if (d.kind === 'leg') { const lx = r.left + pinW(); if (e.clientX < lx + edge) vx = -sp(e.clientX - lx); else if (e.clientX > r.right - edge) vx = sp(r.right - e.clientX); }
+  if (e.clientY < r.top + edge) vy = -sp(e.clientY - r.top); else if (e.clientY > r.bottom - edge) vy = sp(r.bottom - e.clientY);
+  if (vx || vy) {
+    const l0 = sc.scrollLeft, t0 = sc.scrollTop;
+    sc.scrollLeft += vx; sc.scrollTop += vy;
+    if (sc.scrollLeft !== l0 || sc.scrollTop !== t0) dragMove(e);
+  }
+  if (drag === d) d.raf = requestAnimationFrame(dragAuto);
+}
+function dragUp(e) {
+  if (!drag || (e.pointerId != null && e.pointerId !== drag.pid)) return;
+  if (drag.started) noClickUntil = performance.now() + 400; // the click that ends a drag does nothing else
+  dropDrag(drag.started);
+}
+function dragCancel() { if (drag) dropDrag(false); }
+function dropDrag(commit) {
+  const d = drag; if (!d) return;
+  drag = null;
+  removeEventListener('pointermove', dragMove); removeEventListener('pointerup', dragUp); removeEventListener('pointercancel', dragCancel);
+  cancelAnimationFrame(d.raf);
+  const tip = $('#dragTip'); if (tip) tip.hidden = true;
+  document.body.classList.remove('dragging');
+  if (!d.started) return;
+  if (d.band) d.band.remove();
+  if (d.prev) d.prev.remove();
+  $('#graph').classList.remove('dragging');
+  if (commit && geo === d.geo && (d.kind === 'row' ? dropRow(d) : dropLeg(d))) { const pin = $('#pinSvg'); if (pin) pin.classList.remove('sorting'); return; }
+  // nothing changed: everything glides back to where it was
+  const els = d.kind === 'row' ? d.heads || [] : d.els || [];
+  els.forEach(x => { x.classList.remove('ghosted'); x.classList.add('settle'); x.style.transform = ''; });
+  setTimeout(() => { els.forEach(x => x.classList.remove('settle', 'drag', 'lifted')); const pin = $('#pinSvg'); if (pin) pin.classList.remove('sorting'); }, 240);
+}
+function dropRow(d) {
+  if (d.to === d.from) return false;
+  const vis = d.ids.filter(x => x !== d.id); vis.splice(d.to, 0, d.id);
+  const next = vis[d.to + 1], prev = vis[d.to - 1];
+  const ord = S.order.filter(x => x !== d.id);
+  ord.splice(next ? ord.indexOf(next) : ord.indexOf(prev) + 1, 0, d.id);
+  checkpoint();
+  S.order = ord;
+  renderAllGlide();
+  toast(`Moved ${nodeName(d.id)} ${d.to < d.from ? 'up' : 'down'}`, true);
+  return true;
+}
+function dropLeg(d) {
+  if (!S.legs[d.id]) return false;
+  let ch;
+  if (d.part === 'body') { if (!d.dt) return false; ch = { dep: toLocal(d.t.dep + d.dt), arr: toLocal(d.t.arr + d.dt) }; }
+  else {
+    if (d.t1 == null) return false;
+    if (d.bad) { toast(`Not moved: ${d.bad}.`); return false; }
+    ch = d.part === 'from' ? { from: d.node, dep: toLocal(d.t1) } : { to: d.node, arr: toLocal(d.t1) };
+  }
+  return applyLegDrag(d.id, ch);
+}
+// A dragged leg is saved just as an edit in the panel would be: the same checks, one step to undo.
+function applyLegDrag(id, ch) {
+  const base = S.legs[id], changed = diffKeys(base, ch);
+  if (!changed.length) return false;
+  const cand = Object.assign({}, base, ch);
+  const had = new Set(legProblems(base, id).map(p => p.msg));
+  const probs = legProblems(cand, id).filter(p => ['from', 'to', 'dep', 'arr'].includes(p.f) && !had.has(p.msg));
+  if (probs.length) { toast(`Not moved: ${probs[0].msg}`); return false; }
+  const hurt = legBreaksPlan(id, cand);
+  if (hurt) { toast(`Not moved: the plan “${hurt.name}” would no longer work. ${hurt.issues[0]}`); return false; }
+  checkpoint();
+  applyEdit('leg', id, cand, changed);
+  renderAllGlide();
+  toast(`Moved ${legLabel(id)}: ${shortDT(ts(cand.dep))} → ${shortDT(ts(cand.arr))}`, true);
+  return true;
+}
+// renderAll, with the timeline gliding to its new span instead of jumping
+function renderAllGlide() { compute(); joinPending(); renderViewTabs(); renderPlanBar(); settleGraph(); renderInspector(); renderBuilder(); refreshRest(); }
+
+/* ---------- zoom with Ctrl or ⌘ and the wheel, a pinch, or the + and − keys over the timeline ---------- */
+// The timeline zooms, not the page, and the moment under the pointer stays under it.
+let zoomQ = null, overGraph = false, graphPX = null;
+function zoomGraph(f, cx) {
+  if (!geo || !geo.time || viewOnly) return;
+  const sc = $('#graphScroll'), g = $('#graph'), sr = sc.getBoundingClientRect(), gr = g.getBoundingClientRect();
+  const left = sr.left + pinW();
+  const vx = cx != null && cx >= left && cx <= sr.right ? cx : left + (sr.right - left) / 2;
+  const t = geo.tmin + ((vx - gr.left) * (geo.width / gr.width) - geo.left) / geo.pph * H;
+  const want = Math.max(3, Math.min(60, Math.round(geo.pph * f * 100) / 100));
+  if (Math.abs(want - geo.pph) < .01) return;
+  if (autoFitOn()) { UI.autoFit = false; saveUI(); } // zooming by hand turns auto-fit off
+  S.pph = want;
+  renderGraph(); syncToolbar();
+  if (!geo || !geo.time) return;
+  const g2 = $('#graph').getBoundingClientRect();
+  sc.scrollLeft += g2.left + geo.X(t) * (g2.width / geo.width) - vx;
+  clearTimeout(zoomGraph.st); zoomGraph.st = setTimeout(() => save(), 500); // kept once you stop, not on every step
+}
+function queueZoom(f, cx) {
+  if (zoomQ) { zoomQ.f *= f; zoomQ.cx = cx; return; }
+  zoomQ = { f, cx };
+  requestAnimationFrame(() => { const q = zoomQ; zoomQ = null; if (q) zoomGraph(q.f, q.cx); });
+}
+// a key press zooms in a few quick steps, so it glides rather than jumps; presses in a row add up
+const ZS = { rem: 1, n: 0, cx: null, r: 0 };
+function stepZoom(f, cx) {
+  ZS.rem *= f; ZS.n = 6; ZS.cx = cx;
+  if (ZS.r) return;
+  const tick = () => {
+    const k = Math.pow(ZS.rem, 1 / ZS.n);
+    ZS.rem /= k; ZS.n--;
+    zoomGraph(k, ZS.cx);
+    if (ZS.n > 0) ZS.r = requestAnimationFrame(tick); else { ZS.r = 0; ZS.rem = 1; }
+  };
+  ZS.r = requestAnimationFrame(tick);
+}
+function fitAgain() {
+  cancelAnimationFrame(ZS.r); ZS.r = 0; ZS.rem = 1; ZS.n = 0; // a key zoom still gliding stops here
+  if (!geo || !geo.time || autoFitOn()) return;
+  UI.autoFit = true; $('#graphScroll').scrollLeft = 0; saveUI(); settleGraph(); syncToolbar();
+  toast('Auto-fit is on: the timeline fits the window');
+}
+
 /* ---------- events ---------- */
 function tAt(e) {
   const r = $('#graph').getBoundingClientRect();
@@ -5506,12 +5844,47 @@ function bind() {
   const svg = $('#graph');
   const trackY = e => { const sc = $('#graphScroll'); scrubY = e.clientY - sc.getBoundingClientRect().top + sc.scrollTop; };
   svg.addEventListener('pointermove', e => {
+    if (arranging) { // no hover card while arranging; the pointer shows what a drag would move
+      if (!drag) { const g = e.target.closest('[data-leg]'), part = g && !g.dataset.wait && geo ? legPart(g.dataset.leg, svgXY(svg, e)) : null; if (part) svg.dataset.grab = part === 'body' ? 'body' : 'end'; else delete svg.dataset.grab; }
+      return;
+    }
     if (!geo || !geo.time || pinned || e.pointerType === 'touch') return;
     const t = tAt(e), y0 = scrubY;
     trackY(e);
     if (t !== scrubT) { scrubT = t; drawScrub(); renderNow(); }
     else if (Math.abs((y0 || 0) - scrubY) > 2) renderTip();
   });
+  svg.addEventListener('pointerdown', e => {
+    if (!arranging || e.button !== 0 || !geo || !geo.time) return;
+    const g = e.target.closest('[data-leg]'); if (!g || g.dataset.wait) return;
+    const id = g.dataset.leg; if (!geo.legs[id] || !S.legs[id]) return;
+    e.preventDefault();
+    dragDown(e, 'leg', id, legPart(id, svgXY(svg, e)));
+  });
+  $('#pinSvg').addEventListener('pointerdown', e => {
+    if (!arranging || e.button !== 0) return;
+    const rh = e.target.closest('.rowhead'); if (!rh) return;
+    e.preventDefault();
+    dragDown(e, 'row', rh.dataset.node);
+  });
+  // the click that ends a drag does nothing else
+  document.addEventListener('click', e => { if (performance.now() < noClickUntil) { noClickUntil = 0; e.stopPropagation(); e.preventDefault(); } }, true);
+  $('#arrangeBtn').addEventListener('click', () => setArrange(!arranging));
+  // Ctrl or ⌘ with the wheel (or a pinch on a touchpad) zooms the timeline, never the page
+  const card = $('.graph-card');
+  card.addEventListener('wheel', e => {
+    if (!(e.ctrlKey || e.metaKey) || viewOnly) return;
+    e.preventDefault();
+    if (!geo || !geo.time) return;
+    const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * 400 : e.deltaY;
+    queueZoom(Math.exp(-Math.max(-300, Math.min(300, dy)) * .0022), e.clientX);
+  }, { passive: false });
+  // Safari's pinch comes as gestures
+  let gScale = 1;
+  card.addEventListener('gesturestart', e => { e.preventDefault(); gScale = 1; });
+  card.addEventListener('gesturechange', e => { e.preventDefault(); if (geo && geo.time && !viewOnly) queueZoom(e.scale / gScale, e.clientX); gScale = e.scale; });
+  card.addEventListener('pointermove', e => { overGraph = true; graphPX = e.clientX; }, { passive: true });
+  card.addEventListener('pointerleave', () => { overGraph = false; });
   svg.addEventListener('pointerleave', () => { if (pinned || scrubT == null) return; scrubT = null; drawScrub(); renderNow(); });
   $('#graphScroll').addEventListener('scroll', () => { placePin(); if (scrubT != null) renderTip(); }, { passive: true });
   const pinSvg = $('#pinSvg');
@@ -5558,7 +5931,7 @@ function bind() {
       else select({ k: 'leg', id });
       return;
     }
-    if (geo && geo.time) { trackY(e); scrubT = tAt(e); pinned = !pinned; drawScrub(); renderNow(); }
+    if (geo && geo.time && !arranging) { trackY(e); scrubT = tAt(e); pinned = !pinned; drawScrub(); renderNow(); }
     if (sel && canLeave()) { sel = null; renderInspector(); renderGraph(); }
   });
   svg.addEventListener('keydown', e => {
@@ -5952,6 +6325,7 @@ function bind() {
   $('#exampleHide').addEventListener('click', () => { S.example = false; save(); renderGraph(); });
 
   document.addEventListener('keydown', e => {
+    if (drag && e.key === 'Escape') { e.preventDefault(); dropDrag(false); return; } // Esc puts a drag back
     if ($('#tripDlg')) { if (e.key === 'Escape') { e.preventDefault(); closeTripDlg(); } return; } // while the trip dialog is open, keys stay with it
     if (!$('#settings').hidden) { if (e.key === 'Escape') { e.preventDefault(); closeSettings(); } else if ((e.ctrlKey || e.metaKey) && (e.key || '').toLowerCase() === 's') e.preventDefault(); return; } // while Settings is open, keys stay with it
     if (TOUR && !TOUR.explore && $('#tour')) {
@@ -5968,6 +6342,13 @@ function bind() {
     if (viewOnly) return;
     const inField = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
     const mod = e.ctrlKey || e.metaKey, key = (e.key || '').toLowerCase();
+    // over the timeline, Ctrl or ⌘ with + and − (or + and − alone) zoom it, and 0 fits it again; elsewhere the page zooms as usual
+    if (!inField && !e.altKey && (overGraph || (e.target.closest && e.target.closest('.graph-card'))) && geo && geo.time && !document.querySelector('.menu.open, .modal:not([hidden])')
+        && ['+', '=', '-', '_', '0'].includes(e.key)) {
+      e.preventDefault();
+      if (e.key === '0') fitAgain(); else stepZoom(e.key === '+' || e.key === '=' ? 1.25 : 0.8, overGraph ? graphPX : null);
+      return;
+    }
     if (mod && key === 's') { e.preventDefault(); if (draft) saveDraft(); else if (edit && editDirty()) saveEdit(); else if (B && guidePhase() === 'done') savePlan(); return; }
     if (mod && !e.shiftKey && key === 'z' && !inField) { if (canEdit()) { e.preventDefault(); undo(); } }
     else if (mod && ((e.shiftKey && key === 'z') || (!e.shiftKey && key === 'y')) && !inField) { if (canEdit()) { e.preventDefault(); redo(); } }
@@ -5983,6 +6364,7 @@ function bind() {
     }
     else if (e.key === 'Escape' && !inField && draft) { if (draftDirty()) toast(`Choose Cancel to drop the new ${draft.k === 'node' ? 'place' : 'leg'}`); else cancelDraft(); }
     else if (e.key === 'Escape' && !inField && sel) { if (canLeave()) { sel = null; renderInspector(); renderGraph(); } }
+    else if (e.key === 'Escape' && !inField && arranging) setArrange(false);
     else if (e.key === 'Escape' && !inField && focusPlan && !B) { focusPlan = null; renderPlans(); applyHighlight(); renderInspector(); }
     else if (e.key === 'Escape' && !inField && UI.drawer) setDrawer(false);
     else if (e.key === 'Delete' && !inField && sel && sel.k !== 'wait' && canEdit()) { if (sel.k === 'node') delNode(sel.id); else delLeg(sel.id); }
