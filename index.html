@@ -739,7 +739,10 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 .bproblems{margin:8px 0 10px}
 .bproblems[hidden]{display:none}
 .bproblems p + p{margin-top:4px}
-#noTimeHint{background:var(--warn-bg);color:var(--warn-ink);border-color:color-mix(in srgb,var(--warn-ink) 22%,transparent)}
+#noTimeHint,#saveNote{background:var(--warn-bg);color:var(--warn-ink);border-color:color-mix(in srgb,var(--warn-ink) 22%,transparent)}
+#saveNote{display:flex;align-items:center;gap:12px}
+#saveNote[hidden]{display:none}
+#saveNote .btn{flex:none;background:transparent;color:inherit;border-color:color-mix(in srgb,var(--warn-ink) 35%,transparent)}
 #noTimeHint .btn{display:inline-block;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:26px;background:transparent;color:inherit;border-color:color-mix(in srgb,var(--warn-ink) 35%,transparent)}
 #noTimeHint .btn:hover{background:color-mix(in srgb,var(--warn-ink) 8%,transparent)}
 :is(#graph,#axisSvg) .edge.broken .seg{stroke-dasharray:2 6}
@@ -1741,7 +1744,7 @@ html.glass .modal:not([hidden]){animation-name:wmTint}
 html.glass .samplebar{background:color-mix(in srgb,var(--s4) 16%,var(--g-inner));border-color:color-mix(in srgb,var(--s4) 40%,transparent)}
 html.glass .held-bar{background:color-mix(in srgb,var(--warn-bg) 78%,transparent)}
 html.glass #guideNote{background:color-mix(in srgb,var(--accent) 10%,var(--g-inner))}
-html.glass #noTimeHint{background:color-mix(in srgb,var(--warn-bg) 78%,transparent)}
+html.glass #noTimeHint,html.glass #saveNote{background:color-mix(in srgb,var(--warn-bg) 78%,transparent)}
 /* glass-dark: Settings card frost does nothing because the overlay behind it has its own backdrop-filter */
 html.glass .modal{-webkit-backdrop-filter:none;backdrop-filter:none}
 /* ================= tabs, panels, auto-fit, more motion ================= */
@@ -2159,6 +2162,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
         <button class="btn small" type="button" id="exampleHide">Keep it</button>
       </div>
       <div class="notice" id="noTimeHint" hidden></div>
+      <div class="notice" id="saveNote" role="alert" hidden><span><b>Your latest changes are not saved.</b> This browser’s storage is full, so they are only on this page until you export them. Then remove some place photos to make room.</span><button class="btn small" type="button" id="saveNoteExport" data-ico="down">Export now</button></div>
       <div class="notice" id="guideNote" role="status" hidden></div>
       <div class="pickbar" id="pickBar" role="toolbar" aria-label="Selection" hidden></div>
       <div id="graphScroll" class="graph-scroll">
@@ -2731,9 +2735,22 @@ let quietSave = false;              // true while showing a copy another tab jus
 function save() {
   if (TOUR || quietSave) return; // the sample trip is never saved
   commitTrip();
-  try { localStorage.setItem(LIBKEY, JSON.stringify(LIB)); saveWarned = false; }
+  const text = JSON.stringify(LIB);
+  let ok = false;
+  try { localStorage.setItem(LIBKEY, text); ok = true; } catch (e) { /* full: make room below */ }
+  if (!ok) {
+    // The copies kept from before trips (and the planner's old name) are only read when there is no library yet.
+    // There is one (the last save that worked), so they can go to make room.
+    try {
+      if (localStorage.getItem(LIBKEY)) { [STORE, OLD_STORE].forEach(k => localStorage.removeItem(k)); localStorage.setItem(LIBKEY, text); ok = true; }
+    } catch (e) { /* still full */ }
+  }
+  const was = saveWarned;
+  saveWarned = !ok;
+  const note = $('#saveNote'); if (note) note.hidden = ok;
   // shown just after the change's own message (such as "Image added"), so that message cannot cover it
-  catch (e) { if (!saveWarned) { saveWarned = true; setTimeout(() => toast('Could not save in this browser: storage is full. Remove some place images, or use Export in Settings to keep a copy.'), 0); } }
+  if (!ok && !was) setTimeout(() => toast('Not saved: this browser’s storage is full. Export to keep a copy, then remove some place photos.'), 0);
+  // once a save works again the note above the timeline simply goes (a message here would cover the change's own Undo)
 }
 function loadSaved() {
   try { const raw = localStorage.getItem(STORE) || localStorage.getItem(OLD_STORE); if (raw) return normalize(JSON.parse(raw)); } catch (e) { /* ignore */ }
@@ -5782,7 +5799,7 @@ function syncSettings() {
   document.querySelectorAll('.inpre .stp').forEach(b => { b.disabled = !ed; });
   $('#menuImport').disabled = $('#clear').disabled = !ed;
   $('#export').disabled = !!TOUR;
-  let kb = 0; try { kb = Math.max(1, Math.round(((localStorage.getItem(STORE) || '').length * 2) / 1024)); } catch (e) { /* storage unavailable */ }
+  let kb = 0; try { kb = Math.max(1, Math.round(((localStorage.getItem(LIBKEY) || '').length + (localStorage.getItem(STORE) || '').length) * 2 / 1024)); } catch (e) { /* storage unavailable */ }
   $('#setStore').textContent = TOUR ? 'A sample trip is open: nothing here is saved.' : `Your plans are saved only in this browser (about ${kb} KB). Export them to keep a copy.`;
   $('#setCur').textContent = curSym();
 }
@@ -7207,14 +7224,20 @@ function bind() {
   $('#sort').addEventListener('change', e => { S.sort = e.target.value; renderPlans(); save(); });
   $('#undo').addEventListener('click', undo);
   $('#redo').addEventListener('click', redo);
-  $('#export').addEventListener('click', () => {
+  const doExport = () => {
     if (TOUR) { toast('Go back to your own plans first'); return; }
     save();
+    commitTrip(); // even when the browser could not keep it, the file has everything on this page
     const blob = new Blob([JSON.stringify(Object.assign({ app: 'wander-map' }, LIB), null, 2)], { type: 'application/json' });
-    const a = h('a', { href: URL.createObjectURL(blob), download: 'wander-map-trips.json' });
+    const d = new Date(), file = `wander-map-trips-${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.json`;
+    const a = h('a', { href: URL.createObjectURL(blob), download: file });
     document.body.append(a); a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-  });
+    const trips = LIB.tripOrder.length, plans = LIB.tripOrder.reduce((n, id) => n + Object.keys((LIB.trips[id].data && LIB.trips[id].data.plans) || {}).length, 0);
+    toast(`Exported ${trips} trip${trips > 1 ? 's' : ''} and ${plans} plan${plans === 1 ? '' : 's'} to ${file}`);
+  };
+  $('#export').addEventListener('click', doExport);
+  $('#saveNoteExport').addEventListener('click', doExport);
   const pickFile = () => { if (TOUR) { toast('Go back to your own plans first'); return; } closeSettings(); if (B) { toast('Finish or cancel the plan you are making first'); return; } if (!canLeave()) return; $('#importFile').click(); };
   $('#importBtn').addEventListener('click', pickFile);
   $('#menuImport').addEventListener('click', pickFile);
