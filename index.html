@@ -906,6 +906,8 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 [data-ico="leg"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%225.5%22 cy=%2218.5%22 r=%222.2%22/%3E%3Ccircle cx=%2218.5%22 cy=%225.5%22 r=%222.2%22/%3E%3Cpath d=%22M7.7 18.5H15a3.3 3.3 0 0 0 0-6.6H9a3.3 3.3 0 0 1 0-6.6h7.3%22/%3E%3C/svg%3E")}
 [data-ico="plan"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4z%22/%3E%3Cpath d=%22M9 4v14M15 6v14%22/%3E%3C/svg%3E")}
 [data-ico="paste"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%228%22 y=%222%22 width=%228%22 height=%224%22 rx=%221%22/%3E%3Cpath d=%22M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2%22/%3E%3C/svg%3E")}
+[data-ico="minus"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M5 12h14%22/%3E%3C/svg%3E")}
+[data-ico="select"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M5 3h2M11 3h2M17 3h2M21 5v2M21 11v2M21 17v2M19 21h-2M13 21h-2M7 21H5M3 19v-2M3 13v-2M3 7V5%22/%3E%3C/svg%3E")}
 [data-ico="cal"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223.5%22 y=%225%22 width=%2217%22 height=%2216%22 rx=%222.5%22/%3E%3Cpath d=%22M3.5 10h17M8 3v4M16 3v4%22/%3E%3C/svg%3E")}
 [data-ico="move"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3%22/%3E%3C/svg%3E")}
 [data-ico="dup"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%228%22 y=%228%22 width=%2213%22 height=%2213%22 rx=%222.5%22/%3E%3Cpath d=%22M16 8V5.5A2.5 2.5 0 0 0 13.5 3h-8A2.5 2.5 0 0 0 3 5.5v8A2.5 2.5 0 0 0 5.5 16H8M14.5 11.5v6M11.5 14.5h6%22/%3E%3C/svg%3E")}
@@ -4152,6 +4154,7 @@ function legInspector(box, l) {
   ed.normalFoot = () => setFoot(icoBtn(l.to ? `Add leg from ${nodeName(l.to)}` : 'Add the next leg', () => newLeg({ from: l.to, mode: l.mode, after: T[l.id] ? T[l.id].arr : null }), 'primary', 'leg', 'A leg that leaves where this one arrives', !l.to), [
     { label: 'Return leg', sub: 'The same trip back the other way', ico: 'undo', disabled: !(l.from && l.to), run: () => newLeg({ from: l.to, to: l.from, mode: l.mode }) },
     { label: 'Alternative leg', sub: 'Another way between the same two places', ico: 'leg', run: () => newLeg({ from: l.from, to: l.to, mode: l.mode, dep: l.dep, arr: l.arr }) },
+    { label: 'Duplicate leg', sub: 'A copy a little later, in no plan, to drag elsewhere (Ctrl+D)', ico: 'dup', run: () => duplicateLegs([l.id]) },
   ], icoBtn('Delete', () => delLeg(l.id), 'danger', 'trash', 'Delete this leg (you can undo)'));
   showSaved('leg', l);
 }
@@ -4534,8 +4537,8 @@ function helpPanel() {
       h('li', null, 'Name the plan and add its own other costs (stay, food), then save. Travel fares belong to the legs, so a fare is the same in every plan. Compare saved plans below and star the one you pick.'),
       h('li', null, h('b', { text: 'Trips' }), ': each trip has its own legs, plans, budget and currency. Open another or add one from the trip name at the top. A place is in every trip unless you keep it to one.'),
       h('li', null, h('b', { text: 'Arrange' }), ': turn it on above the timeline, then drag a place name up or down, a leg sideways to move its times, or a leg’s end dot to another time or place. Drag from a place’s line to another place to draw a new leg. Shift-click, or drag a box over empty space or the place names, to select several, then drag any of them (or inside their dashed frame) to move them together; the arrow keys nudge them. Undo puts it back.'),
-      h('li', null, h('b', { text: 'Right-click' }), ' a leg, a place, a plan or the timeline for a short menu: copy, paste, a new leg, delete. Esc cancels a new place, leg or plan, or unsaved changes (Undo brings them back), and Enter saves. Drag an empty part of the timeline to scroll it; double-click a place’s row for a new leg there.'),
-      h('li', null, h('b', { text: 'Copy and paste' }), ': select legs and press Ctrl+C, then Ctrl+V (⌘ on a Mac) for copies a little later, or right-click the timeline and choose Paste here. Copies are never part of a plan: add them to one in plan mode. Hold Ctrl and scroll, or press + and −, over the timeline to zoom it; 0 fits it again. The day button above the timeline picks the day it shows.')),
+      h('li', null, h('b', { text: 'Right-click' }), ' a leg, a place, a plan or the timeline for what you can do with it. Esc cancels a new place, leg or plan, or unsaved changes (Undo brings them back), and Enter saves. Drag an empty part of the timeline to scroll it; double-click a place’s row for a new leg there.'),
+      h('li', null, h('b', { text: 'Copy and paste' }), ': select a leg and press Ctrl+C then Ctrl+V (⌘ on a Mac), or Ctrl+D, for a copy a little later, in no plan, ready to drag. Hold Ctrl and scroll, or press + and −, over the timeline to zoom it; 0 fits it again. The day button above the timeline picks the day it shows.')),
     h('div', { class: 'sect' }, h('h3', { text: 'Transport colours' }), lg),
     h('p', { class: 'hint', style: 'margin-top:12px', text: 'Your work saves automatically in this browser. Use Export in Settings to keep a copy or share it.' }));
 }
@@ -5692,6 +5695,7 @@ function syncPickBar() {
   b.replaceChildren(...[
     h('span', { class: 'pb-count', text: `${what} selected` }),
     h('span', { class: 'pb-hint', text: nl > 1 ? 'Drag any of them, or inside the frame, to move them together. Arrow keys nudge.' : nn > 1 ? 'Drag one to move them together. ↑ and ↓ nudge.' : 'Shift-click, or drag a box, to add more' }),
+    nl ? icoBtn('Duplicate', () => duplicateLegs([...pickLegs]), 'small', 'dup', 'A copy of each a little later, in no plan (Ctrl+D)') : null,
     nl ? icoBtn('Delete', () => delLegs([...pickLegs]), 'small danger', 'trash', 'Delete the selected legs (you can undo)') : null,
     icoBtn('Clear', () => clearPick(), 'small icon', 'close', 'Clear the selection (Esc)')].filter(Boolean));
 }
@@ -6097,6 +6101,8 @@ function pasteLegs(at) {
   const when = at != null && isFinite(first) ? `, leaving ${shortDT(first + off)}` : off ? `, ${fmtDur(off)} later` : '';
   toast(`Pasted ${ids.length > 1 ? `${ids.length} legs` : legLabel(ids[0])}${when}. Copies are in no plan: add ${it} to one in plan mode.`, true);
 }
+function duplicateLegs(ids) { if (copyLegs(ids, true)) pasteLegs(); }
+
 // renderAll, with the timeline gliding to its new span instead of jumping
 function renderAllGlide() { compute(); joinPending(); renderViewTabs(); renderPlanBar(); settleGraph(); renderInspector(); renderBuilder(); refreshRest(); }
 
@@ -6224,6 +6230,11 @@ function reopenBuilder(snap) {
   if (UI.drawer) setDrawer(false);
   renderAll(); focusGuide();
 }
+function goToday() {
+  const t = todayMs(), sc = $('#graphScroll');
+  if (geo && geo.time && t + 24 * H > geo.tmin && t < geo.tmax) sc.scrollTo({ left: Math.max(0, geo.X(Math.max(t, geo.tmin)) - pinW() - 24), behavior: scrollMode() });
+  else setDay(toLocal(t).slice(0, 10));
+}
 function selectAllLegs() { if (!geo || !geo.legs) return; if (!arranging) setArrange(true, true); setPick(Object.keys(geo.legs), [...pickNodes]); }
 // the place whose row a point is on (none above the first row or below the last)
 function rowNear(y) {
@@ -6255,19 +6266,51 @@ function openCtx(x, y, items) {
   const f = pop.querySelector('[role=menuitem]:not(:disabled)'); if (f) f.focus({ preventScroll: true });
   return true;
 }
-function legCtx(id) {
-  if (!canEdit()) return null;
+function zoomItems(cx) {
+  if (!geo || !geo.time) return [];
+  return ['-',
+    { label: 'Zoom in', ico: 'plus', key: 'Ctrl++', run: () => stepZoom(1.25, cx) },
+    { label: 'Zoom out', ico: 'minus', key: 'Ctrl+−', run: () => stepZoom(0.8, cx) },
+    { label: 'Fit the timeline', ico: 'fit', key: 'Ctrl+0', disabled: autoFitOn(), run: fitAgain },
+    { label: 'Go to today', ico: 'cal', run: goToday },
+    { label: 'Choose a day…', ico: 'cal', run: () => setTimeout(() => { const b = $('#dayBtn'); if (b) b.click(); }, 0) }];
+}
+function legCtx(id, cx) {
+  const l = S.legs[id], t = T[id];
+  if (!canEdit()) return [{ label: 'Open details', ico: 'list', run: () => select({ k: 'leg', id }) }, ...zoomItems(cx)];
   return [
+    { head: legLabel(id) },
+    { label: 'Open details', ico: 'edit', run: () => select({ k: 'leg', id }) },
+    '-',
     { label: 'Copy', ico: 'copy', key: 'Ctrl+C', run: () => copyLegs([id]) },
-    CLIP ? { label: 'Paste a copy', ico: 'paste', key: 'Ctrl+V', run: () => pasteLegs() } : null,
+    CLIP ? { label: 'Paste a copy later', ico: 'paste', key: 'Ctrl+V', run: () => pasteLegs() } : null,
+    { label: 'Duplicate', ico: 'dup', key: 'Ctrl+D', run: () => duplicateLegs([id]) },
+    '-',
+    l.to ? { label: `Next leg from ${nodeName(l.to)}`, ico: 'leg', run: () => newLeg({ from: l.to, mode: l.mode, after: t && t.arr }) } : null,
+    l.from && l.to ? { label: 'Return leg', ico: 'undo', run: () => newLeg({ from: l.to, to: l.from, mode: l.mode }) } : null,
+    { label: 'Alternative leg', ico: 'leg', run: () => newLeg({ from: l.from, to: l.to, mode: l.mode, dep: l.dep, arr: l.arr }) },
+    t && t.complete ? { label: 'Start a plan with this leg', ico: 'plan', run: () => { startBuilder(null, l.from); if (B) builderTake([id]); } } : null,
+    '-',
+    { label: arranging && pickLegs.has(id) ? 'Remove from the selection' : 'Add to the selection', ico: 'select', key: 'Shift+Click', run: () => { if (!arranging) setArrange(true, true); togglePick(pickLegs, id); } },
     '-',
     { label: 'Delete leg', ico: 'trash', key: 'Del', danger: true, run: () => delLeg(id) }];
 }
 function placeCtx(id) {
   if (arranging && pickNodes.has(id) && pickNodes.size + pickLegs.size > 1) return selCtx();
-  if (!canEdit()) return null;
+  if (!canEdit()) return [{ label: 'Open details', ico: 'list', run: () => select({ k: 'node', id }) }];
+  const i = S.order.indexOf(id), n = nodeName(id);
   return [
-    { label: `New leg from ${nodeName(id)}`, ico: 'leg', run: () => newLeg({ from: id }) },
+    { head: n },
+    { label: 'Open details', ico: 'edit', run: () => select({ k: 'node', id }) },
+    { label: 'Rename', ico: 'edit', key: 'F2', run: () => select({ k: 'node', id }, '#inspector [data-f="name"]') },
+    '-',
+    { label: `New leg from ${n}`, ico: 'leg', run: () => newLeg({ from: id }) },
+    { label: `New leg to ${n}`, ico: 'leg', run: () => newLeg({ to: id }) },
+    { label: `Start a plan from ${n}`, ico: 'plan', run: () => startBuilder(null, id) },
+    '-',
+    { label: 'Move up', ico: 'up', disabled: i <= 0, run: () => moveRow(id, -1) },
+    { label: 'Move down', ico: 'down', disabled: i < 0 || i >= S.order.length - 1, run: () => moveRow(id, 1) },
+    { label: arranging && pickNodes.has(id) ? 'Remove from the selection' : 'Add to the selection', ico: 'select', key: 'Shift+Click', run: () => { if (!arranging) setArrange(true, true); togglePick(pickNodes, id); } },
     '-',
     { label: 'Delete place', ico: 'trash', key: 'Del', danger: true, run: () => delNode(id) }];
 }
@@ -6276,24 +6319,47 @@ function selCtx() {
   return [
     { head: `${[nl ? `${nl} leg${nl > 1 ? 's' : ''}` : null, nn ? `${nn} place${nn > 1 ? 's' : ''}` : null].filter(Boolean).join(' and ')} selected` },
     nl ? { label: 'Copy', ico: 'copy', key: 'Ctrl+C', run: () => copyLegs(ids) } : null,
+    nl ? { label: 'Duplicate', ico: 'dup', key: 'Ctrl+D', run: () => duplicateLegs(ids) } : null,
+    '-',
+    nl ? { label: '15 minutes earlier', ico: 'prev', key: '←', run: () => nudgePick('ArrowLeft') } : null,
+    nl ? { label: '15 minutes later', ico: 'next', key: '→', run: () => nudgePick('ArrowRight') } : null,
+    nn ? { label: 'Move up', ico: 'up', key: '↑', run: () => nudgePick('ArrowUp') } : null,
+    nn ? { label: 'Move down', ico: 'down', key: '↓', run: () => nudgePick('ArrowDown') } : null,
+    '-',
+    { label: 'Select all legs', ico: 'select', key: 'Ctrl+A', run: selectAllLegs },
     { label: 'Clear the selection', ico: 'close', key: 'Esc', run: clearPick },
     nl ? '-' : null,
     nl ? { label: nl > 1 ? `Delete ${nl} legs` : 'Delete leg', ico: 'trash', key: 'Del', danger: true, run: () => delLegs(ids) } : null];
 }
 function planCtx(id) {
-  if (!PLBY[id] || !canEdit() || B) return null;
+  const p = PLBY[id]; if (!p) return null;
+  const ed = canEdit() && !B;
   return [
-    { label: 'Rename', ico: 'edit', key: 'F2', run: () => { setView(id); startRename(id, 'bar'); } },
-    { label: 'Duplicate plan', ico: 'dup', run: () => duplicatePlan(id) },
-    '-',
-    { label: 'Delete plan', ico: 'trash', danger: true, run: () => delPlan(id) }];
+    { head: p.name },
+    viewPlan === id ? { label: 'Show every place and leg', ico: 'eye', run: () => setView(null) } : { label: 'Show on the timeline', ico: 'eye', run: () => setView(id) },
+    { label: 'Open itinerary', ico: 'list', run: () => togglePlan(id, true) },
+    { label: 'Copy as text', ico: 'copy', run: () => copyText(planText(p)) },
+    ed ? '-' : null,
+    ed ? { label: 'Edit route and costs', ico: 'edit', run: () => startBuilder(id) } : null,
+    ed ? { label: 'Rename', ico: 'edit', key: 'F2', run: () => { setView(id); startRename(id, 'bar'); } } : null,
+    ed ? { label: 'Duplicate plan', ico: 'dup', run: () => duplicatePlan(id) } : null,
+    ed ? { label: S.picked === id ? 'Unmark as the chosen plan' : 'Mark as the chosen plan', ico: 'star', run: () => pick(id) } : null,
+    ed ? '-' : null,
+    ed ? { label: 'Delete plan', ico: 'trash', danger: true, run: () => delPlan(id) } : null];
 }
 function timelineCtx(e) {
-  if (!canEdit() || !geo.time) return null;
-  const p = svgXY($('#graph'), e), node = rowNear(p.y), t = p.x >= geo.left ? roundTo(timeAtX(p.x), 30 * MIN) : null;
+  const p = svgXY($('#graph'), e), ed = canEdit();
+  const node = geo.time ? rowNear(p.y) : null, t = geo.time && p.x >= geo.left ? roundTo(timeAtX(p.x), 30 * MIN) : null;
+  const legs = Object.keys(geo.legs || {}).length;
   return [
-    CLIP ? (t != null ? { label: `Paste here, leaving ${shortDT(t)}`, ico: 'paste', key: 'Ctrl+V', run: () => pasteLegs(t) } : { label: 'Paste', ico: 'paste', key: 'Ctrl+V', run: () => pasteLegs() }) : null,
-    node && t != null ? { label: `New leg from ${nodeName(node)} here`, ico: 'leg', run: () => newLeg({ from: node, dep: toLocal(t), arr: toLocal(t + 2 * H) }) } : null];
+    ed && node && t != null ? { label: `New leg from ${nodeName(node)}, ${shortDT(t)}`, ico: 'leg', run: () => newLeg({ from: node, dep: toLocal(t), arr: toLocal(t + 2 * H) }) } : null,
+    ed && CLIP ? (t != null ? { label: `Paste here, leaving ${shortDT(t)}`, ico: 'paste', key: 'Ctrl+V', run: () => pasteLegs(t) } : { label: 'Paste', ico: 'paste', key: 'Ctrl+V', run: () => pasteLegs() }) : null,
+    ed ? { label: 'New place', ico: 'place', run: () => newNode() } : null,
+    ed ? '-' : null,
+    ed ? { label: arranging ? 'Turn Arrange off' : 'Arrange: drag places and legs', ico: 'move', run: () => setArrange(!arranging) } : null,
+    ed && legs ? { label: 'Select all legs', ico: 'select', key: 'Ctrl+A', run: selectAllLegs } : null,
+    ed && arranging && (pickLegs.size || pickNodes.size) ? { label: 'Clear the selection', ico: 'close', key: 'Esc', run: clearPick } : null,
+    ...zoomItems(e.clientX)];
 }
 // what the right-click is on decides the menu; text fields keep the browser's own menu
 function ctxFor(e) {
@@ -6304,13 +6370,15 @@ function ctxFor(e) {
   const pr = t.closest('#plansBody tr[data-plan]'); if (pr) return planCtx(pr.dataset.plan);
   if (t.closest('#planBar') && viewPlan) return planCtx(viewPlan);
   if (!t.closest('#graph, #pinSvg') || !geo) return null;
-  if (B) return null; // Esc stops making the plan
+  if (B) return [{ label: 'Stop making the plan', ico: 'close', key: 'Esc', run: dropBuilder }, ...zoomItems(e.clientX)];
   const rh = t.closest('#pinSvg .rowhead'); if (rh) return placeCtx(rh.dataset.node);
   if (t.closest('#pinSvg')) return timelineCtx(e);
   const b = t.closest('.badge[data-plan]'); if (b) return planCtx(b.dataset.plan);
-  if (t.closest('[data-wait]')) return timelineCtx(e);
+  const w = t.closest('[data-wait]');
+  if (w) return [canEdit() ? { label: 'Rename this wait', ico: 'edit', run: () => select({ k: 'wait', id: w.dataset.wait, plan: w.dataset.plan }, '#fWait') } : null,
+    { label: 'Open the plan’s itinerary', ico: 'list', run: () => togglePlan(w.dataset.plan, true) }, ...zoomItems(e.clientX)];
   const lg = t.closest('[data-leg]');
-  if (lg && S.legs[lg.dataset.leg]) return arranging && pickLegs.has(lg.dataset.leg) && pickLegs.size + pickNodes.size > 1 ? selCtx() : legCtx(lg.dataset.leg);
+  if (lg && S.legs[lg.dataset.leg]) return arranging && pickLegs.has(lg.dataset.leg) && pickLegs.size + pickNodes.size > 1 ? selCtx() : legCtx(lg.dataset.leg, e.clientX);
   const st = t.closest('.station[data-node]'); if (st) return placeCtx(st.dataset.node);
   if (t.closest('.pickframe') && pickLegs.size > 1) return selCtx();
   return timelineCtx(e);
@@ -6932,6 +7000,7 @@ function bind() {
     if (mod && !e.shiftKey && !e.altKey && !inField && canEdit() && !B) {
       if (key === 'c' && !String(getSelection() || '') && chosenLegs().length) { e.preventDefault(); copyLegs(); return; }
       if (key === 'v' && CLIP) { e.preventDefault(); pasteLegs(); return; }
+      if (key === 'd' && chosenLegs().length) { e.preventDefault(); duplicateLegs(); return; }
       if (key === 'a' && geo && geo.legs && (arranging || overGraph)) { e.preventDefault(); selectAllLegs(); return; }
     }
     if (mod && key === 's') { e.preventDefault(); if (draft) saveDraft(); else if (edit && editDirty()) saveEdit(); else if (B && guidePhase() === 'done') savePlan(); return; }
