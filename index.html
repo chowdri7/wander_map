@@ -1926,10 +1926,28 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
 .btn.primary.newbtn,html.glass .btn.primary.newbtn{height:32px;padding:0 10px 0 9px;gap:6px;border-radius:9px !important;font-weight:600;letter-spacing:.01em}
 .btn.primary.newbtn::before{width:16px;height:16px}
 .btn.primary.newbtn:hover:not(:disabled){background:var(--accent);border-color:var(--accent);filter:none}
-.newbtn .caret{width:6px;height:6px;margin:0 1px 3px 3px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);opacity:.85;transition:transform .2s var(--ease)}
-.menu.open > .newbtn .caret{transform:rotate(225deg);margin-bottom:-2px}
 .menu.open > .btn.primary.newbtn{background:color-mix(in srgb,var(--accent) 86%,var(--ink)) !important;border-color:transparent !important}
 #createGroup .menu-pop{min-width:270px}
+/* New, finished: "+ New" and a chevron set apart by a fine divider, with a soft glass highlight (no hover effect) */
+.btn.primary.newbtn,html.glass .btn.primary.newbtn{padding:0 0 0 11px !important;gap:7px;font:600 13px var(--font);letter-spacing:.01em;overflow:hidden;
+  background-image:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,0) 62%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.24),inset 0 0 0 1px color-mix(in srgb,var(--ink) 10%,transparent) !important}
+.newbtn .nb-lab{line-height:1}
+.newbtn .nb-chev{align-self:stretch;width:28px;margin-left:3px;display:flex;align-items:center;justify-content:center;border-left:1px solid color-mix(in srgb,currentColor 26%,transparent)}
+.newbtn .nb-chev::before{content:"";width:12px;height:12px;background:currentColor;opacity:.9;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center/contain no-repeat;
+  transition:transform .22s var(--ease)}
+.menu.open > .newbtn .nb-chev::before{transform:rotate(180deg)}
+.btn.primary.newbtn:focus-visible{box-shadow:inset 0 1px 0 rgba(255,255,255,.24),0 0 0 2px var(--surface),0 0 0 4px color-mix(in srgb,var(--accent) 55%,transparent) !important}
+/* its menu: a "Create" heading, and each choice with its icon in a tinted tile, a title and a short description */
+#createGroup .menu-pop{min-width:296px;padding:6px}
+#createGroup .menu-pop::before{content:"Create";display:block;padding:6px 10px 4px;font:700 10px var(--font);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#createGroup .menu-pop [role=menuitem]{position:relative;grid-template-columns:34px 1fr;column-gap:12px;row-gap:1px;padding:8px 10px;font-weight:600;font-size:13.5px}
+#createGroup .menu-pop [role=menuitem]::after{content:"";position:absolute;left:10px;top:50%;width:34px;height:34px;margin-top:-17px;border-radius:10px;background:var(--accent-soft);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 16%,transparent);transition:background-color .2s var(--ease)}
+#createGroup .menu-pop [role=menuitem]::before{position:relative;z-index:1;justify-self:center;width:17px;height:17px;color:var(--accent)}
+#createGroup .menu-pop [role=menuitem]:hover:not(:disabled)::after,#createGroup .menu-pop [role=menuitem]:focus-visible::after{background:color-mix(in srgb,var(--accent) 22%,transparent)}
+#createGroup .menu-pop [role=menuitem] small{font-weight:400;font-size:12px}
 </style>
 </head>
 <body>
@@ -1943,7 +1961,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
       <button id="redo" class="btn icon" type="button" data-ico="redo" title="Redo (Ctrl+Shift+Z or Ctrl+Y)">Redo</button>
     </div>
     <div class="menu" id="createGroup">
-      <button class="btn primary newbtn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" data-ico="plus">New<span class="caret" aria-hidden="true"></span></button>
+      <button class="btn primary newbtn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" data-ico="plus" title="Create a place, a leg or a plan"><span class="nb-lab">New</span><span class="nb-chev" aria-hidden="true"></span></button>
       <div class="menu-pop right" role="menu" hidden>
         <button type="button" role="menuitem" id="addNode" data-ico="place">Place<small>A home, station, airport or town</small></button>
         <button type="button" role="menuitem" id="addLeg" data-ico="leg">Leg<small>One way to travel between two places</small></button>
