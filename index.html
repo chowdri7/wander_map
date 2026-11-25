@@ -1737,6 +1737,122 @@ html.glass #guideNote{background:color-mix(in srgb,var(--accent) 10%,var(--g-inn
 html.glass #noTimeHint{background:color-mix(in srgb,var(--warn-bg) 78%,transparent)}
 /* glass-dark: Settings card frost does nothing because the overlay behind it has its own backdrop-filter */
 html.glass .modal{-webkit-backdrop-filter:none;backdrop-filter:none}
+/* ================= tabs, panels, auto-fit, more motion ================= */
+/* plan tabs, shaped like a browser's: the chosen tab joins the timeline below it, and its shape glides */
+.viewtabs{position:relative;display:flex;align-items:flex-end;gap:2px;margin:0 !important;padding:6px 14px 0 !important;background:var(--surface2);border-bottom:1px solid var(--border);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;flex:none}
+.viewtabs::-webkit-scrollbar{display:none}
+.viewtabs[hidden]{display:none}
+.vtab{position:relative;z-index:1;flex:none;height:34px;max-width:230px;padding:0 15px !important;display:inline-flex;align-items:center;gap:8px;border:0 !important;border-radius:10px 10px 0 0 !important;background:transparent !important;color:var(--muted);font:500 12.5px var(--font);box-shadow:none !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .22s var(--ease),background-color .22s var(--ease)}
+.vtab:hover{color:var(--ink);background:color-mix(in srgb,var(--ink) 5%,transparent) !important}
+.vtab[aria-selected="true"]{color:var(--ink);font-weight:600}
+.vtab[aria-selected="true"]:hover{background:transparent !important}
+.vtab:focus-visible{outline:none;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent) 55%,transparent) !important}
+.vtab + .vtab::after{content:"";position:absolute;left:-2px;top:10px;bottom:10px;width:1px;background:var(--axis);transition:opacity .2s}
+.vtab[aria-selected="true"]::after,.vtab[aria-selected="true"] + .vtab::after,.vtab:hover::after,.vtab:hover + .vtab::after{opacity:0}
+.vt-ind{position:absolute;z-index:0;left:0;bottom:-1px;height:35px;width:0;border:1px solid var(--border);border-bottom:0;border-radius:10px 10px 0 0;background:var(--surface);pointer-events:none;transition:transform .34s var(--ease-out),width .34s var(--ease-out),opacity .2s}
+.vt-ind::before,.vt-ind::after{content:"";position:absolute;bottom:0;width:10px;height:10px;pointer-events:none}
+.vt-ind::before{left:-11px;background:radial-gradient(circle at 0 0,transparent 9.5px,var(--surface) 10px)}
+.vt-ind::after{right:-11px;background:radial-gradient(circle at 100% 0,transparent 9.5px,var(--surface) 10px)}
+.viewonly .viewtabs{padding:6px 10px 0 !important}
+/* the timeline fades in when you switch the plan in view */
+.gwrap.swap{animation:wmFade .3s ease}
+/* the details panel opens and closes by its width, and keeps its content still while it moves */
+@media (min-width:901px){
+  .side{flex:0 0 clamp(300px,var(--side-w,min(25%,460px)),45vw) !important;min-width:0 !important;max-width:45vw !important;animation:none !important;position:relative;
+    transition:flex-basis .34s var(--ease-out),opacity .24s ease,border-color .34s,visibility 0s}
+  .side > :not(.side-split){min-width:var(--side-px,300px)}
+  .main.side-hidden .side{display:flex !important;flex-basis:0 !important;opacity:0;visibility:hidden;border-color:transparent !important;
+    transition:flex-basis .34s var(--ease-out),opacity .2s ease,border-color .34s,visibility 0s linear .34s}
+  .side-dragging .side{transition:none !important}
+}
+/* the drag edge on the details panel's left side */
+.side-split{position:absolute;left:0;top:0;bottom:0;width:8px;z-index:7;cursor:ew-resize;touch-action:none;outline:none}
+.side-split::after{content:"";position:absolute;left:2px;top:50%;width:3px;height:44px;margin-top:-22px;border-radius:2px;background:var(--axis);opacity:0;transition:opacity .2s,background-color .2s}
+.side-split:hover::after,.side-split:focus-visible::after,.side-dragging .side-split::after{opacity:1;background:var(--accent)}
+@media (max-width:900px){.side-split{display:none}}
+body.side-dragging{user-select:none;-webkit-user-select:none}
+body.side-dragging,body.side-dragging *{cursor:ew-resize !important}
+/* between 701px and 900px the panel slides in over the timeline, and out again */
+@media (min-width:701px) and (max-width:900px){
+  .side{animation:none !important;transition:transform .32s var(--ease-out),opacity .24s ease,visibility 0s}
+  .main.side-hidden .side{display:flex !important;transform:translateX(104%);opacity:0;visibility:hidden;transition:transform .32s var(--ease-out),opacity .2s ease,visibility 0s linear .32s}
+}
+/* the plans panel fades as it opens and closes */
+.dock-body{opacity:0;transition:height .22s var(--ease-out),opacity .22s ease}
+.dock.open .dock-body{opacity:1}
+.dock-toggle .chev{transition:transform .3s var(--ease-out)}
+@media (prefers-reduced-motion:reduce){.dock-body,.side,.main.side-hidden .side,.vt-ind,.vtab,.dock-toggle .chev{transition:none !important}.gwrap.swap{animation:none}}
+/* highlights on the timeline ease in and out */
+#graph .edge,#graph .node,#graph .station,#graph .badge,#graph .wait,#graph .waitlbl,#graph .durtag,#graph .rowhead{transition:opacity .22s var(--ease)}
+/* Auto-fit pressed */
+#fit[aria-pressed="true"]{background:var(--accent-soft) !important;border-color:color-mix(in srgb,var(--accent) 45%,transparent) !important;color:var(--accent) !important}
+/* the colour line across the top follows the header's own corners */
+.topbar::before{inset:0 !important;height:auto !important;border-radius:inherit;background:linear-gradient(90deg,var(--strip-n) 0%,var(--strip-d) 22%,var(--strip-y) 45%,var(--strip-y) 58%,var(--strip-k) 78%,var(--strip-n) 100%) top/100% 3px no-repeat !important;pointer-events:none}
+/* glass: the tab strip and the chosen tab */
+html.glass .viewtabs{background:var(--g-inner2);border-bottom-color:var(--g-line)}
+html.glass .vt-ind{background:var(--g-chart);border-color:var(--g-edge);box-shadow:var(--g-hi)}
+html.glass .vt-ind::before{background:radial-gradient(circle at 0 0,transparent 9.5px,var(--g-chart) 10px)}
+html.glass .vt-ind::after{background:radial-gradient(circle at 100% 0,transparent 9.5px,var(--g-chart) 10px)}
+html.glass .vtab + .vtab::after{background:var(--g-field)}
+html.glass #fit[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 16%,var(--g-inner)) !important}
+/* ================= Liquid glass, all the way through: controls, not only panels ================= */
+/* a soft sheen across the top of every glass panel, as light falls on curved glass */
+html.glass .topbar,html.glass .graph-card,html.glass .dock,html.glass .side,html.glass .rail,html.glass .modal-card,html.glass .tour-card,html.glass .menu-pop{background-image:linear-gradient(180deg,var(--g-sheen),transparent 46%) !important}
+html.glass{--g-sheen:rgba(255,255,255,.42)}
+@media (prefers-color-scheme: dark){html.glass:not([data-theme="light"]){--g-sheen:rgba(255,255,255,.05)}}
+html.glass[data-theme="dark"]{--g-sheen:rgba(255,255,255,.05)}
+/* buttons become glass capsules; icon buttons become glass circles */
+html.glass .btn{border-radius:999px}
+html.glass .btn.icon,html.glass .icon-btn{border-radius:50%}
+html.glass .btn:not(.primary):not(.on):not(.fabbtn){-webkit-backdrop-filter:blur(10px) saturate(160%);backdrop-filter:blur(10px) saturate(160%)}
+html.glass .btn.primary:not(.fabbtn){background-image:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 55%);border-color:color-mix(in srgb,#fff 30%,var(--accent))}
+html.glass .btn.small.primary.icon{border-radius:50%}
+/* the header's tools sit together in one glass capsule */
+html.glass .topbar .tgroup{padding:2px;border-radius:999px;background:var(--g-inner2);border:1px solid var(--g-edge);box-shadow:var(--g-hi)}
+html.glass .topbar .btn.icon:not(.primary){border-radius:50%}
+html.glass .topbar #themeBtn,html.glass .topbar #settingsBtn{background:var(--g-inner2) !important;border:1px solid var(--g-edge) !important;box-shadow:var(--g-hi) !important;border-radius:50%}
+html.glass .topbar #themeBtn:hover,html.glass .topbar #settingsBtn:hover{background:var(--g-strong) !important}
+html.glass .tb-sep{background:var(--g-line)}
+/* switches and segmented controls: a glass track with a bright, raised thumb */
+html.glass .modeseg{background:var(--g-inner2) !important;border:1px solid var(--g-edge) !important;box-shadow:var(--g-hi)}
+html.glass .modeseg::before{background-image:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,0) 60%);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 2px 8px color-mix(in srgb,var(--accent) 30%,transparent)}
+html.glass .seg{background:var(--g-inner2) !important;border-color:var(--g-edge) !important;box-shadow:var(--g-hi)}
+html.glass .seg button[aria-checked="true"]{background:var(--g-strong) !important;box-shadow:var(--g-hi),0 1px 4px rgba(20,30,60,.12) !important}
+html.glass .switch span{background:var(--g-field);box-shadow:inset 0 1px 2px rgba(0,0,0,.08)}
+html.glass .switch input:checked + span{background:var(--accent);background-image:linear-gradient(180deg,rgba(255,255,255,.25),rgba(255,255,255,0) 60%)}
+html.glass .switch span::after{box-shadow:0 1px 3px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.9)}
+/* fields: rounder, glassy */
+html.glass input:not([type=checkbox]):not([type=radio]):not([type=range]),html.glass select,html.glass textarea,html.glass .inpre{border-radius:12px}
+html.glass .inpre input{border-radius:0}
+html.glass input:focus,html.glass select:focus,html.glass textarea:focus,html.glass .inpre:focus-within{background:var(--g-strong)}
+html.glass input[type=range]{accent-color:var(--accent)}
+/* chips, tags, the budget chip, the plan count, bars */
+html.glass .chip,html.glass .tag,html.glass .dock-budget,html.glass .dock-toggle .cnt{background:var(--g-inner) !important;border-color:var(--g-edge) !important;box-shadow:var(--g-hi)}
+html.glass .chip[aria-pressed="true"],html.glass .tag.in{background:var(--ink) !important;color:var(--surface) !important;border-color:transparent !important}
+html.glass .bar,html.glass .bm-bar{background:var(--g-field) !important}
+/* the plan bar, notices and the status line read as glass strips */
+html.glass .planbar{background:var(--g-inner2);border-radius:0 12px 12px 0;padding-top:6px;padding-bottom:6px}
+html.glass .notice{border-radius:14px}
+html.glass .now{background:var(--g-inner2)}
+/* tables and lists */
+html.glass table.plans tbody tr:hover td,html.glass table.plans tbody tr.focus td{background:var(--g-inner2)}
+html.glass .pp-list,html.glass .it-stats,html.glass .set-card{border-radius:16px !important}
+html.glass .pp-wait{background:var(--g-inner2)}
+/* the place picture tile */
+html.glass .nimg-add{background:var(--g-inner2) !important;border-color:var(--g-field) !important;border-radius:16px}
+html.glass .nimg img{border-radius:16px}
+/* rounder floating things */
+html.glass .modal-card,html.glass .tour-card{border-radius:24px}
+html.glass .menu-pop{border-radius:16px;padding:6px}
+html.glass .menu-pop [role=menuitem]{border-radius:10px}
+html.glass .toast{border-radius:999px;padding-left:18px}
+html.glass .btn.primary.fabbtn,html.glass .btn.primary.fabbtn:hover:not(:disabled){border-radius:999px !important}
+html.glass .scrubtip{border-radius:16px}
+/* the dock grip and the panel edge in glass */
+html.glass .dock-split::after{background:var(--g-field)}
+html.glass .side-split::after{background:var(--g-field)}
+/* the closed details panel leaves no line behind */
+@media (min-width:901px){.main.side-hidden .side{border-width:0 !important}}
 </style>
 </head>
 <body>
@@ -1864,6 +1980,7 @@ html.glass .modal{-webkit-backdrop-filter:none;backdrop-filter:none}
     </section>
     </div>
     <aside class="side" id="side" aria-label="Details panel">
+      <div class="side-split" id="sideSplit" role="separator" aria-orientation="vertical" aria-label="Resize the details panel: arrow keys" tabindex="0" title="Drag to make the panel wider or narrower. Double-click for the usual width."></div>
       <div class="side-head"><span class="side-title" id="sideTitle">Details</span><button class="btn icon" type="button" id="sideHide" data-ico="collapse" title="Hide the details panel" aria-label="Hide the details panel"><span class="desk-only">Hide</span><span class="phone-only">Close</span></button></div>
       <div id="builder" hidden></div>
       <div id="inspector"></div>
@@ -2540,6 +2657,21 @@ function renderFixNote() {
     ...items.slice(0, 4).map(it => btn(it.label, it.run, 'small', it.title)));
   if (items.length > 4) box.append(h('span', { class: 'muted', text: `and ${items.length - 4} more` }));
 }
+// Auto-fit: the timeline fits the window by itself (on unless you zoom by hand; the Fit button turns it back on).
+function autoFitOn() { return UI.autoFit !== false; }
+function syncFitBtn() {
+  const b = $('#fit'); if (!b) return;
+  const on = autoFitOn();
+  b.setAttribute('aria-pressed', String(on));
+  b.setAttribute('aria-label', 'Auto-fit');
+  b.title = on ? 'Auto-fit is on: the timeline always fits the window. Click to turn it off, or move the zoom.' : 'Auto-fit: fit the timeline to the window, and keep it fitted';
+}
+// The details panel's width you dragged it to (it never goes past 45% of the window).
+function applySideW() {
+  const sd = $('#side'); if (!sd) return;
+  if (UI.sideW) { sd.style.setProperty('--side-w', UI.sideW + 'px'); sd.style.setProperty('--side-px', UI.sideW + 'px'); }
+  else { sd.style.removeProperty('--side-w'); }
+}
 // The inner width of the timeline's frame, rounded down: the browser rounds clientWidth up or down,
 // and a chart even a fraction of a pixel too wide brings a scrollbar that can come and go for ever.
 function frameW(sc) { return Math.max(0, Math.floor(sc.getBoundingClientRect().width) - (sc.offsetWidth - sc.clientWidth)); }
@@ -2575,9 +2707,12 @@ function renderGraph() {
     let lo = Infinity, hi = -Infinity;
     for (const id of legIds) { const t = T[id]; if (!t.timed) continue; /* only legs that are drawn set the span */ for (const v of [t.dep, t.arr]) if (v != null) { if (v < lo) lo = v; if (v > hi) hi = v; } }
     tmin = floorHour(lo) - H; tmax = floorHour(hi) + 2 * H;
-    pph = S.pph || 14;
+    // auto-fit keeps a smaller margin after the last hour, just room for the end labels, so the timeline fills the frame
+    const right = autoFitOn() ? 130 : LAY.right;
+    pph = autoFitOn() ? Math.max(3, Math.min(60, Math.floor((frameW(sc) - left - right) / Math.max(1, (tmax - tmin) / H)))) : (S.pph || 14);
+    if (autoFitOn()) { const z = $('#zoom'); if (z) z.value = pph; } // the slider shows the fitted zoom
     X = t => left + (t - tmin) / H * pph;
-    width = Math.ceil(X(tmax) + LAY.right);
+    width = Math.ceil(X(tmax) + right);
   }
   width = Math.max(width, frameW(sc));
   const height = phone ? y + 16 : Math.max(y + 16, (sc.clientHeight || 0) - 4);
@@ -3147,6 +3282,7 @@ function frameLeg(id) {
   const pad = 90, room = sc.clientWidth - pinW() - 2 * pad, t = T[id];
   if (L.xA - L.s0 > room && (S.pph || 14) > 3) {
     S.pph = Math.max(3, Math.floor(room / Math.max(.25, (t.arr - t.dep) / H)));
+    if (autoFitOn()) { UI.autoFit = false; saveUI(); } // zoomed in on this leg: auto-fit steps aside
     renderGraph(); syncToolbar(); save();
     L = geo.legs[id]; if (!L) return;
   }
@@ -4677,9 +4813,22 @@ function setView(id) {
   scrubT = null; pinned = false;
   $('#graphScroll').scrollLeft = 0;
   renderViewTabs(); renderPlanBar(); renderGraph(); renderInspector(); renderPlans(); renderNow();
+  const gw = $('#gwrap'); if (gw) { gw.classList.remove('swap'); void gw.offsetWidth; gw.classList.add('swap'); } // the timeline fades in
+}
+// The chosen tab's shape sits under the tabs and glides to the tab you pick (it is kept across redraws).
+function placeTabInd() {
+  const box = $('#viewTabs'); if (!box) return;
+  let ind = box.querySelector('.vt-ind');
+  if (!ind) { ind = h('span', { class: 'vt-ind', 'aria-hidden': 'true' }); box.prepend(ind); }
+  const t = box.querySelector('.vtab[aria-selected="true"]');
+  if (!t || box.hidden || !t.offsetWidth) { ind.style.opacity = '0'; return; }
+  const first = !ind.dataset.placed;
+  if (first) ind.style.transition = 'none';
+  ind.style.opacity = '1'; ind.style.width = t.offsetWidth + 'px'; ind.style.transform = `translateX(${t.offsetLeft}px)`;
+  if (first) { void ind.offsetWidth; ind.style.transition = ''; ind.dataset.placed = '1'; }
 }
 function renderViewTabs() {
-  const box = $('#viewTabs'); box.replaceChildren();
+  const box = $('#viewTabs'); box.querySelectorAll('.vtab').forEach(n => n.remove());
   box.hidden = !PL.length;
   $('#graphTitle').textContent = viewOnly ? 'Plans' : '';
   if (!viewOnly) $('#graphTitle').textContent = viewPlan && PLBY[viewPlan] ? 'Plan view' : 'Places and legs';
@@ -4692,6 +4841,7 @@ function renderViewTabs() {
   };
   if (!viewOnly) box.append(tab(null, 'All places and legs'));
   PL.forEach(p => box.append(tab(p.id, p.name, p.color)));
+  placeTabInd();
 }
 function renderPlanBar() {
   const bar = $('#planBar'); bar.replaceChildren();
@@ -4769,11 +4919,14 @@ function planPanel(p) {
   return box;
 }
 function setSide(open) {
+  // the panel keeps its content at its own width while it opens or closes, so nothing reflows on the way
+  const side = $('#side'); if (side && side.offsetWidth > 60) side.style.setProperty('--side-px', side.offsetWidth + 'px');
   sideOpen = !!open;
   // phones open and close the panel as needed; only a computer's choice is remembered
   if (!(window.matchMedia && matchMedia('(max-width: 900px)').matches)) { UI.side = sideOpen; saveUI(); }
   $('#main').classList.toggle('side-hidden', !sideOpen);
   renderGraph();
+  clearTimeout(setSide._t); setSide._t = setTimeout(renderGraph, 360); // and once more when it has finished moving
 }
 // The plans panel is a sheet: drag its bar up (to at most 65% of the window) or down to close it.
 const DOCK_MAX = .65;
@@ -4903,7 +5056,8 @@ function joinPending() {
 
 /* ---------- render orchestration ---------- */
 function syncToolbar() {
-  $('#zoom').value = S.pph || 14;
+  $('#zoom').value = autoFitOn() && geo && geo.time ? geo.pph : (S.pph || 14);
+  syncFitBtn();
   $('#zoom').disabled = !hasTime; $('#fit').disabled = !hasTime;
   if (document.activeElement !== $('#budget')) $('#budget').value = S.budget || '';
   $('#currency').value = S.currency;
@@ -5109,6 +5263,31 @@ function bind() {
   $('#sideOpen').addEventListener('click', () => setSide(true));
   $('#drawerTab').addEventListener('click', () => { const bar = $('.dock-bar'); if (bar.dataset.dragged) { delete bar.dataset.dragged; return; } setDrawer(!UI.drawer); });
   $('#drawerClose').addEventListener('click', () => setDrawer(false));
+  // drag the details panel's left edge (or use the arrow keys on it): from 300px up to 45% of the window
+  const sideSplit = $('#sideSplit'), sideEl = $('#side');
+  const setSideW = w => { UI.sideW = Math.round(Math.max(300, Math.min(Math.max(300, Math.floor(innerWidth * .45)), w))); applySideW(); };
+  sideSplit.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    const x0 = e.clientX, w0 = sideEl.offsetWidth, pid = e.pointerId; let raf = 0, want = w0;
+    try { sideSplit.setPointerCapture(pid); } catch (err) { /* the window still hears the moves */ }
+    document.body.classList.add('side-dragging');
+    const move = ev => { if (ev.pointerId !== pid) return; want = w0 + (x0 - ev.clientX); if (!raf) raf = requestAnimationFrame(() => { raf = 0; setSideW(want); }); };
+    const up = ev => {
+      if (ev.pointerId !== pid) return;
+      removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up);
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      setSideW(want); document.body.classList.remove('side-dragging'); saveUI(); renderGraph();
+    };
+    addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up);
+  });
+  sideSplit.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault(); e.stopPropagation();
+    setSideW(sideEl.offsetWidth + (e.key === 'ArrowLeft' ? 32 : -32)); saveUI(); renderGraph();
+  });
+  sideSplit.addEventListener('dblclick', () => { delete UI.sideW; applySideW(); saveUI(); setTimeout(renderGraph, 360); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeTabInd);
   // drag the top edge of the plans panel (or use the arrow keys on it) to resize it
   const split = $('#dockSplit'), dockBar = $('.dock-bar'), dock = $('#drawer'), dockBody = $('#drawerBody');
   // The grip and the bar both drag: the height follows the pointer once per frame, the size limit is
@@ -5185,12 +5364,12 @@ function bind() {
       toast('Updated with the changes made in another tab.');
     } else if (e.key === UIKEY && e.newValue) {
       let u = null; try { u = JSON.parse(e.newValue); } catch (err) { return; }
-      const pinWas = pinOn(), costsWas = !!UI.costs, keys = ['theme', 'costs', 'pinPlaces', 'motion', 'glass'];
+      const pinWas = pinOn(), costsWas = !!UI.costs, keys = ['theme', 'costs', 'pinPlaces', 'motion', 'glass', 'autoFit'], fitWas = autoFitOn();
       for (const k of keys) if (k in u) UI[k] = u[k];
       // during the tour, keep them for when your own plans come back too, so ending it does not write older ones back
       if (TOUR) { try { const t = JSON.parse(TOUR.ui); for (const k of keys) if (k in u) t[k] = u[k]; TOUR.ui = JSON.stringify(t); } catch (err) { /* keep what is there */ } }
       applyTheme(); applyMotion(); syncCostBtn(); syncSettings();
-      if (pinWas !== pinOn() || costsWas !== !!UI.costs) renderGraph();
+      if (pinWas !== pinOn() || costsWas !== !!UI.costs || fitWas !== autoFitOn()) { renderGraph(); syncToolbar(); }
     }
   });
   // reloading or closing the page with unsaved work (or after the browser could not save) asks first
@@ -5219,18 +5398,19 @@ function bind() {
     const sc = $('#graphScroll');
     const cx = sc.scrollLeft + sc.clientWidth / 2;
     const tC = geo && geo.time ? geo.tmin + (cx - geo.left) / geo.pph * H : null;
+    if (autoFitOn()) { UI.autoFit = false; saveUI(); syncFitBtn(); } // zooming by hand turns auto-fit off
     S.pph = +e.target.value;
     renderGraph();
     if (tC != null && geo && geo.time) sc.scrollLeft = geo.X(tC) - sc.clientWidth / 2;
   });
   $('#zoom').addEventListener('change', () => save()); // kept once the slider is let go, not on every step of a drag
+  // Auto-fit on or off: on, the timeline fits the window and keeps fitting it as the window or panels change;
+  // off, it stays at the zoom it has and you zoom by hand
   $('#fit').addEventListener('click', () => {
     if (!geo || !geo.time) return;
-    const sc = $('#graphScroll');
-    const hours = (geo.tmax - geo.tmin) / H;
-    S.pph = Math.max(3, Math.min(60, Math.floor((frameW(sc) - geo.left - LAY.right) / hours)));
-    renderGraph(); syncToolbar(); save();
-    sc.scrollLeft = 0;
+    if (autoFitOn()) { S.pph = geo.pph; UI.autoFit = false; save(); }
+    else { UI.autoFit = true; $('#graphScroll').scrollLeft = 0; }
+    saveUI(); renderGraph(); syncToolbar();
   });
   $('#currency').replaceChildren(...CURRENCIES.map(c => h('option', { value: c, text: c })));
   $('#currency').addEventListener('change', e => { checkpoint(); S.currency = e.target.value; renderAll(); syncSettings(); }); // the budget's currency sign in Settings follows too
@@ -5487,6 +5667,7 @@ function endTour() {
   saveUI(); applyMode(); applyTheme(); applyMotion(); syncCostBtn(); // settings changed during the tour go back on screen too
   // the details panel as you left it before the tour opened it (phones open and close it as needed)
   if (!(window.matchMedia && matchMedia('(max-width: 900px)').matches)) { sideOpen = !!UI.side; $('#main').classList.toggle('side-hidden', !sideOpen); }
+  applySideW(); // the panel width you had before the tour
   $('#drawer').classList.toggle('open', !!UI.drawer); $('#drawerTab').setAttribute('aria-expanded', String(!!UI.drawer));
   if (UI.dockH) fitDockH(); // cut down to fit, if the window got smaller meanwhile (the chosen height is kept)
   else $('#drawer').style.removeProperty('--dock-h'); // a height dragged only during the tour is dropped
@@ -5506,6 +5687,7 @@ syncCostBtn();
 // it opens when a place or leg is tapped, or with the Details tab at the side.
 sideOpen = window.matchMedia && matchMedia('(max-width: 900px)').matches ? false : UI.side;
 $('#main').classList.toggle('side-hidden', !sideOpen);
+applySideW();
 // a height saved in a taller window is cut down to fit this one (the chosen height is kept for when the window grows)
 if (UI.dockH) fitDockH();
 setDrawer(UI.drawer);
