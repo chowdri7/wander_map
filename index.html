@@ -1880,6 +1880,12 @@ html.glass .side-split::after{background:var(--g-field)}
 .card-head .now{flex:1 1 auto;min-width:0;height:auto !important;min-height:0;margin:0 14px 0 16px;padding:0 !important;border:0 !important;background:none !important;overflow:hidden;font-size:12px;line-height:1.35;color:var(--muted)}
 .card-head .now .hint{margin:0;font-size:12px;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card-head .now strong{color:var(--ink) !important;font-weight:600}
+/* the details panel opening or closing: the timeline's frame narrows or widens without a scrollbar flashing in,
+   then the old drawing fades out over the new one */
+.side-moving .graph-scroll,.side-dragging .graph-scroll{overflow-x:hidden !important}
+.graph-ghost{position:absolute;z-index:2;overflow:visible;pointer-events:none;animation:wmGhost .26s ease forwards}
+@keyframes wmGhost{to{opacity:0}}
+@media (prefers-reduced-motion:reduce){.graph-ghost{display:none}}
 </style>
 </head>
 <body>
@@ -2769,7 +2775,7 @@ function renderGraph() {
   geo.pinW = pw;
   gScrub = el('g', { class: 'scrub' }, svg);
   el('rect', { x: 0, y: 0, width, height, class: 'hit' }, gBg);
-  rows.forEach((r, i) => { if (i % 2 === 0) el('rect', { x: 0, y: r.top, width, height: r.bot - r.top, class: 'rowband' }, gBg); });
+  rows.forEach((r, i) => { if (i % 2 === 0) el('rect', { x: 0, y: r.top, width: width + LAY.deep, height: r.bot - r.top, class: 'rowband' }, gBg); });
   if (timeOn) drawTimeAxis(gBg);
   const meets = {};
   plist.forEach(pi => pi.nodes.forEach(n => { (meets[n] || (meets[n] = new Set())).add(pi.id); }));
@@ -4949,9 +4955,37 @@ function setSide(open) {
   sideOpen = !!open;
   // phones open and close the panel as needed; only a computer's choice is remembered
   if (!(window.matchMedia && matchMedia('(max-width: 900px)').matches)) { UI.side = sideOpen; saveUI(); }
+  // While the panel opens or closes the timeline keeps its drawing and its frame simply narrows or widens
+  // (nothing is redrawn on the way, so the motion stays smooth); once it settles, the timeline redraws for
+  // its new width and fades from the old drawing into the new one.
+  const glide = !!(window.matchMedia && matchMedia('(min-width: 901px)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if (glide) document.body.classList.add('side-moving');
   $('#main').classList.toggle('side-hidden', !sideOpen);
+  setSide._pending = true;
+  clearTimeout(setSide._t); setSide._t = setTimeout(sideSettled, glide ? 420 : 0); // in case the end of the motion is never reported
+}
+function sideSettled() {
+  if (!setSide._pending) return;
+  setSide._pending = false; clearTimeout(setSide._t);
+  document.body.classList.remove('side-moving');
+  settleGraph();
+}
+// Redraw the timeline, and let the old drawing fade out over the new one, so a change of width reads as a
+// gentle settle rather than a jump.
+function settleGraph() {
+  const g = $('#graph'), wrap = $('#gwrap');
+  const still = !g || !wrap || !geo || viewOnly || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if (still) { renderGraph(); return; }
+  const ghost = g.cloneNode(false);
+  ghost.removeAttribute('id'); ghost.setAttribute('class', 'graph-ghost'); ghost.setAttribute('aria-hidden', 'true');
+  // its own names for gradients, masks and clips, so it keeps looking as it did while the new drawing takes over
+  ghost.innerHTML = g.innerHTML.replace(/\bid="([^"]+)"/g, 'id="gh-$1"').replace(/url\(#/g, 'url(#gh-');
+  ghost.style.left = g.offsetLeft + 'px'; ghost.style.top = g.offsetTop + 'px';
+  wrap.querySelectorAll('.graph-ghost').forEach(n => n.remove());
+  wrap.append(ghost);
   renderGraph();
-  clearTimeout(setSide._t); setSide._t = setTimeout(renderGraph, 360); // and once more when it has finished moving
+  const done = () => ghost.remove();
+  ghost.addEventListener('animationend', done, { once: true }); setTimeout(done, 500);
 }
 // The plans panel is a sheet: drag its bar up (to at most 35% of the window's height) or down to close it.
 const DOCK_MAX = .35;
@@ -5301,7 +5335,7 @@ function bind() {
       if (ev.pointerId !== pid) return;
       removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up);
       if (raf) { cancelAnimationFrame(raf); raf = 0; }
-      setSideW(want); document.body.classList.remove('side-dragging'); saveUI(); renderGraph();
+      setSideW(want); document.body.classList.remove('side-dragging'); saveUI(); settleGraph();
     };
     addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up);
   });
@@ -5364,7 +5398,7 @@ function bind() {
     // opening or closing) always is, so the timeline never stays drawn at an old, shorter height.
     let lastH = 0, prevH = 0, flips = 0;
     new ResizeObserver(() => {
-      if (viewOnly) return;
+      if (viewOnly || document.body.classList.contains('side-moving')) return;
       const hh = $('#graphScroll').clientHeight;
       $('.graph-card').classList.toggle('cramped', hh < 150);
       if (Math.abs(hh - lastH) <= 2) return;
@@ -5378,7 +5412,7 @@ function bind() {
     }).observe($('#graphScroll'));
     // and once more when a panel has finished moving, whatever happened on the way
     $('#drawerBody').addEventListener('transitionend', e => { if (e.target === e.currentTarget && e.propertyName === 'height') { flips = 0; renderGraph(); } });
-    $('#side').addEventListener('transitionend', e => { if (e.target === e.currentTarget && (e.propertyName === 'flex-basis' || e.propertyName === 'transform')) { flips = 0; renderGraph(); } });
+    $('#side').addEventListener('transitionend', e => { if (e.target === e.currentTarget && (e.propertyName === 'flex-basis' || e.propertyName === 'transform')) { flips = 0; sideSettled(); } });
   }
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
   // Wander Map open in more than one tab: when another tab saves, this one takes that copy at once,
