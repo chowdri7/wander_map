@@ -260,20 +260,29 @@ table.plans tbody tr:hover{background:var(--surface2)}
 table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 3px 0 0 var(--accent)}
 .pname{display:inline-flex;align-items:baseline;gap:8px;font-weight:600;white-space:nowrap}
 td.route{color:var(--ink2);min-width:200px}
-td.route .rt-legs{list-style:none;margin:0;padding:0;display:grid;gap:3px}
-td.route .rt-legs li{display:flex;align-items:baseline;gap:8px;min-width:0;max-width:340px}
-td.route .rt-mode{flex:none;min-width:40px;font-size:10.5px;font-weight:600;letter-spacing:.03em;color:color-mix(in srgb,var(--c) 70%,var(--ink))}
-td.route .rt-txt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-td.route .rt-legs.open li{max-width:none}
-td.route .rt-legs.open .rt-txt{white-space:normal;overflow:visible}
-td.route .rt-more{margin-top:5px;padding:0;border:0;background:none;color:var(--accent);font:inherit;font-size:12px;font-weight:600;cursor:pointer}
-td.route .rt-more:hover{text-decoration:underline}
-td.route .rt-more:focus-visible{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:2px;border-radius:4px}
-/* a link field with its Open button beside it */
-.fld > span.linkrow{display:flex;gap:6px;align-items:center;min-width:0;font-size:inherit;font-weight:inherit;letter-spacing:normal;text-transform:none;color:inherit;margin:0}
-.linkrow input{flex:1;min-width:0}
-.linkrow .btn{flex:none}
-.ro-link{display:block;color:var(--accent);word-break:break-all;font-size:13px}
+/* the links of a place or a leg: a name with Open and Remove beside it, and the link under it */
+.lklist{display:grid;gap:8px}
+.lkrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:center;padding:8px;border:1px solid var(--border);border-radius:10px;background:color-mix(in srgb,var(--ink) 3%,transparent)}
+.lkrow > [data-lk=url]{grid-column:1 / -1}
+.lkrow > [data-lk=name]{font-weight:600}
+.lkrow .btn[hidden]{display:none}
+.lkrow.blank{border-style:dashed;background:transparent}
+.lkrow.blank > [data-lk=name]{font-weight:400}
+.lkrow.bad{border-color:color-mix(in srgb,var(--bad) 60%,var(--border))}
+.lkrow .lk-err{grid-column:1 / -1;font-size:11.5px;color:var(--bad)}
+.lkrow .lk-err[hidden]{display:none}
+.lk-hint{margin:8px 0 0}
+.ro-links{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.ro-link{display:flex;flex-direction:column;gap:1px;color:var(--accent);text-decoration:none;font-size:13px;word-break:break-all}
+.ro-link b{font-weight:600}
+.ro-link small{font-size:11.5px;color:var(--muted)}
+.ro-link:hover b{text-decoration:underline}
+/* a leg's details in the itinerary: a line of their own, trimmed, opened with a click */
+.pp-info{display:block;margin-top:2px;font-size:11.5px;line-height:1.4;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-info.can-open{cursor:pointer}
+.pp-info.can-open:hover{color:var(--ink)}
+.pp-info.open{white-space:normal;overflow:visible;overflow-wrap:anywhere}
+
 .nowrap{white-space:nowrap}
 .star{border:0;background:transparent;font-size:18px;line-height:1;cursor:pointer;color:var(--muted);padding:0 2px}
 .star[aria-pressed="true"]{color:var(--ink)}
@@ -2272,7 +2281,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
       <div class="dock-body" id="drawerBody">
         <div class="table-scroll">
           <table class="plans" id="plansTable">
-            <thead><tr><th><span class="muted" title="Pick">★</span></th><th>Plan</th><th>Route</th><th>Leaves</th><th>Arrives</th><th>Door to door</th><th>Cost per head</th></tr></thead>
+            <thead><tr><th><span class="muted" title="Pick">★</span></th><th>Plan</th><th>Leaves</th><th>Arrives</th><th>Door to door</th><th>Cost per head</th></tr></thead>
             <tbody id="plansBody"></tbody>
           </table>
         </div>
@@ -2399,7 +2408,7 @@ const MONS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oc
 const MONTHS_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const BUFS = [0, 15, 30, 60, 120, 180];
 const SORTS = ['made', 'cost', 'costDesc', 'start', 'end', 'dur'];
-const LEGF = { from: '', to: '', mode: 'flight', info: '', cost: '', dep: '', arr: '', buf: '', link: '' };
+const LEGF = { from: '', to: '', mode: 'flight', info: '', cost: '', dep: '', arr: '', buf: '' }; // and links, a list, only when it has some
 
 /* ---------- state ---------- */
 let S = null;                       // saved: nodes, legs, plans (of the trip that is open)
@@ -2626,8 +2635,14 @@ function extraProblem(x) {
 }
 // Editing is off on phones and in view-only mode.
 function canEdit() { return !viewOnly && !UI.view; }
-// A link kept with a place or a leg for your own records (a booking, a ticket, a map). It is never in the itinerary.
-function cleanLink(v) { return typeof v === 'string' ? v.trim().slice(0, 2000) : ''; }
+// Links kept with a place or a leg for your own records (a booking, a ticket, a map), each with a name.
+// They are never in the itinerary or in Copy as text.
+function cleanLinks(list, one) {
+  const src = Array.isArray(list) ? list : typeof one === 'string' && one.trim() ? [{ url: one }] : [];
+  return src.filter(x => x && typeof x === 'object')
+    .map(x => ({ name: String(x.name ?? '').trim().slice(0, 60), url: String(x.url ?? '').trim().slice(0, 2000) }))
+    .filter(x => x.url).slice(0, 40);
+}
 // the web address a link opens: one without http(s):// gets https://, and other kinds (mailto:, javascript:…) are never opened
 function webLink(raw) {
   const v = String(raw || '').trim(); if (!v || /\s/.test(v)) return null;
@@ -2635,22 +2650,95 @@ function webLink(raw) {
   if (/^[a-z][a-z0-9+.-]*:/i.test(v) && !/^[^:]+:\d+(\/|$)/.test(v)) return null;
   return /^[^\s/.]+(\.[^\s/.]+)+(:\d+)?(\/.*)?$/.test(v) ? 'https://' + v : null;
 }
+function linkHost(raw) { try { return new URL(webLink(raw)).hostname.replace(/^www\./, ''); } catch (e) { return String(raw || '').trim(); } }
 function openLink(raw) {
   const u = webLink(raw);
   if (!u) { toast('That is not a web link. It should look like https://… or example.com/…'); return; }
   window.open(u, '_blank', 'noopener,noreferrer');
 }
-function linkField(o) {
-  const i = input(o, 'link', 'text', { id: 'fLink', inputmode: 'url', autocomplete: 'off', spellcheck: 'false', maxlength: '2000', placeholder: 'Optional: a booking, ticket or map link' });
-  const go = h('button', { type: 'button', class: 'btn small', 'data-ico': 'open', title: 'Open the link in a new tab', onclick: e => { e.preventDefault(); openLink(i.value); } }, 'Open');
-  const sync = () => { go.disabled = !webLink(i.value); };
-  i.addEventListener('input', sync); sync();
-  return fld('Link', h('span', { class: 'linkrow' }, i, go), 'Just for your records: it is not in the itinerary or in Copy as text.');
+// What is wrong with the links being typed: a name with no link, a link that is not a web address, a name used twice.
+function linkErrors(list) {
+  const errs = [], seen = new Set();
+  (list || []).forEach((x, i) => {
+    const name = String(x.name || '').trim(), url = String(x.url || '').trim();
+    if (!name && !url) return;
+    if (!url) errs.push({ i, msg: 'Add the link for this name, or remove it.' });
+    else if (!webLink(url)) errs.push({ i, msg: 'This is not a web link. It should look like https://… or example.com/…' });
+    else { const k = (name || linkHost(url)).toLowerCase(); if (seen.has(k)) errs.push({ i, msg: 'Another link here has this name. Give it a name of its own.' }); seen.add(k); }
+  });
+  return errs;
 }
-// in View mode, a saved link is something to open, not to edit
-function linkView(raw) {
-  const u = webLink(raw); if (!u) return null;
-  return h('div', { class: 'sect' }, h('h3', { text: 'Link' }), h('a', { class: 'ro-link', href: u, target: '_blank', rel: 'noopener noreferrer', text: String(raw).trim() }));
+// the links as they are kept: tidied, and named after their site when you gave no name
+function finishLinks(list) { return cleanLinks(list).map(x => ({ name: x.name || linkHost(x.url), url: x.url })); }
+// The links being typed, read from the form (rows left empty are not links).
+function readLinks(box) {
+  return [...box.querySelectorAll('.lkrow')].map(r => ({ name: r.querySelector('[data-lk=name]').value, url: r.querySelector('[data-lk=url]').value }))
+    .filter(x => x.name.trim() || x.url.trim());
+}
+// The Links group: one row per link (a name, the link, Open and Remove), and always one empty row to add another.
+function linksGroup(o) {
+  const list = h('div', { class: 'lklist' });
+  const fire = () => { const i = list.querySelector('input'); if (i) i.dispatchEvent(new Event('input', { bubbles: true })); };
+  const isEmpty = r => !r.querySelector('[data-lk=name]').value.trim() && !r.querySelector('[data-lk=url]').value.trim();
+  const row = x => {
+    const name = h('input', { type: 'text', 'data-f': 'links', 'data-lk': 'name', maxlength: '60', autocomplete: 'off', placeholder: 'Name, e.g. Hotel booking', 'aria-label': 'Link name' });
+    const url = h('input', { type: 'text', 'data-f': 'links', 'data-lk': 'url', inputmode: 'url', maxlength: '2000', autocomplete: 'off', spellcheck: 'false', placeholder: 'Paste a link: https://…', 'aria-label': 'Link' });
+    name.value = x.name || ''; url.value = x.url || '';
+    const r = h('div', { class: 'lkrow' });
+    const open = h('button', { type: 'button', class: 'btn small icon', 'data-ico': 'open', title: 'Open the link in a new tab', 'aria-label': 'Open the link', onclick: () => openLink(url.value) }, 'Open');
+    const del = h('button', { type: 'button', class: 'btn small icon', 'data-ico': 'close', title: 'Remove this link', 'aria-label': 'Remove this link', onclick: () => {
+      const next = r.nextElementSibling || r.previousElementSibling; r.remove(); tidy(); fire();
+      const f = next && next.querySelector('input'); if (f) f.focus();
+    } }, 'Remove');
+    r.append(name, open, del, url, h('small', { class: 'lk-err', hidden: true }));
+    r.addEventListener('focusout', e => { if (!r.contains(e.relatedTarget)) { r.dataset.left = '1'; check(); } });
+    return r;
+  };
+  // the rows stay tidy: one empty row at the end, the buttons only where there is a link, and a name to suggest
+  const tidy = () => {
+    const rows = [...list.querySelectorAll('.lkrow')];
+    rows.slice(0, -1).forEach(r => { if (isEmpty(r) && !r.contains(document.activeElement)) r.remove(); });
+    const last = list.lastElementChild;
+    if (!last || !isEmpty(last)) list.append(row({}));
+    list.querySelectorAll('.lkrow').forEach(r => {
+      const u = r.querySelector('[data-lk=url]').value, empty = isEmpty(r), web = webLink(u);
+      r.classList.toggle('blank', empty);
+      r.querySelector('[data-ico=open]').disabled = !web;
+      r.querySelector('[data-ico=close]').hidden = empty;
+      r.querySelector('[data-lk=name]').placeholder = web ? `Name (or it is called ${linkHost(u)})` : 'Name, e.g. Hotel booking';
+    });
+    check();
+  };
+  // what is wrong is said under its row once you have left that row (or tried to save)
+  const check = (all) => {
+    const errs = linkErrors(readLinks(list));
+    [...list.querySelectorAll('.lkrow')].filter(r => !isEmpty(r)).forEach((r, i) => {
+      const er = errs.find(x => x.i === i), m = r.querySelector('.lk-err'), show = er && (all || r.dataset.left);
+      if (all && er) r.dataset.left = '1';
+      m.hidden = !show; m.textContent = show ? er.msg : '';
+      r.classList.toggle('bad', !!show);
+    });
+    return errs;
+  };
+  list._check = check;
+  cleanLinks(o.links).forEach(x => list.append(row(x)));
+  list.addEventListener('input', () => tidy());
+  tidy();
+  return fgroup('Links', list, h('p', { class: 'hint lk-hint', text: 'Just for your records: links are not in the itinerary or in Copy as text. Fill one in and there is room for another.' }));
+}
+// before a save: the links must be ones that can be opened, each with its own name
+function linksOk() {
+  const list = $('#inspector .lklist'); if (!list) return true;
+  const errs = list._check(true); if (!errs.length) return true;
+  const r = list.querySelector('.lkrow.bad input'); if (r) r.focus();
+  toast(`Not saved yet: ${errs[0].msg}`);
+  return false;
+}
+// in View mode the links are for opening, not editing
+function linksView(list) {
+  const ls = cleanLinks(list).filter(x => webLink(x.url)); if (!ls.length) return null;
+  return h('div', { class: 'sect' }, h('h3', { text: 'Links' }), h('ul', { class: 'ro-links' }, ...ls.map(x =>
+    h('li', null, h('a', { class: 'ro-link', href: webLink(x.url), target: '_blank', rel: 'noopener noreferrer' }, h('b', { text: x.name || linkHost(x.url) }), h('small', { text: linkHost(x.url) }))))));
 }
 function fld(label, input, hint) { return h('label', { class: 'fld' }, h('span', { text: label }), input, hint ? h('small', { text: hint }) : null); }
 
@@ -2712,7 +2800,7 @@ function normalize(d) {
   for (const id in d.nodes) {
     const n = d.nodes[id]; if (!n || typeof n !== 'object') continue;
     out.nodes[id] = { id, name: String(n.name ?? ''), note: String(n.note ?? '') };
-    if (cleanLink(n.link)) out.nodes[id].link = cleanLink(n.link);
+    const ls = cleanLinks(n.links, n.link); if (ls.length) out.nodes[id].links = ls;
     if (n.scope === 'local') out.nodes[id].scope = 'local'; // kept to the open trip; otherwise it is in every trip
     if (typeof n.img === 'string' && (/^data:image\/(png|jpeg|webp|gif);base64,/.test(n.img) || /^https?:\/\/\S+$/i.test(n.img))) out.nodes[id].img = n.img;
   }
@@ -2729,6 +2817,7 @@ function normalize(d) {
       o[f] = v;
     }
     if (!MODE[o.mode]) o.mode = 'other';
+    const ls = cleanLinks(l.links, l.link); if (ls.length) o.links = ls;
     if (o.from && !out.nodes[o.from]) o.from = '';
     if (o.to && !out.nodes[o.to]) o.to = '';
     out.legs[id] = o;
@@ -2831,7 +2920,7 @@ function loadSaved() {
 function tripId() { let id; do { id = 't' + Math.random().toString(36).slice(2, 9); } while (LIB && LIB.trips[id]); return id; }
 function cleanPlace(id, n) {
   const o = { id, name: String(n.name ?? ''), note: String(n.note ?? '') };
-  if (cleanLink(n.link)) o.link = cleanLink(n.link);
+  const ls = cleanLinks(n.links, n.link); if (ls.length) o.links = ls;
   if (typeof n.img === 'string' && (/^data:image\/(png|jpeg|webp|gif);base64,/.test(n.img) || /^https?:\/\/\S+$/i.test(n.img))) o.img = n.img;
   return o;
 }
@@ -4357,6 +4446,7 @@ function nodeInspector(box, n) {
   if (!TOUR) box.append(fgroup('Trips', scopeRow(n.scope !== 'local', on => setPlaceScope(n.id, on))));
   box.append(imageGroup(n.img, nodeName(n.id), (src, msg) => storeNodeImage(n.id, src, msg),
     () => { checkpoint(); delete S.nodes[n.id].img; renderAll(); toast('Image removed', true); }));
+  box.append(linksGroup(ed.obj));
   box.append(fgroup('Legs here', legList('Leaving', legsFrom(n.id), 'to'), legList('Arriving', legsTo(n.id), 'from')));
   const i = S.order.indexOf(n.id), cnt = legsFrom(n.id).length + legsTo(n.id).length;
   ed.normalFoot = () => setFoot(icoBtn('Add leg from here', () => newLeg({ from: n.id }), 'primary', 'leg', 'A leg that leaves this place'), [
@@ -4373,7 +4463,6 @@ function placeFields(box, o) {
   box.append(fld('Name', input(o, 'name', 'text', { placeholder: 'e.g. City Airport', id: 'fName', autocomplete: 'off', maxlength: '80', required: true }), 'Every leg in or out of this place meets here.'));
   box.append(h('div', { id: 'liveDup' }));
   box.append(fld('Note', input(o, 'note', 'textarea', { placeholder: 'Optional' })));
-  box.append(linkField(o));
 }
 function waitInspector(box, p, legId) {
   const w = waitInfo(p, legId), pi = PLBY[p.id], ed = editFor('wait', legId, p.id);
@@ -4515,8 +4604,7 @@ function legFields(box, o, isDraft) {
     h('div', { class: 'row2' },
       fld('How', sel_),
       fld(`Fare per head (${curSym()})`, input(o, 'cost', 'number', { min: '0', step: '1', inputmode: 'numeric', placeholder: 'e.g. 120', required: true }))),
-    fld('Details', input(o, 'info', 'text', { placeholder: 'Optional: airline, flight no., bus operator…', maxlength: '120' })),
-    linkField(o));
+    fld('Details', input(o, 'info', 'text', { placeholder: 'Optional: airline, flight no., bus operator…', maxlength: '120' })));
   const chips = h('div', { class: 'chips', role: 'group', 'aria-label': 'Buffer' });
   BUFS.forEach(b => chips.append(h('button', {
     type: 'button', class: 'chip', 'data-b': String(b), 'aria-pressed': String((+o.buf || 0) === b),
@@ -4530,7 +4618,7 @@ function legFields(box, o, isDraft) {
       h('div', { class: 'chiprow' }, chips, input(o, 'buf', 'number', { min: '0', step: '5', inputmode: 'numeric', placeholder: 'mins', class: 'bufnum', 'aria-label': 'Buffer in minutes', title: 'Or type your own, in minutes' })),
       h('small', null, 'Moves the arrival later by this much. ',
         isDraft ? null : h('button', { type: 'button', class: 'linkbtn', text: 'Use this on every bus and cab leg', onclick: () => applyBufRoad(formValues().buf) }))));
-  box.append(route, how, when);
+  box.append(route, how, when, linksGroup(o));
 }
 /* dates are typed as dd/mm/yyyy (the browser's own date box follows its language, often mm/dd/yyyy) */
 function isoToDMY(iso) { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ''); return m ? `${m[3]}/${m[2]}/${m[1]}` : ''; }
@@ -4604,11 +4692,13 @@ function pickBuf(b) {
 function formValues() {
   const v = {}, box = $('#inspector');
   box.querySelectorAll('[data-f]').forEach(i => {
+    if (i.dataset.lk) return; // a link's name or address: the links are read together below
     if (i.dataset.dt) { v[i.dataset.f] = dtValue(i); return; }
     const f = i.dataset.f, raw = i.value;
     v[f] = f === 'cost' || f === 'buf' ? (i.validity && i.validity.badInput ? NaN : String(raw).trim() === '' ? '' : (num(raw) ?? NaN)) : raw;
   });
   box.querySelectorAll('select[data-end]').forEach(sl => { if (sl.value !== '__new') v[sl.dataset.end] = sl.value; });
+  if (box.querySelector('.lklist')) v.links = readLinks(box);
   return v;
 }
 // Mark each field that still needs something, with the reason beside it. With `only`, just those fields.
@@ -4645,20 +4735,26 @@ function showSaved(kind, obj) {
   if (edit && editDirty()) refreshEditUI(); else { markFields(probs); renderDup(probs); }
   syncEditFoot(true);
 }
-function diffKeys(obj, cand) { return Object.keys(cand).filter(f => f !== 'id' && cand[f] !== obj[f]); }
+function diffKeys(obj, cand) { return Object.keys(cand).filter(f => f !== 'id' && (f === 'links' ? JSON.stringify(cleanLinks(cand[f])) !== JSON.stringify(cleanLinks(obj[f])) : cand[f] !== obj[f])); }
 function applyEdit(k, id, cand, changed) {
   const obj = k === 'node' ? S.nodes[id] : S.legs[id];
-  for (const f of changed) { if (k === 'leg' && f === 'cost') setFare(id, cand.cost); else obj[f] = cand[f]; }
+  for (const f of changed) {
+    if (k === 'leg' && f === 'cost') setFare(id, cand.cost);
+    else if (f === 'links') { if (cand.links.length) obj.links = cand.links; else delete obj.links; }
+    else obj[f] = cand[f];
+  }
   if (k === 'leg' && changed.some(f => ['from', 'to', 'mode', 'dep', 'arr'].includes(f))) adoptTwinFare(id);
 }
 
 /* ---------- editing a saved place, leg or wait: nothing changes until you press Save ---------- */
-const EDIT_F = { node: ['name', 'note', 'link'], leg: ['from', 'to', 'mode', 'cost', 'info', 'dep', 'arr', 'buf', 'link'], wait: ['label'] };
+const EDIT_F = { node: ['name', 'note', 'links'], leg: ['from', 'to', 'mode', 'cost', 'info', 'dep', 'arr', 'buf', 'links'], wait: ['label'] };
+// a field's saved value as the form starts from it (links are a list of their own, never the saved one itself)
+function editVal(src, f) { return f === 'links' ? cleanLinks(src.links) : src[f] ?? ''; }
 function pickF(o, fs) { const r = {}; fs.forEach(f => { if (f in o) r[f] = o[f]; }); return r; }
 function editFor(k, id, plan) {
   if (!edit || edit.k !== k || edit.id !== id || (k === 'wait' && edit.plan !== plan)) {
     const src = k === 'node' ? S.nodes[id] : k === 'leg' ? S.legs[id] : { label: (S.plans[plan].waits || {})[id] || '' };
-    const obj = Object.fromEntries(EDIT_F[k].map(f => [f, src[f] ?? '']));
+    const obj = Object.fromEntries(EDIT_F[k].map(f => [f, editVal(src, f)]));
     edit = { k, id, plan: plan || null, obj, init: JSON.stringify(obj), footDirty: null, normalFoot: null };
   }
   return edit;
@@ -4670,8 +4766,8 @@ function rebaseEdit() {
   if (!edit) return;
   const src = edit.k === 'node' ? S.nodes[edit.id] : edit.k === 'leg' ? S.legs[edit.id] : S.plans[edit.plan] ? { label: (S.plans[edit.plan].waits || {})[edit.id] || '' } : null;
   if (!src) return;
-  const was = JSON.parse(edit.init), now = Object.fromEntries(EDIT_F[edit.k].map(f => [f, src[f] ?? '']));
-  EDIT_F[edit.k].forEach(f => { if (edit.obj[f] === was[f]) edit.obj[f] = now[f]; });
+  const was = JSON.parse(edit.init), now = Object.fromEntries(EDIT_F[edit.k].map(f => [f, editVal(src, f)]));
+  EDIT_F[edit.k].forEach(f => { if (JSON.stringify(edit.obj[f]) === JSON.stringify(was[f])) edit.obj[f] = now[f]; });
   edit.init = JSON.stringify(now); edit.footDirty = null;
 }
 function editName() { return !edit ? '' : edit.k === 'node' ? nodeName(edit.id) : edit.k === 'leg' ? legLabel(edit.id) : 'this wait'; }
@@ -4728,7 +4824,9 @@ function saveEdit() {
   }
   Object.assign(edit.obj, pickF(formValues(), EDIT_F[k]));
   // text is kept without spaces at either end, the same as for new places and legs
-  ['name', 'note', 'info', 'link'].forEach(f => { if (f in edit.obj) edit.obj[f] = String(edit.obj[f] ?? '').trim(); });
+  ['name', 'note', 'info'].forEach(f => { if (f in edit.obj) edit.obj[f] = String(edit.obj[f] ?? '').trim(); });
+  if (!linksOk()) return;
+  if ('links' in edit.obj) edit.obj.links = finishLinks(edit.obj.links);
   const base = k === 'node' ? S.nodes[id] : S.legs[id]; if (!base) { edit = null; renderInspector(); return; }
   const cand = Object.assign({}, base, edit.obj), probs = k === 'node' ? placeProblems(cand, id) : legProblems(cand, id);
   if (probs.length) {
@@ -4790,6 +4888,7 @@ function draftInspector(box) {
       imgMsg(msg || ''); toast('Image added to the new place');
     };
     box.append(imageGroup(d.obj.img, String(d.obj.name || '').trim(), keep, () => { if (draft !== d) return; Object.assign(d.obj, formValues()); delete d.obj.img; renderInspector(); }));
+    box.append(linksGroup(d.obj));
   }
   box.append(h('p', { class: 'need', id: 'draftNeed', 'aria-live': 'polite' }));
   const cr = $('#liveCrumb'); if (cr) cr.textContent = d.plan && S.plans[d.plan] ? `Not saved yet · joins “${S.plans[d.plan].name}” when the route connects` : 'Not saved yet';
@@ -4826,17 +4925,20 @@ function saveDraft() {
     const f = $(`#inspector [data-f="${probs[0].f}"], #inspector select[data-end="${probs[0].f}"]`); if (f) f.focus();
     return;
   }
+  if (!linksOk()) return;
   checkpoint();
   let id;
+  const links = finishLinks(d.obj.links);
   if (d.k === 'node') {
     id = addNode(d.obj.name.trim());
     S.nodes[id].note = String(d.obj.note || '').trim();
-    if (cleanLink(d.obj.link)) S.nodes[id].link = cleanLink(d.obj.link);
+    if (links.length) S.nodes[id].links = links;
     if (d.obj.img) S.nodes[id].img = d.obj.img;
     if (d.obj.scope === 'local') S.nodes[id].scope = 'local';
   } else {
     const o = d.obj;
-    id = addLeg({ from: o.from, to: o.to, mode: o.mode, info: String(o.info || '').trim(), cost: +o.cost, dep: o.dep, arr: o.arr, buf: o.buf === '' ? '' : +o.buf, link: cleanLink(o.link) });
+    id = addLeg({ from: o.from, to: o.to, mode: o.mode, info: String(o.info || '').trim(), cost: +o.cost, dep: o.dep, arr: o.arr, buf: o.buf === '' ? '' : +o.buf });
+    if (links.length) S.legs[id].links = links;
     setFare(id, +o.cost); // one fare per trip: other legs with the same places, transport and times share it
     if (d.plan && S.plans[d.plan]) S.plans[d.plan].pending = (S.plans[d.plan].pending || []).concat(id);
   }
@@ -4885,7 +4987,7 @@ function nodeView(box, n) {
   box.append(inspHead(nodeName(n.id), 'var(--ink)'));
   if (n.img) box.append(h('div', { class: 'nimg' }, h('img', { src: n.img, alt: `Picture of ${nodeName(n.id)}` })));
   if (String(n.note || '').trim()) box.append(h('div', { class: 'sect' }, h('h3', { text: 'Note' }), h('p', { class: 'ro-text', text: n.note.trim() })));
-  const lk = linkView(n.link); if (lk) box.append(lk);
+  const lk = linksView(n.links); if (lk) box.append(lk);
   box.append(legList(`Legs leaving ${nodeName(n.id)}`, legsFrom(n.id), 'to'));
   box.append(legList(`Legs arriving at ${nodeName(n.id)}`, legsTo(n.id), 'from'));
 }
@@ -4901,7 +5003,7 @@ function legView(box, l) {
     ...row('Travel time', t.timed ? fmtDur(t.arrSched - t.dep) : '—'),
     ...(t.buf ? row('Buffer', `+${fmtDur(t.buf)}, latest arrival ${fmtDT(t.arr)}`) : []),
     ...row('Fare per head', l.cost === '' ? '—' : money(l.cost))));
-  const lk = linkView(l.link); if (lk) box.append(lk);
+  const lk = linksView(l.links); if (lk) box.append(lk);
   const ps = LEGPLANS[l.id] || [];
   box.append(h('div', { class: 'sect' }, h('h3', { text: `In saved plans (${ps.length})` }),
     ps.length ? h('div', { class: 'chips' }, ...ps.map(pid => h('button', { type: 'button', class: 'chip', text: S.plans[pid].name, onclick: () => togglePlan(pid, true) })))
@@ -5386,36 +5488,6 @@ function savePlan() {
 }
 
 /* ---------- saved plans ---------- */
-// The route in the plans list, one leg to a line. Past three legs, or with a line too long to fit, it is trimmed;
-// a click on it shows the whole route (and another click trims it again) without opening the plan.
-const ROUTE_SHOW = 3, routeOpen = new Set();
-function routeCell(p) {
-  const td = h('td', { class: 'route' });
-  const legs = p.legs.filter(id => S.legs[id]);
-  if (!legs.length) { td.textContent = p.route; return td; }
-  const fill = () => {
-    const open = routeOpen.has(p.id), more = legs.length - ROUTE_SHOW;
-    const list = h('ol', { class: 'rt-legs' + (open ? ' open' : '') });
-    (open || more <= 0 ? legs : legs.slice(0, ROUTE_SHOW)).forEach(id => {
-      const m = MODE[S.legs[id].mode] || MODE.other;
-      list.append(h('li', { title: `${m.label}: ${legLabel(id)}` }, h('span', { class: 'rt-mode', style: `--c:${m.color}`, text: m.tag }), h('span', { class: 'rt-txt', text: legLabel(id) })));
-    });
-    td.replaceChildren(list);
-    if (more > 0) td.append(h('button', { type: 'button', class: 'rt-more', 'aria-expanded': String(open), text: open ? 'Show less' : `+ ${more} more leg${more > 1 ? 's' : ''}` }));
-    else if (open) td.append(h('button', { type: 'button', class: 'rt-more', 'aria-expanded': 'true', text: 'Show less' }));
-  };
-  fill();
-  td.addEventListener('click', e => {
-    const open = routeOpen.has(p.id);
-    const cut = legs.length > ROUTE_SHOW || [...td.querySelectorAll('.rt-txt')].some(x => x.scrollWidth > x.clientWidth + 1);
-    if (!open && !cut) return; // nothing hidden: the click opens the plan, as anywhere on its row
-    e.stopPropagation();
-    if (open) routeOpen.delete(p.id); else routeOpen.add(p.id);
-    fill();
-    const b = td.querySelector('.rt-more'); if (b && e.target.closest('.rt-more')) b.focus();
-  });
-  return td;
-}
 function renderPlans() {
   const tb = $('#plansBody'); tb.replaceChildren();
   const plans = PL.slice();
@@ -5442,7 +5514,6 @@ function renderPlans() {
     tr.append(
       h('td', null, star),
       h('td', null, h('span', { class: 'pname' }, h('span', { class: 'key', style: `--c:${p.color}` }), p.name), p.warn ? h('div', { class: 'st bad', text: '⚠ check this plan' }) : null),
-      routeCell(p),
       h('td', { class: 'nowrap', text: fmtDT(p.start) }),
       h('td', { class: 'nowrap', text: fmtDT(p.end) }),
       h('td', { class: 'nowrap', text: fmtDur(p.dur) }),
@@ -5547,7 +5618,7 @@ function select(s, focusSel) {
 function newNode() {
   if (!canEdit() || !canLeave()) return;
   if (B) { toast('Finish or cancel the plan you are making first'); return; }
-  openDraft('node', Object.assign({ name: '', note: '' }, newPlacesLocal() ? { scope: 'local' } : {}), '#fName');
+  openDraft('node', Object.assign({ name: '', note: '', links: [] }, newPlacesLocal() ? { scope: 'local' } : {}), '#fName');
 }
 function newLeg(props) {
   if (!canEdit() || !canLeave()) return;
@@ -5566,7 +5637,7 @@ function newLeg(props) {
   // nothing to follow: it starts on the day the timeline shows, when you chose one
   if (!p.dep && dayMs(S.day) != null) { const d = dayMs(S.day) + 9 * H; p.dep = toLocal(d); p.arr = toLocal(d + 2 * H); }
   const focus = p.focus; delete p.after; delete p.focus;
-  const o = Object.assign({}, LEGF, p);
+  const o = Object.assign({}, LEGF, p, { links: [] });
   openDraft('leg', o, focus || (!o.from ? '#fFrom' : !o.to ? '#fTo' : '#fDep'));
 }
 function addNodeFromLeg() {
@@ -5799,6 +5870,20 @@ function renderPlanBar() {
     h('span', { class: 'muted', text: `${fmtDT(p.start)} → ${fmtDT(p.end)} · ${fmtDur(p.dur)}` }),
     planActions(p, 'bar'));
 }
+// A leg's details (airline, flight no., anything you wrote) on a line of their own under the leg. Too long for the
+// line, they end in "…", and a click shows them in full (another click trims them again) without opening the leg.
+function infoLine(text) {
+  const el_ = h('span', { class: 'pp-info', text });
+  const cut = () => el_.scrollWidth > el_.clientWidth + 1;
+  el_.addEventListener('mouseenter', () => { const c = el_.classList.contains('open') || cut(); el_.classList.toggle('can-open', c); el_.title = c ? (el_.classList.contains('open') ? 'Click to trim' : 'Click to read it all') : ''; });
+  el_.addEventListener('click', e => {
+    if (!el_.classList.contains('open') && !cut()) return; // it all fits: the click opens the leg, as anywhere on its row
+    e.stopPropagation();
+    el_.classList.toggle('open');
+    el_.title = el_.classList.contains('open') ? 'Click to trim' : 'Click to read it all';
+  });
+  return el_;
+}
 // A plan's buttons, in the panel's bar at the bottom like a place's and a leg's: the main action on the left, the
 // rest under More, and Delete set apart on the right.
 function planFoot(p) {
@@ -5856,7 +5941,8 @@ function planPanel(p) {
       h('div', { class: 'pp-time' }, h('b', { text: hm(t.dep) }), h('small', { text: `to ${later ? shortDT(t.arrSched) : hm(t.arrSched)}` })),
       h('span', { class: 'pp-bar', 'aria-hidden': 'true' }),
       h('div', { class: 'pp-what' }, h('b', { text: legLabel(id) }),
-        h('small', { text: [m.label, fmtDur(t.arrSched - t.dep), l.info, t.buf ? `+${fmtDur(t.buf)} buffer` : null].filter(Boolean).join(' · ') })),
+        h('small', { text: [m.label, fmtDur(t.arrSched - t.dep), t.buf ? `+${fmtDur(t.buf)} buffer` : null].filter(Boolean).join(' · ') }),
+        l.info ? infoLine(l.info) : null),
       h('span', { class: 'pp-fare', text: l.cost === '' ? '—' : money(l.cost) }));
     row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select({ k: 'leg', id }); } });
     hoverRow(row, id);
