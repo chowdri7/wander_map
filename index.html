@@ -940,6 +940,7 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 [data-ico="edit"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z%22/%3E%3Cpath d=%22M14.5 7.5l3 3%22/%3E%3C/svg%3E")}
 [data-ico="file"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z%22/%3E%3Cpath d=%22M14 3v5h5M9 13h6M9 17h4%22/%3E%3C/svg%3E")}
 [data-ico="open"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M15 3h6v6%22/%3E%3Cpath d=%22M10 14 21 3%22/%3E%3Cpath d=%22M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6%22/%3E%3C/svg%3E")}
+[data-ico="clock"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%229%22/%3E%3Cpath d=%22M12 7v5l3 2%22/%3E%3C/svg%3E")}
 [data-ico="dots"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%225%22 cy=%2212%22 r=%221%22/%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%221%22/%3E%3Ccircle cx=%2219%22 cy=%2212%22 r=%221%22/%3E%3C/svg%3E")}
 [data-ico="key"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223.5%22 y=%224%22 width=%227%22 height=%227%22 rx=%221.5%22/%3E%3Crect x=%2213.5%22 y=%224%22 width=%227%22 height=%227%22 rx=%221.5%22/%3E%3Crect x=%223.5%22 y=%2213%22 width=%227%22 height=%227%22 rx=%221.5%22/%3E%3Cpath d=%22M14 16.5h6.5%22/%3E%3C/svg%3E")}
 [data-ico="close"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M6 6l12 12M18 6L6 18%22/%3E%3C/svg%3E")}
@@ -2000,7 +2001,7 @@ html.glass .vt-list:hover,html.glass .vt-all.open .vt-list{background:var(--g-st
 @container side (max-width:280px){
   .row2{grid-template-columns:1fr}
   .fld > span.dtfield{flex-wrap:wrap}
-  .dtfield .datebox,.dtfield .dttime{flex:1 1 100%;width:auto}
+  .dtfield .datebox,.dtfield .timebox{flex:1 1 100%;width:auto}
   .side-foot .btn.primary .lbl{display:none} /* the icon alone; its name is in the tooltip */
 }
 /* the time header stays at the top while the places scroll under it, like a spreadsheet's frozen row */
@@ -2024,8 +2025,35 @@ html.glass .axiscorner{-webkit-backdrop-filter:blur(16px) saturate(170%);backdro
 .datebox .dtdate{width:100%;padding-right:36px}
 .datebox .dtcal{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:28px;height:28px;display:grid;place-items:center;border:0;border-radius:7px;background:none;color:var(--ink2);cursor:pointer;font-size:0;padding:0}
 .datebox .dtcal:hover{background:var(--surface2);color:var(--ink)}
-.datebox .dtpick{position:absolute;right:0;bottom:0;width:1px;height:1px;padding:0;border:0;opacity:0;pointer-events:none}
-.dtfield .dttime{flex:0 0 auto;width:118px}
+.timebox{position:relative;display:flex;align-items:center;flex:0 0 auto;width:124px}
+.timebox .dttime{width:100%;padding-right:34px}
+.timebox .dttime::-webkit-calendar-picker-indicator{display:none}
+.timebox .dtclock{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:28px;height:28px;display:grid;place-items:center;border:0;border-radius:7px;background:none;color:var(--ink2);cursor:pointer;font-size:0;padding:0}
+.timebox .dtclock:hover,.datebox .dtcal[aria-expanded="true"],.timebox .dtclock[aria-expanded="true"]{background:var(--surface2);color:var(--ink)}
+/* the app's calendar and clock */
+.pickpop{position:fixed;z-index:90;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-lg);color:var(--ink);font:13px var(--font);animation:wmFade .14s ease}
+html.glass .pickpop{background-color:var(--g-strong);background-image:linear-gradient(180deg,var(--g-sheen),transparent 46%);border-color:var(--g-edge);-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);box-shadow:var(--g-hi),var(--g-shadow)}
+.calpop{width:268px}
+.cal-head{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.cal-title{flex:1;text-align:center;font:600 14px var(--serif);letter-spacing:-.005em}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-wd{text-align:center;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:2px 0 6px}
+.cal-day{height:32px;border:0;border-radius:9px;background:none;color:var(--ink);font:500 12.5px var(--font);font-variant-numeric:tabular-nums;cursor:pointer}
+.cal-day:hover{background:color-mix(in srgb,var(--ink) 9%,transparent)}
+.cal-day:focus-visible{outline:2px solid color-mix(in srgb,var(--accent) 60%,transparent);outline-offset:-2px}
+.cal-day.out{color:var(--muted);opacity:.55}
+.cal-day.today{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--accent) 70%,transparent);font-weight:700}
+.cal-day.on{background:var(--accent);color:var(--accent-ink,#fff);font-weight:700;opacity:1}
+.pick-foot{display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:9px;border-top:1px solid var(--border)}
+html.glass .pick-foot{border-top-color:var(--g-line,var(--border))}
+.timepop{width:220px}
+.tp-head{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:4px;text-align:center;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tp-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.tp-col{display:flex;flex-direction:column;gap:2px;height:200px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:2px}
+.tp-opt{flex:none;height:32px;border:0;border-radius:9px;background:none;color:var(--ink);font:500 13px var(--font);font-variant-numeric:tabular-nums;cursor:pointer}
+.tp-opt:hover{background:color-mix(in srgb,var(--ink) 9%,transparent)}
+.tp-opt:focus-visible{outline:2px solid color-mix(in srgb,var(--accent) 60%,transparent);outline-offset:-2px}
+.tp-opt.on{background:var(--accent);color:var(--accent-ink,#fff);font-weight:700}
 .dtfield:has(.dtdate.bad) .dttime{border-color:var(--bad)}
 #dayMenu .datebox{width:100%}
 /* How it works, behind the ? button */
@@ -4356,6 +4384,7 @@ function renderInspector() {
   // leg rows in this panel light up their leg while the pointer is over them; a row that is taken
   // away never hears the pointer leave, so its highlight is cleared here
   if (!B && hoverLeg) { hoverLeg = null; applyHighlight(); }
+  if (PICK && box.contains(PICK.anchor)) closePick(); // its field is about to go
   box.replaceChildren();
   setFoot(null);
   $('#heldBar').hidden = true;
@@ -4404,6 +4433,7 @@ function closeMenus(except) {
     const pp = m.querySelector('.menu-pop'); if (pp) pp.hidden = true;
     const t = m.querySelector('[data-menu-btn]'); if (t) t.setAttribute('aria-expanded', 'false');
   });
+  if (PICK && !PICK.anchor.offsetParent) closePick(); // its field was in a menu that just closed
 }
 // The details panel's action bar: the main action, a menu for the rest, and delete set apart on the right.
 function setFoot(primary, more, danger) {
@@ -4513,7 +4543,7 @@ function nodeInspector(box, n) {
     () => { checkpoint(); delete S.nodes[n.id].img; renderAll(); toast('Image removed', true); }));
   box.append(linksGroup(ed.obj));
   box.append(fgroup('Legs here', legList('Leaving', legsFrom(n.id), 'to'), legList('Arriving', legsTo(n.id), 'from')));
-  ed.normalFoot = () => setFoot(null); // its buttons are at the top; the bar below is for Save and Discard
+  ed.normalFoot = idleFoot; // its buttons are at the top; the bar below always has Save and Discard
   showSaved('node', n);
 }
 function placeFields(box, o) {
@@ -4539,7 +4569,7 @@ function waitInspector(box, p, legId) {
     h('dt', { text: 'From' }), h('dd', { text: fmtDT(w.from) }),
     h('dt', { text: 'Until' }), h('dd', { text: fmtDT(w.to) }),
     h('dt', { text: 'Plan' }), h('dd', { text: `${p.name}, before ${legLabel(legId)}` }))));
-  ed.normalFoot = () => setFoot(null);
+  ed.normalFoot = idleFoot;
   syncEditFoot(true);
 }
 function setWaitLabel(pid, legId, v) {
@@ -4645,7 +4675,7 @@ function legInspector(box, l) {
   } else s.append(h('p', { class: 'hint', text: 'Not in any saved plan yet.' }));
   box.append(s);
   box.append(h('div', { id: 'liveTwin' }));
-  ed.normalFoot = () => setFoot(null);
+  ed.normalFoot = idleFoot;
   showSaved('leg', l);
 }
 function legFields(box, o, isDraft) {
@@ -4689,7 +4719,114 @@ function dmyToIso(v) {
   const dt = new Date(y, mo - 1, d); if (dt.getMonth() !== mo - 1 || dt.getDate() !== d) return '';
   return `${y}-${pad(mo)}-${pad(d)}`;
 }
-// a dd/mm/yyyy box: the slashes come by themselves as you type, and the calendar button opens the browser's picker
+/* ---------- the calendar and the clock: pickers drawn like the rest of the app ----------
+   The browser's own pop-ups look different on every system and can spill out past the window. These open beside
+   their field, always inside the window, in the app's own look. Typing a date or a time works as before. */
+let PICK = null; // the picker that is open: its pop-up, the field it belongs to, and its button
+function isoDay(d) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+function closePick(refocus) {
+  if (!PICK) return;
+  const p = PICK; PICK = null;
+  p.pop.remove();
+  if (p.btn) p.btn.setAttribute('aria-expanded', 'false');
+  if (refocus && p.btn && p.btn.isConnected) p.btn.focus({ preventScroll: true });
+}
+// below its field (above when there is more room there), its right edge on the field's, and inside the window
+function placePick() {
+  if (!PICK) return;
+  const { pop, anchor } = PICK, r = anchor.getBoundingClientRect(), gap = 6, pad_ = 8, w = pop.offsetWidth, ht = pop.offsetHeight;
+  const below = innerHeight - r.bottom - gap - pad_, above = r.top - gap - pad_;
+  const up = below < ht && above > below;
+  pop.style.top = Math.round(Math.max(pad_, Math.min(innerHeight - pad_ - ht, up ? r.top - gap - ht : r.bottom + gap))) + 'px';
+  pop.style.left = Math.round(Math.max(pad_, Math.min(innerWidth - pad_ - w, r.right - w))) + 'px';
+}
+function openPick(pop, anchor, btn) {
+  closePick();
+  pop.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closePick(true); } });
+  document.body.append(pop);
+  PICK = { pop, anchor, btn };
+  if (btn) btn.setAttribute('aria-expanded', 'true');
+  placePick();
+}
+// A month of days: the one in the field is filled, today is ringed. Arrows move a day or a week, Page Up and
+// Page Down a month, Enter picks, Esc closes.
+function calendarPop(cur, start, onPick) {
+  const today = isoDay(new Date(todayMs()));
+  let focus = cur || start || today, view = focus.slice(0, 7);
+  const pop = h('div', { class: 'pickpop calpop', role: 'dialog', 'aria-label': 'Choose a day' });
+  const title = h('b', { class: 'cal-title', 'aria-live': 'polite' });
+  const grid = h('div', { class: 'cal-grid', role: 'grid' });
+  const move = (months) => { const [y, m] = view.split('-').map(Number); const d = new Date(y, m - 1 + months, 1); view = isoDay(d).slice(0, 7); draw(); };
+  const draw = (takeFocus) => {
+    const [y, m] = view.split('-').map(Number);
+    title.textContent = `${MONTHS_LONG[m - 1]} ${y}`;
+    grid.replaceChildren(...['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(t => h('span', { class: 'cal-wd', 'aria-hidden': 'true', text: t })));
+    const first = new Date(y, m - 1, 1);
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(y, m - 1, 1 - first.getDay() + i), iso = isoDay(d);
+      grid.append(h('button', { type: 'button', class: 'cal-day' + (d.getMonth() !== m - 1 ? ' out' : '') + (iso === today ? ' today' : '') + (iso === cur ? ' on' : ''),
+        'data-iso': iso, tabindex: iso === focus ? '0' : '-1', 'aria-pressed': String(iso === cur), 'aria-label': fmtDay(d.getTime()) + (iso === today ? ', today' : ''),
+        text: String(d.getDate()), onclick: () => onPick(iso) }));
+    }
+    if (!grid.querySelector('[tabindex="0"]')) { const f = grid.querySelector('.cal-day:not(.out)'); if (f) f.tabIndex = 0; }
+    if (takeFocus) { const f = grid.querySelector('[tabindex="0"]'); if (f) f.focus({ preventScroll: true }); }
+  };
+  grid.addEventListener('keydown', e => {
+    const b = e.target.closest('.cal-day'); if (!b) return;
+    const step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[e.key];
+    if (!step && e.key !== 'PageUp' && e.key !== 'PageDown') return;
+    e.preventDefault();
+    const d = new Date(b.dataset.iso + 'T00:00');
+    if (step) d.setDate(d.getDate() + step); else d.setMonth(d.getMonth() + (e.key === 'PageUp' ? -1 : 1));
+    focus = isoDay(d); view = focus.slice(0, 7); draw(true);
+  });
+  pop.append(
+    h('div', { class: 'cal-head' },
+      h('button', { type: 'button', class: 'btn small icon', 'data-ico': 'prev', title: 'The month before', 'aria-label': 'The month before', onclick: () => move(-1) }, 'Before'),
+      title,
+      h('button', { type: 'button', class: 'btn small icon', 'data-ico': 'next', title: 'The month after', 'aria-label': 'The month after', onclick: () => move(1) }, 'After')),
+    grid,
+    h('div', { class: 'pick-foot' }, btn('Today', () => onPick(today), 'small'), h('span', { class: 'spacer' }), btn('Close', () => closePick(true), 'small')));
+  draw();
+  return { pop, focus: () => draw(true) };
+}
+// Hours, minutes (every 5, and the one in the field) and AM or PM: a click sets that part of the time at once.
+function clockPop(cur, onSet) {
+  let [hh, mm] = /^\d{2}:\d{2}$/.test(cur || '') ? cur.split(':').map(Number) : [9, 0];
+  const pop = h('div', { class: 'pickpop timepop', role: 'dialog', 'aria-label': 'Choose a time' });
+  const cols = h('div', { class: 'tp-cols' });
+  const value = () => `${pad(hh)}:${pad(mm)}`;
+  const col = (label, opts, isOn, set) => {
+    const c = h('div', { class: 'tp-col', role: 'listbox', 'aria-label': label });
+    opts.forEach(([v, text]) => c.append(h('button', { type: 'button', role: 'option', class: 'tp-opt', 'data-v': String(v), text,
+      onclick: () => { set(v); mark(); onSet(value()); } })));
+    c._isOn = isOn;
+    c.addEventListener('keydown', e => {
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      e.preventDefault();
+      const b = e.target.closest('.tp-opt'), n = b && (e.key === 'ArrowDown' ? b.nextElementSibling : b.previousElementSibling);
+      if (n) { n.focus({ preventScroll: true }); n.scrollIntoView({ block: 'nearest' }); n.click(); }
+    });
+    return c;
+  };
+  const minutes = [...new Set([...Array.from({ length: 12 }, (_, i) => i * 5), mm])].sort((a, b) => a - b);
+  const cH = col('Hour', [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(x => [x, pad(x)]), v => (hh % 12 || 12) === v, v => { hh = (v % 12) + (hh >= 12 ? 12 : 0); });
+  const cM = col('Minute', minutes.map(x => [x, pad(x)]), v => mm === v, v => { mm = v; });
+  const cP = col('AM or PM', [['AM', 'AM'], ['PM', 'PM']], v => (hh >= 12 ? 'PM' : 'AM') === v, v => { if (v === 'AM' && hh >= 12) hh -= 12; if (v === 'PM' && hh < 12) hh += 12; });
+  const all = [cH, cM, cP];
+  const mark = () => all.forEach(c => c.querySelectorAll('.tp-opt').forEach(b => {
+    const v = c === cP ? b.dataset.v : +b.dataset.v, on = c._isOn(v);
+    b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1;
+  }));
+  cols.append(cH, cM, cP);
+  const now = () => { const d = new Date(); hh = d.getHours(); mm = Math.round(d.getMinutes() / 5) * 5; if (mm === 60) { mm = 55; } if (!cM.querySelector(`[data-v="${mm}"]`)) cM.append(h('button', { type: 'button', class: 'tp-opt', 'data-v': String(mm), text: pad(mm) })); mark(); center(); onSet(value()); };
+  const center = () => all.forEach(c => { const b = c.querySelector('.tp-opt.on'); if (b) c.scrollTop += (b.getBoundingClientRect().top - c.getBoundingClientRect().top) - (c.clientHeight - b.offsetHeight) / 2; });
+  pop.append(h('div', { class: 'tp-head', 'aria-hidden': 'true' }, h('span', { text: 'Hour' }), h('span', { text: 'Min' }), h('span', { text: '' })), cols,
+    h('div', { class: 'pick-foot' }, btn('Now', now, 'small'), h('span', { class: 'spacer' }), btn('Done', () => closePick(true), 'small primary')));
+  mark();
+  return { pop, focus: () => { center(); const b = cH.querySelector('.tp-opt.on'); if (b) b.focus({ preventScroll: true }); } };
+}
+// a dd/mm/yyyy box: the slashes come by themselves as you type, and the calendar button opens the app's calendar
 function dateBox(iso, attrs, onPick) {
   const i = h('input', Object.assign({ type: 'text', inputmode: 'numeric', placeholder: 'dd/mm/yyyy', maxlength: '10', autocomplete: 'off', spellcheck: 'false', class: 'dtdate' }, attrs || {}));
   i.value = isoToDMY(iso);
@@ -4699,21 +4836,22 @@ function dateBox(iso, attrs, onPick) {
     if (v !== i.value) i.value = v;
   });
   i.addEventListener('blur', () => { const x = dmyToIso(i.value); if (x) i.value = isoToDMY(x); });
-  const pick = h('input', { type: 'date', class: 'dtpick', tabindex: '-1', 'aria-hidden': 'true', min: '1900-01-01', max: '2199-12-31' });
-  const cal = h('button', { type: 'button', class: 'dtcal', 'data-ico': 'cal', title: 'Pick on a calendar', 'aria-label': 'Pick on a calendar' });
+  const cal = h('button', { type: 'button', class: 'dtcal', 'data-ico': 'cal', title: 'Pick on a calendar', 'aria-label': 'Pick on a calendar', 'aria-haspopup': 'dialog', 'aria-expanded': 'false' });
+  const wrap = h('span', { class: 'datebox' }, i, cal);
   cal.addEventListener('click', e => {
     e.preventDefault();
-    pick.value = dmyToIso(i.value) || iso || toLocal(todayMs()).slice(0, 10);
-    try { pick.showPicker(); } catch (_) { pick.style.pointerEvents = 'auto'; pick.focus(); }
+    if (PICK && PICK.btn === cal) { closePick(true); return; }
+    const c = calendarPop(dmyToIso(i.value), iso, v => {
+      closePick();
+      i.value = isoToDMY(v);
+      i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true }));
+      if (onPick) onPick(v);
+      if (i.isConnected) i.focus();
+    });
+    openPick(c.pop, wrap, cal);
+    c.focus();
   });
-  pick.addEventListener('change', () => {
-    if (!pick.value) return;
-    i.value = isoToDMY(pick.value);
-    i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true }));
-    if (onPick) onPick(pick.value);
-    i.focus();
-  });
-  return { wrap: h('span', { class: 'datebox' }, i, cal, pick), input: i };
+  return { wrap, input: i };
 }
 // a leg's leave or arrive time: the day as dd/mm/yyyy, then the time
 function dtField(o, f, id) {
@@ -4721,7 +4859,16 @@ function dtField(o, f, id) {
   const db = dateBox(v.slice(0, 10), { 'data-f': f, 'data-dt': '1', id, required: true, 'aria-label': f === 'dep' ? 'Leaves on, dd/mm/yyyy' : 'Arrives on, dd/mm/yyyy' });
   const tm = h('input', { type: 'time', class: 'dttime', 'data-dtpart': f, 'aria-label': f === 'dep' ? 'Leaves at' : 'Arrives at' });
   tm.value = v.slice(11, 16);
-  return h('span', { class: 'dtfield' }, db.wrap, tm);
+  const clock = h('button', { type: 'button', class: 'dtclock', 'data-ico': 'clock', title: 'Pick a time', 'aria-label': 'Pick a time', 'aria-haspopup': 'dialog', 'aria-expanded': 'false' });
+  const tbox = h('span', { class: 'timebox' }, tm, clock);
+  clock.addEventListener('click', e => {
+    e.preventDefault();
+    if (PICK && PICK.btn === clock) { closePick(true); return; }
+    const c = clockPop(tm.value, t => { tm.value = t; tm.dispatchEvent(new Event('input', { bubbles: true })); tm.dispatchEvent(new Event('change', { bubbles: true })); });
+    openPick(c.pop, tbox, clock);
+    c.focus();
+  });
+  return h('span', { class: 'dtfield' }, db.wrap, tbox);
 }
 // what a date and time field holds, as the form stores it; half filled in counts as missing
 function dtValue(i) {
@@ -4852,6 +4999,11 @@ function refreshEditUI() {
     }
   }
   syncEditFoot();
+}
+// Save and Discard stay in the bar at the bottom, so they are always where you look for them: greyed out until
+// something has changed.
+function idleFoot() {
+  setFoot(icoBtn('Save changes', saveEdit, 'primary', 'check', 'Nothing has changed yet', true), [], btn('Discard', discardEdit, '', 'Nothing to discard', true));
 }
 function syncEditFoot(force) {
   if (!edit) return;
@@ -6035,8 +6187,12 @@ function planRemarks(p) {
     placeholder: 'Anything to remember about this plan: what to book first, what to pack, who to call…' });
   ta.value = cur;
   const fit = () => { ta.style.height = 'auto'; ta.style.height = Math.min(320, ta.scrollHeight + 2) + 'px'; };
-  ta.addEventListener('input', fit);
-  ta.addEventListener('change', () => {
+  const saveBtn = icoBtn('Save remarks', () => keep(), 'primary', 'check', 'Nothing has changed yet', true);
+  const syncSave = () => { const d = ta.value.trim() !== String((S.plans[p.id] || {}).remarks || '').trim(); saveBtn.disabled = !d; saveBtn.title = d ? 'Save the remarks (they are also kept when you click outside the box)' : 'Nothing has changed yet'; };
+  ta.addEventListener('input', () => { fit(); syncSave(); });
+  // the bar at the bottom has Save, as it does for a place or a leg
+  setTimeout(() => { if (ta.isConnected) { setFoot(saveBtn, [], null); syncSave(); } }, 0);
+  const keep = () => {
     const plan = S.plans[p.id]; if (!plan) return;
     const v = ta.value.trim(); if (v === String(plan.remarks || '').trim()) return;
     checkpoint();
@@ -6045,10 +6201,13 @@ function planRemarks(p) {
     const cell = $(`#plansBody tr[data-plan="${p.id}"] td.remarks`);
     if (cell) cell.replaceChildren(v ? trimmedText(v, 'rm-txt') : h('span', { class: 'rm-none', text: '—' }));
     toast(v ? `Saved the remarks on “${plan.name}”` : `Cleared the remarks on “${plan.name}”`, true);
-  });
+    syncSave();
+  };
+  ta.addEventListener('change', keep);
+  ta.addEventListener('keydown', e => { if (e.key === 's' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); e.stopPropagation(); keep(); } });
   requestAnimationFrame(fit);
   return h('section', { class: 'pp-remarks' }, h('h3', { text: 'Remarks' }), ta,
-    h('small', { class: 'hint', text: 'Kept when you click outside the box. They show in the Plans list too, and Copy as text includes them after the costs.' }));
+    h('small', { class: 'hint', text: 'Save them below, or they are kept when you click outside the box. They show in the Plans list too, and Copy as text includes them after the costs.' }));
 }
 // The details panel has no place of its own: it opens for what you pick (a plan, a leg, a place, something new,
 // the plan maker), its edge drags to resize it, and it closes when there is nothing left to show.
@@ -7358,17 +7517,20 @@ function bind() {
       t.setAttribute('aria-expanded', String(open));
       return;
     }
-    if (!e.target.closest('.menu-pop') || e.target.closest('[role=menuitem]')) closeMenus();
+    if (!e.target.closest('.menu-pop, .pickpop') || e.target.closest('[role=menuitem]')) closeMenus();
   });
   addEventListener('resize', () => closeMenus());
   // a menu closes when the focus moves out of it, with Tab for example
-  document.addEventListener('focusin', e => { const m = document.querySelector('.menu.open'); if (m && !m.contains(e.target)) closeMenus(); });
+  document.addEventListener('focusin', e => { const m = document.querySelector('.menu.open'); if (m && !m.contains(e.target) && !e.target.closest('.pickpop')) closeMenus(); });
   document.addEventListener('scroll', e => {
-    if (!document.querySelector('.menu.open') || (e.target instanceof Element && e.target.closest('.menu-pop'))) return;
+    if (!document.querySelector('.menu.open') || (e.target instanceof Element && e.target.closest('.menu-pop, .pickpop'))) return;
     closeMenus();
   }, true);
   const insp = $('#inspector');
   insp.addEventListener('focusin', e => { const d = e.target.dataset || {}; if (d.end) e.target.dataset.prev = e.target.value; });
+  document.addEventListener('pointerdown', e => { if (PICK && !PICK.pop.contains(e.target) && !(PICK.btn && PICK.btn.contains(e.target))) closePick(); }, true);
+  document.addEventListener('scroll', e => { if (PICK && !(e.target instanceof Element && PICK.pop.contains(e.target))) closePick(); }, true);
+  addEventListener('resize', () => closePick());
   // a new item shows what a field still needs once you leave that field
   insp.addEventListener('focusout', e => {
     const d = e.target.dataset || {}, f = d.f || d.end || d.dtpart;
