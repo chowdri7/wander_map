@@ -292,9 +292,14 @@ td.route{color:var(--ink2);min-width:200px}
 .ro-link:hover b{text-decoration:underline}
 /* a leg's details in the itinerary: a line of their own, trimmed, opened with a click */
 .pp-info{display:block;margin-top:2px;font-size:11.5px;line-height:1.4;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pp-info.can-open{cursor:pointer}
-.pp-info.can-open:hover{color:var(--ink)}
+.trim.can-open{cursor:pointer}
+.trim.can-open:hover{color:var(--ink)}
 .pp-info.open{white-space:normal;overflow:visible;overflow-wrap:anywhere}
+/* a plan's remarks in the plans table: two lines at most, the rest a click away */
+td.remarks{min-width:180px;max-width:340px;color:var(--ink2)}
+td.remarks .rm-txt{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;white-space:pre-line;overflow-wrap:anywhere;line-height:1.4}
+td.remarks .rm-txt.open{display:block;-webkit-line-clamp:unset;overflow:visible}
+td.remarks .rm-none{color:var(--muted)}
 
 .nowrap{white-space:nowrap}
 .star{border:0;background:transparent;font-size:18px;line-height:1;cursor:pointer;color:var(--muted);padding:0 2px}
@@ -1947,7 +1952,8 @@ html.glass .side-split::after{background:var(--g-field)}
 .card-head .now .hint{margin:0;font-size:12px;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card-head .now strong{color:var(--ink) !important;font-weight:600}
 /* narrower windows: Arrange shows its icon only, and the hint gives way before it is squeezed to nothing */
-@media (max-width:1100px){#arrangeBtn,#dayBtn{width:30px;padding:0;font-size:0;gap:0}}
+/* Arrange and the day are icons (their names are in their tooltips, and the tour shows what they do) */
+#arrangeBtn,#dayBtn{width:30px;padding:0 !important;font-size:0;gap:0;justify-content:center}
 /* the hint takes only the room the title and the tools leave, and steps aside before it is squeezed to nothing */
 .graph-card .card-head{container-type:inline-size}
 @container (max-width:830px){.card-head .now{display:none}}
@@ -2209,7 +2215,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
           <span class="zoomgrp"><span class="tb-label">Zoom</span><input id="zoom" type="range" min="3" max="60" step="1" aria-label="Zoom timeline"></span>
           <button id="fit" class="btn small icon" type="button" data-ico="fit" title="Fit the whole timeline on screen">Fit</button>
           <div class="menu" id="dayMenu"><button class="btn small" id="dayBtn" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="cal" title="Choose the day the timeline shows">Day</button><div class="menu-pop right daypop" role="dialog" aria-label="The day the timeline shows" hidden><div class="dp-head">Day on the timeline</div><span id="dayBox"></span><div class="dp-btns"><button type="button" class="btn small" id="dayToday">Today</button><button type="button" class="btn small" id="dayAuto" title="The timeline starts at your first leg, or today when there are none">From the first leg</button></div><p class="dp-note">With no legs yet the timeline shows today. A day you choose is added to the timeline and kept with this trip, so you can start planning right there.</p></div></div>
-          <button id="arrangeBtn" class="btn small" type="button" data-ico="move" aria-pressed="false" title="Arrange: drag a place name up or down, a leg sideways to move its times, or a leg’s end dot to another time or place (hold Shift for 5-minute steps). Off, nothing moves when you scroll or click.">Arrange</button>
+          <button id="arrangeBtn" class="btn small" type="button" data-ico="move" aria-pressed="false" aria-label="Arrange" title="Arrange: drag a place name up or down, a leg sideways to move its times, or a leg’s end dot to another time or place (hold Shift for 5-minute steps). Off, nothing moves when you scroll or click.">Arrange</button>
           <div class="menu" id="keyMenu"><button class="btn small" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="key" title="What the colours and lines mean">Key</button><div class="menu-pop right keypop" role="dialog" aria-label="Colour key" hidden><div class="legend" id="legend"></div></div></div>
         </div>
       </div>
@@ -2294,7 +2300,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
       <div class="dock-body" id="drawerBody">
         <div class="table-scroll">
           <table class="plans" id="plansTable">
-            <thead><tr><th><span class="muted" title="Pick">★</span></th><th>Plan</th><th>Leaves</th><th>Arrives</th><th>Door to door</th><th>Cost per head</th></tr></thead>
+            <thead><tr><th><span class="muted" title="Pick">★</span></th><th>Plan</th><th>Leaves</th><th>Arrives</th><th>Door to door</th><th>Cost per head</th><th>Remarks</th></tr></thead>
             <tbody id="plansBody"></tbody>
           </table>
         </div>
@@ -3508,6 +3514,7 @@ function renderGraph() {
     X = t => left + (t - tmin) / H * pph;
     width = Math.ceil(X(tmax) + right);
   }
+  const contentW = width; // where the legs and their tags end; the sky may run on past it
   width = Math.max(width, frameW(sc));
   // day and night run all the way to the right edge, not only to the last hour with a leg
   const tEnd = tmax;
@@ -3516,7 +3523,7 @@ function renderGraph() {
   svg.setAttribute('width', width); svg.setAttribute('height', height);
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
   const legs = {};
-  geo = { time: timeOn, X, tmin, tmax, pph, left, width, height, rowY, legs, fh: sc.clientHeight }; // fh: the frame height this drawing was made for
+  geo = { time: timeOn, X, tmin, tmax, pph, left, width, height, rowY, legs, fh: sc.clientHeight, contentH: rows.length ? y - LAY.rowH + 80 : y, contentW }; // contentH: the last place's line and the times under it // fh: the frame height this drawing was made for
   // a moment that is no longer on the timeline is let go
   if (scrubT != null && (!timeOn || scrubT < tmin || scrubT > tmax)) { scrubT = null; pinned = false; }
 
@@ -3813,7 +3820,8 @@ function renderGraph() {
     }
   }
   // plan tags and labels set below the last place: the timeline grows to hold them, so they can be scrolled to
-  const need = Math.ceil(Math.max(0, ...boxes.map(b => b[3]))) + 16;
+  const need = Math.ceil(Math.max(0, ...boxes.map(b => b[3]).filter(Number.isFinite))) + 16;
+  geo.contentH = Math.max(geo.contentH, need);
   if (need > height) {
     svg.setAttribute('height', need); svg.setAttribute('viewBox', `0 0 ${width} ${need}`);
     pinSvg.setAttribute('height', need); pinSvg.setAttribute('viewBox', `0 0 ${pw} ${need}`); pinSvg.style.marginBottom = `-${need}px`;
@@ -3822,6 +3830,7 @@ function renderGraph() {
     if (edge) edge.setAttribute('y2', need);
     geo.height = need;
   }
+  syncScrollRoom(); // again, now that the tags below the last place are counted
   drawScrub();
   renderTip(); // the card beside the line follows it to its new place
   applyHighlight();
@@ -5572,7 +5581,8 @@ function renderPlans() {
         h('div', { class: 'costline' }, h('strong', { text: money(p.cost) }), status),
         h('div', { class: 'bar', title: budget > 0 ? `The upright line marks the budget: ${money(budget)} per head` : null },
           h('i', { style: `width:${(p.cost / max * 100).toFixed(1)}%;--c:${p.color}` }),
-          budget > 0 ? h('b', { style: `left:${(budget / max * 100).toFixed(1)}%` }) : null)));
+          budget > 0 ? h('b', { style: `left:${(budget / max * 100).toFixed(1)}%` }) : null)),
+      h('td', { class: 'remarks' }, String(p.p.remarks || '').trim() ? trimmedText(String(p.p.remarks).trim(), 'rm-txt') : h('span', { class: 'rm-none', text: '—' })));
     tr.addEventListener('mouseenter', () => { hoverPlan = p.id; applyHighlight(); });
     tr.addEventListener('mouseleave', () => { hoverPlan = null; applyHighlight(); });
     tr.addEventListener('click', () => togglePlan(p.id));
@@ -5931,9 +5941,12 @@ function renderPlanBar() {
 }
 // A leg's details (airline, flight no., anything you wrote) on a line of their own under the leg. Too long for the
 // line, they end in "…", and a click shows them in full (another click trims them again) without opening the leg.
-function infoLine(text) {
-  const el_ = h('span', { class: 'pp-info', text });
-  const cut = () => el_.scrollWidth > el_.clientWidth + 1;
+function infoLine(text) { return trimmedText(text, 'pp-info'); }
+// Text shown trimmed (one line, or as many as its class allows), that a click shows in full and another trims again.
+// When it all fits, the click goes on to whatever the text sits in (the leg's row, the plan's row).
+function trimmedText(text, cls) {
+  const el_ = h('span', { class: cls + ' trim', text });
+  const cut = () => el_.scrollWidth > el_.clientWidth + 1 || el_.scrollHeight > el_.clientHeight + 1;
   el_.addEventListener('mouseenter', () => { const c = el_.classList.contains('open') || cut(); el_.classList.toggle('can-open', c); el_.title = c ? (el_.classList.contains('open') ? 'Click to trim' : 'Click to read it all') : ''; });
   el_.addEventListener('click', e => {
     if (!el_.classList.contains('open') && !cut()) return; // it all fits: the click opens the leg, as anywhere on its row
@@ -6029,11 +6042,13 @@ function planRemarks(p) {
     checkpoint();
     if (v) plan.remarks = v; else delete plan.remarks;
     save(); syncToolbar();
+    const cell = $(`#plansBody tr[data-plan="${p.id}"] td.remarks`);
+    if (cell) cell.replaceChildren(v ? trimmedText(v, 'rm-txt') : h('span', { class: 'rm-none', text: '—' }));
     toast(v ? `Saved the remarks on “${plan.name}”` : `Cleared the remarks on “${plan.name}”`, true);
   });
   requestAnimationFrame(fit);
   return h('section', { class: 'pp-remarks' }, h('h3', { text: 'Remarks' }), ta,
-    h('small', { class: 'hint', text: 'Kept when you click outside the box. Copy as text includes them, after the costs.' }));
+    h('small', { class: 'hint', text: 'Kept when you click outside the box. They show in the Plans list too, and Copy as text includes them after the costs.' }));
 }
 // The details panel has no place of its own: it opens for what you pick (a plan, a leg, a place, something new,
 // the plan maker), its edge drags to resize it, and it closes when there is nothing left to show.
@@ -6056,10 +6071,10 @@ function setSide(open) {
   syncScrollRoom();
 }
 /* ---------- room to scroll the timeline out from under the panels that float over it ----------
-   The plans panel at the bottom and the details panel at the right float over the timeline. While one is open, the
-   timeline gets as much room as it covers, and some more, to scroll past it: its last places and its last hours can
-   always be brought into view. Only how far it scrolls changes, never the timeline itself. */
-const ROOM_EXTRA = 64;
+   The plans panel at the bottom and the details panel at the right float over the timeline. When one of them covers
+   places, tags or hours, the timeline gets just enough room to scroll them out from under it; when nothing is under
+   it, nothing is added and nothing scrolls. Only how far it scrolls changes, never the timeline itself. */
+const ROOM_GAP = 24; // how far above the plans panel (or left of the details panel) the timeline can end
 // how much of the frame each open panel covers, as it will be once it has finished sliding in
 function coverBottom(sc) {
   const dock = $('#drawer'), sheet = $('.dock-sheet'), bar = $('.dock-bar');
@@ -6076,8 +6091,12 @@ function syncScrollRoom() {
   const sc = $('#graphScroll'), wrap = $('#gwrap'); if (!sc || !wrap) return;
   if (viewOnly || !geo) { wrap.style.paddingBottom = ''; return; }
   const down = coverBottom(sc), right = coverRight(sc);
-  wrap.style.paddingBottom = down ? `${Math.round(down + ROOM_EXTRA)}px` : '';
-  wrap.style.width = `${geo.width + (right ? Math.round(right + ROOM_EXTRA) : 0)}px`;
+  // only as much room as the panel takes from what is drawn: none when every place and tag is above it anyway
+  const ch = geo.contentH || geo.height, cw = geo.contentW || geo.width;
+  const addDown = down && ch > sc.clientHeight - down ? Math.max(0, ch + down + ROOM_GAP - geo.height) : 0;
+  const addRight = right && cw > sc.clientWidth - right ? Math.max(0, cw + right + ROOM_GAP - geo.width) : 0;
+  wrap.style.paddingBottom = addDown ? `${Math.round(addDown)}px` : '';
+  wrap.style.width = `${geo.width + Math.round(addRight)}px`;
 }
 // how much of the timeline's frame is in view beside and above the panels
 function frameVisibleW(sc) { return Math.max(200, sc.clientWidth - coverRight(sc) - (sideOpen ? 8 : 0)); }
@@ -6859,7 +6878,7 @@ function syncDayBtn() {
   const shown = t != null ? t : first;
   b.textContent = dayLbl(shown);
   b.setAttribute('aria-label', `Day: ${dayLbl(shown)}`);
-  b.title = t != null ? `The timeline shows ${fmtDay(t)}. Choose another day` : 'Choose a day to show on the timeline';
+  b.title = t != null ? `Day: the timeline shows ${fmtDay(t)}. Choose another day` : `Day: the timeline starts ${dayLbl(shown)}. Choose a day to show`;
   b.classList.toggle('on', t != null);
   if (i && document.activeElement !== i) i.value = isoToDMY(toLocal(shown).slice(0, 10));
   const c = $('#dayAuto'); if (c) c.disabled = t == null;
@@ -7830,6 +7849,8 @@ const TOUR_STEPS = [
   { target: () => $('#pinSvg .rowhead'), before: () => $('#graphScroll').scrollTo({ left: 0, top: 0 }), title: 'Places are rows', body: 'Every place you might pass through gets a row: home, a station, an airport, a town. Legs that touch a place meet on its row.' },
   { target: () => $('#graph .edge'), before: () => $('#graphScroll').scrollTo({ left: 0, top: 0 }), title: 'Legs are the lines', body: 'A leg is one way to travel between two places: how, when it leaves and arrives, and the fare. Its colour shows the transport.' },
   { target: () => $('#graphScroll'), title: 'Read the timeline', body: 'Move the pointer across it and a card shows where each plan is at that moment. Night, sunrise, day and sunset run along the top.' },
+  { target: () => $('#dayBtn'), title: 'Choose the day', body: 'The calendar icon picks the day the timeline shows: today, a day you choose, or the day of your first leg. It lights up while a day you chose is in view.' },
+  { target: () => $('#arrangeBtn'), title: 'Arrange by dragging', body: 'The arrows icon turns Arrange on. Then drag a place up or down, drag a leg sideways to move its times, or drag from one place’s line to another to add a leg. Esc, or the icon again, turns it off.' },
   { target: () => $('#viewTabs'), title: 'One tab for each plan', body: 'A plan is one complete way from start to finish. Choose its tab to see only that plan.' },
   { target: () => $('.dock-bar'), title: 'Compare plans', body: 'Pull this bar up to compare your plans. Click one to read its itinerary and costs in the details panel.', before: () => { if (UI.drawer) setDrawer(false); } },
   { target: () => $('#createGroup'), title: 'Add, and make plans', body: 'Choose New, beside Undo and Redo at the top, to add a place, a leg or a plan. For a plan, click the leg you leave on, then take the way on at each place until you get there.' },
