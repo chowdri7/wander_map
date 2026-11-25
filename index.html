@@ -364,7 +364,7 @@ body{overflow:hidden}
 .topbar .toolbar{flex:1;margin:0;min-width:0}
 .main{flex:1;min-height:0;display:flex;gap:12px;align-items:stretch;padding-bottom:44px;position:relative}
 .graph-card{flex:3 1 0;min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
-.graph-card .graph-scroll{flex:1;min-height:0;overflow:auto}
+.graph-card .graph-scroll{flex:1;min-height:0;overflow:auto;scrollbar-gutter:stable} /* a scrollbar coming never narrows the timeline */
 .side{flex:1 1 0;min-width:0;position:static;max-height:none;overflow:auto}
 .main.side-hidden .side{display:none}
 .sidetab{position:absolute;right:0;top:12px;writing-mode:vertical-rl;border:1px solid var(--border);border-right:0;background:var(--surface);color:var(--ink);border-radius:10px 0 0 10px;padding:12px 6px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;box-shadow:var(--shadow);z-index:3}
@@ -3282,6 +3282,7 @@ function syncFitBtn() {
 function applySideW() {
   const m = $('#main'); if (!m) return;
   if (UI.sideW) m.style.setProperty('--side-w', UI.sideW + 'px'); else m.style.removeProperty('--side-w');
+  syncScrollRoom();
 }
 // The inner width of the timeline's frame, rounded down: the browser rounds clientWidth up or down,
 // and a chart even a fraction of a pixel too wide brings a scrollbar that can come and go for ever.
@@ -3369,6 +3370,7 @@ function renderGraph() {
     corner.replaceChildren(h('span', { class: 'ac-month', text: month }), h('span', { class: 'ac-span', text: dates }), h('span', { class: 'ac-span', text: `${days} day${days > 1 ? 's' : ''}` }));
   } else corner.replaceChildren();
   $('#gwrap').style.width = viewOnly ? '' : width + 'px'; // phones show the list, not the chart
+  syncScrollRoom(); // and room to scroll past the panels that float over it
   el('rect', { x: 0, y: hh, width: pw, height: height + LAY.deep - hh, class: 'pinbg' }, gPin); // above it, the corner of the frozen header
   rows.forEach((r, i) => { if (i % 2 === 0) el('rect', { x: 0, y: r.top, width: pw, height: r.bot - r.top, class: 'rowband' }, gPin); });
   el('line', { x1: pw, x2: pw, y1: hh, y2: height, class: 'pinedge' }, gPin);
@@ -5432,6 +5434,7 @@ function select(s, focusSel) {
   hoverLeg = null; // the panel is rebuilt, so the row under the pointer is gone and never reports mouseleave
   if (!sideOpen) setSide(true);
   renderInspector(); renderGraph();
+  if (window.innerWidth > 900) keepInView(selBox(s)); // out from under the details panel that has just opened, or the plans panel
   if (window.innerWidth <= 700) $('#side').scrollTop = 0; // phone: the panel is a sheet, start at its top
   else if (window.innerWidth <= 1000) $('#inspector').scrollIntoView({ behavior: scrollMode(), block: 'start' });
 }
@@ -5762,12 +5765,50 @@ function setSide(open) {
   // the panel slides over the timeline, which keeps its size: nothing to wait for and nothing to redraw
   sideOpen = !!open;
   $('#main').classList.toggle('side-hidden', !sideOpen);
+  syncScrollRoom();
 }
-// how much of the timeline's frame is in view beside the details panel, which floats over its right side
-function frameVisibleW(sc) {
+/* ---------- room to scroll the timeline out from under the panels that float over it ----------
+   The plans panel at the bottom and the details panel at the right float over the timeline. While one is open, the
+   timeline gets as much room as it covers, and some more, to scroll past it: its last places and its last hours can
+   always be brought into view. Only how far it scrolls changes, never the timeline itself. */
+const ROOM_EXTRA = 64;
+// how much of the frame each open panel covers, as it will be once it has finished sliding in
+function coverBottom(sc) {
+  const dock = $('#drawer'), sheet = $('.dock-sheet'), bar = $('.dock-bar');
+  if (!UI.drawer || viewOnly || !dock || !sheet || !bar || getComputedStyle(sheet).position !== 'absolute') return 0;
+  const body = parseFloat(dock.style.getPropertyValue('--dock-h')) || innerHeight * .3;
+  return Math.max(0, sc.getBoundingClientRect().bottom - (dock.getBoundingClientRect().bottom - bar.offsetHeight - 2 - body));
+}
+function coverRight(sc) {
   const sd = $('#side');
-  if (!sideOpen || !sd || !sd.offsetWidth || getComputedStyle(sd).position !== 'absolute') return sc.clientWidth;
-  return Math.max(200, Math.min(sc.clientWidth, sd.getBoundingClientRect().left - sc.getBoundingClientRect().left - 8));
+  if (!sideOpen || viewOnly || !sd || !sd.offsetWidth || getComputedStyle(sd).position !== 'absolute') return 0;
+  return Math.max(0, sc.getBoundingClientRect().right - ($('#main').getBoundingClientRect().right - sd.offsetWidth));
+}
+function syncScrollRoom() {
+  const sc = $('#graphScroll'), wrap = $('#gwrap'); if (!sc || !wrap) return;
+  if (viewOnly || !geo) { wrap.style.paddingBottom = ''; return; }
+  const down = coverBottom(sc), right = coverRight(sc);
+  wrap.style.paddingBottom = down ? `${Math.round(down + ROOM_EXTRA)}px` : '';
+  wrap.style.width = `${geo.width + (right ? Math.round(right + ROOM_EXTRA) : 0)}px`;
+}
+// how much of the timeline's frame is in view beside and above the panels
+function frameVisibleW(sc) { return Math.max(200, sc.clientWidth - coverRight(sc) - (sideOpen ? 8 : 0)); }
+function frameVisibleH(sc) { return Math.max(140, sc.clientHeight - coverBottom(sc) - (UI.drawer ? 8 : 0)); }
+// a place or leg just picked: if a panel covers it, the timeline scrolls it into the part left in view
+function keepInView(b) {
+  const sc = $('#graphScroll'); if (!sc || !geo || !b) return;
+  const left = sc.scrollLeft + pinW() + 16, right = sc.scrollLeft + frameVisibleW(sc) - 16;
+  const top = sc.scrollTop + LAY.top + 25, bottom = sc.scrollTop + frameVisibleH(sc) - 12;
+  let dx = 0, dy = 0;
+  if (b.x0 != null) { if (b.x1 - b.x0 > right - left || b.x0 < left) dx = b.x0 - left; else if (b.x1 > right) dx = b.x1 - right; }
+  if (b.y1 - b.y0 > bottom - top || b.y0 < top) dy = b.y0 - top; else if (b.y1 > bottom) dy = b.y1 - bottom;
+  if (Math.abs(dx) > 1 || Math.abs(dy) > 1) sc.scrollBy({ left: dx, top: dy, behavior: scrollMode() });
+}
+function selBox(s) {
+  if (!geo || !s) return null;
+  if (s.k === 'leg' && geo.legs[s.id]) { const L = geo.legs[s.id]; return { x0: L.s0 - 30, x1: L.xA + 30, y0: Math.min(L.yd, L.yk) - 34, y1: Math.max(L.yd, L.yk) + 50 }; }
+  if (s.k === 'node' && geo.rowY[s.id] != null) { const y = geo.rowY[s.id]; return { y0: y - 50, y1: y + 46 }; }
+  return null;
 }
 function sideSettled() {
   if (!setSide._pending) return;
@@ -5843,18 +5884,21 @@ function setDockH(px) {
   const { min, max } = dockLimits();
   UI.dockH = Math.round(Math.max(min, Math.min(max, px)));
   $('#drawer').style.setProperty('--dock-h', UI.dockH + 'px');
+  syncScrollRoom();
 }
 // When the window changes size the panel fits the room it has, but the height you chose is kept,
 // so the panel grows back when the window does.
 function fitDockH() {
   const { min, max } = dockLimits();
   $('#drawer').style.setProperty('--dock-h', Math.round(Math.max(min, Math.min(max, UI.dockH))) + 'px');
+  syncScrollRoom();
 }
 function setDrawer(open) {
   UI.drawer = !!open; saveUI();
   $('#drawer').classList.toggle('open', UI.drawer);
   $('#drawerTab').setAttribute('aria-expanded', String(UI.drawer));
   // the plans sheet slides over the timeline, so the timeline keeps its size and needs no redraw
+  syncScrollRoom();
 }
 function syncCostBtn() {
   const b = $('#costBtn');
@@ -7140,7 +7184,7 @@ function bind() {
     if (e.button !== 0 || e.target.closest('input, select, label, .dock-field, .dock-sort, .cursel, button:not(#drawerTab)')) return;
     const y0 = e.clientY, h0 = UI.drawer ? dockBody.getBoundingClientRect().height : 0, { min, max } = dockLimits(), from = e.target, pid = e.pointerId;
     let dragging = false, want = h0, raf = 0;
-    const paint = () => { raf = 0; dock.style.setProperty('--dock-h', want + 'px'); };
+    const paint = () => { raf = 0; dock.style.setProperty('--dock-h', want + 'px'); syncScrollRoom(); };
     const move = ev => {
       if (ev.pointerId !== pid) return;
       const dy = y0 - ev.clientY;
