@@ -1816,6 +1816,8 @@ html.glass .btn.primary:not(.fabbtn){background-image:linear-gradient(180deg,rgb
 html.glass .btn.small.primary.icon{border-radius:50%}
 /* the header's tools sit together in one glass capsule */
 html.glass .topbar .tgroup{padding:2px;border-radius:999px;background:var(--g-inner2);border:1px solid var(--g-edge);box-shadow:var(--g-hi)}
+html.glass .topbar .tgroup .btn.icon{width:30px;height:30px} /* 36px in all, the same as the Edit and View switch */
+#toolbar{min-height:36px} /* the top bar keeps its height whichever buttons a mode shows */
 html.glass .topbar .btn.icon:not(.primary){border-radius:50%}
 html.glass .topbar #themeBtn,html.glass .topbar #settingsBtn,html.glass .topbar #helpBtn{background:var(--g-inner2) !important;border:1px solid var(--g-edge) !important;box-shadow:var(--g-hi) !important;border-radius:50%}
 html.glass .topbar #themeBtn:hover,html.glass .topbar #settingsBtn:hover,html.glass .topbar #helpBtn:hover{background:var(--g-strong) !important}
@@ -3476,6 +3478,18 @@ function renderGraph() {
   drawNav();
   placePin();
   applyPick();
+  keepSkyTime();
+}
+// The sky's motion (drifting clouds, twinkling stars, the turning sun, the moon's glow) runs on one clock from the
+// page's start: a new drawing picks up every animation exactly where the old one was, so a redraw (switching
+// between View and Edit, a new zoom, a panel opening) never makes the sky jump back.
+function keepSkyTime(...roots) {
+  if (typeof CSSAnimation === 'undefined') return;
+  if (!roots.length) roots = [$('#graph'), $('#axisSvg')];
+  for (const r of roots) {
+    if (!r || !r.getAnimations) continue;
+    for (const a of r.getAnimations({ subtree: true })) if (a instanceof CSSAnimation && a.startTime !== 0 && a.effect && a.effect.getTiming().iterations === Infinity) a.startTime = 0;
+  }
 }
 function curveY(L, x) {
   if (Math.abs(L.yk - L.yd) < .5 || L.xS - L.s0 < 1) return x >= L.xS ? L.yk : L.yd;
@@ -5572,7 +5586,7 @@ function settleGraph() {
   };
   wrap.querySelectorAll('.graph-ghost,.pin-ghost').forEach(n => n.remove());
   const ghost = ghostOf(g, 'graph-ghost');
-  wrap.append(ghost);
+  wrap.append(ghost); keepSkyTime(ghost);
   const rowsWere = was.rows, pinGhost = pin && pin.style.display !== 'none' ? ghostOf(pin, 'pin-ghost') : null;
   // no scrollbar may come or go while the two drawings move (that would change the size and cause another
   // redraw), so the new drawing is measured that way too
