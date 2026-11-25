@@ -1930,6 +1930,9 @@ html.glass .side-split::after{background:var(--g-field)}
 html.glass #axisSvg.lifted{-webkit-backdrop-filter:blur(16px) saturate(170%);backdrop-filter:blur(16px) saturate(170%)}
 .axiscorner{display:block;position:sticky;top:0;z-index:6;pointer-events:none;box-sizing:border-box;border-right:1px solid var(--border);background:var(--g-pin,var(--surface))}
 .axiscorner.pinleft{left:0}
+.axiscorner{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:0 12px 0 16px;overflow:hidden}
+.axiscorner .ac-month{margin-bottom:2px;font:600 15px/1.2 var(--serif);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.axiscorner .ac-span{font-size:11.5px;line-height:1.3;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .axiscorner.lifted{border-right-color:var(--axis);box-shadow:5px 0 8px rgba(0,0,0,.07)}
 html.glass .axiscorner{-webkit-backdrop-filter:blur(16px) saturate(170%);backdrop-filter:blur(16px) saturate(170%)}
 .viewonly #axisSvg,.viewonly .axiscorner{display:none !important}
@@ -2327,6 +2330,7 @@ const F = { place: `600 12px ${FONT}`, small: `11px ${FONT}`, time: `600 11px ${
 const LAY = { top: 68, rowH: 96, right: 260, sky: 48, deep: 2400 };   // deep: how far the sky is drawn below the chart, so space opening up while a panel moves is never bare   // sky: room for the sun and moon above the first place
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTHS_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const BUFS = [0, 15, 30, 60, 120, 180];
 const SORTS = ['made', 'cost', 'costDesc', 'start', 'end', 'dur'];
 const LEGF = { from: '', to: '', mode: 'flight', info: '', cost: '', dep: '', arr: '', buf: '' };
@@ -3242,6 +3246,18 @@ function renderGraph() {
   head.setAttribute('width', width); head.setAttribute('height', hh || 1); head.setAttribute('viewBox', `0 0 ${width} ${hh || 1}`);
   head.style.marginBottom = `-${hh || 1}px`; head.style.display = hh ? '' : 'none';
   Object.assign(corner.style, { width: `${pw}px`, height: `${hh}px`, marginBottom: `-${hh}px`, display: hh ? '' : 'none' });
+  // the corner over the place names says when the timeline is: its month and year, and the days it spans
+  if (hh) {
+    const a = new Date(tmin + H), b = new Date(tmax - 2 * H), d0 = new Date(a), d1 = new Date(b);
+    d0.setHours(0, 0, 0, 0); d1.setHours(0, 0, 0, 0);
+    const days = Math.round((d1 - d0) / (24 * H)) + 1, ya = a.getFullYear(), yb = b.getFullYear();
+    // the month in full when it fits beside the names, else short
+    const room = pw - 30, long = `${MONTHS_LONG[a.getMonth()]} ${ya}`;
+    const month = ya !== yb ? `${MONS[a.getMonth()]} ${ya} – ${MONS[b.getMonth()]} ${yb}` : a.getMonth() !== b.getMonth() ? `${MONS[a.getMonth()]} – ${MONS[b.getMonth()]} ${yb}`
+      : tw(long, `600 15px ${SERIF}`) <= room ? long : `${MONS[a.getMonth()]} ${ya}`;
+    const dates = days > 1 ? `${DAYS[a.getDay()]} ${a.getDate()}${a.getMonth() !== b.getMonth() ? ' ' + MONS[a.getMonth()] : ''} – ${DAYS[b.getDay()]} ${b.getDate()} ${MONS[b.getMonth()]}` : dayLbl(a);
+    corner.replaceChildren(h('span', { class: 'ac-month', text: month }), h('span', { class: 'ac-span', text: dates }), h('span', { class: 'ac-span', text: `${days} day${days > 1 ? 's' : ''}` }));
+  } else corner.replaceChildren();
   $('#gwrap').style.width = viewOnly ? '' : width + 'px'; // phones show the list, not the chart
   el('rect', { x: 0, y: hh, width: pw, height: height + LAY.deep - hh, class: 'pinbg' }, gPin); // above it, the corner of the frozen header
   rows.forEach((r, i) => { if (i % 2 === 0) el('rect', { x: 0, y: r.top, width: pw, height: r.bot - r.top, class: 'rowband' }, gPin); });
