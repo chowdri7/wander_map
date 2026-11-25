@@ -1735,7 +1735,7 @@ html.glass .toast .btn:hover:not(:disabled){background:color-mix(in srgb,var(--g
 /* logic: Liquid glass drops the New button's 'menu open' state */
 html.glass .menu.open > .btn.primary.fabbtn,html.glass .menu.open > .btn.primary.fabbtn:hover:not(:disabled){background:color-mix(in srgb,var(--accent) 86%,var(--ink)) !important;border-color:transparent !important}
 /* logic: In glass, the Details panel floats over the timeline at 900px and below without blur */
-@media (max-width:900px){html.glass .side{background:var(--g-strong) !important;-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur)}}
+@media (max-width:900px){html.glass .side{background:var(--g-strong) !important}} /* frosted by the layer behind its content (above), so its menus open in place */
 /* motion: The glass Settings card cannot frost the page: .modal's own backdrop-filter and its opacit */
 html.glass .modal{-webkit-backdrop-filter:none;backdrop-filter:none}
 html.glass .modal:not([hidden]){animation-name:wmTint}
@@ -1785,9 +1785,15 @@ html.glass .modal{-webkit-backdrop-filter:none;backdrop-filter:none}
   html.glass .dock-sheet{transition:right .32s var(--ease-out),box-shadow .28s var(--ease-out),background-color .28s}
   .main:not(.side-hidden) .dock-sheet{right:calc(var(--side-wd) + 8px) !important}
   .side-dragging .dock-sheet{transition:none !important}
-  /* over the timeline it is liquid glass, frosted deep enough that the legs and the sky behind it are only soft colour */
+  /* over the timeline it is liquid glass, frosted deep enough that the legs and the sky behind it are only soft colour.
+     The frost is on a layer behind the panel's content, never on the panel itself: a frosted panel becomes the frame
+     that its menus (position:fixed, placed against the window) are placed in, and they would open off the screen */
   html.glass .side{background-color:var(--g-strong) !important;background-image:linear-gradient(180deg,var(--g-sheen),transparent 46%) !important;
-    -webkit-backdrop-filter:blur(34px) saturate(180%);backdrop-filter:blur(34px) saturate(180%);box-shadow:var(--g-hi),-16px 0 40px rgba(10,16,36,.26) !important}
+    -webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:var(--g-hi),-16px 0 40px rgba(10,16,36,.26) !important}
+  html.glass .side::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;
+    -webkit-backdrop-filter:blur(34px) saturate(180%);backdrop-filter:blur(34px) saturate(180%)}
+  /* and it slides in and out without fading: while the panel fades, the layer behind its content has nothing to frost */
+  html.glass .side,html.glass .main.side-hidden .side{opacity:1}
 }
 /* the drag edge on the details panel's left side */
 .side-split{position:absolute;left:0;top:0;bottom:0;width:8px;z-index:7;cursor:ew-resize;touch-action:none;outline:none}
