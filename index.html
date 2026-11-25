@@ -271,6 +271,10 @@ html.labels .side-foot > .btn.danger{width:auto !important;padding:0 11px !impor
 @media (min-width:901px){html.labels #modeSeg button{width:auto;min-width:0;padding:0 13px;font-size:12.5px;gap:6px}}
 /* an item's buttons beside its name */
 .insp-head > .head-acts{flex:none;display:flex;gap:4px;align-items:center}
+/* a long name keeps its words whole: when the buttons leave it too little room, they go on a line under it */
+#inspector .insp-head,#builder .insp-head{flex-wrap:wrap}
+#inspector .insp-head > div:not(.head-acts),#builder .insp-head > div:not(.head-acts){flex:1 1 130px}
+#inspector .insp-head h2,#builder .insp-head h2{overflow-wrap:break-word;word-break:normal}
 /* the arrow between two places, drawn the same in every font */
 .arw{display:inline-block;width:1.05em;height:1em;margin:0 .12em;vertical-align:-.17em;overflow:hidden;white-space:nowrap;-webkit-text-fill-color:transparent;background:currentColor;opacity:.75;
   -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 12h15%22/%3E%3Cpath d=%22M13.5 6.5 19 12l-5.5 5.5%22/%3E%3C/svg%3E") center/contain no-repeat;
@@ -2541,14 +2545,14 @@ function setMode(view) {
   view = !!view;
   if (viewOnly || !!UI.view === view) return;
   if (view) {
-    if (B) { toast('Save or cancel the plan you are making first'); return; }
+    if (B) { toast('Save or cancel the plan first'); return; }
     if (!canLeave()) return;
     renaming = null;
   }
   closeMenus();
   UI.view = view; saveUI(); applyMode();
   renderAll();
-  toast(view ? 'View only: nothing can be changed. Choose Edit to make changes.' : 'Editing');
+  toast(view ? 'View only' : 'Editing');
 }
 function saveUI() {
   if (TOUR) return;
@@ -2667,7 +2671,7 @@ function adoptTwinFare(id) {
   if (tw_ && S.legs[id].cost !== S.legs[tw_].cost) {
     S.legs[id].cost = S.legs[tw_].cost;
     const f = $('#inspector [data-f=cost]'); if (f) f.value = S.legs[id].cost;
-    toast(`Same trip as another leg, so it uses the same fare: ${money(S.legs[id].cost)}`);
+    toast(`Shares the fare ${money(S.legs[id].cost)}`);
   }
 }
 function setFare(id, v) { if (!S.legs[id]) return; S.legs[id].cost = v; twinsOf(id).forEach(x => { S.legs[x].cost = v; }); }
@@ -2747,7 +2751,7 @@ function webLink(raw) {
 function linkHost(raw) { try { return new URL(webLink(raw)).hostname.replace(/^www\./, ''); } catch (e) { return String(raw || '').trim(); } }
 function openLink(raw) {
   const u = webLink(raw);
-  if (!u) { toast('That is not a web link. It should look like https://… or example.com/…'); return; }
+  if (!u) { toast('Not a web link'); return; }
   window.open(u, '_blank', 'noopener,noreferrer');
 }
 // What is wrong with the links being typed: a name with no link, a link that is not a web address, a name used twice.
@@ -2832,7 +2836,7 @@ function linksOk() {
   const list = $('#inspector .lklist'); if (!list) return true;
   const errs = list._check(true); if (!errs.length) return true;
   const r = list.querySelector('.lkrow.bad input'); if (r) r.focus();
-  toast(`Not saved yet: ${errs[0].msg}`);
+  toast('Not saved: check the links');
   return false;
 }
 // in View mode the links are for opening, not editing
@@ -2859,8 +2863,8 @@ function allPlacesGlobal() {
   local.forEach(id => { const o = ownNameElsewhere(S.nodes[id].name, id); if (o) held.push(`${nodeName(id)} (trip “${o.trip}” has its own)`); else ok.push(id); });
   if (ok.length) { checkpoint(); ok.forEach(id => { delete S.nodes[id].scope; }); renderAll(); }
   syncSettings();
-  toast(ok.length ? `${ok.length === 1 ? `${nodeName(ok[0])} is` : `${ok.length} places are`} now in every trip${held.length ? `. Not ${listJoin(held)}: rename ${held.length > 1 ? 'them' : 'it'} first.` : ''}`
-    : `Not changed: ${listJoin(held)}. Rename ${held.length > 1 ? 'them' : 'it'} first.`, ok.length > 0);
+  toast(ok.length ? `${ok.length === 1 ? `${nodeName(ok[0])} is` : `${ok.length} places are`} in every trip${held.length ? ` · rename ${listJoin(held)} first` : ''}`
+    : `Rename ${listJoin(held)} first`, ok.length > 0);
 }
 function findNode(name, except) { const k = normName(name); if (!k) return null; return S.order.find(id => id !== except && normName(S.nodes[id].name) === k) || null; }
 function nodeFor(name) { return findNode(name) || addNode(String(name).trim()); }
@@ -3011,7 +3015,7 @@ function save() {
   saveWarned = !ok;
   const note = $('#saveNote'); if (note) note.hidden = ok;
   // shown just after the change's own message (such as "Image added"), so that message cannot cover it
-  if (!ok && !was) setTimeout(() => toast('Not saved: this browser’s storage is full. Export to keep a copy, then remove some place photos.'), 0);
+  if (!ok && !was) setTimeout(() => toast('Not saved: storage full. Export, then remove photos'), 0);
   // once a save works again the note above the timeline simply goes (a message here would cover the change's own Undo)
 }
 function loadSaved() {
@@ -3121,7 +3125,7 @@ function switchTrip(id) {
   closeMenus();
   if (!LIB.trips[id] || id === TRIP) return;
   if (TOUR) { toast('Go back to your own plans first'); return; }
-  if (B) { toast('Finish or cancel the plan you are making first'); return; }
+  if (B) { toast('Finish or cancel the plan first'); return; }
   if (!canLeave()) return;
   save();
   openTrip(id);
@@ -3152,7 +3156,7 @@ function buildTripMenu() {
 function tripDialog(mode) {
   closeMenus();
   if (TOUR || !canEdit()) return;
-  if ((mode === 'new' || mode === 'delete') && (B || !canLeave())) { if (B) toast('Finish or cancel the plan you are making first'); return; }
+  if ((mode === 'new' || mode === 'delete') && (B || !canLeave())) { if (B) toast('Finish or cancel the plan first'); return; }
   closeTripDlg();
   const opener = document.activeElement, cur = LIB.trips[TRIP];
   const close = () => { closeTripDlg(); if (opener && opener.focus) opener.focus({ preventScroll: true }); };
@@ -3249,7 +3253,7 @@ function newTrip(name) {
 function duplicateTrip() {
   closeMenus();
   if (TOUR || !canEdit()) return;
-  if (B) { toast('Finish or cancel the plan you are making first'); return; }
+  if (B) { toast('Finish or cancel the plan first'); return; }
   if (!canLeave()) return;
   save();
   const src = LIB.trips[TRIP], d = JSON.parse(JSON.stringify(src.data)), map = {};
@@ -3288,12 +3292,12 @@ function setPlaceScope(id, everyTrip) {
   const n = S.nodes[id]; if (!n || !canEdit() || TOUR) return;
   if (everyTrip) {
     const o = ownNameElsewhere(n.name, id);
-    if (o) { toast(`Trip “${o.trip}” has its own place called “${o.name}”. Rename one of them first.`); renderInspector(); return; }
+    if (o) { toast(`“${o.trip}” has its own “${o.name}”: rename one`); renderInspector(); return; }
     checkpoint(); delete n.scope;
     renderAll(); toast(`${nodeName(id)} is now in every trip`, true);
   } else {
     const used = tripsUsing(id);
-    if (used.length) { toast(`${nodeName(id)} is used in ${listJoin(used.map(x => `“${x}”`))}, so it stays in every trip.`); renderInspector(); return; }
+    if (used.length) { toast(`${nodeName(id)} stays: ${listJoin(used.map(x => `“${x}”`))} use${used.length > 1 ? '' : 's'} it`); renderInspector(); return; }
     checkpoint(); n.scope = 'local';
     renderAll(); toast(`${nodeName(id)} is now only in ${tripName()}`, true);
   }
@@ -4203,22 +4207,22 @@ function navTo(id, via, chain) {
 function navNext() {
   const id = sel && sel.k === 'leg' ? sel.id : null; if (!id) return;
   const nx = nextLegs(id);
-  if (!nx.length) { toast(`No leg leaves ${nodeName(S.legs[id].to)} after this one`); return; }
+  if (!nx.length) { toast(`Nothing goes on from ${nodeName(S.legs[id].to)}`); return; }
   const fwd = navFwd[id], pid = focusPlan || S.picked, pl = pid && PLBY[pid], inPlan = pl && pl.legs.includes(id) ? pl.legs[pl.legs.indexOf(id) + 1] : null;
   const pick = nx.length === 1 ? nx[0] : nx.includes(fwd) ? fwd : nx.includes(inPlan) ? inPlan : null;
   if (pick) { navTo(pick); return; }
   flashJourney('.jn-next');
-  toast(`${nx.length} ways go on from ${nodeName(S.legs[id].to)}: choose one, or press its number`);
+  toast(`${nx.length} ways on: pick 1–${nx.length}`);
 }
 function navPrev() {
   const id = sel && sel.k === 'leg' ? sel.id : null; if (!id) return;
   const pv = prevLegs(id);
-  if (!pv.length) { toast(`No leg arrives at ${nodeName(S.legs[id].from)} before this one`); return; }
+  if (!pv.length) { toast(`Nothing comes into ${nodeName(S.legs[id].from)}`); return; }
   const back = navBack[id], pid = focusPlan || S.picked, pl = pid && PLBY[pid], inPlan = pl && pl.legs.includes(id) ? pl.legs[pl.legs.indexOf(id) - 1] : null;
   const pick = pv.length === 1 ? pv[0] : pv.includes(back) ? back : pv.includes(inPlan) ? inPlan : null;
   if (pick) { navTo(pick, 'back'); return; }
   flashJourney('.jn-prev');
-  toast(`${pv.length} legs can bring you to ${nodeName(S.legs[id].from)}: choose one`);
+  toast(`${pv.length} ways in: pick one`);
 }
 function flashJourney(q, root) { const e = $(`${root || '#inspector'} ${q}`); if (!e) return; e.classList.remove('jn-flash'); void e.offsetWidth; e.classList.add('jn-flash'); e.scrollIntoView({ block: 'nearest', behavior: scrollMode() }); }
 // Bring a leg into view, centred, with its nearest connections when they fit. The timeline zooms out
@@ -4343,7 +4347,7 @@ function togglePin() {
   UI.pinPlaces = !pinOn(); saveUI(); placePin();
   if (!$('#settings').hidden) syncSettings();
   if (sel && sel.k === 'node' && !draft) renderInspector();
-  toast(pinOn() ? 'Place names pinned: they stay in view when you scroll sideways' : 'Place names unpinned: they scroll with the timeline');
+  toast(pinOn() ? 'Place names pinned' : 'Place names unpinned');
 }
 function legTitle(id) {
   // a few short lines: the leg, how and when, the fare and its plans, and its first problem if it has one
@@ -5081,7 +5085,7 @@ function saveEdit() {
   }
   const changed = diffKeys(base, edit.obj);
   const hurt = k === 'leg' && changed.some(f => ['from', 'to', 'dep', 'arr', 'buf'].includes(f)) ? legBreaksPlan(id, cand) : null;
-  if (hurt) { toast(`Not saved yet: the plan “${hurt.name}” would no longer work. ${hurt.issues[0]}`); return; }
+  if (hurt) { toast(`Not saved: it would break “${hurt.name}”`); return; }
   edit = null;
   if (changed.length) { checkpoint(); applyEdit(k, id, cand, changed); }
   renderAll();
@@ -5337,7 +5341,7 @@ function renderLegend() {
 // The timeline numbers the ways on, and ←, → and 1 to 9 work too.
 function startBuilder(planId, startNode) {
   if (!canEdit() || !canLeave()) return;
-  if (B) { toast('Finish or cancel the plan you are making first'); return; }
+  if (B) { toast('Finish or cancel the plan first'); return; }
   if (!S.order.length) { toast('Add some places and legs first'); return; }
   const dockWas = UI.drawer;
   if (planId && S.plans[planId]) {
@@ -5387,9 +5391,9 @@ function guideClick(e) {
 }
 function guideLeg(id) {
   const ph = guidePhase(), l = S.legs[id]; if (!l) return;
-  if (!T[id].complete) { toast(`${legLabel(id)} is incomplete, so it can’t be in a plan yet: ${T[id].problems[0].msg}`); return; }
+  if (!T[id].complete) { toast(`Incomplete: ${legLabel(id)}`); return; }
   if (ph === 'start') { B.start = l.from; builderTake([id]); return; }
-  if (ph === 'done') { toast(B.chosen.includes(id) ? 'That leg is in your route' : 'The route is finished. Choose Change in the panel to go on.'); return; }
+  if (ph === 'done') { toast(B.chosen.includes(id) ? 'That leg is in your route' : 'Route finished: More › Change the route'); return; }
   if (B.chosen.includes(id)) { toast('That leg is already in your route'); return; }
   if (builderOptions().includes(id)) { builderTake([id]); return; }
   followBranch(id);
@@ -5408,21 +5412,21 @@ function followBranch(id) {
     // The search above stops 6 legs out, so check whether the leg can be reached at all before saying it can't.
     const seen = new Set(opts), queue = opts.slice();
     while (queue.length && !seen.has(id)) bNext(queue.shift()).forEach(y => { if (!seen.has(y)) { seen.add(y); queue.push(y); } });
-    toast(seen.has(id) ? `That leg is more than 6 legs away from ${nodeName(builderHere())}. Take the first legs toward it, then click it again.` : `You can’t get to that leg from ${nodeName(builderHere())} in time`);
+    toast(seen.has(id) ? 'Too far: take the legs toward it first' : `Can’t reach it in time from ${nodeName(builderHere())}`);
     return;
   }
   let n = 0;
   while (n < chains[0].length && chains.every(c => c[n] === chains[0][n])) n++;
   if (!n) {
     const nums = [...new Set(chains.map(c => opts.indexOf(c[0]) + 1))].sort((a, b) => a - b);
-    toast(`${nums.length} ways lead to that leg: first take ${nums.slice(0, -1).join(', ')} or ${nums[nums.length - 1]}`);
+    toast(`${nums.length} ways there: take ${nums.slice(0, -1).join(', ')} or ${nums[nums.length - 1]}`);
     return;
   }
   builderTake(chains[0].slice(0, n));
 }
 function guidePlace(node) {
   if (guidePhase() === 'start') { B.start = node; renderBuilder(); applyHighlight(); focusGuide(); return; }
-  toast('To start somewhere else, go back to the start with Back');
+  toast('To start elsewhere, use Back');
 }
 // Add legs to the route: one, or a chain picked further along the tree.
 function builderTake(chain) {
@@ -5452,7 +5456,7 @@ function builderNext() {
   if (ph !== 'route') return;
   if (o.length === 1) builderTake([o[0]]);
   else if (!o.length) { if (B.chosen.length) finishRoute(); }
-  else { flashJourney('.jn-next', '#builder'); toast(`${o.length} ways go on from ${nodeName(builderHere())}: choose one, or press its number`); }
+  else { flashJourney('.jn-next', '#builder'); toast(`${o.length} ways on: pick 1–${o.length}`); }
 }
 function legRowCells(id) {
   const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
@@ -5834,7 +5838,7 @@ function delPlan(id) {
 // A copy of a plan, right after it, named “… (copy)”: the same legs, waits and extra costs, its own colour.
 function duplicatePlan(id) {
   const p = S.plans[id]; if (!p || !canEdit()) return;
-  if (B) { toast('Finish or cancel the plan you are making first'); return; }
+  if (B) { toast('Finish or cancel the plan first'); return; }
   if (!canLeave()) return;
   const stem = `${String(p.name).replace(/\s*\(copy(?: \d+)?\)\s*$/i, '')} (copy`;
   let name = stem + ')', n = 2;
@@ -5847,13 +5851,13 @@ function duplicatePlan(id) {
   assignSlots();
   focusPlan = nid;
   renderAll();
-  toast(`Made “${name}”, a copy of “${p.name}”. Click its name to rename it.`, true);
+  toast(`Made “${name}”`, true);
 }
 
 /* ---------- edits ---------- */
 function select(s, focusSel) {
   if (viewOnly) return; // phones only view the timeline
-  if (B) { toast('Finish or cancel the plan you are making first'); return; }
+  if (B) { toast('Finish or cancel the plan first'); return; }
   const same = sel && s && sel.k === s.k && sel.id === s.id && sel.plan === s.plan;
   if (!same && !canLeave()) return;
   sel = s; focusNext = focusSel || null;
@@ -5872,12 +5876,12 @@ function select(s, focusSel) {
 }
 function newNode() {
   if (!canEdit() || !canLeave()) return;
-  if (B) { toast('Finish or cancel the plan you are making first'); return; }
+  if (B) { toast('Finish or cancel the plan first'); return; }
   openDraft('node', Object.assign({ name: '', note: '', links: [] }, newPlacesLocal() ? { scope: 'local' } : {}), '#fName');
 }
 function newLeg(props) {
   if (!canEdit() || !canLeave()) return;
-  if (B) { toast('Finish or cancel the plan you are making first'); return; }
+  if (B) { toast('Finish or cancel the plan first'); return; }
   if (!S.order.length) { toast('Add a place first'); newNode(); return; }
   const p = Object.assign({}, props);
   if (!p.from && !p.to) p.from = sel ? (sel.k === 'node' ? sel.id : S.legs[sel.id] ? S.legs[sel.id].to : '') || '' : '';
@@ -5904,7 +5908,7 @@ function addNodeFromLeg() {
     const id = existing || newPlace(name);
     Object.assign(draft.obj, formValues(), { [side]: id }); draft.touched.add(side);
     renderAll();
-    if (existing) toast(`Using the place you already have: ${nodeName(existing)}`);
+    if (existing) toast(`Using your ${nodeName(existing)}`);
     return;
   }
   const l = sel && sel.k === 'leg' && S.legs[sel.id]; if (!l || !edit) return;
@@ -5912,13 +5916,13 @@ function addNodeFromLeg() {
   const id = existing || newPlace(name);
   Object.assign(edit.obj, pickF(formValues(), EDIT_F.leg), { [side]: id });
   renderAll();
-  toast(existing ? `Using the place you already have: ${nodeName(existing)}. Save to keep the change.` : `Added ${nodeName(id)}. Save the leg to use it.`);
+  toast(existing ? `Using your ${nodeName(existing)} · save to keep it` : `Added ${nodeName(id)} · save the leg`);
 }
 function mergeNode(from, into) {
-  if (S.nodes[from] && S.nodes[from].scope !== 'local') { const used = tripsUsing(from); if (used.length) { toast(`${nodeName(from)} is in every trip and ${listJoin(used.map(x => `“${x}”`))} ${used.length > 1 ? 'use' : 'uses'} it, so it cannot be merged away here.`); return; } }
+  if (S.nodes[from] && S.nodes[from].scope !== 'local') { const used = tripsUsing(from); if (used.length) { toast(`Can’t merge: ${listJoin(used.map(x => `“${x}”`))} use${used.length > 1 ? '' : 's'} ${nodeName(from)}`); return; } }
   // a leg between the two places would start and end at the same place once they are one
   const joins = Object.keys(S.legs).filter(id => { const l = S.legs[id]; return (l.from === from && l.to === into) || (l.from === into && l.to === from); });
-  if (joins.length) { toast(`${nodeName(from)} and ${nodeName(into)} are joined by ${joins.length === 1 ? 'a leg' : `${joins.length} legs`}, which would then start and end at the same place. Delete ${joins.length === 1 ? 'it' : 'them'} first, then merge.`); return; }
+  if (joins.length) { toast(`Delete the leg${joins.length > 1 ? 's' : ''} between them first`); return; }
   // one journey, one leg: two legs that would have the same two places and the same times once the places are one
   const endsAfter = l => [l.from === from ? into : l.from, l.to === from ? into : l.to, ts(l.dep), ts(l.arr)].join('|');
   const touches = l => l.from === from || l.to === from;
@@ -5929,11 +5933,11 @@ function mergeNode(from, into) {
     if (o && (touches(l) || touches(S.legs[o]))) { clash = [o, lid]; break; }
     if (!o) byKey[k] = lid;
   }
-  if (clash) { toast(`Once merged, ${legLabel(clash[0])} and ${legLabel(clash[1])} would be the same journey at the same times. Delete one or change its times first, then merge.`); return; }
+  if (clash) { toast(`Can’t merge: two legs would be the same`); return; }
   // one journey, one leg: a moved leg must not become the same journey as a leg already at the other place
   const mapEnd = x => (x === from ? into : x);
   const same = Object.keys(S.legs).filter(id => S.legs[id].from === from || S.legs[id].to === from).find(id => { const l = S.legs[id], d = ts(l.dep), a = ts(l.arr); return d != null && a != null && Object.keys(S.legs).some(x => x !== id && mapEnd(S.legs[x].from) === mapEnd(l.from) && mapEnd(S.legs[x].to) === mapEnd(l.to) && ts(S.legs[x].dep) === d && ts(S.legs[x].arr) === a); });
-  if (same) { toast(`${legLabel(same)} would become the same journey as another leg once the places are one. Delete one of them or change its times first, then merge.`); return; }
+  if (same) { toast(`Can’t merge: ${legLabel(same)} would repeat a leg`); return; }
   checkpoint(); edit = null;
   const moved = [];
   for (const id in S.legs) { const l = S.legs[id]; if (l.from === from || l.to === from) moved.push(id); if (l.from === from) l.from = into; if (l.to === from) l.to = into; }
@@ -5971,7 +5975,7 @@ function moveRow(id, dir) {
 function dropScrub() { if (scrubT != null && !pinned) scrubT = null; }
 function delNode(id) {
   if (!S.nodes[id]) return;
-  if (S.nodes[id].scope !== 'local') { const used = tripsUsing(id); if (used.length) { toast(`${nodeName(id)} is in every trip and ${listJoin(used.map(x => `“${x}”`))} ${used.length > 1 ? 'use' : 'uses'} it, so it cannot be deleted here. Delete its legs there first.`); return; } }
+  if (S.nodes[id].scope !== 'local') { const used = tripsUsing(id); if (used.length) { toast(`Can’t delete: ${listJoin(used.map(x => `“${x}”`))} use${used.length > 1 ? '' : 's'} ${nodeName(id)}`); return; } }
   if (edit && edit.id === id) edit = null;
   checkpoint();
   const name = nodeName(id);
@@ -5992,7 +5996,7 @@ function delLeg(id) {
   sel = from && S.nodes[from] ? { k: 'node', id: from } : null;
   dropScrub();
   renderAll();
-  toast(n ? `Deleted the leg. ${n} saved plan${n > 1 ? 's' : ''} used it and now need${n > 1 ? '' : 's'} editing.` : 'Deleted the leg', true);
+  toast(n ? `Deleted the leg · ${n} plan${n > 1 ? 's' : ''} to fix` : 'Deleted the leg', true);
 }
 
 /* ---------- plan names, plan view, panels, theme ---------- */
@@ -6047,7 +6051,7 @@ function nameEditor(id) {
   return h('div', { class: 'rename' }, i, err);
 }
 function setView(id) {
-  if (B) { toast('Finish or cancel the plan you are making first'); return; }
+  if (B) { toast('Finish or cancel the plan first'); return; }
   if (id && (sel || draft) && !canLeave()) return; // an untouched draft is dropped; one with something filled in stays and blocks
   viewPlan = id && S.plans[id] ? id : null;
   focusPlan = viewPlan; hoverPlan = null; hoverLeg = null; renaming = null;
@@ -6234,7 +6238,7 @@ function planRemarks(p) {
     save(); syncToolbar();
     const cell = $(`#plansBody tr[data-plan="${p.id}"] td.remarks`);
     if (cell) cell.replaceChildren(v ? trimmedText(v, 'rm-txt') : h('span', { class: 'rm-none', text: '—' }));
-    toast(v ? `Saved the remarks on “${plan.name}”` : `Cleared the remarks on “${plan.name}”`, true);
+    toast(v ? 'Remarks saved' : 'Remarks cleared', true);
     syncSave();
   };
   ta.addEventListener('change', keep);
@@ -6601,7 +6605,7 @@ function setArrange(on, quiet) {
   arranging = on;
   if (on && (scrubT != null || pinned)) { scrubT = null; pinned = false; drawScrub(); } // the hover card steps aside
   syncArrangeBtn(); renderNow();
-  if (!quiet) toast(on ? 'Arrange is on: drag places and legs to move them, drag from a place’s line to another place to add a leg, or drag across empty space to select several. Esc ends it.' : 'Arrange is off: the timeline only scrolls');
+  if (!quiet) toast(on ? 'Arrange on · Esc to stop' : 'Arrange off');
 }
 
 /* the selection */
@@ -6966,7 +6970,7 @@ function dropLeg(d) {
 }
 function dropLink(d) {
   if (!d.node || d.node === d.node0) return;
-  if (d.t1 <= d.t0) { toast('Not added: it has to arrive after it leaves. Drag to the right.'); return; }
+  if (d.t1 <= d.t0) { toast('Not added: drag to the right'); return; }
   newLeg({ from: d.node0, to: d.node, dep: toLocal(d.t0), arr: toLocal(d.t1), focus: '#inspector [data-f="mode"]' });
 }
 // Moved legs are saved just as edits in the panel would be: the same checks, one step to undo.
@@ -6985,7 +6989,7 @@ function applyLegsChange(chs, label) {
     if (!msg) { compute(); hurt = PL.find(q => q.warn && !before.has(q.id) && q.legs.some(x => ids.includes(x))) || null; }
   } finally { ids.forEach(id => { S.legs[id] = keep[id]; }); compute(); }
   if (msg) { toast(`Not moved: ${msg}`); return false; }
-  if (hurt) { toast(`Not moved: the plan “${hurt.name}” would no longer work. ${hurt.issues[0]}`); return false; }
+  if (hurt) { toast(`Not moved: it would break “${hurt.name}”`); return false; }
   checkpoint();
   ids.forEach(id => { const cand = Object.assign({}, S.legs[id], chs[id]); applyEdit('leg', id, cand, diffKeys(S.legs[id], chs[id])); });
   renderAllGlide();
@@ -6996,7 +7000,7 @@ function applyLegsChange(chs, label) {
 function nudgePick(key, big) {
   if (key === 'ArrowLeft' || key === 'ArrowRight') {
     const ids = [...pickLegs].filter(id => S.legs[id] && T[id] && T[id].timed);
-    if (!ids.length) { toast('Select legs to move them in time; ↑ and ↓ move places'); return; }
+    if (!ids.length) { toast('Select legs first'); return; }
     const dt = (key === 'ArrowRight' ? 1 : -1) * (big ? 60 : 15) * MIN, chs = {};
     ids.forEach(id => { const l = S.legs[id]; chs[id] = { dep: toLocal(ts(l.dep) + dt), arr: toLocal(ts(l.arr) + dt) }; });
     applyLegsChange(chs, `Moved ${ids.length > 1 ? `${ids.length} legs` : legLabel(ids[0])} ${fmtDur(Math.abs(dt))} ${dt > 0 ? 'later' : 'earlier'}`);
@@ -7004,7 +7008,7 @@ function nudgePick(key, big) {
   }
   const vis = [...$('#pinSvg').querySelectorAll('.rowhead')].map(g => g.dataset.node), up = key === 'ArrowUp';
   const at = vis.map((id, i) => pickNodes.has(id) ? i : -1).filter(i => i >= 0);
-  if (!at.length) { toast('Select places to move them up or down; ← and → move legs'); return; }
+  if (!at.length) { toast('Select places first'); return; }
   if (up ? at[0] === 0 : at[at.length - 1] === vis.length - 1) return; // already at the edge
   const ord = vis.slice();
   (up ? at : at.reverse()).forEach(i => { const j = up ? i - 1 : i + 1; [ord[i], ord[j]] = [ord[j], ord[i]]; });
@@ -7023,7 +7027,7 @@ function delLegs(ids) {
   if (sel && sel.k === 'leg' && !S.legs[sel.id]) sel = null;
   dropScrub();
   renderAll();
-  toast(`Deleted ${ids.length} legs${plans.size ? `. ${plans.size} saved plan${plans.size > 1 ? 's' : ''} used them and now need${plans.size > 1 ? '' : 's'} editing.` : ''}`, true);
+  toast(`Deleted ${ids.length} legs${plans.size ? ` · ${plans.size} plan${plans.size > 1 ? 's' : ''} to fix` : ''}`, true);
 }
 
 /* copy, paste and duplicate legs: the copies land a little later, in no plan, ready to drag */
@@ -7035,12 +7039,12 @@ function chosenLegs() {
 function copyLegs(ids, quiet) {
   ids = (ids || chosenLegs()).filter(id => S.legs[id]); if (!ids.length) return false;
   CLIP = { legs: ids.map(id => JSON.parse(JSON.stringify(S.legs[id]))), n: 0 };
-  if (!quiet) toast(`Copied ${ids.length > 1 ? `${ids.length} legs` : legLabel(ids[0])}. Press Ctrl+V (⌘V on a Mac) to paste a copy a little later.`);
+  if (!quiet) toast(`Copied ${ids.length > 1 ? `${ids.length} legs` : legLabel(ids[0])} · ${MAC ? '⌘' : 'Ctrl'}+V to paste`);
   return true;
 }
 function pasteLegs(at) {
   if (!CLIP || !CLIP.legs.length || !canEdit()) return;
-  if (B) { toast('Finish or cancel the plan you are making first'); return; }
+  if (B) { toast('Finish or cancel the plan first'); return; }
   if (!canLeave()) return;
   const live = CLIP.legs.filter(l => S.nodes[l.from] && S.nodes[l.to]);
   if (!live.length) { toast('The places of the copied legs are gone'); return; }
@@ -7065,9 +7069,8 @@ function pasteLegs(at) {
   if (canArrange() && !arranging) setArrange(true, true);
   pickLegs.clear(); pickNodes.clear(); ids.forEach(id => pickLegs.add(id));
   renderAll();
-  const it = ids.length > 1 ? 'them' : 'it';
-  const when = at != null && isFinite(first) ? `, leaving ${shortDT(first + off)}` : off ? `, ${fmtDur(off)} later` : '';
-  toast(`Pasted ${ids.length > 1 ? `${ids.length} legs` : legLabel(ids[0])}${when}. Copies are in no plan: add ${it} to one in plan mode.`, true);
+  const when = at != null && isFinite(first) ? ` · ${shortDT(first + off)}` : off ? ` · ${fmtDur(off)} later` : '';
+  toast(`Pasted ${ids.length > 1 ? `${ids.length} legs` : legLabel(ids[0])}${when}`, true);
 }
 function duplicateLegs(ids) { if (copyLegs(ids, true)) pasteLegs(); }
 
@@ -7152,7 +7155,7 @@ function fitAgain() {
   cancelAnimationFrame(ZS.r); ZS.r = 0; ZS.rem = 1; ZS.n = 0; // a key zoom still gliding stops here
   if (!geo || !geo.time || autoFitOn()) return;
   UI.autoFit = true; $('#graphScroll').scrollLeft = 0; saveUI(); settleGraph(); syncToolbar();
-  toast('Auto-fit is on: the timeline fits the window');
+  toast('Auto-fit on');
 }
 
 /* ---------- keys and menus as on any computer ---------- */
@@ -7187,7 +7190,7 @@ function dropBuilder() {
   if (!B) return;
   const snap = JSON.parse(JSON.stringify(B)), had = snap.chosen.length || String(snap.name || '').trim() || snap.extras.length;
   closeBuilder();
-  toast(snap.editing ? 'Stopped editing the plan; it is as it was' : 'Stopped making the plan', had ? () => reopenBuilder(snap) : null);
+  toast(snap.editing ? 'Plan left as it was' : 'Plan cancelled', had ? () => reopenBuilder(snap) : null);
 }
 function reopenBuilder(snap) {
   if (B || !canEdit() || !canLeave()) return;
@@ -7667,7 +7670,7 @@ function bind() {
   // changing the theme cross-fades the whole page where the browser can, instead of snapping
   const fadeSwap = fn => { if (document.startViewTransition && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) { const vt = document.startViewTransition(fn); vt.ready.catch(() => {}); /* a skipped fade (a hidden tab) is fine */ } else fn(); };
   $('#themeBtn').addEventListener('click', () => fadeSwap(() => { UI.theme = effectiveTheme() === 'dark' ? 'light' : 'dark'; saveUI(); applyTheme(); syncSettings(); }));
-  $('#setScope').addEventListener('change', e => { UI.newLocal = !e.target.checked; saveUI(); toast(e.target.checked ? 'New places will be in every trip' : 'New places will be kept to the trip you add them in'); });
+  $('#setScope').addEventListener('change', e => { UI.newLocal = !e.target.checked; saveUI(); toast(e.target.checked ? 'New places go in every trip' : 'New places stay in their trip'); });
   $('#setAllGlobal').addEventListener('click', () => allPlacesGlobal());
   $('#setTheme').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; fadeSwap(() => { UI.theme = b.dataset.v === 'system' ? null : b.dataset.v; saveUI(); applyTheme(); syncSettings(); }); });
   $('#setMotion').addEventListener('change', e => { UI.motion = e.target.checked; saveUI(); applyMotion(); });
@@ -7812,7 +7815,7 @@ function bind() {
       try { renderAll(); } finally { quietSave = false; }
       if (fid) { const f = document.getElementById(fid); if (f && f !== document.activeElement) { f.focus({ preventScroll: true }); try { if (s0 != null) f.setSelectionRange(s0, s1); } catch (err) { /* not a text field */ } } }
       if (rn) { const r = document.querySelector(`input[data-rename="${rn.id}"]`); if (r && r !== document.activeElement) { r.value = rn.v; r.dispatchEvent(new Event('input')); r.focus({ preventScroll: true }); try { if (s0 != null) r.setSelectionRange(s0, s1); } catch (err) { /* not a text field */ } } }
-      toast('Updated with the changes made in another tab.');
+      toast('Updated from another tab');
     } else if (e.key === UIKEY && e.newValue) {
       let u = null; try { u = JSON.parse(e.newValue); } catch (err) { return; }
       const pinWas = pinOn(), costsWas = !!UI.costs, keys = ['theme', 'costs', 'pinPlaces', 'motion', 'autoFit'], fitWas = autoFitOn();
@@ -7898,11 +7901,11 @@ function bind() {
     document.body.append(a); a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
     const trips = LIB.tripOrder.length, plans = LIB.tripOrder.reduce((n, id) => n + Object.keys((LIB.trips[id].data && LIB.trips[id].data.plans) || {}).length, 0);
-    toast(`Exported ${trips} trip${trips > 1 ? 's' : ''} and ${plans} plan${plans === 1 ? '' : 's'} to ${file}`);
+    toast(`Exported ${plans} plan${plans === 1 ? '' : 's'}`);
   };
   $('#export').addEventListener('click', doExport);
   $('#saveNoteExport').addEventListener('click', doExport);
-  const pickFile = () => { if (TOUR) { toast('Go back to your own plans first'); return; } closeSettings(); if (B) { toast('Finish or cancel the plan you are making first'); return; } if (!canLeave()) return; $('#importFile').click(); };
+  const pickFile = () => { if (TOUR) { toast('Go back to your own plans first'); return; } closeSettings(); if (B) { toast('Finish or cancel the plan first'); return; } if (!canLeave()) return; $('#importFile').click(); };
   $('#importBtn').addEventListener('click', pickFile);
   $('#menuImport').addEventListener('click', pickFile);
   $('#emptyImport').addEventListener('click', pickFile);
@@ -7928,7 +7931,7 @@ function bind() {
       };
       const done = (msg, back) => {
         const nb = BROKEN.nodes.length + BROKEN.legs.length + BROKEN.plans.length;
-        toast(nb && canEdit() ? `${msg}. ${nb === 1 ? 'One item is' : `${nb} items are`} incomplete: the note above the timeline lists ${nb === 1 ? 'it' : 'them'} to fix.` : msg, back);
+        toast(nb && canEdit() ? `${msg} · ${nb} to fix` : msg, back);
       };
       if (lib) {
         // a whole library (an export of every trip): added to yours, or in place of it, as you choose
@@ -7978,7 +7981,7 @@ function bind() {
     if (TOUR) { toast('Go back to your own plans first'); return; }
     if (!canEdit()) return;
     closeSettings();
-    if (B) { toast('Finish or cancel the plan you are making first'); return; } // the plan being made is not dropped silently either
+    if (B) { toast('Finish or cancel the plan first'); return; } // the plan being made is not dropped silently either
     if (!canLeave()) return; // a new item or unsaved changes are saved or dropped first
     checkpoint();
     const keep = { budget: S.budget, pph: S.pph, currency: S.currency }, shared = {};
@@ -8041,8 +8044,8 @@ function bind() {
       if (draft) saveDraft();
       else if (edit && editDirty()) saveEdit();
       else if (B && guidePhase() === 'done') savePlan();
-      else if (B) toast(`Finish the route first, then ${MAC ? '⌘' : 'Ctrl'}+S saves the plan`);
-      else toast('Nothing to save: everything is already kept in this browser');
+      else if (B) toast('Finish the route first');
+      else toast('Nothing to save');
       return;
     }
     if (mod && !e.shiftKey && key === 'z' && !inField) { if (canEdit()) { e.preventDefault(); undo(); } }
@@ -8234,7 +8237,7 @@ function startTour() {
   if (viewOnly) return;
   if (TOUR) {
     // taking the tour again starts over on a fresh sample, so every step has its part to point at
-    if (B) { toast('Finish or cancel the plan you are making first'); return; }
+    if (B) { toast('Finish or cancel the plan first'); return; }
     if (!canLeave()) return;
     closeMenus();
     const bar = $('#sampleBar'); if (bar) bar.remove();
@@ -8248,7 +8251,7 @@ function startTour() {
     showTourStep();
     return;
   }
-  if (B) { toast('Finish or cancel the plan you are making first'); return; }
+  if (B) { toast('Finish or cancel the plan first'); return; }
   if (!canLeave()) return;
   closeMenus();
   TOUR = { saved: JSON.stringify(S), ui: JSON.stringify(UI), undo: undoStack.splice(0), redo: redoStack.splice(0), step: 0, explore: false,
@@ -8316,7 +8319,7 @@ function exploreSample() {
   if (!$('#sampleBar')) $('#guideNote').before(h('div', { id: 'sampleBar', class: 'notice samplebar', role: 'status' },
     h('span', { class: 'sb-dot', 'aria-hidden': 'true' }), h('span', { class: 'sb-txt', text: 'You are trying a sample trip. Change anything you like: nothing here is saved.' }),
     btn('Back to my plans', endTour, 'small primary')));
-  toast('Try making a plan: choose New, then Plan, and click the legs on the timeline.');
+  toast('Try it: New › Plan, then click legs');
 }
 function endTour() {
   if (!TOUR) return;
@@ -8339,7 +8342,7 @@ function endTour() {
   else $('#drawer').style.removeProperty('--dock-h'); // a height dragged only during the tour is dropped
   renderAll();
   $('#graphScroll').scrollTo({ left: t.sl || 0, top: t.st || 0 });
-  toast('Your own plans are back.');
+  toast('Your plans are back');
 }
 
 /* ---------- start ---------- */
