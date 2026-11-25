@@ -1877,15 +1877,20 @@ html.glass .side-split::after{background:var(--g-field)}
 }
 @media (prefers-reduced-motion:reduce){html.glass .dock .dock-body,html.glass .dock .dock-split{transition:none !important}}
 /* the timeline's hint, and the moment under the pointer, sit beside its title: the plans sheet never covers them */
-.card-head .now{flex:1 1 auto;min-width:0;height:auto !important;min-height:0;margin:0 14px 0 16px;padding:0 !important;border:0 !important;background:none !important;overflow:hidden;font-size:12px;line-height:1.35;color:var(--muted)}
+.card-head .now{flex:1 1 0;min-width:0;height:auto !important;min-height:0;margin:0 14px 0 16px;padding:0 !important;border:0 !important;background:none !important;overflow:hidden;font-size:12px;line-height:1.35;color:var(--muted)}
 .card-head .now .hint{margin:0;font-size:12px;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card-head .now strong{color:var(--ink) !important;font-weight:600}
 /* the details panel opening or closing: the timeline's frame narrows or widens without a scrollbar flashing in,
    then the old drawing fades out over the new one */
-.side-moving .graph-scroll,.side-dragging .graph-scroll{overflow-x:hidden !important}
+.side-moving .graph-scroll,.side-dragging .graph-scroll,.settling .graph-scroll{overflow-x:hidden !important}
 .graph-ghost{position:absolute;z-index:2;overflow:visible;pointer-events:none;animation:wmGhost .26s ease forwards}
 @keyframes wmGhost{to{opacity:0}}
 @media (prefers-reduced-motion:reduce){.graph-ghost{display:none}}
+/* the old drawing during a settle: it moves and fades by script (no fixed animation) */
+.graph-ghost{animation:none !important}
+.pin-ghost{position:absolute;z-index:4;pointer-events:none}
+/* the timeline's title row keeps one height whatever the hint says (one line or two), so the timeline below never moves */
+@media (min-width:701px){.graph-card > .card-head{flex-wrap:nowrap !important;height:58px;min-height:58px;box-sizing:border-box;align-items:center !important;padding-top:8px !important;padding-bottom:8px !important}}
 </style>
 </head>
 <body>
@@ -2750,7 +2755,7 @@ function renderGraph() {
   svg.setAttribute('width', width); svg.setAttribute('height', height);
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
   const legs = {};
-  geo = { time: timeOn, X, tmin, tmax, pph, left, width, height, rowY, legs };
+  geo = { time: timeOn, X, tmin, tmax, pph, left, width, height, rowY, legs, fh: sc.clientHeight }; // fh: the frame height this drawing was made for
   // a moment that is no longer on the timeline is let go
   if (scrubT != null && (!timeOn || scrubT < tmin || scrubT > tmax)) { scrubT = null; pinned = false; }
 
@@ -4843,8 +4848,7 @@ function setView(id) {
   if (viewPlan) sel = null;
   scrubT = null; pinned = false;
   $('#graphScroll').scrollLeft = 0;
-  renderViewTabs(); renderPlanBar(); renderGraph(); renderInspector(); renderPlans(); renderNow();
-  const gw = $('#gwrap'); if (gw) { gw.classList.remove('swap'); void gw.offsetWidth; gw.classList.add('swap'); } // the timeline fades in
+  renderViewTabs(); renderPlanBar(); settleGraph(); renderInspector(); renderPlans(); renderNow(); // the timeline glides to the plan in view
 }
 // The chosen tab's shape sits under the tabs and glides to the tab you pick (it is kept across redraws).
 function placeTabInd() {
@@ -4970,22 +4974,55 @@ function sideSettled() {
   document.body.classList.remove('side-moving');
   settleGraph();
 }
-// Redraw the timeline, and let the old drawing fade out over the new one, so a change of width reads as a
-// gentle settle rather than a jump.
+// Redraw the timeline so that a change of zoom (auto-fit after the details panel moves, another plan in view)
+// glides instead of jumping: the old drawing and the new one move together along the time axis, so every hour,
+// day and night stays lined up, while the old one fades out and the new one fades in. Places that come or go
+// (another plan in view) cross-fade, names column included.
 function settleGraph() {
-  const g = $('#graph'), wrap = $('#gwrap');
-  const still = !g || !wrap || !geo || viewOnly || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const g = $('#graph'), wrap = $('#gwrap'), pin = $('#pinSvg');
+  const still = !g || !wrap || !geo || !geo.time || viewOnly || !g.animate || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   if (still) { renderGraph(); return; }
-  const ghost = g.cloneNode(false);
-  ghost.removeAttribute('id'); ghost.setAttribute('class', 'graph-ghost'); ghost.setAttribute('aria-hidden', 'true');
-  // its own names for gradients, masks and clips, so it keeps looking as it did while the new drawing takes over
-  ghost.innerHTML = g.innerHTML.replace(/\bid="([^"]+)"/g, 'id="gh-$1"').replace(/url\(#/g, 'url(#gh-');
-  ghost.style.left = g.offsetLeft + 'px'; ghost.style.top = g.offsetTop + 'px';
-  wrap.querySelectorAll('.graph-ghost').forEach(n => n.remove());
+  const was = { left: geo.left, pph: geo.pph, tmin: geo.tmin, rows: JSON.stringify(geo.rowY) };
+  const ghostOf = (svg, cls) => {
+    const c = svg.cloneNode(false);
+    c.removeAttribute('id'); c.setAttribute('class', cls); c.setAttribute('aria-hidden', 'true'); c.removeAttribute('style');
+    // its own names for gradients, masks and clips, so it keeps looking as it did while the new drawing takes over
+    c.innerHTML = svg.innerHTML.replace(/\bid="([^"]+)"/g, 'id="gh-$1"').replace(/url\(#/g, 'url(#gh-');
+    c.style.left = svg.offsetLeft + 'px'; c.style.top = svg.offsetTop + 'px';
+    return c;
+  };
+  wrap.querySelectorAll('.graph-ghost,.pin-ghost').forEach(n => n.remove());
+  const ghost = ghostOf(g, 'graph-ghost');
   wrap.append(ghost);
+  const rowsWere = was.rows, pinGhost = pin && pin.style.display !== 'none' ? ghostOf(pin, 'pin-ghost') : null;
+  // no scrollbar may come or go while the two drawings move (that would change the size and cause another
+  // redraw), so the new drawing is measured that way too
+  document.body.classList.add('settling');
   renderGraph();
-  const done = () => ghost.remove();
-  ghost.addEventListener('animationend', done, { once: true }); setTimeout(done, 500);
+  if (!geo || !geo.time) { ghost.remove(); document.body.classList.remove('settling'); return; }
+  const k = geo.pph / was.pph, dx = (was.tmin - geo.tmin) / H * geo.pph, rowsSame = JSON.stringify(geo.rowY) === rowsWere;
+  if (Math.abs(k - 1) < .003 && Math.abs(dx) < .5 && geo.left === was.left && rowsSame) { ghost.remove(); document.body.classList.remove('settling'); return; } // nothing moved
+  const opts = { duration: 320, easing: 'cubic-bezier(.22,.8,.24,1)' };
+  // where a moment of the old drawing sits in the new one, and the other way round
+  ghost.style.transformOrigin = `${was.left}px 0`;
+  g.style.transformOrigin = `${geo.left}px 0`;
+  const tOld = `translateX(${geo.left - was.left + dx}px) scaleX(${k})`, tNew = `translateX(${was.left - geo.left - dx / k}px) scaleX(${1 / k})`;
+  const a = ghost.animate([{ transform: 'none', opacity: 1 }, { transform: tOld, opacity: 0 }], { ...opts, fill: 'forwards' });
+  const b = g.animate([{ transform: tNew, opacity: rowsSame ? .35 : 0 }, { transform: 'none', opacity: 1 }], opts);
+  let ended = false;
+  const done = () => {
+    if (ended) return; ended = true;
+    b.cancel(); // finished already, or held up (a tab in the background): either way the drawing ends where it belongs
+    ghost.remove(); document.body.classList.remove('settling');
+    const sc = $('#graphScroll'); if (geo && sc && Math.abs(sc.clientHeight - (geo.fh || 0)) > 2) renderGraph(); // only if the frame really changed
+  };
+  a.finished.then(done, done); setTimeout(done, opts.duration + 200);
+  if (!rowsSame && pinGhost) {
+    wrap.append(pinGhost);
+    const pa = pinGhost.animate([{ opacity: 1 }, { opacity: 0 }], { ...opts, fill: 'forwards' });
+    const pb = pin.animate([{ opacity: 0 }, { opacity: 1 }], opts);
+    const pd = () => { pb.cancel(); pinGhost.remove(); }; pa.finished.then(pd, pd); setTimeout(pd, opts.duration + 200);
+  }
 }
 // The plans panel is a sheet: drag its bar up (to at most 35% of the window's height) or down to close it.
 const DOCK_MAX = .35;
@@ -5398,20 +5435,22 @@ function bind() {
     // opening or closing) always is, so the timeline never stays drawn at an old, shorter height.
     let lastH = 0, prevH = 0, flips = 0;
     new ResizeObserver(() => {
-      if (viewOnly || document.body.classList.contains('side-moving')) return;
+      if (viewOnly || document.body.classList.contains('side-moving') || document.body.classList.contains('settling')) return;
       const hh = $('#graphScroll').clientHeight;
       $('.graph-card').classList.toggle('cramped', hh < 150);
       if (Math.abs(hh - lastH) <= 2) return;
       flips = Math.abs(hh - prevH) <= 2 ? flips + 1 : 0;
       prevH = lastH; lastH = hh;
       if (flips > 4) return;
-      // keep up while a panel is being pulled or is opening (at most about ten times a second), then draw the final size
+      if (geo && Math.abs(hh - (geo.fh || 0)) <= 2) return; // the latest drawing was already made for this height
+      // one change: draw once, a moment later; a size that keeps changing (the window being resized): keep up about
+      // ten times a second, then draw the final size
+      const now = performance.now(), busy = now - (bind._roLast || 0) < 160; bind._roLast = now;
       clearTimeout(bind._ro);
-      if (performance.now() - (bind._roAt || 0) > 90) { bind._roAt = performance.now(); renderGraph(); }
-      bind._ro = setTimeout(() => { bind._roAt = performance.now(); renderGraph(); }, 90);
+      if (busy && now - (bind._roAt || 0) > 90) { bind._roAt = now; renderGraph(); }
+      bind._ro = setTimeout(() => { bind._roAt = performance.now(); if (!geo || Math.abs($('#graphScroll').clientHeight - (geo.fh || 0)) > 2) renderGraph(); }, busy ? 90 : 60);
     }).observe($('#graphScroll'));
-    // and once more when a panel has finished moving, whatever happened on the way
-    $('#drawerBody').addEventListener('transitionend', e => { if (e.target === e.currentTarget && e.propertyName === 'height') { flips = 0; renderGraph(); } });
+    // the details panel: draw once it has finished moving (the plans sheet floats over the timeline and needs no redraw)
     $('#side').addEventListener('transitionend', e => { if (e.target === e.currentTarget && (e.propertyName === 'flex-basis' || e.propertyName === 'transform')) { flips = 0; sideSettled(); } });
   }
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
