@@ -1891,12 +1891,42 @@ html.glass .side-split::after{background:var(--g-field)}
 .pin-ghost{position:absolute;z-index:4;pointer-events:none}
 /* the timeline's title row keeps one height whatever the hint says (one line or two), so the timeline below never moves */
 @media (min-width:701px){.graph-card > .card-head{flex-wrap:nowrap !important;height:58px;min-height:58px;box-sizing:border-box;align-items:center !important;padding-top:8px !important;padding-bottom:8px !important}}
+/* View mode: the plan being followed */
+.jn-follow{margin:2px 0 6px;font-size:12px;font-weight:600;color:var(--accent)}
+/* the trip menu beside the app's name */
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.trip-menu{min-width:0}
+.trip-btn{height:32px;max-width:280px;gap:7px;padding:0 10px 0 12px;border-radius:999px;font-weight:600}
+.trip-btn .trip-lab{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.trip-btn b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--serif);font-size:14px}
+.trip-btn .caret{width:6px;height:6px;margin:0 2px 3px 2px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);opacity:.7;transition:transform .2s}
+.trip-menu.open .trip-btn .caret{transform:rotate(225deg);margin-bottom:-2px}
+.trip-menu .menu-pop{min-width:260px}
+.menu-lab{margin:4px 10px 6px;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.trip-item.on{font-weight:700}
+.touring .trip-menu{display:none}
+.viewonly .brand{flex-wrap:wrap;row-gap:6px;flex:1 1 auto;min-width:0}
+.viewonly .trip-menu{flex-basis:100%}
+.viewonly .trip-btn{height:30px;max-width:100%}
+/* the trip dialog */
+.trip-card{width:min(440px,100%)}
+.trip-body{padding:16px 20px 18px}
+.trip-body p{margin:0 0 12px;color:var(--ink2);font-size:13px;line-height:1.5}
+.trip-body .fld input{width:100%}
+.trip-err{min-height:18px;margin:6px 0 0 !important;font-size:12px !important;color:var(--bad) !important}
+.trip-btns{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
+/* a place in every trip, or only this one */
+.scope-row{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.scope-lab{display:flex;flex-direction:column;gap:2px;min-width:0}
+.scope-lab b{font-size:13px}
+.scope-lab small{font-size:12px;color:var(--muted);line-height:1.4}
+html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-shadow:var(--g-hi)}
 </style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
-  <div class="brand"><img class="brand-mark" alt="" width="28" height="28"><h1 title="Add places, join them with legs, then build and save named plans.">Wander Map</h1></div>
+  <div class="brand"><img class="brand-mark" alt="" width="28" height="28"><h1 title="Add places, join them with legs, then build and save named plans.">Wander Map</h1><div class="menu trip-menu" id="tripMenu"><button class="btn trip-btn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" title="Your trips: open another, or add one"><span class="trip-lab">Trip</span><b id="tripName"></b><span class="caret" aria-hidden="true"></span></button><div class="menu-pop" role="menu" hidden></div></div></div>
   <div class="toolbar" id="toolbar" role="toolbar" aria-label="Planner tools">
     <span class="spacer"></span>
     <div class="tgroup" id="editTools">
@@ -2053,7 +2083,7 @@ html.glass .side-split::after{background:var(--g-field)}
         </div>
       </section>
       <section class="set-sect" aria-labelledby="setC">
-        <h3 id="setC">Trip</h3>
+        <h3 id="setC">This trip</h3>
         <div class="set-card">
           <div class="set-row"><div class="set-lab"><b>Currency</b><small>Used for every fare and cost</small></div>
             <div class="set-ctl"><select id="currency" aria-label="Currency"></select></div></div>
@@ -2068,7 +2098,7 @@ html.glass .side-split::after{background:var(--g-field)}
             <div class="set-ctl"><button type="button" class="btn small" id="export" data-ico="down">Export</button></div></div>
           <div class="set-row"><div class="set-lab"><b>Import plans</b><small>Load plans from a file you exported</small></div>
             <div class="set-ctl"><button type="button" class="btn small" id="menuImport" data-ico="up">Import</button></div></div>
-          <div class="set-row"><div class="set-lab"><b>Clear everything</b><small>Remove every place, leg and plan. You can undo it.</small></div>
+          <div class="set-row"><div class="set-lab"><b>Clear this trip</b><small>Remove its legs, plans and the places kept to it. Places in every trip stay. You can undo it.</small></div>
             <div class="set-ctl"><button type="button" class="btn small danger" id="clear" data-ico="trash">Clear</button></div></div>
         </div>
         <p class="set-foot" id="setStore">Saved only in this browser.</p>
@@ -2106,6 +2136,7 @@ const $ = s => document.querySelector(s);
 const SVGNS = 'http://www.w3.org/2000/svg';
 const MIN = 60e3, H = 3600e3;
 const STORE = 'wander-map.v1', OLD_STORE = 'route-branch-planner.v1'; // older copies saved under the old name
+const LIBKEY = 'wander-map.v2';   // the library: every trip, and the places that are in every trip
 const MODES = [
   ['flight', 'Flight', 'var(--s1)'],
   ['train', 'Train', 'var(--s7)'],
@@ -2126,7 +2157,8 @@ const SORTS = ['made', 'cost', 'costDesc', 'start', 'end', 'dur'];
 const LEGF = { from: '', to: '', mode: 'flight', info: '', cost: '', dep: '', arr: '', buf: '' };
 
 /* ---------- state ---------- */
-let S = null;                       // saved: nodes, legs, plans
+let S = null;                       // saved: nodes, legs, plans (of the trip that is open)
+let LIB = null, TRIP = null;        // every trip and the every-trip places; the open trip's id
 let T = {};                         // computed per leg: dep, arrSched, arr, buf, timed, ok, warn
 let PL = [], PLBY = {}, LEGPLANS = {}, hasTime = false;
 let BROKEN = { nodes: [], legs: [], plans: [] }; // incomplete items saved before these checks, or imported
@@ -2316,7 +2348,9 @@ function placeProblems(n, exceptId) {
   const name = String((n && n.name) || '').trim();
   if (!name) return [{ f: 'name', msg: 'Give the place a name.', need: 'a name' }];
   const dup = findNode(name, exceptId);
-  return dup ? [{ f: 'name', msg: `Another place is already called “${nodeName(dup)}”.`, need: 'a name no other place has', dup }] : [];
+  if (dup) return [{ f: 'name', msg: `Another place is already called “${nodeName(dup)}”.`, need: 'a name no other place has', dup }];
+  const o = n.scope !== 'local' ? ownNameElsewhere(name, exceptId) : null;
+  return o ? [{ f: 'name', msg: `Trip “${o.trip}” has its own place called “${o.name}”. Use another name, or keep this place to this trip only.`, need: 'a name no other trip uses' }] : [];
 }
 // self: when saving, the leg's own id (null for a new one), so the same journey can never be saved twice
 function legProblems(l, self) {
@@ -2351,7 +2385,7 @@ function fld(label, input, hint) { return h('label', { class: 'fld' }, h('span',
 
 /* ---------- state lifecycle ---------- */
 function blank() { return { v: 3, currency: DEFAULT_CURRENCY, budget: 0, pph: null, sort: 'made', nodes: {}, order: [], legs: {}, plans: {}, planOrder: [], picked: null, seq: 1, example: false }; }
-function uid(p) { let id; do { id = p + (S.seq++).toString(36) + Math.random().toString(36).slice(2, 5); } while (S.nodes[id] || S.legs[id] || S.plans[id]); return id; }
+function uid(p) { let id; do { id = p + (S.seq++).toString(36) + Math.random().toString(36).slice(2, 5); } while (S.nodes[id] || S.legs[id] || S.plans[id] || placeIdElsewhere(id)); return id; }
 function addNode(name) { const id = uid('n'); S.nodes[id] = { id, name: name || '', note: '' }; S.order.push(id); return id; }
 function findNode(name, except) { const k = normName(name); if (!k) return null; return S.order.find(id => id !== except && normName(S.nodes[id].name) === k) || null; }
 function nodeFor(name) { return findNode(name) || addNode(String(name).trim()); }
@@ -2391,6 +2425,7 @@ function normalize(d) {
   for (const id in d.nodes) {
     const n = d.nodes[id]; if (!n || typeof n !== 'object') continue;
     out.nodes[id] = { id, name: String(n.name ?? ''), note: String(n.note ?? '') };
+    if (n.scope === 'local') out.nodes[id].scope = 'local'; // kept to the open trip; otherwise it is in every trip
     if (typeof n.img === 'string' && (/^data:image\/(png|jpeg|webp|gif);base64,/.test(n.img) || /^https?:\/\/\S+$/i.test(n.img))) out.nodes[id].img = n.img;
   }
   out.order = (Array.isArray(d.order) ? d.order : []).map(String).filter((id, i, a) => out.nodes[id] && a.indexOf(id) === i);
@@ -2482,13 +2517,254 @@ let saveWarned = false;
 let quietSave = false;              // true while showing a copy another tab just saved: no need to write it back
 function save() {
   if (TOUR || quietSave) return; // the sample trip is never saved
-  try { localStorage.setItem(STORE, JSON.stringify(S)); saveWarned = false; }
+  commitTrip();
+  try { localStorage.setItem(LIBKEY, JSON.stringify(LIB)); saveWarned = false; }
   // shown just after the change's own message (such as "Image added"), so that message cannot cover it
   catch (e) { if (!saveWarned) { saveWarned = true; setTimeout(() => toast('Could not save in this browser: storage is full. Remove some place images, or use Export in Settings to keep a copy.'), 0); } }
 }
 function loadSaved() {
   try { const raw = localStorage.getItem(STORE) || localStorage.getItem(OLD_STORE); if (raw) return normalize(JSON.parse(raw)); } catch (e) { /* ignore */ }
   return null;
+}
+/* ---------- trips: each has its own legs, plans, budget and currency; places are in every trip unless kept to one ---------- */
+function tripId() { let id; do { id = 't' + Math.random().toString(36).slice(2, 9); } while (LIB && LIB.trips[id]); return id; }
+function cleanPlace(id, n) {
+  const o = { id, name: String(n.name ?? ''), note: String(n.note ?? '') };
+  if (typeof n.img === 'string' && (/^data:image\/(png|jpeg|webp|gif);base64,/.test(n.img) || /^https?:\/\/\S+$/i.test(n.img))) o.img = n.img;
+  return o;
+}
+// A library read from this browser or a file: every trip (its own data), and the every-trip places, kept once.
+function readLib(d) {
+  if (!d || typeof d !== 'object' || !d.trips || typeof d.trips !== 'object') return null;
+  const lib = { v: 4, trips: {}, tripOrder: [], places: {} };
+  if (d.places && typeof d.places === 'object') for (const id in d.places) { const n = d.places[id]; if (n && typeof n === 'object') lib.places[id] = cleanPlace(id, n); }
+  for (const id in d.trips) {
+    const t = d.trips[id]; if (!t || typeof t !== 'object' || !t.data || typeof t.data !== 'object') continue;
+    lib.trips[id] = { id, name: String(t.name ?? '').trim().slice(0, 60) || 'Trip', data: t.data };
+  }
+  lib.tripOrder = (Array.isArray(d.tripOrder) ? d.tripOrder : []).map(String).filter((id, i, a) => lib.trips[id] && a.indexOf(id) === i);
+  for (const id in lib.trips) if (!lib.tripOrder.includes(id)) lib.tripOrder.push(id);
+  return lib.tripOrder.length ? lib : null;
+}
+// A library with one trip made from a planner copy. own: its places are kept to that trip (true for an imported
+// trip, so its names cannot clash with your every-trip places); otherwise they are in every trip.
+function libFrom(d, name, own) {
+  const id = tripId(), lib = { v: 4, trips: {}, tripOrder: [id], places: {} };
+  const data = Object.assign({}, d, { nodes: {} });
+  for (const nid in d.nodes) { if (own) data.nodes[nid] = Object.assign({}, d.nodes[nid], { scope: 'local' }); else lib.places[nid] = cleanPlace(nid, d.nodes[nid]); }
+  lib.trips[id] = { id, name, data };
+  return lib;
+}
+// The library in this browser. A save from before trips becomes the first trip, its places in every trip.
+function loadLib() {
+  try { const raw = localStorage.getItem(LIBKEY); if (raw) { const lib = readLib(JSON.parse(raw)); if (lib) return lib; } } catch (e) { /* ignore */ }
+  return libFrom(loadSaved() || blank(), 'My trip', false);
+}
+// A trip as the planner works on it: the every-trip places, its own places, its legs and plans.
+function tripView(tid) {
+  const t = LIB && LIB.trips[tid]; if (!t) return blank();
+  const d = Object.assign({}, t.data), nodes = {};
+  for (const id in LIB.places) nodes[id] = Object.assign({}, LIB.places[id]);
+  const own = t.data.nodes && typeof t.data.nodes === 'object' ? t.data.nodes : {};
+  for (const id in own) if (own[id] && typeof own[id] === 'object') nodes[id] = Object.assign({}, own[id], { scope: 'local' });
+  d.nodes = nodes; if (!d.legs || typeof d.legs !== 'object') d.legs = {};
+  return normalize(JSON.parse(JSON.stringify(d))) || blank();
+}
+// The open trip goes back into the library: its own places with it, every-trip places into the shared set.
+function commitTrip() {
+  if (!LIB || !LIB.trips[TRIP] || TOUR) return;
+  const own = {}, shared = {};
+  for (const id in S.nodes) { const n = S.nodes[id]; if (n.scope === 'local') own[id] = n; else shared[id] = cleanPlace(id, n); }
+  LIB.trips[TRIP].data = Object.assign({}, S, { nodes: own });
+  LIB.places = shared;
+}
+function tripName(id) { const t = LIB && LIB.trips[id || TRIP]; return t ? t.name : ''; }
+// Is this id a place kept to another trip? (ids stay unique across trips)
+function placeIdElsewhere(id) {
+  if (!LIB || TOUR) return false;
+  for (const tid in LIB.trips) { if (tid === TRIP) continue; const n = LIB.trips[tid].data.nodes; if (n && n[id]) return true; }
+  return false;
+}
+// The other trips whose legs or plans use a place
+function tripsUsing(id) {
+  if (!LIB || TOUR) return [];
+  const out = [];
+  for (const tid of LIB.tripOrder) {
+    if (tid === TRIP) continue;
+    const d = LIB.trips[tid].data, legs = d.legs || {}, plans = d.plans || {};
+    if (Object.values(legs).some(l => l && (l.from === id || l.to === id)) || Object.values(plans).some(q => q && (q.start === id || q.end === id))) out.push(LIB.trips[tid].name);
+  }
+  return out;
+}
+// A place kept to another trip with this name (a place in every trip must not share a name with one)
+function ownNameElsewhere(name, exceptId) {
+  if (!LIB || TOUR) return null;
+  const k = normName(name); if (!k) return null;
+  for (const tid of LIB.tripOrder) {
+    if (tid === TRIP) continue;
+    const nodes = LIB.trips[tid].data.nodes || {};
+    for (const id in nodes) if (id !== exceptId && nodes[id] && normName(nodes[id].name) === k) return { trip: LIB.trips[tid].name, name: nodes[id].name };
+  }
+  return null;
+}
+function tripNameError(name, exceptId) {
+  const k = normName(name);
+  if (!k) return 'Give the trip a name.';
+  const dup = LIB.tripOrder.find(id => id !== exceptId && normName(LIB.trips[id].name) === k);
+  return dup ? `Another trip is already called “${LIB.trips[dup].name}”.` : null;
+}
+// Open another trip: whatever is open is saved first, and nothing of one trip's work carries into the other.
+function openTrip(id, quiet) {
+  TRIP = id; UI.trip = id; saveUI();
+  S = tripView(id);
+  undoStack.length = 0; redoStack.length = 0;
+  for (const k in navBack) delete navBack[k]; for (const k in navFwd) delete navFwd[k]; navOpen.clear();
+  sel = null; edit = null; draft = null; B = null; viewPlan = null; focusPlan = null; hoverPlan = null; hoverLeg = null; renaming = null; scrubT = null; pinned = false; phoneKept = null;
+  syncTripName(); renderAll(); syncSettings();
+  $('#graphScroll').scrollTo({ left: 0, top: 0 });
+  if (!quiet) toast(`Opened ${tripName(id)}`);
+}
+function switchTrip(id) {
+  closeMenus();
+  if (!LIB.trips[id] || id === TRIP) return;
+  if (TOUR) { toast('Go back to your own plans first'); return; }
+  if (B) { toast('Finish or cancel the plan you are making first'); return; }
+  if (!canLeave()) return;
+  save();
+  openTrip(id);
+}
+function syncTripName() {
+  const n = $('#tripName'); if (n) n.textContent = tripName();
+  document.title = TOUR ? 'Wander Map' : `${tripName()} · Wander Map`;
+}
+// The trip menu, built each time it opens: every trip to switch to, then (when editing) new, rename, duplicate and delete.
+function buildTripMenu() {
+  const pop = $('#tripMenu .menu-pop'); if (!pop || !LIB) return;
+  pop.replaceChildren(h('p', { class: 'menu-lab', text: 'Your trips' }));
+  for (const id of LIB.tripOrder) {
+    const t = LIB.trips[id], d = t.data || {}, np = Object.keys(d.plans || {}).length, nl = Object.keys(d.legs || {}).length, on = id === TRIP;
+    pop.append(h('button', { type: 'button', role: 'menuitem', class: 'trip-item' + (on ? ' on' : ''), 'aria-current': on ? 'true' : null, 'data-ico': on ? 'check' : 'dot', onclick: () => switchTrip(id) },
+      t.name, h('small', { text: `${np} plan${np === 1 ? '' : 's'} · ${nl} leg${nl === 1 ? '' : 's'}` })));
+  }
+  if (!canEdit() || TOUR) return;
+  const it = (label, sub, ico, run, cls, dis) => h('button', { type: 'button', role: 'menuitem', class: cls || null, 'data-ico': ico, disabled: !!dis, onclick: run }, label, sub ? h('small', { text: sub }) : null);
+  pop.append(h('hr'),
+    it('New trip', 'Its own legs, plans, budget and currency', 'plus', () => tripDialog('new')),
+    it('Rename this trip', null, 'edit', () => tripDialog('rename')),
+    it('Duplicate this trip', 'A copy to try other plans in', 'copy', duplicateTrip),
+    h('hr'),
+    it('Delete this trip', LIB.tripOrder.length < 2 ? 'Your only trip: add another first' : 'Its legs, plans and its own places', 'trash', () => tripDialog('delete'), 'danger', LIB.tripOrder.length < 2));
+}
+// New, rename and delete ask in a small dialog
+function tripDialog(mode) {
+  closeMenus();
+  if (TOUR || !canEdit()) return;
+  if ((mode === 'new' || mode === 'delete') && (B || !canLeave())) { if (B) toast('Finish or cancel the plan you are making first'); return; }
+  closeTripDlg();
+  const opener = document.activeElement, cur = LIB.trips[TRIP];
+  const close = () => { closeTripDlg(); if (opener && opener.focus) opener.focus({ preventScroll: true }); };
+  const card = h('div', { class: 'modal-card trip-card' });
+  const dlg = h('div', { class: 'modal', id: 'tripDlg', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'tripDlgTitle' }, card);
+  dlg.addEventListener('click', e => { if (e.target === dlg) close(); });
+  const head = (title, sub) => h('div', { class: 'modal-head' }, h('div', null, h('h2', { id: 'tripDlgTitle', text: title }), h('p', { class: 'modal-sub', text: sub })),
+    h('button', { class: 'icon-btn', type: 'button', title: 'Close', 'aria-label': 'Close', text: '×', onclick: close }));
+  if (mode === 'delete') {
+    card.append(head(`Delete “${cur.name}”?`, 'You can undo this right after.'),
+      h('div', { class: 'modal-body trip-body' },
+        h('p', { text: 'Its legs and plans, and the places kept to this trip only, are deleted. Places that are in every trip stay.' }),
+        h('div', { class: 'trip-btns' }, btn('Cancel', close), btn('Delete trip', () => { closeTripDlg(); deleteTrip(); }, 'danger'))));
+  } else {
+    const i = h('input', { type: 'text', id: 'tripNameInput', maxlength: '60', autocomplete: 'off', placeholder: 'e.g. Manali, January', 'aria-label': 'Trip name' });
+    if (mode === 'rename') i.value = cur.name;
+    const err = h('p', { class: 'trip-err', role: 'alert' });
+    const go = () => {
+      const name = i.value.trim(), e2 = tripNameError(name, mode === 'rename' ? TRIP : null);
+      if (e2) { err.textContent = e2; i.focus(); return; }
+      closeTripDlg();
+      if (mode === 'rename') { cur.name = name; save(); syncTripName(); toast(`Renamed to ${name}`); }
+      else newTrip(name);
+    };
+    i.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); go(); } });
+    i.addEventListener('input', () => { err.textContent = ''; });
+    card.append(head(mode === 'new' ? 'New trip' : 'Rename trip', mode === 'new' ? 'Its own legs, plans, budget and currency. Places that are in every trip come along.' : 'The name shows at the top and in the trip menu.'),
+      h('div', { class: 'modal-body trip-body' }, h('label', { class: 'fld' }, h('span', { text: 'Trip name' }), i), err,
+        h('div', { class: 'trip-btns' }, btn('Cancel', close), btn(mode === 'new' ? 'Create trip' : 'Save', go, 'primary'))));
+    setTimeout(() => { i.focus(); i.select(); }, 20);
+  }
+  document.body.append(dlg); document.body.classList.add('modal-open');
+  if (mode === 'delete') setTimeout(() => { const b = dlg.querySelector('.trip-btns .btn'); if (b) b.focus(); }, 20);
+}
+function closeTripDlg() { const d = $('#tripDlg'); if (d) d.remove(); if ($('#settings').hidden) document.body.classList.remove('modal-open'); }
+function newTrip(name) {
+  save();
+  const id = tripId(), d = blank();
+  d.currency = S.currency; // most trips are planned in the same money; it can be changed in Settings
+  LIB.trips[id] = { id, name, data: d };
+  LIB.tripOrder.push(id);
+  openTrip(id, true);
+  save();
+  toast(`Created ${name}`);
+}
+// A copy of the open trip. Its own places get new ids, so the two trips never share them.
+function duplicateTrip() {
+  closeMenus();
+  if (TOUR || !canEdit()) return;
+  if (B) { toast('Finish or cancel the plan you are making first'); return; }
+  if (!canLeave()) return;
+  save();
+  const src = LIB.trips[TRIP], d = JSON.parse(JSON.stringify(src.data)), map = {};
+  let name = `${src.name} (copy)`, k = 2;
+  while (tripNameError(name)) name = `${src.name} (copy ${k++})`;
+  const own = d.nodes || {}; d.nodes = {};
+  const fresh = () => { let id; do { id = 'n' + Math.random().toString(36).slice(2, 10); } while (LIB.places[id] || placeIdElsewhere(id) || own[id] || map[id]); return id; };
+  for (const nid in own) { const nn = fresh(); map[nid] = nn; d.nodes[nn] = Object.assign({}, own[nid], { id: nn }); }
+  const re = x => map[x] || x;
+  d.order = (d.order || []).map(re);
+  for (const lid in d.legs || {}) { const l = d.legs[lid]; l.from = re(l.from); l.to = re(l.to); }
+  for (const pid in d.plans || {}) { const q = d.plans[pid]; q.start = re(q.start); q.end = re(q.end); }
+  const id = tripId();
+  LIB.trips[id] = { id, name, data: d };
+  LIB.tripOrder.splice(LIB.tripOrder.indexOf(TRIP) + 1, 0, id);
+  openTrip(id, true);
+  save();
+  toast(`Created ${name}, a copy of ${src.name}`);
+}
+function deleteTrip() {
+  if (LIB.tripOrder.length < 2) return;
+  save();
+  const t = LIB.trips[TRIP], i = LIB.tripOrder.indexOf(TRIP);
+  delete LIB.trips[TRIP]; LIB.tripOrder.splice(i, 1);
+  openTrip(LIB.tripOrder[Math.max(0, i - 1)], true);
+  save();
+  toast(`Deleted ${t.name}`, () => { // undo: the trip comes back as it was, and opens
+    if (LIB.trips[t.id]) return;
+    save();
+    LIB.trips[t.id] = t; LIB.tripOrder.splice(Math.min(i, LIB.tripOrder.length), 0, t.id);
+    openTrip(t.id, true); save(); toast(`${t.name} is back`);
+  });
+}
+// A place in every trip, or kept to the open trip only
+function setPlaceScope(id, everyTrip) {
+  const n = S.nodes[id]; if (!n || !canEdit() || TOUR) return;
+  if (everyTrip) {
+    const o = ownNameElsewhere(n.name, id);
+    if (o) { toast(`Trip “${o.trip}” has its own place called “${o.name}”. Rename one of them first.`); renderInspector(); return; }
+    checkpoint(); delete n.scope;
+    renderAll(); toast(`${nodeName(id)} is now in every trip`, true);
+  } else {
+    const used = tripsUsing(id);
+    if (used.length) { toast(`${nodeName(id)} is used in ${listJoin(used.map(x => `“${x}”`))}, so it stays in every trip.`); renderInspector(); return; }
+    checkpoint(); n.scope = 'local';
+    renderAll(); toast(`${nodeName(id)} is now only in ${tripName()}`, true);
+  }
+}
+function scopeRow(on, change) {
+  const i = h('input', { type: 'checkbox', id: 'fScope', 'aria-label': 'In every trip' }); i.checked = on;
+  i.addEventListener('change', () => change(i.checked));
+  return h('div', { class: 'scope-row' },
+    h('div', { class: 'scope-lab' }, h('b', { text: 'In every trip' }),
+      h('small', { text: on ? 'Shown in all your trips. Its name, note and picture are the same in each.' : `Only in ${tripName()}.` })),
+    h('label', { class: 'switch' }, i, h('span', { 'aria-hidden': 'true' })));
 }
 // Undo and redo keep whole copies of the plans. Any new change clears what could be redone.
 function pushUndo(snap) { undoStack.push(snap); if (undoStack.length > 80) undoStack.shift(); redoStack.length = 0; }
@@ -3264,15 +3540,21 @@ function applyHighlight() {
 // The legs you can take after a leg (leaving its arrival place once you are there) and the legs that
 // can bring you to it. In a plan's view, only that plan's own next and previous leg.
 const navBack = {}, navFwd = {}, navOpen = new Set(); // the way you came, and which branches are unfolded
+// In View mode you only follow a saved plan, never a choice of ways: the plan in view, else the open plan,
+// else the starred one, else the first plan the leg is in. A leg in no plan has nothing to follow.
+function followPlan(id) {
+  for (const pid of [viewPlan, focusPlan, S.picked]) { const p = pid && PLBY[pid]; if (p && p.legs.includes(id)) return p; }
+  return PL.find(p => p.legs.includes(id)) || null;
+}
 function nextLegs(id) {
   const l = S.legs[id], t = T[id]; if (!l || !t || !t.timed) return [];
-  const vp = viewPlan && PLBY[viewPlan];
+  const vp = (viewPlan && PLBY[viewPlan]) || (canEdit() ? null : followPlan(id) || { legs: [] });
   if (vp) { const i = vp.legs.indexOf(id); return i >= 0 && vp.legs[i + 1] ? [vp.legs[i + 1]] : []; }
   return legsFrom(l.to).filter(x => x !== id && T[x].ok && T[x].timed && T[x].dep >= t.arr - MIN);
 }
 function prevLegs(id) {
   const l = S.legs[id], t = T[id]; if (!l || !t || !t.timed) return [];
-  const vp = viewPlan && PLBY[viewPlan];
+  const vp = (viewPlan && PLBY[viewPlan]) || (canEdit() ? null : followPlan(id) || { legs: [] });
   if (vp) { const i = vp.legs.indexOf(id); return i > 0 ? [vp.legs[i - 1]] : []; }
   return legsTo(l.from).filter(x => x !== id && T[x].ok && T[x].timed && T[x].arr <= t.dep + MIN).sort((a, b) => T[b].arr - T[a].arr);
 }
@@ -3378,6 +3660,7 @@ function journeyCard(l) {
     icoBtn('Previous', navPrev, 'small', 'prev', pv.length ? 'The leg before this one (←)' : 'No leg comes before this one', !pv.length),
     icoBtn('Next', navNext, 'small ico-after', 'next', nx.length ? 'The leg after this one (→)' : 'No leg goes on from here', !nx.length)));
   if (!t || !t.timed) { card.append(h('p', { class: 'hint', text: 'Add both times to see which legs connect to this one.' })); return card; }
+  if (!canEdit()) { const fp = (viewPlan && PLBY[viewPlan]) || followPlan(id); card.append(h('p', { class: 'jn-follow', text: fp ? `Following ${fp.name}` : 'This leg is in no saved plan, so there is nothing to follow.' })); }
   const prev = h('div', { class: 'jn-sect jn-prev' }, h('p', { class: 'jn-lab', text: pv.length > 1 ? `Can come from · ${pv.length} legs` : pv.length ? 'Comes from' : 'Starts here: no leg arrives before it' }));
   pv.slice(0, 6).forEach(x => prev.append(h('div', { class: 'jn-row' }, jnRow(x, h('span', { class: 'jn-dot' + (navBack[id] === x ? ' came' : ''), 'aria-hidden': 'true' }),
     `${shortDT(T[x].dep)} → ${shortDT(T[x].arrSched)} · ${fmtDur(t.dep - T[x].arr)} before`, () => navTo(x, 'back')))));
@@ -3632,6 +3915,7 @@ function nodeInspector(box, n) {
   const go = () => setNodeImageUrl(n.id, link.value);
   link.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); go(); } });
   const place = fgroup('Place'); placeFields(place, ed.obj); box.append(place);
+  if (!TOUR) box.append(fgroup('Trips', scopeRow(n.scope !== 'local', on => setPlaceScope(n.id, on))));
   box.append(fgroup('Image', pick, zone,
     h('div', { class: 'nimg-link' }, link, btn('Load', go, 'small')),
     h('p', { class: 'nimg-msg', id: 'imgMsg', text: n.img && /^https?:/i.test(n.img) ? 'This image loads from its link each time, so it needs an internet connection.' : '' })));
@@ -3981,11 +4265,12 @@ function cancelDraft() { draft = null; renderInspector(); renderGraph(); }
 function draftInspector(box) {
   const d = draft, isLeg = d.k === 'leg';
   box.append(inspHead(isLeg ? 'New leg' : 'New place', isLeg ? (MODE[d.obj.mode] || MODE.other).color : 'var(--ink)', cancelDraft));
-  if (isLeg) legFields(box, d.obj, true); else placeFields(box, d.obj);
+  if (isLeg) legFields(box, d.obj, true); else { placeFields(box, d.obj); if (!TOUR) box.append(fgroup('Trips', scopeRow(d.obj.scope !== 'local', on => { if (on) delete d.obj.scope; else d.obj.scope = 'local'; draftInspectorScope(on); showDraft(); }))); }
   box.append(h('p', { class: 'need', id: 'draftNeed', 'aria-live': 'polite' }));
   const cr = $('#liveCrumb'); if (cr) cr.textContent = d.plan && S.plans[d.plan] ? `Not saved yet · joins “${S.plans[d.plan].name}” when the route connects` : 'Not saved yet';
   setFoot(icoBtn(isLeg ? 'Save leg' : 'Save place', saveDraft, 'primary', isLeg ? 'leg' : 'place'), [], btn('Cancel', cancelDraft, '', 'Drop this new ' + (isLeg ? 'leg' : 'place')));
 }
+function draftInspectorScope(on) { const s = $('#inspector .scope-lab small'); if (s) s.textContent = on ? 'Shown in all your trips. Its name, note and picture are the same in each.' : `Only in ${tripName()}.`; }
 function listJoin(a) { return a.length < 2 ? a.join('') : `${a.slice(0, -1).join(', ')} and ${a[a.length - 1]}`; }
 function showDraft() {
   const d = draft; if (!d) return;
@@ -4020,6 +4305,7 @@ function saveDraft() {
   if (d.k === 'node') {
     id = addNode(d.obj.name.trim());
     S.nodes[id].note = String(d.obj.note || '').trim();
+    if (d.obj.scope === 'local') S.nodes[id].scope = 'local';
   } else {
     const o = d.obj;
     id = addLeg({ from: o.from, to: o.to, mode: o.mode, info: String(o.info || '').trim(), cost: +o.cost, dep: o.dep, arr: o.arr, buf: o.buf === '' ? '' : +o.buf });
@@ -4124,7 +4410,8 @@ function helpPanel() {
       h('li', null, h('b', { text: 'Legs' }), ' join two places, with how, when and the fare. When you add a leg, pick its ends from your places or create a new place.'),
       h('li', null, 'Legs that touch the same place ', h('b', { text: 'meet on its row' }), '. Legs there at about the same time share one station.'),
       h('li', null, h('b', { text: 'Make a plan' }), ': choose New, then Plan. Click the leg you leave on in the timeline, then take the way on at each place (when there is more than one, they are numbered) until you get there, and choose Finish.'),
-      h('li', null, 'Name the plan and add its own other costs (stay, food), then save. Travel fares belong to the legs, so a fare is the same in every plan. Compare saved plans below and star the one you pick.')),
+      h('li', null, 'Name the plan and add its own other costs (stay, food), then save. Travel fares belong to the legs, so a fare is the same in every plan. Compare saved plans below and star the one you pick.'),
+      h('li', null, h('b', { text: 'Trips' }), ': each trip has its own legs, plans, budget and currency. Open another or add one from the trip name at the top. A place is in every trip unless you keep it to one.')),
     h('div', { class: 'sect' }, h('h3', { text: 'Transport colours' }), lg),
     h('p', { class: 'hint', style: 'margin-top:12px', text: 'Your work saves automatically in this browser. Use Export in Settings to keep a copy or share it.' }));
 }
@@ -4715,6 +5002,7 @@ function addNodeFromLeg() {
   toast(existing ? `Using the place you already have: ${nodeName(existing)}. Save to keep the change.` : `Added ${nodeName(id)}. Save the leg to use it.`);
 }
 function mergeNode(from, into) {
+  if (S.nodes[from] && S.nodes[from].scope !== 'local') { const used = tripsUsing(from); if (used.length) { toast(`${nodeName(from)} is in every trip and ${listJoin(used.map(x => `“${x}”`))} ${used.length > 1 ? 'use' : 'uses'} it, so it cannot be merged away here.`); return; } }
   // a leg between the two places would start and end at the same place once they are one
   const joins = Object.keys(S.legs).filter(id => { const l = S.legs[id]; return (l.from === from && l.to === into) || (l.from === into && l.to === from); });
   if (joins.length) { toast(`${nodeName(from)} and ${nodeName(into)} are joined by ${joins.length === 1 ? 'a leg' : `${joins.length} legs`}, which would then start and end at the same place. Delete ${joins.length === 1 ? 'it' : 'them'} first, then merge.`); return; }
@@ -4767,6 +5055,7 @@ function moveRow(id, dir) {
 }
 function delNode(id) {
   if (!S.nodes[id]) return;
+  if (S.nodes[id].scope !== 'local') { const used = tripsUsing(id); if (used.length) { toast(`${nodeName(id)} is in every trip and ${listJoin(used.map(x => `“${x}”`))} ${used.length > 1 ? 'use' : 'uses'} it, so it cannot be deleted here. Delete its legs there first.`); return; } }
   if (edit && edit.id === id) edit = null;
   checkpoint();
   const name = nodeName(id);
@@ -5176,7 +5465,7 @@ function refreshAfterEdit() { compute(); joinPending(); renderViewTabs(); render
 let toastTimer = null;
 function toast(msg, undoable) {
   const t = $('#toast'); t.replaceChildren(h('span', { text: msg }));
-  if (undoable) t.append(h('button', { class: 'btn small', type: 'button', text: 'Undo', onclick: () => { undo(); t.hidden = true; } }));
+  if (undoable) t.append(h('button', { class: 'btn small', type: 'button', text: 'Undo', onclick: () => { if (typeof undoable === 'function') undoable(); else undo(); t.hidden = true; } }));
   t.hidden = false;
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 6000);
 }
@@ -5459,11 +5748,17 @@ function bind() {
   // the copy that was replaced. Work in progress (a new place or leg, unsaved edits, a plan being made) stays.
   addEventListener('storage', e => {
     if (e.storageArea !== localStorage) return;
-    if (e.key === STORE) {
-      let next = null;
-      try { next = e.newValue ? normalize(JSON.parse(e.newValue)) : blank(); } catch (err) { return; }
-      if (!next) return;
+    if (e.key === LIBKEY) {
+      let lib = null;
+      try { lib = e.newValue ? readLib(JSON.parse(e.newValue)) : null; } catch (err) { return; }
+      if (!lib) return;
+      LIB = lib;
+      const gone = !LIB.trips[TRIP]; // the trip open here was deleted in the other tab
+      if (gone) { TRIP = LIB.tripOrder[0]; UI.trip = TRIP; }
+      const next = tripView(TRIP);
       if (TOUR) { TOUR.saved = JSON.stringify(next); TOUR.undo = []; TOUR.redo = []; return; }
+      if (gone) { sel = null; edit = null; draft = null; B = null; viewPlan = null; focusPlan = null; renaming = null; }
+      syncTripName();
       const a = document.activeElement, fid = a && a.id && a.matches('input, textarea') ? a.id : null;
       // a plan name being typed has no id: keep its text too
       const rn = a && a.matches && a.matches('input[data-rename]') ? { id: a.dataset.rename, v: a.value } : null;
@@ -5554,8 +5849,9 @@ function bind() {
   $('#redo').addEventListener('click', redo);
   $('#export').addEventListener('click', () => {
     if (TOUR) { toast('Go back to your own plans first'); return; }
-    const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
-    const a = h('a', { href: URL.createObjectURL(blob), download: 'wander-map-plans.json' });
+    save();
+    const blob = new Blob([JSON.stringify(Object.assign({ app: 'wander-map' }, LIB), null, 2)], { type: 'application/json' });
+    const a = h('a', { href: URL.createObjectURL(blob), download: 'wander-map-trips.json' });
     document.body.append(a); a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   });
@@ -5577,11 +5873,38 @@ function bind() {
     const file = e.target.files && e.target.files[0]; e.target.value = '';
     if (!file) return;
     try {
-      const d = normalize(JSON.parse(await file.text()));
-      if (!d) throw new Error('bad');
-      checkpoint(); S = d; sel = null; focusPlan = null; B = null; draft = null; edit = null; phoneKept = null; renderAll();
+      const raw = JSON.parse(await file.text()), lib = readLib(raw);
+      save();
+      const before = JSON.stringify(LIB), wasTrip = TRIP;
+      const back = () => { LIB = readLib(JSON.parse(before)); openTrip(LIB.trips[wasTrip] ? wasTrip : LIB.tripOrder[0], true); save(); toast('Back as before the file'); };
+      if (lib) {
+        // a whole library (an export of every trip) takes the place of yours; Undo brings yours back
+        LIB = lib; openTrip(LIB.trips[UI.trip] ? UI.trip : LIB.tripOrder[0], true); save();
+      } else {
+        // one trip (a file from before trips): added beside your trips, its places kept to it
+        const d = normalize(raw); if (!d) throw new Error('bad');
+        // its places: one with the name of a place you have in every trip is that place; the others are kept to the
+        // new trip, with fresh ids so they never clash with places you already have
+        const byName = {}, map = {}, own = d.nodes; d.nodes = {};
+        for (const gid in LIB.places) byName[normName(LIB.places[gid].name)] = gid;
+        for (const nid in own) {
+          const g = byName[normName(own[nid].name)];
+          if (g) { map[nid] = g; continue; }
+          let fresh; do { fresh = 'n' + Math.random().toString(36).slice(2, 10); } while (LIB.places[fresh] || S.nodes[fresh] || placeIdElsewhere(fresh) || d.nodes[fresh]);
+          map[nid] = fresh; d.nodes[fresh] = Object.assign({}, own[nid], { id: fresh });
+        }
+        const re = x => map[x] || x;
+        d.order = d.order.map(re).filter((x, i, a) => a.indexOf(x) === i);
+        for (const lid in d.legs) { d.legs[lid].from = re(d.legs[lid].from); d.legs[lid].to = re(d.legs[lid].to); }
+        for (const pid in d.plans) { d.plans[pid].start = re(d.plans[pid].start); d.plans[pid].end = re(d.plans[pid].end); }
+        const one = libFrom(d, '', true), id = one.tripOrder[0], t = one.trips[id];
+        let name = file.name.replace(/\.json$/i, '').replace(/[-_]+/g, ' ').trim(); if (!name || /^wander map/i.test(name)) name = 'Imported trip';
+        let nm = name, k = 2; while (tripNameError(nm)) nm = `${name} ${k++}`;
+        t.name = nm; LIB.trips[id] = t; LIB.tripOrder.push(id);
+        openTrip(id, true); save();
+      }
       const nb = BROKEN.nodes.length + BROKEN.legs.length + BROKEN.plans.length;
-      toast(nb && canEdit() ? `Loaded ${file.name}. ${nb === 1 ? 'One item is' : `${nb} items are`} incomplete: the note above the timeline lists ${nb === 1 ? 'it' : 'them'} to fix.` : `Loaded ${file.name}`, true);
+      toast(nb && canEdit() ? `Loaded ${file.name}. ${nb === 1 ? 'One item is' : `${nb} items are`} incomplete: the note above the timeline lists ${nb === 1 ? 'it' : 'them'} to fix.` : `Loaded ${file.name}`, back);
     } catch (err) { toast('That file is not a planner export'); }
   });
   const clearAll = () => {
@@ -5591,8 +5914,10 @@ function bind() {
     if (B) { toast('Finish or cancel the plan you are making first'); return; } // the plan being made is not dropped silently either
     if (!canLeave()) return; // a new item or unsaved changes are saved or dropped first
     checkpoint();
-    const keep = { budget: S.budget, pph: S.pph, currency: S.currency };
+    const keep = { budget: S.budget, pph: S.pph, currency: S.currency }, shared = {};
+    for (const id in S.nodes) if (S.nodes[id].scope !== 'local') shared[id] = S.nodes[id]; // places in every trip stay
     S = blank(); Object.assign(S, keep);
+    S.nodes = shared; S.order = Object.keys(shared);
     sel = null; focusPlan = null; B = null; scrubT = null; pinned = false;
     renderAll();
     toast('Cleared', true);
@@ -5602,6 +5927,7 @@ function bind() {
   $('#exampleHide').addEventListener('click', () => { S.example = false; save(); renderGraph(); });
 
   document.addEventListener('keydown', e => {
+    if ($('#tripDlg')) { if (e.key === 'Escape') { e.preventDefault(); closeTripDlg(); } return; } // while the trip dialog is open, keys stay with it
     if (!$('#settings').hidden) { if (e.key === 'Escape') { e.preventDefault(); closeSettings(); } else if ((e.ctrlKey || e.metaKey) && (e.key || '').toLowerCase() === 's') e.preventDefault(); return; } // while Settings is open, keys stay with it
     if (TOUR && !TOUR.explore && $('#tour')) {
       if (e.key === 'Escape' && !document.querySelector('.menu.open')) { e.preventDefault(); endTour(); return; } // an open menu closes first
@@ -5705,7 +6031,7 @@ function startTour() {
   S = sampleTrip();
   sel = null; edit = null; draft = null; viewPlan = null; focusPlan = null; hoverPlan = null; hoverLeg = null; renaming = null; scrubT = null; pinned = false;
   UI.view = false; applyMode();
-  document.body.classList.add('touring');
+  document.body.classList.add('touring'); syncTripName();
   if (!sideOpen) setSide(true);
   renderAll();
   $('#graphScroll').scrollTo({ left: 0, top: 0 });
@@ -5771,7 +6097,7 @@ function endTour() {
   if (!TOUR) return;
   const t = TOUR; TOUR = null;
   ['#tour', '#sampleBar'].forEach(q => { const e = $(q); if (e) e.remove(); });
-  document.body.classList.remove('touring');
+  document.body.classList.remove('touring'); syncTripName();
   S = normalize(JSON.parse(t.saved)) || blank();
   const theme = UI.theme;
   // the settings go back exactly as they were; one first set during the tour is dropped too
@@ -5792,7 +6118,10 @@ function endTour() {
 }
 
 /* ---------- start ---------- */
-S = loadSaved() || blank();
+LIB = loadLib();
+TRIP = LIB.trips[UI.trip] ? UI.trip : LIB.tripOrder[0];
+UI.trip = TRIP;
+S = tripView(TRIP);
 { const bm = document.querySelector('.brand-mark'), fav = document.querySelector('link[rel=icon]'); if (bm && fav) bm.src = fav.href; }
 applyViewOnly();
 applyTheme();
@@ -5808,6 +6137,8 @@ if (UI.dockH) fitDockH();
 setDrawer(UI.drawer);
 renderLegend();
 bind();
+$('#tripMenu [data-menu-btn]').addEventListener('click', buildTripMenu); // the list is fresh each time it opens
+syncTripName();
 renderAll();
 })();
 </script>
