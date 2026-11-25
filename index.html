@@ -5605,16 +5605,16 @@ function settleGraph() {
     const pd = () => { pb.cancel(); pinGhost.remove(); }; pa.finished.then(pd, pd); setTimeout(pd, opts.duration + 200);
   }
 }
-// The plans panel is a sheet: drag its bar up (to at most 35% of the window's height with its bar; the panel itself at
-// least 15%) or well down to close it.
-const DOCK_MAX = .35, DOCK_MIN = .15;
+// The plans panel is a sheet: drag its bar up (to at most 35% of the window's height, with its bar) or down to
+// close it. It has no smallest size: it is as tall as you leave it, and dragged almost shut it closes.
+const DOCK_MAX = .35, DOCK_SHUT = 40;
 // the details panel: from 15% to 25% of the window's width
 const SIDE_MIN = .15, SIDE_MAX = .25;
 function dockLimits() {
   // everything from the bar's top edge to the bottom of the window (the bar and the page margin under it);
   // the sheet floats above the bar, so its top never rises past the limit
   const d = $('#drawer'), r = d && d.getBoundingClientRect(), bar = (r && r.height ? innerHeight - r.top : 0) || ($('.dock-bar') && $('.dock-bar').offsetHeight) || 44, col = $('.maincol') ? $('.maincol').clientHeight : innerHeight;
-  const min = Math.max(64, Math.round(innerHeight * DOCK_MIN)); // the panel itself, not counting its bar
+  const min = DOCK_SHUT; // below this it closes
   return { min, max: Math.max(min + 30, Math.min(innerHeight * DOCK_MAX - bar, col - bar - 110)) };
 }
 function setDockH(px) {
@@ -6906,8 +6906,7 @@ function bind() {
         dragging = true; dock.classList.add('resizing', 'open'); document.body.classList.add('dock-dragging');
         try { from.setPointerCapture(pid); } catch (err) { /* the window still hears the moves */ }
       }
-      want = Math.min(max, h0 + dy);
-      if (want < min) want = want < min / 2 ? Math.max(0, want) : min; // it holds at its smallest size; well below that it is closing
+      want = Math.max(0, Math.min(max, h0 + dy));
       if (!raf) raf = requestAnimationFrame(paint);
     };
     const up = ev => {
@@ -6920,7 +6919,7 @@ function bind() {
       dockBar.dataset.dragged = '1'; setTimeout(() => { delete dockBar.dataset.dragged; }, 0);
       dock.classList.remove('resizing'); document.body.classList.remove('dock-dragging');
       const hh = want;
-      if (hh < min / 2) { if (UI.dockH) fitDockH(); else dock.style.setProperty('--dock-h', '0px'); setDrawer(false); }
+      if (hh < min) { if (UI.dockH) fitDockH(); else dock.style.setProperty('--dock-h', '0px'); setDrawer(false); }
       else { setDockH(hh); setDrawer(true); }
       saveUI();
     };
@@ -6933,7 +6932,7 @@ function bind() {
     e.preventDefault();
     if (!UI.drawer) { if (e.key === 'ArrowUp') setDrawer(true); return; }
     const hh = dockBody.getBoundingClientRect().height + (e.key === 'ArrowUp' ? 40 : -40);
-    if (hh < dockLimits().min - 20) setDrawer(false); else { setDockH(hh); saveUI(); renderGraph(); }
+    if (hh < dockLimits().min) setDrawer(false); else { setDockH(hh); saveUI(); renderGraph(); }
   });
   if (window.ResizeObserver) {
     // The timeline redraws when its height changes. A height that keeps flipping between the same two values
