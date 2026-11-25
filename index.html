@@ -2183,13 +2183,12 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
     </div>
     <aside class="side" id="side" aria-label="Details panel">
       <div class="side-split" id="sideSplit" role="separator" aria-orientation="vertical" aria-label="Resize the details panel: arrow keys" tabindex="0" title="Drag to make the panel wider or narrower. Double-click for the usual width."></div>
-      <div class="side-head"><span class="side-title" id="sideTitle">Details</span><button class="btn icon" type="button" id="sideHide" data-ico="collapse" title="Hide the details panel" aria-label="Hide the details panel"><span class="desk-only">Hide</span><span class="phone-only">Close</span></button></div>
+      <div class="side-head"><span class="side-title" id="sideTitle">Details</span><button class="btn icon" type="button" id="sideHide" data-ico="close" title="Close (Esc)" aria-label="Close the details panel">Close</button></div>
       <div id="builder" hidden></div>
       <div id="inspector"></div>
       <p class="held-bar" id="heldBar" role="status" hidden></p>
       <div class="side-foot" id="sideFoot" hidden></div>
     </aside>
-    <button class="rail" id="sideOpen" type="button" data-ico="side" title="Show the details panel" aria-label="Show the details panel"><span>Details</span></button>
   </div>
 </div>
 <div class="modal" id="settings" role="dialog" aria-modal="true" aria-labelledby="setTitle" hidden>
@@ -2215,6 +2214,15 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
             <div class="set-ctl"><label class="switch"><input type="checkbox" id="setPin" aria-label="Pin place names"><span aria-hidden="true"></span></label></div></div>
           <div class="set-row"><div class="set-lab"><b>Fares on the timeline</b><small>Show each leg’s fare on its line</small></div>
             <div class="set-ctl"><label class="switch"><input type="checkbox" id="setCosts" aria-label="Fares on the timeline"><span aria-hidden="true"></span></label></div></div>
+        </div>
+      </section>
+      <section class="set-sect" aria-labelledby="setP">
+        <h3 id="setP">Places</h3>
+        <div class="set-card">
+          <div class="set-row"><div class="set-lab"><b>New places in every trip</b><small>On, a place you add shows in all your trips; off, it is kept to the trip you add it in. Each place also has its own switch.</small></div>
+            <div class="set-ctl"><label class="switch"><input type="checkbox" id="setScope" aria-label="New places in every trip"><span aria-hidden="true"></span></label></div></div>
+          <div class="set-row"><div class="set-lab"><b>Put this trip’s places in every trip</b><small id="setAllSub">Places kept to this trip show in all your trips.</small></div>
+            <div class="set-ctl"><button type="button" class="btn small" id="setAllGlobal" data-ico="place">Put in every trip</button></div></div>
         </div>
       </section>
       <section class="set-sect" aria-labelledby="setC">
@@ -2522,6 +2530,21 @@ function fld(label, input, hint) { return h('label', { class: 'fld' }, h('span',
 function blank() { return { v: 3, currency: DEFAULT_CURRENCY, budget: 0, pph: null, day: '', sort: 'made', nodes: {}, order: [], legs: {}, plans: {}, planOrder: [], picked: null, seq: 1, example: false }; }
 function uid(p) { let id; do { id = p + (S.seq++).toString(36) + Math.random().toString(36).slice(2, 5); } while (S.nodes[id] || S.legs[id] || S.plans[id] || placeIdElsewhere(id)); return id; }
 function addNode(name) { const id = uid('n'); S.nodes[id] = { id, name: name || '', note: '' }; S.order.push(id); return id; }
+// whether a place you add is in every trip or kept to this one: set in Settings, on by default
+function newPlacesLocal() { return !!UI.newLocal && !TOUR; }
+function newPlace(name) { const id = addNode(name); if (newPlacesLocal()) S.nodes[id].scope = 'local'; return id; }
+// Settings: every place kept to this trip goes into every trip, except one whose name another trip's own place has
+function allPlacesGlobal() {
+  if (!canEdit() || TOUR) return;
+  const local = S.order.filter(id => S.nodes[id] && S.nodes[id].scope === 'local');
+  if (!local.length) { toast('Every place in this trip is already in every trip'); return; }
+  const ok = [], held = [];
+  local.forEach(id => { const o = ownNameElsewhere(S.nodes[id].name, id); if (o) held.push(`${nodeName(id)} (trip “${o.trip}” has its own)`); else ok.push(id); });
+  if (ok.length) { checkpoint(); ok.forEach(id => { delete S.nodes[id].scope; }); renderAll(); }
+  syncSettings();
+  toast(ok.length ? `${ok.length === 1 ? `${nodeName(ok[0])} is` : `${ok.length} places are`} now in every trip${held.length ? `. Not ${listJoin(held)}: rename ${held.length > 1 ? 'them' : 'it'} first.` : ''}`
+    : `Not changed: ${listJoin(held)}. Rename ${held.length > 1 ? 'them' : 'it'} first.`, ok.length > 0);
+}
 function findNode(name, except) { const k = normName(name); if (!k) return null; return S.order.find(id => id !== except && normName(S.nodes[id].name) === k) || null; }
 function nodeFor(name) { return findNode(name) || addNode(String(name).trim()); }
 function addLeg(props) { const id = uid('l'); S.legs[id] = Object.assign({ id }, LEGF, props); return id; }
@@ -3933,6 +3956,7 @@ function renderTip() {
 function renderInspector() {
   const box = $('#inspector');
   if (edit && (!sel || sel.k !== edit.k || sel.id !== edit.id || (edit.k === 'wait' && sel.plan !== edit.plan))) edit = null;
+  syncSide(); // open for what is picked, closed when nothing is
   // leg rows in this panel light up their leg while the pointer is over them; a row that is taken
   // away never hears the pointer leave, so its highlight is cleared here
   if (!B && hoverLeg) { hoverLeg = null; applyHighlight(); }
@@ -5205,7 +5229,7 @@ function select(s, focusSel) {
 function newNode() {
   if (!canEdit() || !canLeave()) return;
   if (B) { toast('Finish or cancel the plan you are making first'); return; }
-  openDraft('node', { name: '', note: '' }, '#fName');
+  openDraft('node', Object.assign({ name: '', note: '' }, newPlacesLocal() ? { scope: 'local' } : {}), '#fName');
 }
 function newLeg(props) {
   if (!canEdit() || !canLeave()) return;
@@ -5233,7 +5257,7 @@ function addNodeFromLeg() {
   const existing = findNode(name);
   if (draft) {
     if (!existing) checkpoint();
-    const id = existing || addNode(name);
+    const id = existing || newPlace(name);
     Object.assign(draft.obj, formValues(), { [side]: id }); draft.touched.add(side);
     renderAll();
     if (existing) toast(`Using the place you already have: ${nodeName(existing)}`);
@@ -5241,7 +5265,7 @@ function addNodeFromLeg() {
   }
   const l = sel && sel.k === 'leg' && S.legs[sel.id]; if (!l || !edit) return;
   if (!existing) checkpoint();
-  const id = existing || addNode(name);
+  const id = existing || newPlace(name);
   Object.assign(edit.obj, pickF(formValues(), EDIT_F.leg), { [side]: id });
   renderAll();
   toast(existing ? `Using the place you already have: ${nodeName(existing)}. Save to keep the change.` : `Added ${nodeName(id)}. Save the leg to use it.`);
@@ -5487,12 +5511,24 @@ function planPanel(p) {
   box.append(list);
   return box;
 }
+// The details panel has no place of its own: it opens for what you pick (a plan, a leg, a place, something new,
+// the plan maker), its edge drags to resize it, and it closes when there is nothing left to show.
+function sideWanted() { return !!(B || draft || sel || (focusPlan && PLBY[focusPlan])); }
+function syncSide() { const w = sideWanted(); if (w !== sideOpen) setSide(w); }
+// Close: what is open in the panel is put away (a new item, unsaved changes or the plan being made can come back
+// with Undo in the note), and the panel goes with it
+function closeSide() {
+  if (B) { dropBuilder(); focusPlan = null; renderPlans(); renderInspector(); applyHighlight(); return; }
+  if (draft) { dropDraft(); return; }
+  if (sel && edit && editDirty()) dropEdit();
+  const had = !!sel;
+  sel = null; edit = null; focusPlan = null;
+  renderPlans(); renderInspector(); applyHighlight(); if (had) renderGraph();
+}
 function setSide(open) {
   // the panel keeps its content at its own width while it opens or closes, so nothing reflows on the way
   const side = $('#side'); if (side && side.offsetWidth > 60) side.style.setProperty('--side-px', side.offsetWidth + 'px');
   sideOpen = !!open;
-  // phones open and close the panel as needed; only a computer's choice is remembered
-  if (!(window.matchMedia && matchMedia('(max-width: 900px)').matches)) { UI.side = sideOpen; saveUI(); }
   // While the panel opens or closes the timeline keeps its drawing and its frame simply narrows or widens
   // (nothing is redrawn on the way, so the motion stays smooth); once it settles, the timeline redraws for
   // its new width and fades from the old drawing into the new one.
@@ -5603,6 +5639,10 @@ function syncSettings() {
   $('#setMotion').checked = UI.motion !== false;
   $('#setCosts').checked = !!UI.costs;
   $('#setPin').checked = pinOn();
+  $('#setScope').checked = !UI.newLocal; $('#setScope').disabled = !!TOUR;
+  { const n = S.order.filter(id => S.nodes[id] && S.nodes[id].scope === 'local').length;
+    $('#setAllSub').textContent = n ? `${n} place${n > 1 ? 's are' : ' is'} kept to ${tripName() || 'this trip'}. Show ${n > 1 ? 'them' : 'it'} in all your trips.` : `Every place in ${tripName() || 'this trip'} is already in every trip.`;
+    $('#setAllGlobal').disabled = !n || !canEdit() || !!TOUR; }
   const ed = canEdit() && !TOUR;
   $('#currency').disabled = $('#budget').disabled = !ed;
   document.querySelectorAll('.inpre .stp').forEach(b => { b.disabled = !ed; });
@@ -6787,6 +6827,8 @@ function bind() {
   // changing the theme cross-fades the whole page where the browser can, instead of snapping
   const fadeSwap = fn => { if (document.startViewTransition && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) { const vt = document.startViewTransition(fn); vt.ready.catch(() => {}); /* a skipped fade (a hidden tab) is fine */ } else fn(); };
   $('#themeBtn').addEventListener('click', () => fadeSwap(() => { UI.theme = effectiveTheme() === 'dark' ? 'light' : 'dark'; saveUI(); applyTheme(); syncSettings(); }));
+  $('#setScope').addEventListener('change', e => { UI.newLocal = !e.target.checked; saveUI(); toast(e.target.checked ? 'New places will be in every trip' : 'New places will be kept to the trip you add them in'); });
+  $('#setAllGlobal').addEventListener('click', () => allPlacesGlobal());
   $('#setTheme').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; fadeSwap(() => { UI.theme = b.dataset.v === 'system' ? null : b.dataset.v; saveUI(); applyTheme(); syncSettings(); }); });
   $('#setMotion').addEventListener('change', e => { UI.motion = e.target.checked; saveUI(); applyMotion(); });
   $('#setCosts').addEventListener('change', e => { UI.costs = e.target.checked; saveUI(); syncCostBtn(); renderGraph(); });
@@ -6802,8 +6844,7 @@ function bind() {
   });
   arrowGroup($('#viewTabs'), '.vtab', false);
   arrowGroup($('#setTheme'), '[data-v]', true);
-  $('#sideHide').addEventListener('click', () => setSide(false));
-  $('#sideOpen').addEventListener('click', () => setSide(true));
+  $('#sideHide').addEventListener('click', () => closeSide());
   $('#drawerTab').addEventListener('click', () => { const bar = $('.dock-bar'); if (bar.dataset.dragged) { delete bar.dataset.dragged; return; } setDrawer(!UI.drawer); });
   $('#drawerClose').addEventListener('click', () => setDrawer(false));
   // drag the details panel's left edge (or use the arrow keys on it): from 300px up to 25% of the window
@@ -7023,8 +7064,7 @@ function bind() {
   // unless something is open in it; wider windows go back to the choice remembered for them.
   const SIDEQ = window.matchMedia ? matchMedia('(max-width: 900px)') : null;
   if (SIDEQ && SIDEQ.addEventListener) SIDEQ.addEventListener('change', () => {
-    const busy = !!(sel || draft || B || focusPlan);
-    const want = SIDEQ.matches ? sideOpen && busy : !!UI.side || busy;
+    const want = sideWanted();
     if (want === sideOpen) return;
     sideOpen = want; $('#main').classList.toggle('side-hidden', !sideOpen); renderGraph();
   });
@@ -7213,7 +7253,6 @@ function startTour() {
     S = sampleTrip();
     sel = null; edit = null; draft = null; viewPlan = null; focusPlan = null; hoverPlan = null; hoverLeg = null; renaming = null; scrubT = null; pinned = false;
     UI.view = false; applyMode();
-    if (!sideOpen) setSide(true);
     renderAll();
     $('#graphScroll').scrollTo({ left: 0, top: 0 });
     showTourStep();
@@ -7229,7 +7268,6 @@ function startTour() {
   sel = null; edit = null; draft = null; viewPlan = null; focusPlan = null; hoverPlan = null; hoverLeg = null; renaming = null; scrubT = null; pinned = false;
   UI.view = false; applyMode();
   document.body.classList.add('touring'); syncTripName();
-  if (!sideOpen) setSide(true);
   renderAll();
   $('#graphScroll').scrollTo({ left: 0, top: 0 });
   showTourStep();
@@ -7303,8 +7341,8 @@ function endTour() {
   undoStack.splice(0, undoStack.length, ...t.undo); redoStack.splice(0, redoStack.length, ...t.redo);
   sel = null; edit = null; draft = null; B = null; viewPlan = t.view && S.plans[t.view] ? t.view : null; focusPlan = viewPlan; hoverPlan = null; hoverLeg = null; renaming = null; scrubT = null; pinned = false;
   saveUI(); applyMode(); applyTheme(); applyMotion(); syncCostBtn(); // settings changed during the tour go back on screen too
-  // the details panel as you left it before the tour opened it (phones open and close it as needed)
-  if (!(window.matchMedia && matchMedia('(max-width: 900px)').matches)) { sideOpen = !!UI.side; $('#main').classList.toggle('side-hidden', !sideOpen); }
+  // the details panel is closed until something is picked
+  sideOpen = false; $('#main').classList.add('side-hidden');
   applySideW(); // the panel width you had before the tour
   $('#drawer').classList.toggle('open', !!UI.drawer); $('#drawerTab').setAttribute('aria-expanded', String(!!UI.drawer));
   if (UI.dockH) fitDockH(); // cut down to fit, if the window got smaller meanwhile (the chosen height is kept)
@@ -7324,10 +7362,9 @@ applyViewOnly();
 applyTheme();
 applyMotion();
 syncCostBtn();
-// On phone-size screens the panel floats over the timeline, so it starts closed there;
-// it opens when a place or leg is tapped, or with the Details tab at the side.
-sideOpen = window.matchMedia && matchMedia('(max-width: 900px)').matches ? false : UI.side;
-$('#main').classList.toggle('side-hidden', !sideOpen);
+// The details panel starts closed: it opens when a plan, a leg or a place is picked.
+sideOpen = false;
+$('#main').classList.add('side-hidden');
 applySideW();
 // a height saved in a taller window is cut down to fit this one (the chosen height is kept for when the window grows)
 if (UI.dockH) fitDockH();
