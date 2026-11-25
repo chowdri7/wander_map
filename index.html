@@ -1855,6 +1855,27 @@ html.glass .side-split::after{background:var(--g-field)}
 @media (min-width:901px){.main.side-hidden .side{border-width:0 !important}}
 /* the sky drawn below the chart shows in space that opens up while a panel moves (it adds no scrolling) */
 #graph,#pinSvg{overflow:visible}
+/* ================= the plans panel: a sheet that slides up over the timeline =================
+   The bar stays where it is; the plans rise above it as a frosted sheet, so the timeline keeps its full
+   size and is never squeezed or redrawn while you open, close or pull the panel. */
+@media (min-width:701px){
+  html.glass .dock{overflow:visible !important;z-index:9}
+  html.glass .dock .dock-body{position:absolute;left:-1px;right:-1px;bottom:calc(100% - 1px);height:0;overflow:hidden;
+    border:1px solid var(--g-edge);border-bottom:0;border-radius:18px 18px 0 0;
+    background:var(--g-strong);background-image:linear-gradient(180deg,var(--g-sheen),transparent 38%);
+    -webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);
+    box-shadow:var(--g-hi),0 -14px 34px rgba(18,28,60,.16);
+    opacity:0;visibility:hidden;transition:height .28s var(--ease-out),opacity .2s ease,visibility 0s linear .28s}
+  html.glass .dock.open .dock-body{height:var(--dock-h,30vh);overflow:auto;opacity:1;visibility:visible;transition:height .28s var(--ease-out),opacity .2s ease,visibility 0s}
+  html.glass .dock.resizing .dock-body{transition:none}
+  /* bar and sheet read as one panel while it is open */
+  html.glass .dock.open{border-top-left-radius:0 !important;border-top-right-radius:0 !important;border-top-color:transparent !important}
+  /* the grip rides on the sheet's top edge */
+  html.glass .dock .dock-split{transition:top .28s var(--ease-out)}
+  html.glass .dock.open .dock-split{top:calc(-1 * var(--dock-h,30vh) - 5px)}
+  html.glass .dock.resizing .dock-split{transition:none}
+}
+@media (prefers-reduced-motion:reduce){html.glass .dock .dock-body,html.glass .dock .dock-split{transition:none !important}}
 </style>
 </head>
 <body>
@@ -4932,8 +4953,9 @@ function setSide(open) {
 // The plans panel is a sheet: drag its bar up (to at most 35% of the window's height) or down to close it.
 const DOCK_MAX = .35;
 function dockLimits() {
-  // everything of the panel that is not its body (the bar and its border), so the whole panel stays within the limit
-  const d = $('#drawer'), b = $('#drawerBody'), bar = (d && b ? d.offsetHeight - b.offsetHeight : 0) || ($('.dock-bar') && $('.dock-bar').offsetHeight) || 44, col = $('.maincol') ? $('.maincol').clientHeight : innerHeight;
+  // everything from the bar's top edge to the bottom of the window (the bar and the page margin under it);
+  // the sheet floats above the bar, so its top never rises past the limit
+  const d = $('#drawer'), r = d && d.getBoundingClientRect(), bar = (r && r.height ? innerHeight - r.top : 0) || ($('.dock-bar') && $('.dock-bar').offsetHeight) || 44, col = $('.maincol') ? $('.maincol').clientHeight : innerHeight;
   return { min: 110, max: Math.max(140, Math.min(innerHeight * DOCK_MAX - bar, col - bar - 110)) };
 }
 function setDockH(px) {
@@ -4951,7 +4973,7 @@ function setDrawer(open) {
   UI.drawer = !!open; saveUI();
   $('#drawer').classList.toggle('open', UI.drawer);
   $('#drawerTab').setAttribute('aria-expanded', String(UI.drawer));
-  setTimeout(renderGraph, 230); // the timeline gets more or less room
+  // the plans sheet slides over the timeline, so the timeline keeps its size and needs no redraw
 }
 function syncCostBtn() {
   const b = $('#costBtn');
