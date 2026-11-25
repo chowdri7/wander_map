@@ -1900,6 +1900,22 @@ html.glass .side-split::after{background:var(--g-field)}
 .side-moving .graph-scroll,.side-dragging .graph-scroll,.settling .graph-scroll{overflow-x:hidden !important}
 /* one Close for the details panel, at its top; the header of what is in it has none of its own */
 #inspector .insp-head > .icon-btn{display:none}
+/* more plans than the tab strip has room for: arrows at its ends, the wheel scrolls it, and a list of every plan */
+.vtabs-wrap{position:relative;flex:none;--vt-bg:var(--surface)}
+.vtabs-wrap[hidden]{display:none}
+.vt-scroll{position:absolute;top:calc(50% + 3px);z-index:3;width:28px;height:28px;margin-top:-14px;display:grid;place-items:center;padding:0;font-size:0;color:var(--ink);cursor:pointer;
+  border:1px solid var(--border);border-radius:50%;background:var(--vt-bg);box-shadow:0 0 0 6px color-mix(in srgb,var(--vt-bg) 70%,transparent),0 2px 8px rgba(0,0,0,.22)}
+.vt-scroll[hidden]{display:none}
+.vt-scroll::before{width:14px;height:14px}
+.vt-scroll:hover{background:var(--surface2)}
+.vt-scroll.left{left:8px}
+.vt-scroll.right{right:52px}
+.vt-all{position:absolute;right:0;top:6px;bottom:1px;z-index:4;display:flex;align-items:center;padding:0 8px 0 4px;background:var(--vt-bg)}
+.vt-all[hidden]{display:none}
+.vtabs-wrap.over .viewtabs{padding-right:88px !important}
+.vt-all .menu-pop{max-width:320px}
+.vt-all .menu-pop [role=menuitem] .key{justify-self:center;width:9px;height:9px;border-radius:50%;background:var(--c,transparent);border:1px solid color-mix(in srgb,var(--c,var(--ink)) 70%,transparent)}
+.vt-all .menu-pop [role=menuitem][aria-current="true"]{font-weight:650;background:var(--surface2)}
 /* a narrow details panel: fields one under the other */
 @container side (max-width:280px){
   .row2{grid-template-columns:1fr}
@@ -2109,7 +2125,12 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
           <div class="menu" id="keyMenu"><button class="btn small" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="key" title="What the colours and lines mean">Key</button><div class="menu-pop right keypop" role="dialog" aria-label="Colour key" hidden><div class="legend" id="legend"></div></div></div>
         </div>
       </div>
-      <div class="viewtabs" id="viewTabs" role="tablist" aria-label="View"></div>
+      <div class="vtabs-wrap" id="vtabsWrap">
+        <div class="viewtabs" id="viewTabs" role="tablist" aria-label="View"></div>
+        <button class="vt-scroll left" id="vtLeft" type="button" data-ico="prev" tabindex="-1" aria-label="Show the plan tabs to the left" title="More plans" hidden></button>
+        <button class="vt-scroll right" id="vtRight" type="button" data-ico="next" tabindex="-1" aria-label="Show the plan tabs to the right" title="More plans" hidden></button>
+        <div class="menu vt-all" id="vtAll" hidden><button class="btn small icon" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" data-ico="list" title="Every plan" aria-label="Every plan">Plans</button><div class="menu-pop right" role="menu" aria-label="Every plan" hidden></div></div>
+      </div>
       <div class="planbar" id="planBar" hidden></div>
       <div class="notice" id="exampleNote" hidden>
         <span>Example: a made-up weekend trip with three ways to travel. Places, times and costs are invented.</span>
@@ -5443,9 +5464,26 @@ function placeTabInd() {
   ind.style.opacity = '1'; ind.style.width = t.offsetWidth + 'px'; ind.style.transform = `translateX(${t.offsetLeft}px)`;
   if (first) { void ind.offsetWidth; ind.style.transition = ''; ind.dataset.placed = '1'; }
 }
+// More plans than fit: the strip scrolls (with the arrows at its ends, the wheel or a swipe), shows which way
+// there are more, and the list button at its end has every plan.
+function syncTabScroll() {
+  const box = $('#viewTabs'), wrap = $('#vtabsWrap'); if (!box || !wrap) return;
+  const over = !box.hidden && box.scrollWidth > box.clientWidth + 2;
+  wrap.classList.toggle('over', over);
+  $('#vtLeft').hidden = !over || box.scrollLeft <= 2;
+  $('#vtRight').hidden = !over || box.scrollLeft >= box.scrollWidth - box.clientWidth - 2;
+  $('#vtAll').hidden = !over;
+}
+// the chosen tab is always in view, clear of the arrows and the list button
+function showChosenTab(smooth) {
+  const box = $('#viewTabs'), t = box && box.querySelector('.vtab[aria-selected="true"]'); if (!t || box.hidden) return;
+  const l = t.offsetLeft - 44, r = t.offsetLeft + t.offsetWidth + ($('#vtabsWrap').classList.contains('over') ? 92 : 44);
+  const to = l < box.scrollLeft ? Math.max(0, l) : r > box.scrollLeft + box.clientWidth ? r - box.clientWidth : null;
+  if (to != null) box.scrollTo({ left: to, behavior: smooth ? scrollMode() : 'auto' });
+}
 function renderViewTabs() {
   const box = $('#viewTabs'); box.querySelectorAll('.vtab').forEach(n => n.remove());
-  box.hidden = !PL.length;
+  box.hidden = !PL.length; $('#vtabsWrap').hidden = box.hidden;
   $('#graphTitle').textContent = viewOnly ? 'Plans' : '';
   if (!viewOnly) $('#graphTitle').textContent = viewPlan && PLBY[viewPlan] ? 'Plan view' : 'Places and legs';
   const tab = (id, label, color) => {
@@ -5458,6 +5496,10 @@ function renderViewTabs() {
   if (!viewOnly) box.append(tab(null, 'All places and legs'));
   PL.forEach(p => box.append(tab(p.id, p.name, p.color)));
   placeTabInd();
+  syncTabScroll();
+  // a newly chosen tab scrolls into view; a redraw for anything else leaves the strip where you scrolled it
+  const chosen = viewPlan || '';
+  if (renderViewTabs.chosen !== chosen) { showChosenTab(renderViewTabs.chosen !== undefined); renderViewTabs.chosen = chosen; renderViewTabs.at = performance.now(); syncTabScroll(); }
 }
 function renderPlanBar() {
   const bar = $('#planBar'); bar.replaceChildren();
@@ -6691,6 +6733,29 @@ function bind() {
   // (only on the timeline: a button elsewhere, such as Undo in a note, works at once)
   document.addEventListener('click', e => { if (performance.now() < noClickUntil && e.target instanceof Element && e.target.closest('#graphScroll')) { noClickUntil = 0; e.stopPropagation(); e.preventDefault(); } }, true);
   $('#arrangeBtn').addEventListener('click', () => setArrange(!arranging));
+  // the plan tabs: arrows, the wheel, and the list of every plan
+  {
+    const box = $('#viewTabs');
+    box.addEventListener('scroll', syncTabScroll, { passive: true });
+    box.addEventListener('wheel', e => {
+      if (e.ctrlKey || e.metaKey || box.scrollWidth <= box.clientWidth + 2) return;
+      const d = (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) * (e.deltaMode === 1 ? 16 : 1);
+      if (!d) return;
+      e.preventDefault(); box.scrollLeft += d;
+    }, { passive: false });
+    $('#vtLeft').addEventListener('click', () => box.scrollBy({ left: -Math.max(120, box.clientWidth * .7), behavior: scrollMode() }));
+    $('#vtRight').addEventListener('click', () => box.scrollBy({ left: Math.max(120, box.clientWidth * .7), behavior: scrollMode() }));
+    $('#vtAll [data-menu-btn]').addEventListener('click', () => {
+      const ids = [...(viewOnly ? [] : [null]), ...PL.map(p => p.id)];
+      $('#vtAll .menu-pop').replaceChildren(...ids.map(id => {
+        const p = id && PLBY[id], cur = (viewPlan || null) === id;
+        return h('button', { type: 'button', role: 'menuitem', 'aria-current': cur ? 'true' : null, onclick: () => setView(id) },
+          h('span', { class: 'key', style: p ? `--c:${p.color}` : null }), p ? p.name : 'All places and legs');
+      }));
+    });
+    // the strip narrows when the details panel opens for the plan just chosen: its tab stays in view
+    if (window.ResizeObserver) new ResizeObserver(() => { syncTabScroll(); if (performance.now() - (renderViewTabs.at || 0) < 1500) showChosenTab(false); }).observe(box);
+  }
   // the ? button: How it works, for editing or for viewing, filled as it opens
   $('#helpBtn').addEventListener('click', () => { const pop = $('#helpMenu .menu-pop'); if (pop) pop.replaceChildren(canEdit() ? helpPanel() : viewHelp()); });
   // Ctrl or ⌘ with the wheel (or a pinch on a touchpad) zooms the timeline, never the page
