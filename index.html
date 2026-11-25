@@ -1539,6 +1539,204 @@ body.dock-dragging,body.dock-dragging *{cursor:ns-resize !important}
 @media (max-width:900px) and (min-width:701px){body:has(#tour) .main:not(.side-hidden) .fabdock{z-index:8}}
 /* text: At 701-900px the details panel now covers New during the tour step that points at New */
 @media (max-width:900px) and (min-width:701px){body:has(#tour) .main:not(.side-hidden) .fabdock{z-index:7}}
+/* ================= motion: one smooth feel everywhere (both looks) ================= */
+:root{--ease:cubic-bezier(.22,.8,.24,1);--ease-out:cubic-bezier(.16,1,.3,1)}
+.btn,.icon-btn,.linkbtn,.vtab,.chip,.seg button,.modeseg button,.dock-toggle,.legbtn,.opt,.jn-go,.pp-leg,.stp,table.plans tbody tr,input,select,textarea,.switch span,.switch span::after,.tour-ring,.tour-card,.modeseg::before,.dock-split::after{transition-timing-function:var(--ease) !important}
+.dock-body{transition:height .22s var(--ease-out)}
+@media (prefers-reduced-motion:reduce){.dock-body{transition:none}}
+.dock.resizing .dock-body{transition:none}
+/* things that appear ease in rather than pop */
+.menu-pop:not([hidden]){animation:wmPop .17s var(--ease-out);transform-origin:top center}
+.menu-pop.up:not([hidden]){animation-name:wmPopUp;transform-origin:bottom center}
+.modal:not([hidden]){animation:wmFade .2s ease}
+.modal:not([hidden]) .modal-card{animation:wmRise .26s var(--ease-out)}
+.toast:not([hidden]){animation:wmToast .24s var(--ease-out)}
+.notice:not([hidden]),.planbar:not([hidden]){animation:wmFade .22s ease}
+@media (min-width:701px){.side{animation:wmSide .26s var(--ease-out)}}
+.app{animation:wmFade .32s ease}
+@keyframes wmFade{from{opacity:0}}
+@keyframes wmPop{from{opacity:0;transform:translateY(-5px) scale(.985)}}
+@keyframes wmPopUp{from{opacity:0;transform:translateY(5px) scale(.985)}}
+@keyframes wmRise{from{opacity:0;transform:translateY(10px) scale(.985)}}
+@keyframes wmToast{from{opacity:0;translate:0 10px}}
+@keyframes wmSide{from{opacity:0;transform:translateX(12px)}}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.34s;animation-timing-function:var(--ease)}
+@media (prefers-reduced-motion:reduce){
+  .menu-pop,.modal,.modal-card,.toast,.notice,.planbar,.side,.app{animation:none !important}
+  .dock-body{transition:none}
+  ::view-transition-old(root),::view-transition-new(root){animation:none}
+}
+
+/* ================= Liquid glass: an optional look (Settings > Liquid glass) =================
+   Only surfaces, colours and spacing change: frosted, see-through panels over a soft colour
+   backdrop, with a bright edge. Panels that sit straight on the backdrop are see-through without
+   blur (the backdrop is soft already, so it costs nothing to draw); things that float over moving
+   content (menus, dialogs, messages, the hover card, pinned names, New) are blurred. */
+html.glass{
+  --g-base:#e8eef6;
+  --g-mesh:radial-gradient(900px 620px at 8% 0%,rgba(110,205,220,.55),transparent 62%),radial-gradient(820px 600px at 96% 6%,rgba(176,158,255,.45),transparent 60%),radial-gradient(900px 700px at 88% 100%,rgba(255,190,160,.45),transparent 60%),radial-gradient(760px 620px at 0% 96%,rgba(140,220,186,.42),transparent 62%);
+  --g-panel:rgba(255,255,255,.52); --g-strong:rgba(255,255,255,.74); --g-inner:rgba(255,255,255,.56); --g-inner2:rgba(255,255,255,.34);
+  --g-edge:rgba(255,255,255,.72); --g-line:rgba(28,40,80,.10); --g-field:rgba(28,40,80,.16);
+  --g-hi:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.28);
+  --g-shadow:0 12px 34px rgba(30,44,96,.10),0 2px 6px rgba(30,44,96,.06);
+  --g-blur:blur(26px) saturate(180%); --g-chart:rgba(255,255,255,.62); --g-pin:rgba(250,252,255,.66);
+  --g-toast:rgba(24,30,44,.80); --g-toast-ink:#f4f6fb;
+}
+@media (prefers-color-scheme: dark){html.glass:not([data-theme="light"]){
+  --g-base:#0a0d16;
+  --g-mesh:radial-gradient(900px 620px at 8% 0%,rgba(40,130,150,.40),transparent 62%),radial-gradient(820px 600px at 96% 6%,rgba(100,72,210,.36),transparent 60%),radial-gradient(900px 700px at 88% 100%,rgba(190,80,120,.24),transparent 60%),radial-gradient(760px 620px at 0% 96%,rgba(36,140,104,.24),transparent 62%);
+  --g-panel:rgba(24,28,40,.56); --g-strong:rgba(28,32,46,.80); --g-inner:rgba(255,255,255,.07); --g-inner2:rgba(255,255,255,.04);
+  --g-edge:rgba(255,255,255,.13); --g-line:rgba(255,255,255,.08); --g-field:rgba(255,255,255,.16);
+  --g-hi:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -1px 0 rgba(255,255,255,.03);
+  --g-shadow:0 14px 38px rgba(0,0,0,.40),0 2px 6px rgba(0,0,0,.25);
+  --g-chart:rgba(14,17,26,.52); --g-pin:rgba(20,24,34,.72); --g-toast:rgba(240,243,250,.86); --g-toast-ink:#151925;
+}}
+html.glass[data-theme="dark"]{
+  --g-base:#0a0d16;
+  --g-mesh:radial-gradient(900px 620px at 8% 0%,rgba(40,130,150,.40),transparent 62%),radial-gradient(820px 600px at 96% 6%,rgba(100,72,210,.36),transparent 60%),radial-gradient(900px 700px at 88% 100%,rgba(190,80,120,.24),transparent 60%),radial-gradient(760px 620px at 0% 96%,rgba(36,140,104,.24),transparent 62%);
+  --g-panel:rgba(24,28,40,.56); --g-strong:rgba(28,32,46,.80); --g-inner:rgba(255,255,255,.07); --g-inner2:rgba(255,255,255,.04);
+  --g-edge:rgba(255,255,255,.13); --g-line:rgba(255,255,255,.08); --g-field:rgba(255,255,255,.16);
+  --g-hi:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -1px 0 rgba(255,255,255,.03);
+  --g-shadow:0 14px 38px rgba(0,0,0,.40),0 2px 6px rgba(0,0,0,.25);
+  --g-chart:rgba(14,17,26,.52); --g-pin:rgba(20,24,34,.72); --g-toast:rgba(240,243,250,.86); --g-toast-ink:#151925;
+}
+/* the backdrop */
+html.glass body{background:var(--g-mesh),var(--g-base) !important;background-attachment:fixed !important}
+@media (max-width:700px){html.glass body{background-attachment:scroll !important}}
+/* floating panels, with a little room between them */
+@media (min-width:701px){
+  html.glass body{padding:8px}
+  html.glass .app{background:transparent;border:0;border-radius:0;box-shadow:none;overflow:visible;gap:8px}
+  html.glass .main{gap:8px}
+  html.glass .maincol{background:transparent;gap:8px}
+  html.glass .topbar,html.glass .graph-card,html.glass .dock,html.glass .side{border:1px solid var(--g-edge) !important;border-radius:18px !important;box-shadow:var(--g-hi),var(--g-shadow) !important}
+  html.glass .graph-card,html.glass .dock,html.glass .side{overflow:hidden}
+  html.glass .side{border-left:1px solid var(--g-edge) !important}
+}
+html.glass .topbar,html.glass .graph-card,html.glass .dock,html.glass .side,html.glass .maincol .card{background:var(--g-panel) !important}
+html.glass .topbar{margin:0}
+html.glass .graph-scroll{background:var(--g-chart);border-top-color:var(--g-line)}
+html.glass .now,html.glass .dock-body{border-color:var(--g-line)}
+html.glass .dock-body{background:transparent}
+/* inner surfaces: lighter glass */
+html.glass .btn:not(.primary):not(.on),html.glass .icon-btn{background:var(--g-inner);border-color:var(--g-ctl,var(--g-edge));box-shadow:var(--g-hi)}
+html.glass .topbar .btn:not(.primary){background:transparent;border-color:transparent;box-shadow:none}
+html.glass .topbar .btn:not(.primary):hover:not(:disabled),html.glass .btn:not(.primary):not(.on):hover:not(:disabled){background:var(--g-strong)}
+html.glass input,html.glass select,html.glass textarea{background:var(--g-inner);border-color:var(--g-field)}
+html.glass .inpre{background:var(--g-inner);border-color:var(--g-field)}
+html.glass .inpre input{background:transparent}
+html.glass .modeseg,html.glass .seg{background:var(--g-inner2);border-color:var(--g-edge)}
+html.glass .set-card,html.glass .it-stats,html.glass .pp-list{background:var(--g-inner) !important;border-color:var(--g-edge) !important}
+html.glass .legbtn,html.glass .opt,html.glass .jn-go{background:var(--g-inner);border-color:var(--g-edge)}
+html.glass .opt,html.glass .jn-go{border-left-color:var(--c)}
+html.glass .legbtn:hover,html.glass .opt:hover,html.glass .opt:focus-visible{background:var(--g-strong);border-color:var(--axis)}
+html.glass .opt.hl{border-color:color-mix(in srgb,var(--accent) 55%,transparent);background:color-mix(in srgb,var(--accent) 10%,var(--g-strong))}
+html.glass .jn-go:hover,html.glass .jn-go:focus-visible{background:var(--g-strong);border-color:var(--g-edge);border-left-color:var(--c)}
+html.glass .jn-go.hl{background:var(--g-strong);border-color:color-mix(in srgb,var(--accent) 45%,var(--g-edge));border-left-color:var(--c)}
+html.glass .it-stat{background:var(--g-inner2)}
+html.glass .it-stats{background:transparent !important}
+html.glass .it-stat{box-shadow:0 0 0 1px var(--g-line)}
+html.glass .modal-body{background:transparent}
+html.glass table.plans thead th,html.glass table.itin th{background:var(--g-inner2)}
+html.glass .notice{background:var(--g-inner);border-color:var(--g-edge)}
+/* floating over moving content: blurred */
+html.glass .menu-pop,html.glass .modal-card,html.glass .tour-card,html.glass .scrubtip{background:var(--g-strong) !important;border-color:var(--g-edge) !important;-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);box-shadow:var(--g-hi),var(--g-shadow) !important}
+html.glass .modal-card,html.glass .tour-card{border-radius:20px}
+html.glass .menu-pop{border-radius:14px}
+html.glass .modal{background:rgba(14,18,30,.26)}
+html.glass .toast{background:var(--g-toast) !important;color:var(--g-toast-ink) !important;border:1px solid var(--g-edge);-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);border-radius:14px}
+html.glass .toast .btn{color:var(--g-toast-ink) !important;background:transparent !important;border-color:color-mix(in srgb,var(--g-toast-ink) 35%,transparent) !important;box-shadow:none !important}
+/* the pinned place names frost the chart that scrolls under them */
+html.glass #pinSvg{-webkit-backdrop-filter:blur(16px) saturate(170%);backdrop-filter:blur(16px) saturate(170%)}
+html.glass #pinSvg .pinbg{fill:var(--g-pin)}
+/* New: tinted glass with a bright edge, still with no hover effect */
+html.glass .btn.primary.fabbtn,html.glass .btn.primary.fabbtn:hover:not(:disabled){background:color-mix(in srgb,var(--accent) 84%,transparent) !important;border-color:color-mix(in srgb,#fff 38%,transparent) !important;-webkit-backdrop-filter:blur(14px) saturate(170%);backdrop-filter:blur(14px) saturate(170%);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(0,0,0,.08) !important;border-radius:18px}
+html.glass .btn.primary{box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+/* the Details panel's own header and footer sit on the same glass */
+html.glass .side-head,html.glass .side-foot{background:transparent;border-color:var(--g-line)}
+html.glass .held-bar{background:color-mix(in srgb,var(--warn-bg) 78%,transparent);border-color:var(--g-line)}
+/* ---------- motion and Liquid glass: review fixes ---------- */
+/* motion: Liquid glass hides the keyboard focus ring on every button, New included */
+html.glass .btn:not(.primary):not(.on):focus-visible,html.glass .btn.primary:focus-visible{outline:none;box-shadow:0 0 0 2px var(--surface),0 0 0 4px color-mix(in srgb,var(--accent) 55%,transparent)}
+html.glass .toast .btn:focus-visible,html.glass .btn.primary.fabbtn:focus-visible,html.glass .btn.primary.fabbtn:focus-visible:hover:not(:disabled){box-shadow:0 0 0 2px var(--surface),0 0 0 4px color-mix(in srgb,var(--accent) 55%,transparent) !important}
+/* glass-light: Liquid glass hides the keyboard focus ring on every .btn and clears the open-menu look on  */
+/* glass: keep the keyboard focus ring and the open-menu look on buttons */
+html.glass .btn:focus-visible,html.glass .btn:not(.primary):not(.on):focus-visible{box-shadow:0 0 0 2px var(--g-base),0 0 0 4px color-mix(in srgb,var(--accent) 55%,transparent)}
+html.glass .btn.primary.fabbtn:focus-visible,html.glass .btn.primary.fabbtn:focus-visible:hover:not(:disabled){box-shadow:0 0 0 2px var(--g-base),0 0 0 4px color-mix(in srgb,var(--accent) 55%,transparent) !important}
+html.glass .toast .btn:focus-visible{box-shadow:0 0 0 2px color-mix(in srgb,var(--g-toast-ink) 60%,transparent) !important}
+html.glass .menu.open > [data-menu-btn]:not(.primary){background:var(--g-strong);border-color:var(--g-ctl,var(--g-field))}
+html.glass .menu.open > .btn.primary.fabbtn{background:color-mix(in srgb,var(--accent) 86%,var(--ink)) !important}
+/* glass-light: At 900px and below the Details panel lies over the timeline as an unblurred 52% panel, so  */
+/* glass: where the Details panel lies over the timeline (900px and below) it is frosted, like the other floating panels.
+   The blur is on a layer behind its content, not on the panel itself, so the panel's More actions menu
+   (position:fixed, placed against the window) is not moved or clipped by the panel */
+@media (max-width:900px){
+  html.glass .side{background:var(--g-strong) !important}
+  html.glass .side::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur)}
+}
+/* glass-light: Glass !important on .jn-go removes the plan-colour bar, the hover and the timeline-linked  */
+/* glass: journey rows keep their colour bar, their hover and the highlight that follows the timeline */
+html.glass .jn-go{border-left-color:var(--c) !important}
+html.glass .legbtn:hover,html.glass .jn-go:hover,html.glass .jn-go:focus-visible{background:var(--g-strong) !important}
+html.glass .jn-go.hl{background:color-mix(in srgb,var(--accent) 10%,var(--g-strong)) !important;border-color:color-mix(in srgb,var(--accent) 45%,transparent) !important;border-left-color:var(--c) !important}
+/* glass-dark: Liquid glass hides the keyboard focus ring on every button */
+/* glass: keep the keyboard focus ring on buttons (including New) */
+html.glass .btn:focus-visible,html.glass .btn.primary.fabbtn:focus-visible,html.glass .btn.primary.fabbtn:focus-visible:hover:not(:disabled){box-shadow:0 0 0 2px var(--surface),0 0 0 4px color-mix(in srgb,var(--accent) 55%,transparent) !important}
+/* logic: The page cross-fade swallows clicks for about 0.34s after a theme or look change */
+::view-transition{pointer-events:none}
+/* logic: Liquid glass hides the keyboard focus ring on every button, New included */
+html.glass .btn:focus-visible,html.glass .btn:not(.primary):not(.on):focus-visible,html.glass .topbar .btn:not(.primary):focus-visible,html.glass .btn.primary.fabbtn:focus-visible,html.glass .btn.primary.fabbtn:focus-visible:hover:not(:disabled){box-shadow:0 0 0 2px var(--surface),0 0 0 4px color-mix(in srgb,var(--accent) 55%,transparent) !important}
+/* motion: Liquid glass removes New's pressed look while its menu is open */
+html.glass .menu.open > .btn.primary.fabbtn{background:color-mix(in srgb,color-mix(in srgb,var(--accent) 86%,var(--ink)) 84%,transparent) !important}
+/* glass-light: Light glass: buttons get a white edge on a white panel, so their outline disappears */
+/* glass: controls get a hairline that shows on light glass; dark keeps its bright edge */
+html.glass{--g-ctl:rgba(28,40,80,.16)}
+@media (prefers-color-scheme: dark){html.glass:not([data-theme="light"]){--g-ctl:rgba(255,255,255,.13)}}
+html.glass[data-theme="dark"]{--g-ctl:rgba(255,255,255,.13)}
+/* glass-light: Light glass: Details panel and plan-maker pieces still draw as opaque paper boxes */
+/* glass: the Details panel's chips, journey card and notes are glass too */
+html.glass .chip:not([aria-pressed="true"]){background:var(--g-inner);border-color:var(--g-ctl,var(--g-field))}
+html.glass .chip:not([aria-pressed="true"]):hover{background:var(--g-strong)}
+html.glass .journey{background:var(--g-inner2);border-color:var(--g-edge)}
+html.glass .jn-cur,html.glass .jn-unfold{background:var(--g-strong)}
+html.glass .need{background:var(--g-inner2)}
+/* glass-light: Light glass: Details rail, guide steps, budget chip, plan count and plans-table hover stay */
+/* glass: the rail, guide steps, budget chip, plan count and plan rows are glass too */
+@media (min-width:701px){
+  html.glass .rail{background:var(--g-panel);border:1px solid var(--g-edge);border-radius:18px;box-shadow:var(--g-hi),var(--g-shadow)}
+  html.glass .rail:hover{background:var(--g-strong)}
+  html.glass .rail:focus-visible{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent) 55%,transparent),var(--g-shadow)}
+}
+html.glass .gsteps li{background:var(--g-inner);border-color:var(--g-edge)}
+html.glass .dock-budget,html.glass .dock-toggle .cnt{background:var(--g-inner);border-color:var(--g-field)}
+html.glass .dock-budget:hover,html.glass .dock-toggle:hover{background:var(--g-strong)}
+html.glass table.plans tbody tr:hover,html.glass table.plans tbody tr.focus{background:color-mix(in srgb,var(--ink) 5%,transparent)}
+/* glass-dark: New button loses its open-menu state and its focus ring in glass */
+/* glass: New keeps its open state and its keyboard ring (still no hover effect, no drop shadow) */
+html.glass .menu.open > .btn.primary.fabbtn{background:color-mix(in srgb,var(--accent) 86%,var(--ink)) !important;border-color:transparent !important}
+html.glass .btn.primary.fabbtn:focus-visible,html.glass .btn.primary.fabbtn:focus-visible:hover:not(:disabled){box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(0,0,0,.08),0 0 0 2px var(--surface),0 0 0 4px color-mix(in srgb,var(--accent) 55%,transparent) !important}
+/* glass-dark: Menu triggers lose their 'open' look, and the toast Undo button loses its hover, in glass */
+html.glass .menu.open > .btn[data-menu-btn]:not(.primary){background:var(--g-strong);border-color:var(--axis);color:var(--ink)}
+html.glass .toast .btn:hover:not(:disabled){background:color-mix(in srgb,var(--g-toast-ink) 14%,transparent) !important;border-color:color-mix(in srgb,var(--g-toast-ink) 60%,transparent) !important}
+/* glass-dark: At 900px and below the Details panel floats over the timeline as unblurred 56% glass, so t */
+/* glass: where Details floats over the timeline, keep it readable (no backdrop-filter: it would re-anchor the fixed menus inside it) */
+@media (max-width:900px){html.glass .side{background:color-mix(in srgb,var(--surface) 94%,transparent) !important}}
+/* logic: Liquid glass drops the New button's 'menu open' state */
+html.glass .menu.open > .btn.primary.fabbtn,html.glass .menu.open > .btn.primary.fabbtn:hover:not(:disabled){background:color-mix(in srgb,var(--accent) 86%,var(--ink)) !important;border-color:transparent !important}
+/* logic: In glass, the Details panel floats over the timeline at 900px and below without blur */
+@media (max-width:900px){html.glass .side{background:var(--g-strong) !important;-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur)}}
+/* motion: The glass Settings card cannot frost the page: .modal's own backdrop-filter and its opacit */
+html.glass .modal{-webkit-backdrop-filter:none;backdrop-filter:none}
+html.glass .modal:not([hidden]){animation-name:wmTint}
+@keyframes wmTint{from{background-color:transparent}}
+/* glass-light: Glass removes the sample bar's amber tint and the held-changes warning fill; the guide not */
+/* glass: the sample bar, the held-changes bar and the tinted notices keep their tints, as see-through glass */
+html.glass .samplebar{background:color-mix(in srgb,var(--s4) 16%,var(--g-inner));border-color:color-mix(in srgb,var(--s4) 40%,transparent)}
+html.glass .held-bar{background:color-mix(in srgb,var(--warn-bg) 78%,transparent)}
+html.glass #guideNote{background:color-mix(in srgb,var(--accent) 10%,var(--g-inner))}
+html.glass #noTimeHint{background:color-mix(in srgb,var(--warn-bg) 78%,transparent)}
+/* glass-dark: Settings card frost does nothing because the overlay behind it has its own backdrop-filter */
+html.glass .modal{-webkit-backdrop-filter:none;backdrop-filter:none}
 </style>
 </head>
 <body>
@@ -1689,6 +1887,8 @@ body.dock-dragging,body.dock-dragging *{cursor:ns-resize !important}
             <div class="set-ctl"><div class="seg" id="setTheme" role="radiogroup" aria-label="Theme"><button type="button" role="radio" data-v="light">Light</button><button type="button" role="radio" data-v="dark">Dark</button><button type="button" role="radio" data-v="system">Device</button></div></div></div>
           <div class="set-row"><div class="set-lab"><b>Moving sky</b><small>Twinkling stars, drifting clouds and glowing choices</small></div>
             <div class="set-ctl"><label class="switch"><input type="checkbox" id="setMotion" aria-label="Moving sky"><span aria-hidden="true"></span></label></div></div>
+          <div class="set-row"><div class="set-lab"><b>Liquid glass</b><small>Frosted, see-through panels over a soft colour backdrop</small></div>
+            <div class="set-ctl"><label class="switch"><input type="checkbox" id="setGlass" aria-label="Liquid glass"><span aria-hidden="true"></span></label></div></div>
         </div>
       </section>
       <section class="set-sect" aria-labelledby="setB">
@@ -4614,6 +4814,7 @@ function syncSettings() {
   const th = UI.theme === 'light' || UI.theme === 'dark' ? UI.theme : 'system';
   document.querySelectorAll('#setTheme [data-v]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.v === th)));
   $('#setMotion').checked = UI.motion !== false;
+  $('#setGlass').checked = !!UI.glass;
   $('#setCosts').checked = !!UI.costs;
   $('#setPin').checked = pinOn();
   const ed = canEdit() && !TOUR;
@@ -4647,6 +4848,7 @@ function applyMotion() { document.body.classList.toggle('still', UI.motion === f
 function applyTheme() {
   if (UI.theme === 'light' || UI.theme === 'dark') document.documentElement.dataset.theme = UI.theme;
   else delete document.documentElement.dataset.theme;
+  document.documentElement.classList.toggle('glass', !!UI.glass);   // the Liquid glass look
   syncThemeBtn();
 }
 // The header's light and dark switch shows the mode it leads to, and always agrees with Settings.
@@ -4884,8 +5086,11 @@ function bind() {
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   });
-  $('#themeBtn').addEventListener('click', () => { UI.theme = effectiveTheme() === 'dark' ? 'light' : 'dark'; saveUI(); applyTheme(); syncSettings(); });
-  $('#setTheme').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; UI.theme = b.dataset.v === 'system' ? null : b.dataset.v; saveUI(); applyTheme(); syncSettings(); });
+  // changing the theme or the look cross-fades the whole page where the browser can, instead of snapping
+  const fadeSwap = fn => { if (document.startViewTransition && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.startViewTransition(fn); else fn(); };
+  $('#themeBtn').addEventListener('click', () => fadeSwap(() => { UI.theme = effectiveTheme() === 'dark' ? 'light' : 'dark'; saveUI(); applyTheme(); syncSettings(); }));
+  $('#setTheme').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; fadeSwap(() => { UI.theme = b.dataset.v === 'system' ? null : b.dataset.v; saveUI(); applyTheme(); syncSettings(); }); });
+  $('#setGlass').addEventListener('change', e => { const on = e.target.checked; fadeSwap(() => { UI.glass = on; saveUI(); applyTheme(); }); });
   $('#setMotion').addEventListener('change', e => { UI.motion = e.target.checked; saveUI(); applyMotion(); });
   $('#setCosts').addEventListener('change', e => { UI.costs = e.target.checked; saveUI(); syncCostBtn(); renderGraph(); });
   $('#setPin').addEventListener('change', e => { if (e.target.checked !== pinOn()) togglePin(); });
@@ -4980,7 +5185,7 @@ function bind() {
       toast('Updated with the changes made in another tab.');
     } else if (e.key === UIKEY && e.newValue) {
       let u = null; try { u = JSON.parse(e.newValue); } catch (err) { return; }
-      const pinWas = pinOn(), costsWas = !!UI.costs, keys = ['theme', 'costs', 'pinPlaces', 'motion'];
+      const pinWas = pinOn(), costsWas = !!UI.costs, keys = ['theme', 'costs', 'pinPlaces', 'motion', 'glass'];
       for (const k of keys) if (k in u) UI[k] = u[k];
       // during the tour, keep them for when your own plans come back too, so ending it does not write older ones back
       if (TOUR) { try { const t = JSON.parse(TOUR.ui); for (const k of keys) if (k in u) t[k] = u[k]; TOUR.ui = JSON.stringify(t); } catch (err) { /* keep what is there */ } }
