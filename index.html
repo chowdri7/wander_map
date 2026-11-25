@@ -1765,9 +1765,9 @@ html.glass .modal{-webkit-backdrop-filter:none;backdrop-filter:none}
 .gwrap.swap{animation:wmFade .3s ease}
 /* the details panel opens and closes by its width, and keeps its content still while it moves */
 @media (min-width:901px){
-  .side{flex:0 0 clamp(300px,var(--side-w,min(25%,460px)),25vw) !important;min-width:0 !important;max-width:max(300px,25vw) !important;animation:none !important;position:relative;
+  .side{flex:0 0 clamp(15vw,var(--side-w,min(25%,460px)),25vw) !important;min-width:0 !important;max-width:25vw !important;container:side / inline-size;animation:none !important;position:relative;
     transition:flex-basis .34s var(--ease-out),opacity .24s ease,border-color .34s,visibility 0s}
-  .side > :not(.side-split){min-width:var(--side-px,300px)}
+  .side > :not(.side-split){min-width:var(--side-px,15vw)}
   .main.side-hidden .side{display:flex !important;flex-basis:0 !important;opacity:0;visibility:hidden;border-color:transparent !important;
     transition:flex-basis .34s var(--ease-out),opacity .2s ease,border-color .34s,visibility 0s linear .34s}
   .side-dragging .side{transition:none !important}
@@ -1896,6 +1896,13 @@ html.glass .side-split::after{background:var(--g-field)}
 /* the details panel opening or closing: the timeline's frame narrows or widens without a scrollbar flashing in,
    then the old drawing fades out over the new one */
 .side-moving .graph-scroll,.side-dragging .graph-scroll,.settling .graph-scroll{overflow-x:hidden !important}
+/* a narrow details panel: fields one under the other */
+@container side (max-width:280px){
+  .row2{grid-template-columns:1fr}
+  .fld > span.dtfield{flex-wrap:wrap}
+  .dtfield .datebox,.dtfield .dttime{flex:1 1 100%;width:auto}
+  .side-foot .btn.primary .lbl{display:none} /* the icon alone; its name is in the tooltip */
+}
 /* the time header stays at the top while the places scroll under it, like a spreadsheet's frozen row */
 #axisSvg{display:block;position:sticky;top:0;z-index:4;overflow:hidden;user-select:none;-webkit-user-select:none}
 #axisSvg .headbg{fill:transparent}
@@ -1980,7 +1987,7 @@ body.dragging,body.dragging *{cursor:grabbing !important;-webkit-user-select:non
 #pinSvg.sorting .rowhead:not(.lifted){transition:transform .18s var(--ease)}
 #pinSvg .rowhead.lifted .rowhit{fill:var(--surface);stroke:var(--accent);stroke-width:1.5}
 #pinSvg .rowhead.lifted{filter:drop-shadow(0 6px 14px rgba(0,0,0,.18))}
-.dragtip{position:fixed;left:0;top:0;z-index:90;pointer-events:none;display:flex;flex-direction:column;gap:2px;max-width:300px;padding:7px 10px;border-radius:10px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-lg);font-size:12px;color:var(--ink2);white-space:nowrap}
+.dragtip{position:fixed;left:0;top:0;z-index:90;pointer-events:none;display:flex;flex-direction:column;gap:2px;max-width:min(340px,calc(100vw - 24px));padding:7px 10px;border-radius:10px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-lg);font-size:12px;color:var(--ink2);white-space:normal;overflow-wrap:anywhere}
 .dragtip[hidden]{display:none}
 .dragtip b{font-family:var(--serif);font-size:13px;font-weight:600;color:var(--ink)}
 .dragtip small{font-size:11px;color:var(--muted)}
@@ -5596,13 +5603,16 @@ function settleGraph() {
     const pd = () => { pb.cancel(); pinGhost.remove(); }; pa.finished.then(pd, pd); setTimeout(pd, opts.duration + 200);
   }
 }
-// The plans panel is a sheet: drag its bar up (to at most 35% of the window's height) or down to close it.
-const DOCK_MAX = .35;
+// The plans panel is a sheet: drag its bar up (to at most 35% of the window's height, at least 15%) or down to close it.
+const DOCK_MAX = .35, DOCK_MIN = .15;
+// the details panel: from 15% to 25% of the window's width
+const SIDE_MIN = .15, SIDE_MAX = .25;
 function dockLimits() {
   // everything from the bar's top edge to the bottom of the window (the bar and the page margin under it);
   // the sheet floats above the bar, so its top never rises past the limit
   const d = $('#drawer'), r = d && d.getBoundingClientRect(), bar = (r && r.height ? innerHeight - r.top : 0) || ($('.dock-bar') && $('.dock-bar').offsetHeight) || 44, col = $('.maincol') ? $('.maincol').clientHeight : innerHeight;
-  return { min: 110, max: Math.max(140, Math.min(innerHeight * DOCK_MAX - bar, col - bar - 110)) };
+  const min = Math.max(64, Math.round(innerHeight * DOCK_MIN - bar));
+  return { min, max: Math.max(min + 30, Math.min(innerHeight * DOCK_MAX - bar, col - bar - 110)) };
 }
 function setDockH(px) {
   const { min, max } = dockLimits();
@@ -6057,12 +6067,15 @@ function moveLinkDrag(e) {
   const t = Math.max(geo.tmin, roundTo(timeAtX(p.x), dragStep(e)));
   const node = rowAtY(p.y) || d.node0, yy = geo.rowY[node], same = node === d.node0;
   d.t1 = t; d.node = node;
-  d.path.setAttribute('d', curvePath(X(d.t0), geo.rowY[d.node0], X(t), yy));
+  // still on the place it leaves from: the line simply follows the pointer, with no second dot yet;
+  // over another place it lands on that place's line, at the time under the pointer
+  d.path.setAttribute('d', same ? `M${X(d.t0)} ${geo.rowY[d.node0]} L${p.x} ${p.y}` : curvePath(X(d.t0), geo.rowY[d.node0], X(t), yy));
+  d.dot.style.display = same ? 'none' : '';
   d.dot.setAttribute('cx', X(t)); d.dot.setAttribute('cy', yy);
   d.band.setAttribute('y', yy - 50);
   const bad = !same && t <= d.t0 ? 'It has to arrive after it leaves: drag to the right' : null;
   d.prev.classList.toggle('bad', !!bad);
-  dragTip(e, [h('b', { text: `New leg: ${nodeName(d.node0)} → ${same ? '…' : nodeName(node)}` }), h('span', { text: `${shortDT(d.t0)} → ${shortDT(t)}` }),
+  dragTip(e, [h('b', { text: same ? `New leg from ${nodeName(d.node0)}` : `New leg: ${nodeName(d.node0)} → ${nodeName(node)}` }), h('span', { text: same ? `Leaves ${shortDT(d.t0)}` : `${shortDT(d.t0)} → ${shortDT(t)}` }),
     h('small', { text: bad || (same ? 'Drag onto another place to arrive there' : 'Let go, then choose how you travel and the fare') })], bad);
 }
 function moveBoxDrag(e) {
@@ -6847,9 +6860,9 @@ function bind() {
   $('#sideHide').addEventListener('click', () => closeSide());
   $('#drawerTab').addEventListener('click', () => { const bar = $('.dock-bar'); if (bar.dataset.dragged) { delete bar.dataset.dragged; return; } setDrawer(!UI.drawer); });
   $('#drawerClose').addEventListener('click', () => setDrawer(false));
-  // drag the details panel's left edge (or use the arrow keys on it): from 300px up to 25% of the window
+  // drag the details panel's left edge (or use the arrow keys on it): from 15% up to 25% of the window
   const sideSplit = $('#sideSplit'), sideEl = $('#side');
-  const setSideW = w => { UI.sideW = Math.round(Math.max(300, Math.min(Math.max(300, Math.floor(innerWidth * .25)), w))); applySideW(); };
+  const setSideW = w => { UI.sideW = Math.round(Math.max(Math.ceil(innerWidth * SIDE_MIN), Math.min(Math.floor(innerWidth * SIDE_MAX), w))); applySideW(); };
   sideSplit.addEventListener('pointerdown', e => {
     if (e.button !== 0) return;
     e.preventDefault();
