@@ -1359,6 +1359,15 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 .inpre input{flex:1;min-width:0;height:100%;border:0 !important;box-shadow:none !important;background:transparent;padding:0 10px 0 2px}
 .set-foot{margin:8px 2px 0;font-size:12px;color:var(--muted)}
 .set-card .set-keys{display:block}
+.keys-groups{display:grid;gap:10px}
+.keys-card{padding:12px 14px}
+.keys-h{margin:0 0 8px;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.keys-card .keys{margin:0;grid-template-columns:minmax(120px,max-content) 1fr;gap:9px 18px;align-items:baseline}
+.keys-card .keys dt{display:flex;flex-wrap:wrap;gap:4px;align-items:center;white-space:normal}
+.keys-card .keys dd{line-height:1.4}
+.k-or{font-size:11px;color:var(--muted);padding:0 2px}
+.k-mouse{font-size:12px;font-weight:600;color:var(--ink)}
+@media (max-width:560px){.keys-card .keys{grid-template-columns:1fr;gap:2px 0}.keys-card .keys dd{margin-bottom:8px}}
 .set-keys .keys{margin:10px 0 2px;grid-template-columns:max-content 1fr;gap:8px 18px}
 .keys dt{display:flex;gap:4px;align-items:center}
 .keys dd{color:var(--ink2)}
@@ -2408,18 +2417,11 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
         <div class="set-card">
           <div class="set-row"><div class="set-lab"><b>Guided tour</b><small>A one-minute walk through a sample trip</small></div>
             <div class="set-ctl"><button type="button" class="btn small" id="setTour" data-ico="compass">Start</button></div></div>
-          <div class="set-row set-keys"><div class="set-lab"><b>Keyboard shortcuts</b></div>
-            <dl class="keys">
-              <dt><kbd>Ctrl</kbd><kbd>Z</kbd></dt><dd>Undo</dd>
-              <dt><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>Z</kbd></dt><dd>Redo</dd>
-              <dt><kbd>Ctrl</kbd><kbd>Y</kbd></dt><dd>Redo</dd>
-              <dt><kbd>Ctrl</kbd><kbd>S</kbd></dt><dd>Save what you are editing</dd>
-              <dt><kbd>←</kbd><kbd>→</kbd></dt><dd>Previous or next leg, or back and on while making a plan</dd>
-              <dt><kbd>1</kbd>–<kbd>9</kbd></dt><dd>Take a numbered way on</dd>
-              <dt><kbd>Esc</kbd></dt><dd>Close, or step back</dd>
-              <dt><kbd>Delete</kbd></dt><dd>Delete the selected place or leg (you can undo)</dd>
-            </dl></div>
         </div>
+      </section>
+      <section class="set-sect" aria-labelledby="setK">
+        <h3 id="setK">Keyboard and mouse shortcuts</h3>
+        <div id="setKeys" class="keys-groups"></div>
       </section>
     </div>
   </div>
@@ -7966,7 +7968,15 @@ function bind() {
       if (key === 'd' && chosenLegs().length) { e.preventDefault(); duplicateLegs(); return; }
       if (key === 'a' && geo && geo.legs && (arranging || overGraph)) { e.preventDefault(); selectAllLegs(); return; }
     }
-    if (mod && key === 's') { e.preventDefault(); if (draft) saveDraft(); else if (edit && editDirty()) saveEdit(); else if (B && guidePhase() === 'done') savePlan(); return; }
+    if (mod && key === 's') {
+      e.preventDefault();
+      if (draft) saveDraft();
+      else if (edit && editDirty()) saveEdit();
+      else if (B && guidePhase() === 'done') savePlan();
+      else if (B) toast(`Finish the route first, then ${MAC ? '⌘' : 'Ctrl'}+S saves the plan`);
+      else toast('Nothing to save: everything is already kept in this browser');
+      return;
+    }
     if (mod && !e.shiftKey && key === 'z' && !inField) { if (canEdit()) { e.preventDefault(); undo(); } }
     else if (mod && ((e.shiftKey && key === 'z') || (!e.shiftKey && key === 'y')) && !inField) { if (canEdit()) { e.preventDefault(); redo(); } }
     else if (!inField && B && !mod && !e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || /^[1-9]$/.test(e.key)) && !e.target.closest('.menu, [role=tablist], #dockSplit, .modal')) {
@@ -8000,7 +8010,93 @@ function bind() {
     else if ((e.key === 'Delete' || e.key === 'Backspace') && !inField && sel && sel.k !== 'wait' && canEdit() && !B) { e.preventDefault(); if (sel.k === 'node') delNode(sel.id); else delLeg(sel.id); }
     else if ((e.key === 'Delete' || e.key === 'Backspace') && !inField && !sel && !draft && !B && canEdit() && S.plans[focusPlan || viewPlan]) { e.preventDefault(); delPlan(focusPlan || viewPlan); }
   });
+  renderShortcuts();
   window.addEventListener('resize', () => { clearTimeout(bind._rt); bind._rt = setTimeout(() => { if (UI.dockH) fitDockH(); if (VIEWQ && VIEWQ.matches !== viewOnly) { applyViewOnly(); renderAll(); } else renderGraph(); }, 150); });
+}
+
+/* ---------- every shortcut, listed in Settings ----------
+   Keys are drawn as keys; a mouse action is in words. Kept here, beside the code that handles them. */
+function shortcutGroups() {
+  const m = MAC ? '⌘' : 'Ctrl', add = MAC ? 'Shift-click or ⌘-click' : 'Shift-click or Ctrl-click';
+  return [
+    ['Anywhere', [
+      [[[m, 'Z']], 'Undo'],
+      [[[m, 'Shift', 'Z'], [m, 'Y']], 'Redo'],
+      [[[m, 'S']], 'Save: a new place or leg, your changes, a plan’s remarks, or the plan you are making (at its last step)'],
+      [[['Enter']], 'Save the form you are typing in (in a note, ' + m + '+Enter)'],
+      [[['Esc']], 'Cancel what you are making or changing (Undo brings it back); then close the panel, Arrange, a menu or Plans'],
+      [[['Delete'], ['Backspace']], 'Delete the selected place or leg, or the plan in view (you can undo)'],
+      [[['F2']], 'Rename the selected place, waiting time, or the plan in view'],
+    ]],
+    ['On the timeline', [
+      [['Move the pointer'], 'A card shows where every plan is at that moment'],
+      [['Click'], 'Pin that card (click again to let it go)'],
+      [[[m, 'wheel']], 'Zoom (or pinch on a touchpad)'],
+      [[['+'], ['−']], 'Zoom in or out while the pointer is over it'],
+      [[['0']], 'Fit the whole trip again'],
+      [[['Home'], ['End']], 'Go to the start or the end'],
+      [['Drag empty space'], 'Scroll it, as on a map (the middle button drags from anywhere)'],
+      [['Double-click a row'], 'A new leg from that place, at that time'],
+      [['Double-click a name'], 'Rename that place'],
+      [['Right-click'], 'What you can do with what is under the pointer'],
+    ]],
+    ['A selected leg', [
+      [[['←'], ['→']], 'The previous or next leg along the way'],
+      [[['1', '–', '9']], 'Take that numbered way on'],
+      [[[m, 'C'], [m, 'V']], 'Copy the selected legs; paste them a little later, in no plan'],
+      [[[m, 'D']], 'Duplicate the selected legs'],
+    ]],
+    ['Arrange (the arrows icon)', [
+      [['Drag a place name'], 'Move its row up or down'],
+      [['Drag a leg'], 'Move its times; drag an end dot to another time or place'],
+      [['Drag from a place’s line'], 'Drop on another place to add a leg'],
+      [[['Shift']], 'Hold while dragging for 5-minute steps'],
+      [['Drag across empty space'], 'Select several legs and places'],
+      [[add], 'Add one to the selection, or take it out'],
+      [[[m, 'A']], 'Select every leg'],
+      [[['←'], ['→']], 'Move the selected legs 15 minutes (with Shift, an hour)'],
+      [[['↑'], ['↓']], 'Move the selected places up or down'],
+      [[['Space']], 'Hold and drag to scroll'],
+      [[['Esc']], 'Clear the selection, then turn Arrange off'],
+    ]],
+    ['Making a plan', [
+      [[['←'], ['→']], 'A step back, or on'],
+      [[['1', '–', '9']], 'Take that numbered way on'],
+      [[[m, 'S']], 'Save the plan, at its last step'],
+      [[['Esc']], 'Stop making it (Undo brings it back)'],
+    ]],
+    ['Plans', [
+      [['Double-click a tab'], 'Rename that plan'],
+      [['Click its name'], 'Rename the plan in the details panel'],
+      [['Wheel over the tabs'], 'Scroll through them'],
+    ]],
+    ['Menus, calendar and clock', [
+      [[['↑'], ['↓']], 'Move through a menu, or the hours and minutes of the clock'],
+      [[['←'], ['→'], ['↑'], ['↓']], 'In the calendar, a day or a week'],
+      [[['Page Up'], ['Page Down']], 'In the calendar, a month'],
+      [[['Esc']], 'Close it'],
+    ]],
+    ['The tour', [
+      [[['←'], ['→']], 'The step before or after'],
+      [[['Esc']], 'End it'],
+    ]],
+  ];
+}
+// one shortcut: its keys (several ways are joined by "or"; a key between dashes is a range) or the mouse action
+function keysCell(ways) {
+  const dt = h('dt');
+  ways.forEach((w, i) => {
+    if (i) dt.append(h('span', { class: 'k-or', text: 'or' }));
+    if (typeof w === 'string') { dt.append(h('span', { class: 'k-mouse', text: w })); return; }
+    w.forEach(k => dt.append(k === '–' ? h('span', { class: 'k-or', text: 'to' }) : k === 'wheel' ? h('span', { class: 'k-mouse', text: '+ wheel' }) : h('kbd', { text: k })));
+  });
+  return dt;
+}
+function renderShortcuts() {
+  const box = $('#setKeys'); if (!box) return;
+  box.replaceChildren(...shortcutGroups().map(([title, rows]) => h('div', { class: 'set-card keys-card' },
+    h('h4', { class: 'keys-h', text: title }),
+    h('dl', { class: 'keys' }, ...rows.flatMap(([ways, what]) => [keysCell(ways), h('dd', { text: what })])))));
 }
 
 /* ---------- the guided tour, on a sample trip ---------- */
