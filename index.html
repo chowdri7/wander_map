@@ -1766,14 +1766,27 @@ html.glass .modal{-webkit-backdrop-filter:none;backdrop-filter:none}
 .viewonly .viewtabs{padding:6px 10px 0 !important}
 /* the timeline fades in when you switch the plan in view */
 .gwrap.swap{animation:wmFade .3s ease}
-/* the details panel opens and closes by its width, and keeps its content still while it moves */
+/* the details panel floats over the right of the timeline and slides in and out: opening, closing or resizing it
+   never changes the timeline's size, so the timeline is never redrawn for it and never left half drawn */
 @media (min-width:901px){
-  .side{flex:0 0 clamp(15vw,var(--side-w,min(25%,460px)),25vw) !important;min-width:0 !important;max-width:25vw !important;container:side / inline-size;top:0 !important;max-height:none !important;animation:none !important;position:relative;
-    transition:flex-basis .34s var(--ease-out),opacity .24s ease,border-color .34s,visibility 0s}
-  .side > :not(.side-split){min-width:var(--side-px,15vw)}
-  .main.side-hidden .side{display:flex !important;flex-basis:0 !important;opacity:0;visibility:hidden;border-color:transparent !important;
-    transition:flex-basis .34s var(--ease-out),opacity .2s ease,border-color .34s,visibility 0s linear .34s}
+  .main{position:relative;--side-wd:clamp(15vw,var(--side-w,min(25vw,460px)),25vw)}
+  .side{position:absolute !important;top:0 !important;right:0;bottom:0;z-index:12;flex:none !important;
+    width:var(--side-wd);min-width:0 !important;max-width:25vw !important;max-height:none !important;container:side / inline-size;animation:none !important;
+    transform:none;opacity:1;visibility:visible;transition:transform .32s var(--ease-out),opacity .22s ease,visibility 0s}
+  .main.side-hidden .side{display:flex !important;transform:translateX(calc(100% + 16px));opacity:0;visibility:hidden;transition:transform .32s var(--ease-out),opacity .2s ease,visibility 0s linear .32s}
   .side-dragging .side{transition:none !important}
+  /* while it is open, the timeline's tools, its plan tabs and its notes keep clear of it (the timeline itself does not move) */
+  .graph-card .card-head,.graph-card .vtabs-wrap,.graph-card > .notice{transition:padding-right .32s var(--ease-out),margin-right .32s var(--ease-out)}
+  .main:not(.side-hidden) .graph-card .card-head{padding-right:calc(var(--side-wd) + 14px)}
+  .main:not(.side-hidden) .graph-card .vtabs-wrap,.main:not(.side-hidden) .graph-card > .notice{margin-right:calc(var(--side-wd) + 8px)}
+  .side-dragging .graph-card .card-head,.side-dragging .graph-card .vtabs-wrap,.side-dragging .graph-card > .notice{transition:none}
+  /* the plans panel ends where the details panel begins, so its sort and its list stay in view */
+  html.glass .dock-sheet{transition:right .32s var(--ease-out),box-shadow .28s var(--ease-out),background-color .28s}
+  .main:not(.side-hidden) .dock-sheet{right:calc(var(--side-wd) + 8px) !important}
+  .side-dragging .dock-sheet{transition:none !important}
+  /* over the timeline it is nearly solid, so the legs and the sky never show through its text */
+  html.glass .side{background:color-mix(in srgb,var(--surface) 94%,transparent) !important;-webkit-backdrop-filter:blur(22px) saturate(150%);backdrop-filter:blur(22px) saturate(150%);
+    box-shadow:var(--g-hi),-16px 0 40px rgba(10,16,36,.28) !important}
 }
 /* the drag edge on the details panel's left side */
 .side-split{position:absolute;left:0;top:0;bottom:0;width:8px;z-index:7;cursor:ew-resize;touch-action:none;outline:none}
@@ -3259,9 +3272,8 @@ function syncFitBtn() {
 }
 // The details panel's width you dragged it to (it never goes past 25% of the window).
 function applySideW() {
-  const sd = $('#side'); if (!sd) return;
-  if (UI.sideW) { sd.style.setProperty('--side-w', UI.sideW + 'px'); sd.style.setProperty('--side-px', UI.sideW + 'px'); }
-  else { sd.style.removeProperty('--side-w'); }
+  const m = $('#main'); if (!m) return;
+  if (UI.sideW) m.style.setProperty('--side-w', UI.sideW + 'px'); else m.style.removeProperty('--side-w');
 }
 // The inner width of the timeline's frame, rounded down: the browser rounds clientWidth up or down,
 // and a chart even a fraction of a pixel too wide brings a scrollbar that can come and go for ever.
@@ -3962,7 +3974,7 @@ function frameLeg(id) {
   const sc = $('#graphScroll'); if (!sc || !geo || !geo.time) return;
   let L = geo.legs[id]; if (!L) return;
   // the room beside the pinned place names; the zoom is 14 until it is first changed
-  const pad = 90, room = sc.clientWidth - pinW() - 2 * pad, t = T[id];
+  const vw = frameVisibleW(sc), pad = 90, room = vw - pinW() - 2 * pad, t = T[id];
   if (L.xA - L.s0 > room && (S.pph || 14) > 3) {
     S.pph = Math.max(3, Math.floor(room / Math.max(.25, (t.arr - t.dep) / H)));
     if (autoFitOn()) { UI.autoFit = false; saveUI(); } // zoomed in on this leg: auto-fit steps aside
@@ -3977,7 +3989,7 @@ function frameLeg(id) {
   }
   const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
   const pw = pinW();
-  sc.scrollTo({ left: Math.max(0, cx - pw - (sc.clientWidth - pw) / 2), top: Math.max(0, cy - sc.clientHeight / 2), behavior: scrollMode() });
+  sc.scrollTo({ left: Math.max(0, cx - pw - (vw - pw) / 2), top: Math.max(0, cy - sc.clientHeight / 2), behavior: scrollMode() });
 }
 // Rows shared by the Journey card and the plan maker: a leg, the plans it is in, and a line of detail.
 function jnPlans(x) {
@@ -4132,8 +4144,9 @@ function renderTip() {
   tip.hidden = false;
   const sc = $('#graphScroll'), x = geo.X(scrubT), w = tip.offsetWidth, hh = tip.offsetHeight;
   let left = x + 16;
-  if (left + w > sc.scrollLeft + sc.clientWidth - 10) left = x - 16 - w;
-  left = Math.max(sc.scrollLeft + pinW() + 10, Math.min(sc.scrollLeft + sc.clientWidth - w - 10, left));
+  const vw = frameVisibleW(sc);
+  if (left + w > sc.scrollLeft + vw - 10) left = x - 16 - w;
+  left = Math.max(sc.scrollLeft + pinW() + 10, Math.min(sc.scrollLeft + vw - w - 10, left));
   let top = (scrubY != null ? scrubY : sc.scrollTop + LAY.top + 40) + 16;
   top = Math.max(sc.scrollTop + LAY.top + 14, Math.min(sc.scrollTop + sc.clientHeight - hh - 10, top));
   tip.style.left = Math.round(left) + 'px';
@@ -5737,17 +5750,15 @@ function closeSide() {
   renderPlans(); renderInspector(); applyHighlight(); if (had) renderGraph();
 }
 function setSide(open) {
-  // the panel keeps its content at its own width while it opens or closes, so nothing reflows on the way
-  const side = $('#side'); if (side && side.offsetWidth > 60) side.style.setProperty('--side-px', side.offsetWidth + 'px');
+  // the panel slides over the timeline, which keeps its size: nothing to wait for and nothing to redraw
   sideOpen = !!open;
-  // While the panel opens or closes the timeline keeps its drawing and its frame simply narrows or widens
-  // (nothing is redrawn on the way, so the motion stays smooth); once it settles, the timeline redraws for
-  // its new width and fades from the old drawing into the new one.
-  const glide = !!(window.matchMedia && matchMedia('(min-width: 901px)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches);
-  if (glide) document.body.classList.add('side-moving');
   $('#main').classList.toggle('side-hidden', !sideOpen);
-  setSide._pending = true;
-  clearTimeout(setSide._t); setSide._t = setTimeout(sideSettled, glide ? 420 : 0); // in case the end of the motion is never reported
+}
+// how much of the timeline's frame is in view beside the details panel, which floats over its right side
+function frameVisibleW(sc) {
+  const sd = $('#side');
+  if (!sideOpen || !sd || !sd.offsetWidth || getComputedStyle(sd).position !== 'absolute') return sc.clientWidth;
+  return Math.max(200, Math.min(sc.clientWidth, sd.getBoundingClientRect().left - sc.getBoundingClientRect().left - 8));
 }
 function sideSettled() {
   if (!setSide._pending) return;
@@ -7100,16 +7111,16 @@ function bind() {
       if (ev.pointerId !== pid) return;
       removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up);
       if (raf) { cancelAnimationFrame(raf); raf = 0; }
-      setSideW(want); document.body.classList.remove('side-dragging'); saveUI(); settleGraph();
+      setSideW(want); document.body.classList.remove('side-dragging'); saveUI();
     };
     addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up);
   });
   sideSplit.addEventListener('keydown', e => {
     if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
     e.preventDefault(); e.stopPropagation();
-    setSideW(sideEl.offsetWidth + (e.key === 'ArrowLeft' ? 32 : -32)); saveUI(); renderGraph();
+    setSideW(sideEl.offsetWidth + (e.key === 'ArrowLeft' ? 32 : -32)); saveUI();
   });
-  sideSplit.addEventListener('dblclick', () => { delete UI.sideW; applySideW(); saveUI(); setTimeout(renderGraph, 360); });
+  sideSplit.addEventListener('dblclick', () => { delete UI.sideW; applySideW(); saveUI(); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeTabInd);
   // drag the top edge of the plans panel (or use the arrow keys on it) to resize it
   const split = $('#dockSplit'), dockBar = $('.dock-bar'), dock = $('#drawer'), dockBody = $('#drawerBody');
