@@ -260,6 +260,17 @@ table.plans tbody tr:hover{background:var(--surface2)}
 table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 3px 0 0 var(--accent)}
 .pname{display:inline-flex;align-items:baseline;gap:8px;font-weight:600;white-space:nowrap}
 td.route{color:var(--ink2);min-width:200px}
+/* names on buttons: icon buttons show their name beside the icon (Settings > Appearance) */
+html.labels .btn.icon:not(.lkrow .btn):not(.pickpop .btn),html.labels #arrangeBtn,html.labels #dayBtn{width:auto !important;padding:0 11px !important;font-size:12.5px !important;gap:6px !important;border-radius:999px !important}
+html.labels .btn.small.icon:not(.lkrow .btn):not(.pickpop .btn),html.labels #arrangeBtn,html.labels #dayBtn{padding:0 9px !important;font-size:12px !important}
+html.labels .modeseg button{width:auto;min-width:0;padding:0 12px;font-size:12.5px;gap:6px}
+html.labels .side-foot .btn.primary .lbl{display:inline !important}
+html.labels .side-foot > .btn.danger{width:auto !important;padding:0 11px !important;font-size:12.5px !important;gap:6px !important}
+/* a narrower window: the top bar's lesser buttons go back to icons (with their tooltips), so the bar stays one row */
+@media (max-width:1180px){html.labels .topbar :is(#undo,#redo,#themeBtn,#keysBtn,#helpBtn){width:32px !important;padding:0 !important;font-size:0 !important;gap:0 !important;border-radius:50% !important}
+  html.glass.labels .topbar .tgroup :is(#undo,#redo){width:30px !important}}
+@media (max-width:900px){html.labels .topbar #settingsBtn{width:32px !important;padding:0 !important;font-size:0 !important;gap:0 !important;border-radius:50% !important}
+  html.labels .modeseg button{width:36px;padding:0;font-size:0;gap:0}}
 /* an item's buttons beside its name */
 .insp-head > .head-acts{flex:none;display:flex;gap:4px;align-items:center}
 /* the arrow between two places, drawn the same in every font */
@@ -2325,7 +2336,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
     </section>
     <section class="dock" id="drawer" aria-label="Plans">
       <div class="dock-sheet">
-      <div class="dock-split" id="dockSplit" role="separator" aria-orientation="horizontal" aria-label="Resize the plans panel: arrow keys" tabindex="0" title="Drag the bar up or down"></div>
+      <div class="dock-split" id="dockSplit" role="separator" aria-orientation="horizontal" aria-label="Resize the plans panel: arrow keys" tabindex="0" title="Drag to resize"></div>
       <div class="dock-bar">
         <button class="dock-toggle" id="drawerTab" type="button" aria-expanded="false" aria-controls="drawerBody" title="Show or hide plans"><span class="chev" id="drawerArrow" aria-hidden="true"></span><span class="dock-title">Plans</span><span class="cnt" id="planCount"></span></button>
         <span class="spacer"></span>
@@ -2380,6 +2391,8 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
             <div class="set-ctl"><div class="seg" id="setTheme" role="radiogroup" aria-label="Theme"><button type="button" role="radio" data-v="light">Light</button><button type="button" role="radio" data-v="dark">Dark</button><button type="button" role="radio" data-v="system">Device</button></div></div></div>
           <div class="set-row"><div class="set-lab"><b>Moving sky</b><small>Twinkling stars, drifting clouds and glowing choices</small></div>
             <div class="set-ctl"><label class="switch"><input type="checkbox" id="setMotion" aria-label="Moving sky"><span aria-hidden="true"></span></label></div></div>
+          <div class="set-row"><div class="set-lab"><b>Names on buttons</b><small>On, every button shows its name and there are no tooltips. Off, buttons are icons and show their name when you point at them.</small></div>
+            <div class="set-ctl"><label class="switch"><input type="checkbox" id="setLabels" aria-label="Names on buttons"><span aria-hidden="true"></span></label></div></div>
         </div>
       </section>
       <section class="set-sect" aria-labelledby="setB">
@@ -4235,7 +4248,7 @@ function frameLeg(id) {
 // Rows shared by the Journey card and the plan maker: a leg, the plans it is in, and a line of detail.
 function jnPlans(x) {
   const ps = LEGPLANS[x] || [];
-  return ps.length ? h('span', { class: 'jn-plans', title: 'In ' + ps.map(p => S.plans[p].name).join(', ') }, ...ps.map(p => h('i', { style: `--c:${PLBY[p] ? PLBY[p].color : 'var(--s9)'}` }))) : null;
+  return ps.length ? h('span', { class: 'jn-plans', title: ps.length === 1 ? `In ${S.plans[ps[0]].name}` : `In ${ps.length} plans` }, ...ps.map(p => h('i', { style: `--c:${PLBY[p] ? PLBY[p].color : 'var(--s9)'}` }))) : null;
 }
 function jnRow(x, mark, sub, onGo) {
   const lx = S.legs[x], m = MODE[lx.mode] || MODE.other;
@@ -4426,7 +4439,8 @@ function menuEl(label, items, opt) {
     if (it === '-') { pop.append(h('hr')); return; }
     pop.append(h('button', { type: 'button', role: 'menuitem', id: it.id || null, class: it.danger ? 'danger' : null, disabled: !!it.disabled, title: it.title || null, 'data-ico': it.ico || 'dot', onclick: it.run }, it.label, it.sub ? h('small', { text: it.sub }) : null));
   });
-  const trigger = h('button', { type: 'button', class: 'btn' + (opt.small ? ' small' : '') + (opt.iconOnly ? ' icon' : ''), 'aria-label': opt.iconOnly ? label : null, 'data-menu-btn': true, 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'data-ico': opt.ico || 'dots', title: opt.title || label }, label);
+  const trigger = h('button', { type: 'button', class: 'btn' + (opt.small ? ' small' : '') + (opt.iconOnly ? ' icon' : ''), 'aria-label': opt.iconOnly ? label : null, 'data-menu-btn': true, 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'data-ico': opt.ico || 'dots', title: opt.title || label },
+    opt.iconOnly && /^More/.test(label) ? 'More' : label); // its short name, shown when names are on
   return h('div', { class: 'menu' }, trigger, pop);
 }
 // An open menu floats above the page (position: fixed) on whichever side of its button has room,
@@ -4477,7 +4491,8 @@ function headActs(primary, items) {
   const its = (items || []).filter(Boolean);
   return h('div', { class: 'btns head-acts' }, primary || null, its.length ? menuEl('More actions', its, { small: true, right: true, iconOnly: true }) : null);
 }
-function headBtn(label, fn, ico, title, disabled) { const b = icoBtn(label, fn, 'small primary icon', ico, title || label, disabled); b.setAttribute('aria-label', label); return b; }
+// label: its short name on the button; title: what it does, for the tooltip and screen readers
+function headBtn(label, fn, ico, title, disabled) { const b = icoBtn(label, fn, 'small primary icon', ico, title || label, disabled); b.setAttribute('aria-label', title || label); return b; }
 function icoBtn(label, fn, cls, ico, title, disabled) { const b = btn(label, fn, cls, title, disabled); b.dataset.ico = ico; return b; }
 // One set of plan actions, the same wherever a plan is shown.
 function planActions(p, where) {
@@ -4543,7 +4558,7 @@ function fgroup(title, ...kids) { return h('section', { class: 'fgroup' }, h('h4
 function nodeInspector(box, n) {
   const ed = editFor('node', n.id);
   const i = S.order.indexOf(n.id), cnt = legsFrom(n.id).length + legsTo(n.id).length;
-  box.append(inspHead(nodeName(n.id), 'var(--ink)', null, headActs(headBtn('Add leg from here', () => newLeg({ from: n.id }), 'leg', 'New leg from here'), [
+  box.append(inspHead(nodeName(n.id), 'var(--ink)', null, headActs(headBtn('Add leg', () => newLeg({ from: n.id }), 'leg', 'New leg from here'), [
     { label: 'Add leg into here', sub: 'A leg that arrives at this place', ico: 'leg', run: () => newLeg({ to: n.id }) },
     { label: 'Make a plan from here', sub: 'Start a plan at this place', ico: 'plan', run: () => startBuilder(null, n.id) },
     { label: pinOn() ? 'Unpin the place names' : 'Pin the place names', sub: pinOn() ? 'Let them scroll with the timeline' : 'Keep them in view when you scroll sideways', ico: 'pin', run: togglePin },
@@ -4570,7 +4585,7 @@ function placeFields(box, o) {
 }
 function waitInspector(box, p, legId) {
   const w = waitInfo(p, legId), pi = PLBY[p.id], ed = editFor('wait', legId, p.id);
-  box.append(inspHead('Waiting time', pi ? pi.color : 'var(--ink)', null, headActs(headBtn('Show this plan', () => { sel = null; edit = null; setView(p.id); }, 'eye', `Show “${p.name}” on the timeline`), [
+  box.append(inspHead('Waiting time', pi ? pi.color : 'var(--ink)', null, headActs(headBtn('Show plan', () => { sel = null; edit = null; setView(p.id); }, 'eye', `Show “${p.name}” on the timeline`), [
     { id: 'waitReset', label: 'Use the default label', sub: `Back to “${w.auto}”`, ico: 'undo', disabled: !w.custom, run: () => { const f = $('#fWait'); if (f) { f.value = ''; ed.obj.label = ''; syncEditFoot(); f.focus(); } } },
   ])));
   const i = h('input', { type: 'text', id: 'fWait', 'data-wait-label': legId, maxlength: '60', placeholder: w.auto, autocomplete: 'off' });
@@ -4673,7 +4688,7 @@ function nodeSelect(side, val) {
 function legInspector(box, l) {
   const ed = editFor('leg', l.id);
   box.append(inspHead('Leg', legColor(l.id), null, headActs(
-    headBtn(l.to ? `Add leg from ${nodeName(l.to)}` : 'Add the next leg', () => newLeg({ from: l.to, mode: l.mode, after: T[l.id] ? T[l.id].arr : null }), 'leg', 'Next leg', !l.to), [
+    headBtn('Next leg', () => newLeg({ from: l.to, mode: l.mode, after: T[l.id] ? T[l.id].arr : null }), 'leg', l.to ? `Next leg from ${nodeName(l.to)}` : 'Next leg', !l.to), [
     { label: l.from ? `Add leg into ${nodeName(l.from)}` : 'Add a leg before this one', sub: 'A leg that arrives where this one leaves', ico: 'leg', disabled: !l.from, run: () => newLeg({ to: l.from, mode: l.mode }) },
     { label: 'Return leg', sub: 'The same trip back the other way', ico: 'undo', disabled: !(l.from && l.to), run: () => newLeg({ from: l.to, to: l.from, mode: l.mode }) },
     { label: 'Alternative leg', sub: 'Another way between the same two places', ico: 'leg', run: () => newLeg({ from: l.from, to: l.to, mode: l.mode, dep: l.dep, arr: l.arr }) },
@@ -4723,7 +4738,7 @@ function legFields(box, o, isDraft) {
     h('p', { class: 'live', id: 'liveDur' }),
     h('div', { class: 'fld' },
       h('span', { text: 'Buffer for traffic or delays' }),
-      h('div', { class: 'chiprow' }, chips, input(o, 'buf', 'number', { min: '0', step: '5', inputmode: 'numeric', placeholder: 'mins', class: 'bufnum', 'aria-label': 'Buffer in minutes', title: 'Or type your own, in minutes' })),
+      h('div', { class: 'chiprow' }, chips, input(o, 'buf', 'number', { min: '0', step: '5', inputmode: 'numeric', placeholder: 'mins', class: 'bufnum', 'aria-label': 'Buffer in minutes', title: 'Minutes' })),
       h('small', null, 'Moves the arrival later by this much. ',
         isDraft ? null : h('button', { type: 'button', class: 'linkbtn', text: 'Use this on every bus and cab leg', onclick: () => applyBufRoad(formValues().buf) }))));
   box.append(route, how, when, linksGroup(o));
@@ -5241,7 +5256,7 @@ function legView(box, l) {
 }
 function waitView(box, p, legId) {
   const w = waitInfo(p, legId), pi = PLBY[p.id];
-  box.append(inspHead('Waiting time', pi ? pi.color : 'var(--ink)', null, headActs(headBtn('Show this plan', () => { sel = null; setView(p.id); }, 'eye', `Show “${p.name}” on the timeline`))));
+  box.append(inspHead('Waiting time', pi ? pi.color : 'var(--ink)', null, headActs(headBtn('Show plan', () => { sel = null; setView(p.id); }, 'eye', `Show “${p.name}” on the timeline`))));
   box.append(h('div', { class: 'sect' }, h('h3', { text: 'Details' }),
     h('p', { class: 'live', text: `At ${nodeName(w.node)} · ${fmtDur(w.ms)}` }),
     h('p', { class: 'live', text: `From ${fmtDT(w.from)} to ${fmtDT(w.to)}` }),
@@ -5751,7 +5766,7 @@ function renderPlans() {
       h('td', { class: 'nowrap', text: fmtDur(p.dur) }),
       h('td', { class: 'costcell' },
         h('div', { class: 'costline' }, h('strong', { text: money(p.cost) }), status),
-        h('div', { class: 'bar', title: budget > 0 ? `The upright line marks the budget: ${money(budget)} per head` : null },
+        h('div', { class: 'bar', title: budget > 0 ? `Budget: ${money(budget)}` : null },
           h('i', { style: `width:${(p.cost / max * 100).toFixed(1)}%;--c:${p.color}` }),
           budget > 0 ? h('b', { style: `left:${(budget / max * 100).toFixed(1)}%` }) : null)),
       h('td', { class: 'remarks' }, String(p.p.remarks || '').trim() ? trimmedText(String(p.p.remarks).trim(), 'rm-txt') : h('span', { class: 'rm-none', text: '—' })));
@@ -6138,7 +6153,7 @@ function planActs(p) {
   if (!canEdit()) return headActs(null, items);
   items.push({ label: 'Duplicate plan', sub: 'A copy to change without losing this one', ico: 'dup', run: () => duplicatePlan(p.id) }, '-',
     { label: 'Delete plan', sub: 'You can undo it (Del)', ico: 'trash', danger: true, run: () => delPlan(p.id) });
-  return headActs(headBtn('Edit plan', () => startBuilder(p.id), 'edit', 'Edit route and costs'), items);
+  return headActs(headBtn('Edit', () => startBuilder(p.id), 'edit', 'Edit route and costs'), items);
 }
 // A plan in the details panel: its key figures, then every leg and wait in order, day by day, with
 // this plan's other costs and the total. Click a leg for its details; Rename names a wait.
@@ -6402,6 +6417,7 @@ function syncSettings() {
   const th = UI.theme === 'light' || UI.theme === 'dark' ? UI.theme : 'system';
   document.querySelectorAll('#setTheme [data-v]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.v === th)));
   $('#setMotion').checked = UI.motion !== false;
+  $('#setLabels').checked = labelsOn();
   $('#setCosts').checked = !!UI.costs;
   $('#setPin').checked = pinOn();
   $('#setScope').checked = !UI.newLocal; $('#setScope').disabled = !!TOUR;
@@ -6436,6 +6452,37 @@ function closeSettings() {
   back.focus({ preventScroll: true });
 }
 function applyMotion() { document.body.classList.toggle('still', UI.motion === false); }
+/* ---------- names on buttons, or icons with tooltips ----------
+   With names on (the default), icon buttons show their short name beside the icon, so a tooltip would only say it
+   again: tooltips are put aside (and come back when names are off). Buttons that stay icons, such as Close, the
+   calendar in a date box or the links' Open and Remove, keep theirs, and so does the timeline's hover text. */
+function labelsOn() { return UI.labels !== false; }
+const KEEP_TIP = '.icon-btn, .dtcal, .dtclock, .pickpop, .lkrow, svg, .side-split, input, select, textarea';
+// is the element's name on screen? (a narrow window turns some buttons back into icons)
+function nameShown(e) {
+  if (!(e.textContent || '').trim() || (e.closest && e.closest(KEEP_TIP))) return false;
+  if (parseFloat(getComputedStyle(e).fontSize) === 0) return false;
+  const l = e.querySelector(':scope > .lbl'); return !(l && getComputedStyle(l).display === 'none');
+}
+function stashTip(e) {
+  if (e.nodeType !== 1 || !e.hasAttribute('title') || !nameShown(e)) return;
+  e.dataset.tip = e.getAttribute('title'); e.removeAttribute('title');
+}
+function restoreTip(e) { if (e.dataset.tip == null) return; if (!e.hasAttribute('title')) e.setAttribute('title', e.dataset.tip); delete e.dataset.tip; }
+function syncTips() {
+  const on = labelsOn();
+  document.querySelectorAll('[title], [data-tip]').forEach(e => { if (on && nameShown(e)) stashTip(e); else restoreTip(e); });
+}
+addEventListener('resize', () => { clearTimeout(syncTips._t); syncTips._t = setTimeout(syncTips, 200); });
+function applyLabels() { document.documentElement.classList.toggle('labels', labelsOn()); syncTips(); }
+// buttons made later (every panel is drawn afresh) lose their tooltip the moment they appear, while names are on
+new MutationObserver(ms => {
+  if (!labelsOn()) return;
+  for (const m of ms) {
+    if (m.type === 'attributes') stashTip(m.target);
+    else m.addedNodes.forEach(n => { if (n.nodeType === 1) { stashTip(n); if (n.querySelectorAll) n.querySelectorAll('[title]').forEach(stashTip); } });
+  }
+}).observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ['title'] });
 function applyTheme() {
   if (UI.theme === 'light' || UI.theme === 'dark') document.documentElement.dataset.theme = UI.theme;
   else delete document.documentElement.dataset.theme;
@@ -7624,6 +7671,7 @@ function bind() {
   $('#setAllGlobal').addEventListener('click', () => allPlacesGlobal());
   $('#setTheme').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; fadeSwap(() => { UI.theme = b.dataset.v === 'system' ? null : b.dataset.v; saveUI(); applyTheme(); syncSettings(); }); });
   $('#setMotion').addEventListener('change', e => { UI.motion = e.target.checked; saveUI(); applyMotion(); });
+  $('#setLabels').addEventListener('change', e => { UI.labels = e.target.checked; saveUI(); applyLabels(); });
   $('#setCosts').addEventListener('change', e => { UI.costs = e.target.checked; saveUI(); syncCostBtn(); renderGraph(); });
   $('#setPin').addEventListener('change', e => { if (e.target.checked !== pinOn()) togglePin(); });
   $('#setTour').addEventListener('click', () => { closeSettings(); startTour(); });
@@ -7771,7 +7819,7 @@ function bind() {
       for (const k of keys) if (k in u) UI[k] = u[k];
       // during the tour, keep them for when your own plans come back too, so ending it does not write older ones back
       if (TOUR) { try { const t = JSON.parse(TOUR.ui); for (const k of keys) if (k in u) t[k] = u[k]; TOUR.ui = JSON.stringify(t); } catch (err) { /* keep what is there */ } }
-      applyTheme(); applyMotion(); syncCostBtn(); syncSettings();
+      applyTheme(); applyMotion(); applyLabels(); syncCostBtn(); syncSettings();
       if (pinWas !== pinOn() || costsWas !== !!UI.costs || fitWas !== autoFitOn()) { renderGraph(); syncToolbar(); }
     }
   });
@@ -8282,7 +8330,7 @@ function endTour() {
   UI.theme = theme; // a theme picked during the tour stays
   undoStack.splice(0, undoStack.length, ...t.undo); redoStack.splice(0, redoStack.length, ...t.redo);
   sel = null; edit = null; draft = null; B = null; viewPlan = t.view && S.plans[t.view] ? t.view : null; focusPlan = viewPlan; hoverPlan = null; hoverLeg = null; renaming = null; scrubT = null; pinned = false;
-  saveUI(); applyMode(); applyTheme(); applyMotion(); syncCostBtn(); // settings changed during the tour go back on screen too
+  saveUI(); applyMode(); applyTheme(); applyMotion(); applyLabels(); syncCostBtn(); // settings changed during the tour go back on screen too
   // the details panel is closed until something is picked
   sideOpen = false; $('#main').classList.add('side-hidden');
   applySideW(); // the panel width you had before the tour
@@ -8303,6 +8351,7 @@ S = tripView(TRIP);
 applyViewOnly();
 applyTheme();
 applyMotion();
+applyLabels();
 syncCostBtn();
 // The details panel starts closed: it opens when a plan, a leg or a place is picked.
 sideOpen = false;
