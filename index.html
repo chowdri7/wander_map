@@ -2232,28 +2232,29 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
 <body>
 <div class="app">
   <header class="topbar">
-  <div class="brand"><img class="brand-mark" alt="" width="28" height="28"><h1>Wander Map</h1><div class="menu trip-menu" id="tripMenu"><button class="btn trip-btn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" title="Your trips: open another, or add one"><span class="trip-lab">Trip</span><b id="tripName"></b><span class="caret" aria-hidden="true"></span></button><div class="menu-pop" role="menu" hidden></div></div></div>
+  <div class="brand"><img class="brand-mark" alt="" width="28" height="28"><h1>Wander Map</h1><div class="menu trip-menu" id="tripMenu"><button class="btn trip-btn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" title="Your trips: open another, or add one"><span class="trip-lab">Trip</span><b id="tripName"></b><span class="caret" aria-hidden="true"></span></button><div class="menu-pop" role="menu" hidden></div></div>
+    <div class="menu" id="createGroup">
+      <button class="btn primary newbtn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" data-ico="plus" title="Create a place, a leg or a plan"><span class="nb-lab">New</span><span class="nb-chev" aria-hidden="true"></span></button>
+      <div class="menu-pop" role="menu" hidden>
+        <button type="button" role="menuitem" id="addNode" data-ico="place">Place<small>A home, station, airport or town</small></button>
+        <button type="button" role="menuitem" id="addLeg" data-ico="leg">Leg<small>One way to travel between two places</small></button>
+        <button type="button" role="menuitem" id="makePlan" data-ico="plan">Plan<small>A complete way from start to finish</small></button>
+      </div>
+    </div>
+  </div>
   <div class="toolbar" id="toolbar" role="toolbar" aria-label="Planner tools">
     <span class="spacer"></span>
     <div class="tgroup" id="editTools">
       <button id="undo" class="btn icon" type="button" data-ico="undo" title="Undo (Ctrl+Z)">Undo</button>
       <button id="redo" class="btn icon" type="button" data-ico="redo" title="Redo (Ctrl+Shift+Z or Ctrl+Y)">Redo</button>
     </div>
-    <div class="menu" id="createGroup">
-      <button class="btn primary newbtn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" data-ico="plus" title="Create a place, a leg or a plan"><span class="nb-lab">New</span><span class="nb-chev" aria-hidden="true"></span></button>
-      <div class="menu-pop right" role="menu" hidden>
-        <button type="button" role="menuitem" id="addNode" data-ico="place">Place<small>A home, station, airport or town</small></button>
-        <button type="button" role="menuitem" id="addLeg" data-ico="leg">Leg<small>One way to travel between two places</small></button>
-        <button type="button" role="menuitem" id="makePlan" data-ico="plan">Plan<small>A complete way from start to finish</small></button>
-      </div>
-    </div>
     <span class="tb-sep vsep"></span>
-    <button id="themeBtn" class="btn icon" type="button" data-ico="moon" aria-pressed="false" aria-label="Dark mode" title="Switch to dark mode">Theme</button>
-    <button id="settingsBtn" class="btn icon" type="button" data-ico="gear" aria-haspopup="dialog" aria-controls="settings" title="Settings">Settings</button>
     <div class="modeseg" id="modeSeg" role="group" aria-label="Mode">
       <button id="modeEdit" type="button" data-ico="edit" aria-pressed="true" aria-label="Edit" title="Edit">Edit</button>
       <button id="modeView" type="button" data-ico="eye" aria-pressed="false" aria-label="View only" title="View only">View</button>
     </div>
+    <button id="themeBtn" class="btn icon" type="button" data-ico="moon" aria-pressed="false" aria-label="Dark mode" title="Switch to dark mode">Theme</button>
+    <button id="settingsBtn" class="btn icon" type="button" data-ico="gear" aria-haspopup="dialog" aria-controls="settings" title="Settings">Settings</button>
     <button id="keysBtn" class="btn icon" type="button" data-ico="kbd" aria-haspopup="dialog" aria-controls="keysDlg" title="Shortcuts (?)">Shortcuts</button>
     <div class="menu" id="helpMenu"><button id="helpBtn" class="btn icon" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="help" title="How it works">Help</button><div class="menu-pop right helppop" role="dialog" aria-label="How it works" hidden></div></div>
     <button id="importBtn" class="btn phone-import" type="button" data-ico="up" title="Import plans from a file">Import</button>
@@ -8200,7 +8201,7 @@ const TOUR_STEPS = [
   { target: () => $('#arrangeBtn'), title: 'Arrange by dragging', body: 'The arrows icon turns Arrange on. Then drag a place up or down, drag a leg sideways to move its times, or drag from one place’s line to another to add a leg. Esc, or the icon again, turns it off.' },
   { target: () => $('#viewTabs'), title: 'One tab for each plan', body: 'A plan is one complete way from start to finish. Choose its tab to see only that plan.' },
   { target: () => $('.dock-bar'), title: 'Compare plans', body: 'Pull this bar up to compare your plans. Click one to read its itinerary and costs in the details panel.', before: () => { if (UI.drawer) setDrawer(false); } },
-  { target: () => $('#createGroup'), title: 'Add, and make plans', body: 'Choose New, beside Undo and Redo at the top, to add a place, a leg or a plan. For a plan, click the leg you leave on, then take the way on at each place until you get there.' },
+  { target: () => $('#createGroup'), title: 'Add, and make plans', body: 'Choose New, beside the trip’s name at the top, to add a place, a leg or a plan. For a plan, click the leg you leave on, then take the way on at each place until you get there.' },
   { target: () => $('#modeSeg'), title: 'Edit, or just view', body: 'Switch to View to look at everything without changing anything.' },
   { target: () => $('#keysBtn'), title: 'Shortcuts', body: 'The keyboard icon (or the ? key) lists every keyboard and mouse shortcut, with what each one does.' },
   { target: () => $('#settingsBtn'), title: 'Settings', body: 'The theme, the sky, your currency and budget, and Export and Import to keep a copy or move your plans to another device.' },
