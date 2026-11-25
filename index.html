@@ -1853,6 +1853,8 @@ html.glass .dock-split::after{background:var(--g-field)}
 html.glass .side-split::after{background:var(--g-field)}
 /* the closed details panel leaves no line behind */
 @media (min-width:901px){.main.side-hidden .side{border-width:0 !important}}
+/* the sky drawn below the chart shows in space that opens up while a panel moves (it adds no scrolling) */
+#graph,#pinSvg{overflow:visible}
 </style>
 </head>
 <body>
@@ -2081,7 +2083,7 @@ const MODE = Object.fromEntries(MODES.map(([k, label, color]) => [k, { label, co
 const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
 const SERIF = '"Iowan Old Style", Charter, "Bitstream Charter", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Noto Serif", "DejaVu Serif", serif';
 const F = { place: `600 12px ${FONT}`, small: `11px ${FONT}`, time: `600 11px ${FONT}`, dur: `600 10.5px ${FONT}`, cost: `700 11px ${FONT}`, root: `600 14px ${SERIF}`, badge: `600 12px ${FONT}` };
-const LAY = { top: 68, rowH: 96, right: 260, sky: 48 };   // sky: room for the sun and moon above the first place
+const LAY = { top: 68, rowH: 96, right: 260, sky: 48, deep: 2400 };   // deep: how far the sky is drawn below the chart, so space opening up while a panel moves is never bare   // sky: room for the sun and moon above the first place
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const BUFS = [0, 15, 30, 60, 120, 180];
@@ -2731,7 +2733,7 @@ function renderGraph() {
   pinSvg.setAttribute('width', pw); pinSvg.setAttribute('height', height); pinSvg.setAttribute('viewBox', `0 0 ${pw} ${height}`);
   pinSvg.style.marginBottom = `-${height}px`;
   $('#gwrap').style.width = viewOnly ? '' : width + 'px'; // phones show the list, not the chart
-  el('rect', { x: 0, y: 0, width: pw, height, class: 'pinbg' }, gPin);
+  el('rect', { x: 0, y: 0, width: pw, height: height + LAY.deep, class: 'pinbg' }, gPin);
   rows.forEach((r, i) => { if (i % 2 === 0) el('rect', { x: 0, y: r.top, width: pw, height: r.bot - r.top, class: 'rowband' }, gPin); });
   el('line', { x1: pw, x2: pw, y1: 0, y2: height, class: 'pinedge' }, gPin);
   const hy = LAY.top + (timeOn ? LAY.sky : 0);   // the header sits right above the first place
@@ -3031,7 +3033,7 @@ function drawTimeAxis(g) {
     const a = Math.max(tmin, day), b = Math.min(tmax, next);
     if (b > a) {
       // the day's light across the whole chart
-      el('rect', { x: X(a), y: yA, width: X(b) - X(a), height: height - yA, fill: `url(#skyb${i})`, class: 'skybody' }, g);
+      el('rect', { x: X(a), y: yA, width: X(b) - X(a), height: height - yA + LAY.deep, fill: `url(#skyb${i})`, class: 'skybody' }, g);
       el('rect', { x: X(day), y: sy, width: X(next) - X(day), height: sh, fill: `url(#sky${i})` }, sky);
       const r = rng(day / H + 7);
       // the midday sky is brightest near the top, as a clear sky is
@@ -3102,7 +3104,7 @@ function drawTimeAxis(g) {
       for (const [hr, name] of [[6, 'Sunrise, about 6 AM'], [18, 'Sunset, about 6 PM']]) {
         const t = day + hr * H; if (t < tmin || t > tmax) continue;
         const x = X(t);
-        tip(el('line', { x1: x, x2: x, y1: yA, y2: height, class: 'goldline' }, g), name);
+        tip(el('line', { x1: x, x2: x, y1: yA, y2: height + LAY.deep, class: 'goldline' }, g), name);
         art.push(['circle', { cx: x, cy: hz, r: 13, fill: 'url(#sunglow)', class: 'nohit' }]);
         art.push(['path', { d: `M${x - 6.5} ${hz} A6.5 6.5 0 0 1 ${x + 6.5} ${hz} Z`, class: 'halfsun' }, name]);
       }
@@ -3166,11 +3168,11 @@ function drawTimeAxis(g) {
     if (hr === 0) {
       if (firstMid == null) firstMid = x;
       const gap = moonGap.get(t);
-      if (gap) { el('line', { x1: x, x2: x, y1: hz, y2: gap[0], class: 'midnight' }, g); el('line', { x1: x, x2: x, y1: gap[1], y2: height, class: 'midnight' }, g); }
-      else el('line', { x1: x, x2: x, y1: hz, y2: height, class: 'midnight' }, g);
+      if (gap) { el('line', { x1: x, x2: x, y1: hz, y2: gap[0], class: 'midnight' }, g); el('line', { x1: x, x2: x, y1: gap[1], y2: height + LAY.deep, class: 'midnight' }, g); }
+      else el('line', { x1: x, x2: x, y1: hz, y2: height + LAY.deep, class: 'midnight' }, g);
       dayPill(x + 4, t);
     } else if (hr % step === 0) {
-      el('line', { x1: x, x2: x, y1: yA, y2: height, class: 'tick' + (hr === 12 ? ' noon' : '') }, g);
+      el('line', { x1: x, x2: x, y1: yA, y2: height + LAY.deep, class: 'tick' + (hr === 12 ? ' noon' : '') }, g);
       if (pph * step >= 34) txt(g, x, yA - 4, hm(t), 'hrlbl halo');
     }
   }
@@ -5340,12 +5342,14 @@ function bind() {
       if (viewOnly) return;
       const hh = $('#graphScroll').clientHeight;
       $('.graph-card').classList.toggle('cramped', hh < 150);
-      if (dock.classList.contains('resizing')) return;
       if (Math.abs(hh - lastH) <= 2) return;
       flips = Math.abs(hh - prevH) <= 2 ? flips + 1 : 0;
       prevH = lastH; lastH = hh;
       if (flips > 4) return;
-      clearTimeout(bind._ro); bind._ro = setTimeout(renderGraph, 60);
+      // keep up while a panel is being pulled or is opening (at most about ten times a second), then draw the final size
+      clearTimeout(bind._ro);
+      if (performance.now() - (bind._roAt || 0) > 90) { bind._roAt = performance.now(); renderGraph(); }
+      bind._ro = setTimeout(() => { bind._roAt = performance.now(); renderGraph(); }, 90);
     }).observe($('#graphScroll'));
     // and once more when a panel has finished moving, whatever happened on the way
     $('#drawerBody').addEventListener('transitionend', e => { if (e.target === e.currentTarget && e.propertyName === 'height') { flips = 0; renderGraph(); } });
