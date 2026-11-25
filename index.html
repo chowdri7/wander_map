@@ -1876,6 +1876,10 @@ html.glass .side-split::after{background:var(--g-field)}
   html.glass .dock.resizing .dock-split{transition:none}
 }
 @media (prefers-reduced-motion:reduce){html.glass .dock .dock-body,html.glass .dock .dock-split{transition:none !important}}
+/* the timeline's hint, and the moment under the pointer, sit beside its title: the plans sheet never covers them */
+.card-head .now{flex:1 1 auto;min-width:0;height:auto !important;min-height:0;margin:0 14px 0 16px;padding:0 !important;border:0 !important;background:none !important;overflow:hidden;font-size:12px;line-height:1.35;color:var(--muted)}
+.card-head .now .hint{margin:0;font-size:12px;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-head .now strong{color:var(--ink) !important;font-weight:600}
 </style>
 </head>
 <body>
@@ -1903,7 +1907,7 @@ html.glass .side-split::after{background:var(--g-field)}
   <div class="main" id="main">
     <div class="maincol">
     <section class="card graph-card" aria-label="Places and legs">
-      <div class="card-head"><h2 id="graphTitle">Places and legs</h2><span class="vo-note">View only · edit on a computer</span>
+      <div class="card-head"><h2 id="graphTitle">Places and legs</h2><div id="now" class="now" aria-live="polite"></div><span class="vo-note">View only · edit on a computer</span>
         <div class="ctools" role="toolbar" aria-label="Timeline tools">
           <button id="costBtn" class="btn small" type="button" data-ico="coin" aria-pressed="false" title="Show the cost of each leg on the timeline">Costs: off</button>
           <span class="zoomgrp"><span class="tb-label">Zoom</span><input id="zoom" type="range" min="3" max="60" step="1" aria-label="Zoom timeline"></span>
@@ -1969,7 +1973,6 @@ html.glass .side-split::after{background:var(--g-field)}
           </div>
         </div>
       </div>
-      <div id="now" class="now" aria-live="polite"></div>
     </section>
     <section class="dock" id="drawer" aria-label="Plans">
       <div class="dock-split" id="dockSplit" role="separator" aria-orientation="horizontal" aria-label="Resize the plans panel: arrow keys" tabindex="0" title="Drag the bar up or down"></div>
