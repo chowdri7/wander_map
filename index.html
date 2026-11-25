@@ -261,8 +261,8 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 3px 0 0 v
 .pname{display:inline-flex;align-items:baseline;gap:8px;font-weight:600;white-space:nowrap}
 td.route{color:var(--ink2);min-width:200px}
 /* names on buttons: icon buttons show their name beside the icon (Settings > Appearance) */
-html.labels .btn.icon:not(.lkrow .btn):not(.pickpop .btn),html.labels #arrangeBtn,html.labels #dayBtn{width:auto !important;padding:0 11px !important;font-size:12.5px !important;gap:6px !important;border-radius:999px !important}
-html.labels .btn.small.icon:not(.lkrow .btn):not(.pickpop .btn),html.labels #arrangeBtn,html.labels #dayBtn{padding:0 9px !important;font-size:12px !important}
+html.labels .btn.icon:not(.lkrow .btn):not(.pickpop .btn),html.labels #arrangeBtn,html.labels #dayBtn,html.labels #costBtn,html.labels #keyBtn{width:auto !important;padding:0 11px !important;font-size:12.5px !important;gap:6px !important;border-radius:999px !important}
+html.labels .btn.small.icon:not(.lkrow .btn):not(.pickpop .btn),html.labels #arrangeBtn,html.labels #dayBtn,html.labels #costBtn,html.labels #keyBtn{padding:0 9px !important;font-size:12px !important}
 html.labels .modeseg button{width:auto;min-width:0;padding:0 12px;font-size:12.5px;gap:6px}
 html.labels .side-foot .btn.primary .lbl{display:inline !important}
 html.labels .side-foot > .btn.danger{width:auto !important;padding:0 11px !important;font-size:12.5px !important;gap:6px !important}
@@ -1982,7 +1982,7 @@ html.glass .side-split::after{background:var(--g-field)}
 .card-head .now strong{color:var(--ink) !important;font-weight:600}
 /* narrower windows: Arrange shows its icon only, and the hint gives way before it is squeezed to nothing */
 /* Arrange and the day are icons (their names are in their tooltips, and the tour shows what they do) */
-#arrangeBtn,#dayBtn{width:30px;padding:0 !important;font-size:0;gap:0;justify-content:center}
+#arrangeBtn,#dayBtn,#costBtn,#keyBtn{width:30px;padding:0 !important;font-size:0;gap:0;justify-content:center}
 /* the hint takes only the room the title and the tools leave, and steps aside before it is squeezed to nothing */
 .graph-card .card-head{container-type:inline-size}
 @container (max-width:830px){.card-head .now{display:none}}
@@ -2268,12 +2268,12 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
     <section class="card graph-card" aria-label="Places and legs">
       <div class="card-head"><h2 id="graphTitle">Places and legs</h2><div id="now" class="now" aria-live="polite"></div><span class="vo-note">View only · edit on a computer</span>
         <div class="ctools" role="toolbar" aria-label="Timeline tools">
-          <button id="costBtn" class="btn small" type="button" data-ico="coin" aria-pressed="false" title="Show the cost of each leg on the timeline">Costs: off</button>
+          <button id="costBtn" class="btn small" type="button" data-ico="coin" aria-pressed="false" aria-label="Costs on the timeline" title="Costs: off">Costs: off</button>
           <span class="zoomgrp"><span class="tb-label">Zoom</span><input id="zoom" type="range" min="3" max="60" step="1" aria-label="Zoom timeline"></span>
           <button id="fit" class="btn small icon" type="button" data-ico="fit" title="Fit the whole timeline on screen">Fit</button>
           <div class="menu" id="dayMenu"><button class="btn small" id="dayBtn" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="cal" title="Choose the day the timeline shows">Day</button><div class="menu-pop right daypop" role="dialog" aria-label="The day the timeline shows" hidden><div class="dp-head">Day on the timeline</div><span id="dayBox"></span><div class="dp-btns"><button type="button" class="btn small" id="dayToday">Today</button><button type="button" class="btn small" id="dayAuto" title="Start at the first leg">From the first leg</button></div><p class="dp-note">With no legs yet the timeline shows today. A day you choose is added to the timeline and kept with this trip, so you can start planning right there.</p></div></div>
           <button id="arrangeBtn" class="btn small" type="button" data-ico="move" aria-pressed="false" aria-label="Arrange" title="Arrange: drag places and legs">Arrange</button>
-          <div class="menu" id="keyMenu"><button class="btn small" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="key" title="What the colours and lines mean">Key</button><div class="menu-pop right keypop" role="dialog" aria-label="Colour key" hidden><div class="legend" id="legend"></div></div></div>
+          <div class="menu" id="keyMenu"><button class="btn small" id="keyBtn" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="key" aria-label="Key: what the colours mean" title="Key: what the colours mean">Key</button><div class="menu-pop right keypop" role="dialog" aria-label="Colour key" hidden><div class="legend" id="legend"></div></div></div>
         </div>
       </div>
       <div class="vtabs-wrap" id="vtabsWrap">
@@ -6406,6 +6406,7 @@ function syncCostBtn() {
   b.setAttribute('aria-pressed', String(!!UI.costs));
   b.classList.toggle('on', !!UI.costs);
   b.textContent = UI.costs ? 'Costs: on' : 'Costs: off';
+  b.title = b.textContent; // the tooltip, when names are off; the button says it when they are on
 }
 function effectiveTheme() {
   const t = document.documentElement.dataset.theme;
