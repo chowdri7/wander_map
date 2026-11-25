@@ -261,11 +261,11 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 3px 0 0 v
 .pname{display:inline-flex;align-items:baseline;gap:8px;font-weight:600;white-space:nowrap}
 td.route{color:var(--ink2);min-width:200px}
 /* names on buttons: icon buttons show their name beside the icon (Settings > Appearance) */
-html.labels .btn.icon:not(.lkrow .btn):not(.pickpop .btn):not(.topbar .btn):not(#fit),html.labels #arrangeBtn,html.labels #dayBtn,html.labels #costBtn,html.labels #keyBtn{width:auto !important;padding:0 11px !important;font-size:12.5px !important;gap:6px !important;border-radius:999px !important}
-html.labels .btn.small.icon:not(.lkrow .btn):not(.pickpop .btn):not(.topbar .btn):not(#fit),html.labels #arrangeBtn,html.labels #dayBtn,html.labels #costBtn,html.labels #keyBtn{padding:0 9px !important;font-size:12px !important}
+html.labels .btn.icon:not(.lkrow .btn):not(.pickpop .btn):not(.topbar .btn):not(#fit):not([data-ico="dots"]),html.labels #arrangeBtn,html.labels #dayBtn,html.labels #costBtn,html.labels #keyBtn{width:auto !important;padding:0 11px !important;font-size:12.5px !important;gap:6px !important;border-radius:999px !important}
+html.labels .btn.small.icon:not(.lkrow .btn):not(.pickpop .btn):not(.topbar .btn):not(#fit):not([data-ico="dots"]),html.labels #arrangeBtn,html.labels #dayBtn,html.labels #costBtn,html.labels #keyBtn{padding:0 9px !important;font-size:12px !important}
 html.labels .side-foot .btn.primary .lbl{display:inline !important}
 html.labels .side-foot > .btn.danger{width:auto !important;padding:0 11px !important;font-size:12.5px !important;gap:6px !important}
-/* The top bar: Undo, Redo, Theme, Settings, Shortcuts and Help (and Fit, above the timeline) are always symbols, with
+/* The top bar: Undo, Redo, Theme, Settings, Shortcuts and Help (and Fit, and every More ⋯) are always symbols, with
    their tooltips; New always has its name; Edit | View take theirs with the switch (down to 901px wide, below which
    there is no room) */
 @media (min-width:901px){html.labels #modeSeg button{width:auto;min-width:0;padding:0 13px;font-size:12.5px;gap:6px}}
