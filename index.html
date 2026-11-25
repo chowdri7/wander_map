@@ -1974,6 +1974,17 @@ html.glass .axiscorner{-webkit-backdrop-filter:blur(16px) saturate(170%);backdro
 .helppop .help h2{margin-top:0}
 .helppop .help li{font-size:13px}
 .empty-help .btn{margin-top:4px}
+/* Import: add to mine or replace mine */
+.imp-opt{display:flex;flex-direction:column;align-items:flex-start;gap:4px;width:100%;margin:0 0 10px;padding:12px 14px;text-align:left;font:inherit;color:var(--ink);cursor:pointer;border:1px solid var(--border);border-radius:12px;background:var(--surface);transition:background-color .15s,border-color .15s}
+.imp-opt b{font-size:14px;font-weight:650}
+.imp-opt small{font-size:12px;line-height:1.45;color:var(--muted)}
+.imp-opt:hover{background:var(--surface2)}
+.imp-opt.primary{border-color:color-mix(in srgb,var(--accent) 55%,transparent);background:color-mix(in srgb,var(--accent) 9%,var(--surface))}
+.imp-opt.danger b{color:var(--bad)}
+.imp-opt:focus-visible{outline:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 55%,transparent)}
+html.glass .imp-opt{background:var(--g-inner);border-color:var(--g-edge)}
+html.glass .imp-opt:hover{background:var(--g-strong)}
+html.glass .imp-opt.primary{background:color-mix(in srgb,var(--accent) 12%,var(--g-inner));border-color:color-mix(in srgb,var(--accent) 50%,transparent)}
 /* right-click menus: the same look as every other menu, at the pointer, with the keys for each action */
 .ctx-menu{position:fixed;left:0;top:0;width:0;height:0;z-index:95}
 .ctx-pop{position:fixed;min-width:236px;max-width:360px;z-index:95}
@@ -2296,7 +2307,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
         <div class="set-card">
           <div class="set-row"><div class="set-lab"><b>Export plans</b><small>Save everything to a file, to keep a copy or move it</small></div>
             <div class="set-ctl"><button type="button" class="btn small" id="export" data-ico="down">Export</button></div></div>
-          <div class="set-row"><div class="set-lab"><b>Import plans</b><small>Load plans from a file you exported</small></div>
+          <div class="set-row"><div class="set-lab"><b>Import plans</b><small>Add plans from a file you exported, or replace yours with it</small></div>
             <div class="set-ctl"><button type="button" class="btn small" id="menuImport" data-ico="up">Import</button></div></div>
           <div class="set-row"><div class="set-lab"><b>Clear this trip</b><small>Remove its legs, plans and the places kept to it. Places in every trip stay. You can undo it.</small></div>
             <div class="set-ctl"><button type="button" class="btn small danger" id="clear" data-ico="trash">Clear</button></div></div>
@@ -2923,6 +2934,53 @@ function tripDialog(mode) {
   }
   document.body.append(dlg); document.body.classList.add('modal-open');
   if (mode === 'delete') setTimeout(() => { const b = dlg.querySelector('.trip-btns .btn'); if (b) b.focus(); }, 20);
+}
+// Importing a whole library: add it to what is here (nothing here is lost: plans copied since the file was exported
+// stay), or replace everything with it. Either way Undo in the note brings back what was here.
+function mergeOrder(first, mine) {
+  const out = (first || []).filter((x, i, a) => a.indexOf(x) === i);
+  (mine || []).forEach((id, i) => {
+    if (out.includes(id)) return;
+    let j = -1; for (let k = i - 1; k >= 0 && j < 0; k--) j = out.indexOf(mine[k]); // where it was: after the one before it
+    out.splice(j + 1, 0, id);
+  });
+  return out;
+}
+function mergeLib(cur, inc) {
+  const lib = JSON.parse(JSON.stringify(cur)), n = { trips: 0, added: 0, updated: 0, kept: 0 };
+  Object.assign(lib.places, JSON.parse(JSON.stringify(inc.places || {})));
+  for (const tid of inc.tripOrder) {
+    const t = JSON.parse(JSON.stringify(inc.trips[tid]));
+    if (!lib.trips[tid]) { lib.trips[tid] = t; lib.tripOrder.push(tid); n.trips++; n.added += Object.keys(t.data.plans || {}).length; continue; }
+    const a = lib.trips[tid].data, b = t.data;
+    lib.trips[tid].name = t.name;
+    for (const id in b.plans || {}) { if (!(a.plans || {})[id]) n.added++; else if (JSON.stringify(a.plans[id]) !== JSON.stringify(b.plans[id])) n.updated++; }
+    for (const id in a.plans || {}) if (!(b.plans || {})[id]) n.kept++;
+    for (const k of ['nodes', 'legs', 'plans']) a[k] = Object.assign({}, a[k] || {}, b[k] || {});
+    a.order = mergeOrder(b.order, a.order);
+    a.planOrder = mergeOrder(b.planOrder, a.planOrder);
+    for (const k of ['budget', 'currency', 'pph', 'day', 'sort']) if (k in b) a[k] = b[k];
+    if (b.picked) a.picked = b.picked;
+    a.seq = Math.max(+a.seq || 1, +b.seq || 1); a.example = false;
+  }
+  return { lib, n };
+}
+function importChoice(inc, file, pick) {
+  closeTripDlg();
+  const count = L => ({ trips: L.tripOrder.length, plans: L.tripOrder.reduce((k, id) => k + Object.keys((L.trips[id].data && L.trips[id].data.plans) || {}).length, 0) });
+  const f = count(inc), m = count(LIB), say = c => `${c.trips} trip${c.trips === 1 ? '' : 's'} and ${c.plans} plan${c.plans === 1 ? '' : 's'}`;
+  const card = h('div', { class: 'modal-card trip-card' });
+  const dlg = h('div', { class: 'modal', id: 'tripDlg', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'tripDlgTitle' }, card);
+  dlg.addEventListener('click', e => { if (e.target === dlg) closeTripDlg(); });
+  const opt = (title, sub, cls, how) => h('button', { type: 'button', class: 'imp-opt ' + cls, onclick: () => { closeTripDlg(); pick(how); } }, h('b', { text: title }), h('small', { text: sub }));
+  card.append(h('div', { class: 'modal-head' }, h('div', null, h('h2', { id: 'tripDlgTitle', text: 'Import' }), h('p', { class: 'modal-sub', text: `The file has ${say(f)}; you have ${say(m)} here.` })),
+      h('button', { class: 'icon-btn', type: 'button', title: 'Close', 'aria-label': 'Close', text: '×', onclick: () => closeTripDlg() })),
+    h('div', { class: 'modal-body trip-body' },
+      opt('Add to mine', 'Everything you have stays, plan copies you made since included. What the file has is added, and anything in both takes the file’s version.', 'primary', 'add'),
+      opt('Replace mine', 'Everything here becomes what is in the file. What you made after exporting it is gone, until you choose Undo.', 'danger', 'replace'),
+      h('div', { class: 'trip-btns' }, btn('Cancel', () => closeTripDlg()))));
+  document.body.append(dlg); document.body.classList.add('modal-open');
+  setTimeout(() => { const b = dlg.querySelector('.imp-opt'); if (b) b.focus(); }, 20);
 }
 function closeTripDlg() { const d = $('#tripDlg'); if (d) d.remove(); if ($('#settings').hidden) document.body.classList.remove('modal-open'); }
 function newTrip(name) {
@@ -7256,13 +7314,35 @@ function bind() {
     if (!file) return;
     try {
       const raw = JSON.parse(await file.text()), lib = readLib(raw);
-      save();
-      const before = JSON.stringify(LIB), wasTrip = TRIP;
-      const back = () => { LIB = readLib(JSON.parse(before)); openTrip(LIB.trips[wasTrip] ? wasTrip : LIB.tripOrder[0], true); save(); toast('Back as before the file'); };
+      // what is here now, for Undo
+      const begin = () => {
+        save();
+        const before = JSON.stringify(LIB), wasTrip = TRIP;
+        return () => { LIB = readLib(JSON.parse(before)); openTrip(LIB.trips[wasTrip] ? wasTrip : LIB.tripOrder[0], true); save(); toast('Back as before the file'); };
+      };
+      const done = (msg, back) => {
+        const nb = BROKEN.nodes.length + BROKEN.legs.length + BROKEN.plans.length;
+        toast(nb && canEdit() ? `${msg}. ${nb === 1 ? 'One item is' : `${nb} items are`} incomplete: the note above the timeline lists ${nb === 1 ? 'it' : 'them'} to fix.` : msg, back);
+      };
       if (lib) {
-        // a whole library (an export of every trip) takes the place of yours; Undo brings yours back
-        LIB = lib; openTrip(LIB.trips[UI.trip] ? UI.trip : LIB.tripOrder[0], true); save();
-      } else {
+        // a whole library (an export of every trip): added to yours, or in place of it, as you choose
+        importChoice(lib, file.name, how => {
+          const back = begin(), wasTrip = TRIP;
+          if (how === 'replace') {
+            LIB = lib; openTrip(LIB.trips[UI.trip] ? UI.trip : LIB.tripOrder[0], true); save();
+            done(`Loaded ${file.name}`, back);
+          } else {
+            const r = mergeLib(LIB, lib);
+            LIB = r.lib; openTrip(LIB.trips[wasTrip] ? wasTrip : LIB.tripOrder[0], true); save();
+            const bits = [r.n.trips ? `${r.n.trips} new trip${r.n.trips > 1 ? 's' : ''}` : null, r.n.added ? `${r.n.added} new plan${r.n.added > 1 ? 's' : ''}` : null, r.n.updated ? `${r.n.updated} updated` : null,
+              r.n.kept ? `${r.n.kept} of yours kept` : null].filter(Boolean);
+            done(`Added ${file.name}${bits.length ? ': ' + listJoin(bits) : ': nothing new'}`, back);
+          }
+        });
+        return;
+      }
+      const back = begin();
+      {
         // one trip (a file from before trips): added beside your trips, its places kept to it
         const d = normalize(raw); if (!d) throw new Error('bad');
         // its places: one with the name of a place you have in every trip is that place; the others are kept to the
@@ -7285,8 +7365,7 @@ function bind() {
         t.name = nm; LIB.trips[id] = t; LIB.tripOrder.push(id);
         openTrip(id, true); save();
       }
-      const nb = BROKEN.nodes.length + BROKEN.legs.length + BROKEN.plans.length;
-      toast(nb && canEdit() ? `Loaded ${file.name}. ${nb === 1 ? 'One item is' : `${nb} items are`} incomplete: the note above the timeline lists ${nb === 1 ? 'it' : 'them'} to fix.` : `Loaded ${file.name}`, back);
+      done(`Loaded ${file.name}`, back);
     } catch (err) { toast('That file is not a planner export'); }
   });
   const clearAll = () => {
