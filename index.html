@@ -260,6 +260,19 @@ table.plans tbody tr:hover{background:var(--surface2)}
 table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 3px 0 0 var(--accent)}
 .pname{display:inline-flex;align-items:baseline;gap:8px;font-weight:600;white-space:nowrap}
 td.route{color:var(--ink2);min-width:200px}
+/* an item's buttons beside its name */
+.insp-head > .head-acts{flex:none;display:flex;gap:4px;align-items:center}
+/* the arrow between two places, drawn the same in every font */
+.arw{display:inline-block;width:1.05em;height:1em;margin:0 .12em;vertical-align:-.17em;overflow:hidden;white-space:nowrap;-webkit-text-fill-color:transparent;background:currentColor;opacity:.75;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 12h15%22/%3E%3Cpath d=%22M13.5 6.5 19 12l-5.5 5.5%22/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 12h15%22/%3E%3Cpath d=%22M13.5 6.5 19 12l-5.5 5.5%22/%3E%3C/svg%3E") center/contain no-repeat}
+/* a plan's remarks, after its budget */
+.pp-remarks{margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+.pp-remarks h3{margin:0 0 8px;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.pp-remarks .pp-rem-in{display:block;width:100%;min-height:74px;resize:vertical;line-height:1.45}
+.pp-remarks .hint{display:block;margin-top:6px}
+.pp-remarks .ro-text{white-space:pre-wrap}
+.lk-add{margin-top:8px}
 /* the links of a place or a leg: a name with Open and Remove beside it, and the link under it */
 .lklist{display:grid;gap:8px}
 .lkrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:center;padding:8px;border:1px solid var(--border);border-radius:10px;background:color-mix(in srgb,var(--ink) 3%,transparent)}
@@ -2499,20 +2512,37 @@ function txt(parent, x, y, s, cls, extra) {
   t.textContent = s;
   return t;
 }
+// "→" between two places sits too low, or too small, in many fonts, so on the page it is drawn as an arrow of its own.
+// The character is still there underneath, so copied text keeps it.
+const PLAIN_TEXT = new Set(['OPTION', 'TEXTAREA', 'TITLE', 'SCRIPT', 'STYLE']);
+function arrowNodes(s) {
+  const out = [];
+  String(s).split('→').forEach((part, i) => {
+    if (i) { const a = document.createElement('span'); a.className = 'arw'; a.textContent = '→'; out.push(a); }
+    if (part) out.push(document.createTextNode(part));
+  });
+  return out;
+}
+function putText(e, s) {
+  s = s == null ? '' : String(s);
+  if (!s.includes('→') || PLAIN_TEXT.has(e.tagName)) e.textContent = s; else e.replaceChildren(...arrowNodes(s));
+}
 function h(tag, props, ...kids) {
   const e = document.createElement(tag);
   if (props) for (const k in props) {
     const v = props[k];
     if (v == null || v === false) continue;
     if (k === 'class') e.className = v;
-    else if (k === 'text') e.textContent = v;
+    else if (k === 'text') putText(e, v);
     else if (k === 'dataset') Object.assign(e.dataset, v);
     else if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2), v);
     else e.setAttribute(k, v === true ? '' : v);
   }
   for (const c of kids) {
     if (c == null || c === false) continue;
-    e.append(c.nodeType ? c : document.createTextNode(String(c)));
+    if (c.nodeType) e.append(c);
+    else if (!String(c).includes('→') || PLAIN_TEXT.has(e.tagName)) e.append(document.createTextNode(String(c)));
+    else e.append(...arrowNodes(c));
   }
   return e;
 }
@@ -2675,11 +2705,19 @@ function readLinks(box) {
   return [...box.querySelectorAll('.lkrow')].map(r => ({ name: r.querySelector('[data-lk=name]').value, url: r.querySelector('[data-lk=url]').value }))
     .filter(x => x.name.trim() || x.url.trim());
 }
-// The Links group: one row per link (a name, the link, Open and Remove), and always one empty row to add another.
+// The Links group: one row per link (a name, the link, Open and Remove). Add link makes the next row, and only once
+// every row above it has a link that can be opened.
 function linksGroup(o) {
-  const list = h('div', { class: 'lklist' });
-  const fire = () => { const i = list.querySelector('input'); if (i) i.dispatchEvent(new Event('input', { bubbles: true })); };
+  // data-f and data-lk: the panel hears the links change through the list itself (even with no row left),
+  // and the form does not read the list as a field of its own
+  const list = h('div', { class: 'lklist', 'data-f': 'links', 'data-lk': 'list' });
+  const fire = () => list.dispatchEvent(new Event('input', { bubbles: true }));
   const isEmpty = r => !r.querySelector('[data-lk=name]').value.trim() && !r.querySelector('[data-lk=url]').value.trim();
+  const add = h('button', { type: 'button', class: 'btn small lk-add', 'data-ico': 'plus', onclick: () => {
+    if (add.disabled) return;
+    const r = row({}); list.append(r); tidy(); fire();
+    r.querySelector('[data-lk=name]').focus();
+  } }, 'Add link');
   const row = x => {
     const name = h('input', { type: 'text', 'data-f': 'links', 'data-lk': 'name', maxlength: '60', autocomplete: 'off', placeholder: 'Name, e.g. Hotel booking', 'aria-label': 'Link name' });
     const url = h('input', { type: 'text', 'data-f': 'links', 'data-lk': 'url', inputmode: 'url', maxlength: '2000', autocomplete: 'off', spellcheck: 'false', placeholder: 'Paste a link: https://…', 'aria-label': 'Link' });
@@ -2688,25 +2726,24 @@ function linksGroup(o) {
     const open = h('button', { type: 'button', class: 'btn small icon', 'data-ico': 'open', title: 'Open the link in a new tab', 'aria-label': 'Open the link', onclick: () => openLink(url.value) }, 'Open');
     const del = h('button', { type: 'button', class: 'btn small icon', 'data-ico': 'close', title: 'Remove this link', 'aria-label': 'Remove this link', onclick: () => {
       const next = r.nextElementSibling || r.previousElementSibling; r.remove(); tidy(); fire();
-      const f = next && next.querySelector('input'); if (f) f.focus();
+      const f = next && next.querySelector('input'); (f || add).focus();
     } }, 'Remove');
     r.append(name, open, del, url, h('small', { class: 'lk-err', hidden: true }));
     r.addEventListener('focusout', e => { if (!r.contains(e.relatedTarget)) { r.dataset.left = '1'; check(); } });
     return r;
   };
-  // the rows stay tidy: one empty row at the end, the buttons only where there is a link, and a name to suggest
   const tidy = () => {
     const rows = [...list.querySelectorAll('.lkrow')];
-    rows.slice(0, -1).forEach(r => { if (isEmpty(r) && !r.contains(document.activeElement)) r.remove(); });
-    const last = list.lastElementChild;
-    if (!last || !isEmpty(last)) list.append(row({}));
-    list.querySelectorAll('.lkrow').forEach(r => {
-      const u = r.querySelector('[data-lk=url]').value, empty = isEmpty(r), web = webLink(u);
-      r.classList.toggle('blank', empty);
+    rows.forEach(r => {
+      const u = r.querySelector('[data-lk=url]').value, web = webLink(u);
+      r.classList.toggle('blank', isEmpty(r));
       r.querySelector('[data-ico=open]').disabled = !web;
-      r.querySelector('[data-ico=close]').hidden = empty;
       r.querySelector('[data-lk=name]').placeholder = web ? `Name (or it is called ${linkHost(u)})` : 'Name, e.g. Hotel booking';
     });
+    const waiting = rows.some(r => !webLink(r.querySelector('[data-lk=url]').value));
+    add.disabled = waiting;
+    add.title = waiting ? 'Fill in the link above first' : 'Add another link';
+    add.textContent = rows.length ? 'Add another link' : 'Add link';
     check();
   };
   // what is wrong is said under its row once you have left that row (or tried to save)
@@ -2722,9 +2759,9 @@ function linksGroup(o) {
   };
   list._check = check;
   cleanLinks(o.links).forEach(x => list.append(row(x)));
-  list.addEventListener('input', () => tidy());
+  list.addEventListener('input', e => { if (e.target !== list) tidy(); });
   tidy();
-  return fgroup('Links', list, h('p', { class: 'hint lk-hint', text: 'Just for your records: links are not in the itinerary or in Copy as text. Fill one in and there is room for another.' }));
+  return fgroup('Links', list, add, h('p', { class: 'hint lk-hint', text: 'Just for your records: links are not in the itinerary or in Copy as text.' }));
 }
 // before a save: the links must be ones that can be opened, each with its own name
 function linksOk() {
@@ -2834,6 +2871,7 @@ function normalize(d) {
     if (Array.isArray(p.pending)) o.pending = p.pending.map(String);
     if (p.waits && typeof p.waits === 'object') for (const k in p.waits) { const v = String(p.waits[k] ?? '').trim(); if (v) o.waits[k] = v.slice(0, 60); }
     if (Number.isInteger(p.cslot)) o.cslot = p.cslot;
+    if (typeof p.remarks === 'string' && p.remarks.trim()) o.remarks = p.remarks.trim().slice(0, 4000);
     out.plans[id] = o;
   }
   out.planOrder = (Array.isArray(d.planOrder) ? d.planOrder : []).map(String).filter((id, i, a) => out.plans[id] && a.indexOf(id) === i);
@@ -4378,6 +4416,12 @@ function budgetMeter(cost, budget) {
     h('span', { class: 'bm-bar', 'aria-hidden': 'true' }, h('i', { style: `width:${pct.toFixed(1)}%` })),
     h('span', { class: 'bm-txt', text: over ? `${money(cost - budget)} over budget` : `${money(budget - cost)} left` }));
 }
+// the buttons beside an item's name: its main action as an icon, then More for everything else (Delete last, set apart)
+function headActs(primary, items) {
+  const its = (items || []).filter(Boolean);
+  return h('div', { class: 'btns head-acts' }, primary || null, its.length ? menuEl('More actions', its, { small: true, right: true, iconOnly: true }) : null);
+}
+function headBtn(label, fn, ico, title, disabled) { const b = icoBtn(label, fn, 'small primary icon', ico, title || label, disabled); b.setAttribute('aria-label', label); return b; }
 function icoBtn(label, fn, cls, ico, title, disabled) { const b = btn(label, fn, cls, title, disabled); b.dataset.ico = ico; return b; }
 // One set of plan actions, the same wherever a plan is shown.
 function planActions(p, where) {
@@ -4406,10 +4450,12 @@ function nameTitle(p, where, cls) {
   return h('button', { type: 'button', class: 'name-btn' + (cls ? ' ' + cls : ''), title: 'Click to rename', 'aria-label': `${p.name}. Click to rename`, onclick: () => startRename(p.id, where) },
     h('span', { class: 'name-txt', text: (S.picked === p.id ? '★ ' : '') + p.name }), h('span', { class: 'pen', 'data-ico': 'edit', 'aria-hidden': 'true' }));
 }
-function inspHead(title, color, onClose) {
+// The top of the details panel: the item's name, its buttons (the main one, and More with the rest and Delete), and Close.
+function inspHead(title, color, onClose, acts) {
   return h('div', { class: 'insp-head' },
     h('span', { class: 'key-dot', style: `--c:${color}` }),
     h('div', null, h('h2', { text: title }), h('p', { class: 'crumb', id: 'liveCrumb' })),
+    acts || null,
     h('button', { class: 'icon-btn', type: 'button', title: 'Close', 'aria-label': 'Close', text: '×', onclick: onClose || (() => { if (!canLeave()) return; sel = null; renderInspector(); renderGraph(); }) }));
 }
 function input(obj, f, type, extra) {
@@ -4440,7 +4486,17 @@ function legList(title, ids, side) {
 function fgroup(title, ...kids) { return h('section', { class: 'fgroup' }, h('h4', { class: 'fgroup-h', text: title }), ...kids); }
 function nodeInspector(box, n) {
   const ed = editFor('node', n.id);
-  box.append(inspHead(nodeName(n.id), 'var(--ink)'));
+  const i = S.order.indexOf(n.id), cnt = legsFrom(n.id).length + legsTo(n.id).length;
+  box.append(inspHead(nodeName(n.id), 'var(--ink)', null, headActs(headBtn('Add leg from here', () => newLeg({ from: n.id }), 'leg', 'Add a leg that leaves this place'), [
+    { label: 'Add leg into here', sub: 'A leg that arrives at this place', ico: 'leg', run: () => newLeg({ to: n.id }) },
+    { label: 'Make a plan from here', sub: 'Start a plan at this place', ico: 'plan', run: () => startBuilder(null, n.id) },
+    { label: pinOn() ? 'Unpin the place names' : 'Pin the place names', sub: pinOn() ? 'Let them scroll with the timeline' : 'Keep them in view when you scroll sideways', ico: 'pin', run: togglePin },
+    S.order.length > 1 ? '-' : null,
+    S.order.length > 1 ? { label: 'Move row up', ico: 'up', disabled: i === 0, run: () => moveRow(n.id, -1) } : null,
+    S.order.length > 1 ? { label: 'Move row down', ico: 'down', disabled: i === S.order.length - 1, run: () => moveRow(n.id, 1) } : null,
+    '-',
+    { label: 'Delete place', sub: cnt ? `And its ${cnt} leg${cnt > 1 ? 's' : ''}. You can undo it (Del).` : 'You can undo it (Del)', ico: 'trash', danger: true, run: () => delNode(n.id) },
+  ])));
   box.append(h('p', { class: 'heldnote', id: 'liveHeld', role: 'status', hidden: true }));
   const place = fgroup('Place'); placeFields(place, ed.obj); box.append(place);
   if (!TOUR) box.append(fgroup('Trips', scopeRow(n.scope !== 'local', on => setPlaceScope(n.id, on))));
@@ -4448,15 +4504,7 @@ function nodeInspector(box, n) {
     () => { checkpoint(); delete S.nodes[n.id].img; renderAll(); toast('Image removed', true); }));
   box.append(linksGroup(ed.obj));
   box.append(fgroup('Legs here', legList('Leaving', legsFrom(n.id), 'to'), legList('Arriving', legsTo(n.id), 'from')));
-  const i = S.order.indexOf(n.id), cnt = legsFrom(n.id).length + legsTo(n.id).length;
-  ed.normalFoot = () => setFoot(icoBtn('Add leg from here', () => newLeg({ from: n.id }), 'primary', 'leg', 'A leg that leaves this place'), [
-    { label: 'Add leg into here', sub: 'A leg that arrives at this place', ico: 'leg', run: () => newLeg({ to: n.id }) },
-    { label: 'Make a plan from here', sub: 'Start a plan at this place', ico: 'plan', run: () => startBuilder(null, n.id) },
-    { label: pinOn() ? 'Unpin the place names' : 'Pin the place names', sub: pinOn() ? 'Let them scroll with the timeline' : 'Keep them in view when you scroll sideways', ico: 'pin', run: togglePin },
-    S.order.length > 1 ? '-' : null,
-    S.order.length > 1 ? { label: 'Move row up', ico: 'up', disabled: i === 0, run: () => moveRow(n.id, -1) } : null,
-    S.order.length > 1 ? { label: 'Move row down', ico: 'down', disabled: i === S.order.length - 1, run: () => moveRow(n.id, 1) } : null,
-  ], icoBtn('Delete', () => delNode(n.id), 'danger', 'trash', cnt ? `Delete this place and its ${cnt} leg${cnt > 1 ? 's' : ''} (you can undo)` : 'Delete this place (you can undo)'));
+  ed.normalFoot = () => setFoot(null); // its buttons are at the top; the bar below is for Save and Discard
   showSaved('node', n);
 }
 function placeFields(box, o) {
@@ -4466,7 +4514,9 @@ function placeFields(box, o) {
 }
 function waitInspector(box, p, legId) {
   const w = waitInfo(p, legId), pi = PLBY[p.id], ed = editFor('wait', legId, p.id);
-  box.append(inspHead('Waiting time', pi ? pi.color : 'var(--ink)'));
+  box.append(inspHead('Waiting time', pi ? pi.color : 'var(--ink)', null, headActs(headBtn('Show this plan', () => { sel = null; edit = null; setView(p.id); }, 'eye', `Show “${p.name}” on the timeline`), [
+    { id: 'waitReset', label: 'Use the default label', sub: `Back to “${w.auto}”`, ico: 'undo', disabled: !w.custom, run: () => { const f = $('#fWait'); if (f) { f.value = ''; ed.obj.label = ''; syncEditFoot(); f.focus(); } } },
+  ])));
   const i = h('input', { type: 'text', id: 'fWait', 'data-wait-label': legId, maxlength: '60', placeholder: w.auto, autocomplete: 'off' });
   i.value = ed.obj.label;
   const setTo = v => { i.value = v; ed.obj.label = v; syncEditFoot(); i.focus(); };
@@ -4480,9 +4530,7 @@ function waitInspector(box, p, legId) {
     h('dt', { text: 'From' }), h('dd', { text: fmtDT(w.from) }),
     h('dt', { text: 'Until' }), h('dd', { text: fmtDT(w.to) }),
     h('dt', { text: 'Plan' }), h('dd', { text: `${p.name}, before ${legLabel(legId)}` }))));
-  ed.normalFoot = () => setFoot(icoBtn('Show this plan', () => { sel = null; edit = null; setView(p.id); }, 'primary', 'eye'), [
-    { id: 'waitReset', label: 'Use the default label', sub: `Back to “${w.auto}”`, ico: 'undo', disabled: !w.custom, run: () => setTo('') },
-  ], null);
+  ed.normalFoot = () => setFoot(null);
   syncEditFoot(true);
 }
 function setWaitLabel(pid, legId, v) {
@@ -4568,7 +4616,15 @@ function nodeSelect(side, val) {
 }
 function legInspector(box, l) {
   const ed = editFor('leg', l.id);
-  box.append(inspHead('Leg', legColor(l.id)));
+  box.append(inspHead('Leg', legColor(l.id), null, headActs(
+    headBtn(l.to ? `Add leg from ${nodeName(l.to)}` : 'Add the next leg', () => newLeg({ from: l.to, mode: l.mode, after: T[l.id] ? T[l.id].arr : null }), 'leg', l.to ? `Add a leg that leaves ${nodeName(l.to)}, where this one arrives` : 'Add the next leg', !l.to), [
+    { label: l.from ? `Add leg into ${nodeName(l.from)}` : 'Add a leg before this one', sub: 'A leg that arrives where this one leaves', ico: 'leg', disabled: !l.from, run: () => newLeg({ to: l.from, mode: l.mode }) },
+    { label: 'Return leg', sub: 'The same trip back the other way', ico: 'undo', disabled: !(l.from && l.to), run: () => newLeg({ from: l.to, to: l.from, mode: l.mode }) },
+    { label: 'Alternative leg', sub: 'Another way between the same two places', ico: 'leg', run: () => newLeg({ from: l.from, to: l.to, mode: l.mode, dep: l.dep, arr: l.arr }) },
+    { label: 'Duplicate leg', sub: 'A copy a little later, in no plan, to drag elsewhere (Ctrl+D)', ico: 'dup', run: () => duplicateLegs([l.id]) },
+    '-',
+    { label: 'Delete leg', sub: 'You can undo it (Del)', ico: 'trash', danger: true, run: () => delLeg(l.id) },
+  ])));
   box.append(h('p', { class: 'heldnote', id: 'liveHeld', role: 'status', hidden: true }));
   box.append(journeyCard(l));
   legFields(box, ed.obj, false);
@@ -4580,11 +4636,7 @@ function legInspector(box, l) {
   } else s.append(h('p', { class: 'hint', text: 'Not in any saved plan yet.' }));
   box.append(s);
   box.append(h('div', { id: 'liveTwin' }));
-  ed.normalFoot = () => setFoot(icoBtn(l.to ? `Add leg from ${nodeName(l.to)}` : 'Add the next leg', () => newLeg({ from: l.to, mode: l.mode, after: T[l.id] ? T[l.id].arr : null }), 'primary', 'leg', 'A leg that leaves where this one arrives', !l.to), [
-    { label: 'Return leg', sub: 'The same trip back the other way', ico: 'undo', disabled: !(l.from && l.to), run: () => newLeg({ from: l.to, to: l.from, mode: l.mode }) },
-    { label: 'Alternative leg', sub: 'Another way between the same two places', ico: 'leg', run: () => newLeg({ from: l.from, to: l.to, mode: l.mode, dep: l.dep, arr: l.arr }) },
-    { label: 'Duplicate leg', sub: 'A copy a little later, in no plan, to drag elsewhere (Ctrl+D)', ico: 'dup', run: () => duplicateLegs([l.id]) },
-  ], icoBtn('Delete', () => delLeg(l.id), 'danger', 'trash', 'Delete this leg (you can undo)'));
+  ed.normalFoot = () => setFoot(null);
   showSaved('leg', l);
 }
 function legFields(box, o, isDraft) {
@@ -4960,7 +5012,7 @@ function updateLive() {
     return;
   }
   const l = S.legs[sel.id], t = T[sel.id]; if (!l || !t) return;
-  if (cr) cr.textContent = `${l.from ? nodeName(l.from) : '?'} → ${l.to ? nodeName(l.to) : '?'}`;
+  if (cr) putText(cr, `${l.from ? nodeName(l.from) : '?'} → ${l.to ? nodeName(l.to) : '?'}`);
   const kd = $('#inspector .insp-head .key-dot'); if (kd) kd.style.setProperty('--c', legColor(l.id));
   const ms = $('#inspector select[data-f=mode]'); if (ms) ms.style.borderLeft = `6px solid ${legColor(l.id)}`;
   const d = $('#liveDur'); if (d) d.textContent = durText(edit && edit.k === 'leg' && edit.id === l.id ? Object.assign({}, l, edit.obj) : l);
@@ -5011,12 +5063,11 @@ function legView(box, l) {
 }
 function waitView(box, p, legId) {
   const w = waitInfo(p, legId), pi = PLBY[p.id];
-  box.append(inspHead('Waiting time', pi ? pi.color : 'var(--ink)'));
+  box.append(inspHead('Waiting time', pi ? pi.color : 'var(--ink)', null, headActs(headBtn('Show this plan', () => { sel = null; setView(p.id); }, 'eye', `Show “${p.name}” on the timeline`))));
   box.append(h('div', { class: 'sect' }, h('h3', { text: 'Details' }),
     h('p', { class: 'live', text: `At ${nodeName(w.node)} · ${fmtDur(w.ms)}` }),
     h('p', { class: 'live', text: `From ${fmtDT(w.from)} to ${fmtDT(w.to)}` }),
     h('p', { class: 'live', text: `In plan “${p.name}”, before ${legLabel(legId)}` })));
-  setFoot(icoBtn('Show this plan', () => { sel = null; setView(p.id); }, 'primary', 'eye'), [], null);
 }
 function viewHelp() {
   return h('div', { class: 'help' },
@@ -5545,6 +5596,7 @@ function planText(p) {
   });
   p.p.extras.forEach(x => out.push(`${x.label || 'Other cost'}: ${x.amount === '' ? '—' : money(x.amount)}`));
   out.push('', `Door to door: ${fmtDur(p.dur)}`);
+  if (String(p.p.remarks || '').trim()) out.push('', 'Remarks:', String(p.p.remarks).trim());
   return out.join('\n');
 }
 async function copyText(s) {
@@ -5560,7 +5612,8 @@ function pick(id) { if (!canEdit()) return; checkpoint(); S.picked = S.picked ==
 // Clicking a plan opens its itinerary in the details panel (clicking it again closes it).
 function togglePlan(id, only) {
   if (viewOnly) return;
-  const next = only ? id : focusPlan === id ? null : id;
+  // clicking the open plan closes it, unless the panel is showing something else (a leg, a place): then the plan comes back
+  const next = only ? id : focusPlan === id && !sel && !draft ? null : id;
   const hadSel = !!sel;
   if (next && !B && (sel || draft)) { if (!canLeave()) return; sel = null; draft = null; }
   focusPlan = next;
@@ -5608,7 +5661,13 @@ function select(s, focusSel) {
   const same = sel && s && sel.k === s.k && sel.id === s.id && sel.plan === s.plan;
   if (!same && !canLeave()) return;
   sel = s; focusNext = focusSel || null;
-  hoverLeg = null; // the panel is rebuilt, so the row under the pointer is gone and never reports mouseleave
+  hoverLeg = null;
+  // a plan opened from the list stays under a leg or place of its own (Close goes back to it), but not under one it does not have
+  if (s && focusPlan && focusPlan !== viewPlan) {
+    const pp = PLBY[focusPlan];
+    const has = pp && (s.k === 'leg' ? pp.legs.includes(s.id) : s.k === 'node' ? pp.nodes.includes(s.id) : s.plan === focusPlan);
+    if (!has) { focusPlan = null; renderPlans(); applyHighlight(); }
+  } // the panel is rebuilt, so the row under the pointer is gone and never reports mouseleave
   if (!sideOpen) setSide(true);
   renderInspector(); renderGraph();
   if (window.innerWidth > 900) keepInView(selBox(s)); // out from under the details panel that has just opened, or the plans panel
@@ -5884,19 +5943,17 @@ function infoLine(text) {
   });
   return el_;
 }
-// A plan's buttons, in the panel's bar at the bottom like a place's and a leg's: the main action on the left, the
-// rest under More, and Delete set apart on the right.
-function planFoot(p) {
-  const shown = viewPlan === p.id;
+// A plan's buttons, beside its name like a place's and a leg's: Edit, then More with the rest and Delete last.
+function planActs(p) {
   const items = [
-    shown ? { label: 'Show every place and leg', sub: 'Leave this plan’s view', ico: 'eye', run: () => setView(null) }
-          : { label: 'Show on the timeline', sub: 'Only this plan', ico: 'eye', run: () => setView(p.id) },
+    viewPlan === p.id ? { label: 'Show every place and leg', sub: 'Leave this plan’s view', ico: 'eye', run: () => setView(null) }
+                      : { label: 'Show on the timeline', sub: 'Only this plan', ico: 'eye', run: () => setView(p.id) },
     { label: 'Copy as text', sub: 'To paste into a message', ico: 'copy', run: () => copyText(planText(p)) },
   ];
-  if (!canEdit()) { setFoot(null, items, null); return; }
-  items.push({ label: 'Duplicate plan', sub: 'A copy to change without losing this one', ico: 'dup', run: () => duplicatePlan(p.id) });
-  setFoot(icoBtn('Edit plan', () => startBuilder(p.id), 'primary', 'edit', 'Change this plan’s route and costs'), items,
-    icoBtn('Delete', () => delPlan(p.id), 'danger', 'trash', `Delete the plan “${p.name}” (you can undo)`));
+  if (!canEdit()) return headActs(null, items);
+  items.push({ label: 'Duplicate plan', sub: 'A copy to change without losing this one', ico: 'dup', run: () => duplicatePlan(p.id) }, '-',
+    { label: 'Delete plan', sub: 'You can undo it (Del)', ico: 'trash', danger: true, run: () => delPlan(p.id) });
+  return headActs(headBtn('Edit plan', () => startBuilder(p.id), 'edit', 'Change this plan’s route and costs'), items);
 }
 // A plan in the details panel: its key figures, then every leg and wait in order, day by day, with
 // this plan's other costs and the total. Click a leg for its details; Rename names a wait.
@@ -5909,8 +5966,7 @@ function planPanel(p) {
   box.append(h('div', { class: 'insp-head pp-head' },
     h('span', { class: 'key-dot', style: `--c:${p.color}` }),
     h('div', { class: 'pp-titles' }, h('h2', null, renaming && renaming.id === p.id && renaming.where === 'side' ? nameEditor(p.id) : nameTitle(p, 'side'))),
-    close));
-  planFoot(p);
+    planActs(p), close));
   if (p.issues.length) box.append(h('div', { class: 'warnbox' }, ...p.issues.map(x => h('p', { text: '⚠ ' + x }))));
   const stat = (label, value, sub) => h('div', { class: 'it-stat' }, h('span', { class: 'it-lab', text: label }), h('b', { class: 'it-val', text: value }),
     sub == null ? null : typeof sub === 'string' ? h('small', { text: sub }) : sub);
@@ -5955,8 +6011,29 @@ function planPanel(p) {
   list.append(h('div', { class: 'pp-total', role: 'listitem' }, h('span', { text: 'Total per head' }), h('span', { text: money(p.cost) })));
   if (budget > 0) list.append(h('div', { class: 'pp-budget' + (p.cost > budget ? ' over' : ''), role: 'listitem' }, h('span', { text: `Budget ${money(budget)} per head` }),
     h('span', { text: p.cost > budget ? `${money(p.cost - budget)} over` : `${money(budget - p.cost)} left` })));
-  box.append(list);
+  box.append(list, planRemarks(p));
   return box;
+}
+// Remarks: whatever you want to remember about a plan. They are kept when you leave the box, and Undo takes them back.
+function planRemarks(p) {
+  const cur = String(S.plans[p.id].remarks || '');
+  if (!canEdit()) return cur.trim() ? h('section', { class: 'pp-remarks' }, h('h3', { text: 'Remarks' }), h('p', { class: 'ro-text', text: cur.trim() })) : null;
+  const ta = h('textarea', { class: 'pp-rem-in', id: 'planRemarks', rows: '3', maxlength: '4000', 'aria-label': `Remarks on ${p.name}`,
+    placeholder: 'Anything to remember about this plan: what to book first, what to pack, who to call…' });
+  ta.value = cur;
+  const fit = () => { ta.style.height = 'auto'; ta.style.height = Math.min(320, ta.scrollHeight + 2) + 'px'; };
+  ta.addEventListener('input', fit);
+  ta.addEventListener('change', () => {
+    const plan = S.plans[p.id]; if (!plan) return;
+    const v = ta.value.trim(); if (v === String(plan.remarks || '').trim()) return;
+    checkpoint();
+    if (v) plan.remarks = v; else delete plan.remarks;
+    save(); syncToolbar();
+    toast(v ? `Saved the remarks on “${plan.name}”` : `Cleared the remarks on “${plan.name}”`, true);
+  });
+  requestAnimationFrame(fit);
+  return h('section', { class: 'pp-remarks' }, h('h3', { text: 'Remarks' }), ta,
+    h('small', { class: 'hint', text: 'Kept when you click outside the box. Copy as text includes them, after the costs.' }));
 }
 // The details panel has no place of its own: it opens for what you pick (a plan, a leg, a place, something new,
 // the plan maker), its edge drags to resize it, and it closes when there is nothing left to show.
