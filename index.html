@@ -1868,24 +1868,21 @@ html.glass .side-split::after{background:var(--g-field)}
 /* the sky drawn below the chart shows in space that opens up while a panel moves (it adds no scrolling) */
 #graph,#pinSvg{overflow:visible}
 /* ================= the plans panel: a sheet that slides up over the timeline =================
-   The bar stays where it is; the plans rise above it as a frosted sheet, so the timeline keeps its full
+   One panel anchored to the bottom: closed, it is just its bar; open, it grows upwards over the timeline with the
+   bar on top and the plans below it. Its place in the page stays the bar's height, so the timeline keeps its full
    size and is never squeezed or redrawn while you open, close or pull the panel. */
 @media (min-width:701px){
-  html.glass .dock{overflow:visible !important;z-index:9}
-  html.glass .dock .dock-body{position:absolute;left:-1px;right:-1px;bottom:calc(100% - 1px);height:0;overflow:hidden;
-    border:1px solid var(--g-edge);border-bottom:0;border-radius:18px 18px 0 0;
-    background:var(--g-strong);background-image:linear-gradient(180deg,var(--g-sheen),transparent 38%);
-    -webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);
-    box-shadow:var(--g-hi),0 -14px 34px rgba(18,28,60,.16);
-    opacity:0;visibility:hidden;transition:height .28s var(--ease-out),opacity .2s ease,visibility 0s linear .28s}
-  html.glass .dock.open .dock-body{height:var(--dock-h,30vh);overflow:auto;opacity:1;visibility:visible;transition:height .28s var(--ease-out),opacity .2s ease,visibility 0s}
+  html.glass section.dock{height:46px;flex:none;overflow:visible !important;z-index:9;border:0 !important;border-radius:0 !important;background:none !important;background-image:none !important;box-shadow:none !important}
+  html.glass .dock-sheet{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;
+    border:1px solid var(--g-edge);border-radius:18px;background:var(--g-panel);background-image:linear-gradient(180deg,var(--g-sheen),transparent 46%);
+    box-shadow:var(--g-hi),var(--g-shadow);-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);transition:box-shadow .28s var(--ease-out),background-color .28s}
+  html.glass .dock.open .dock-sheet{background-color:var(--g-strong);box-shadow:var(--g-hi),0 -14px 34px rgba(18,28,60,.16)}
+  html.glass .dock .dock-body{position:static;flex:none;height:0;overflow:hidden;border:0;border-top:1px solid transparent;border-radius:0 0 17px 17px;background:transparent;
+    opacity:0;visibility:hidden;transition:height .28s var(--ease-out),opacity .2s ease,border-color .28s,visibility 0s linear .28s}
+  html.glass .dock.open .dock-body{height:var(--dock-h,30vh);overflow:auto;opacity:1;visibility:visible;border-top-color:var(--g-line);transition:height .28s var(--ease-out),opacity .2s ease,border-color .28s,visibility 0s}
   html.glass .dock.resizing .dock-body{transition:none}
-  /* bar and sheet read as one panel while it is open */
-  html.glass .dock.open{border-top-left-radius:0 !important;border-top-right-radius:0 !important;border-top-color:transparent !important}
-  /* the grip rides on the sheet's top edge */
-  html.glass .dock .dock-split{transition:top .28s var(--ease-out)}
-  html.glass .dock.open .dock-split{top:calc(-1 * var(--dock-h,30vh) - 5px)}
-  html.glass .dock.resizing .dock-split{transition:none}
+  /* the grip rides on the panel's top edge, open or closed */
+  html.glass .dock .dock-split{top:-5px}
 }
 @media (prefers-reduced-motion:reduce){html.glass .dock .dock-body,html.glass .dock .dock-split{transition:none !important}}
 /* the timeline's hint, and the moment under the pointer, sit beside its title: the plans sheet never covers them */
@@ -2211,6 +2208,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
       </div>
     </section>
     <section class="dock" id="drawer" aria-label="Plans">
+      <div class="dock-sheet">
       <div class="dock-split" id="dockSplit" role="separator" aria-orientation="horizontal" aria-label="Resize the plans panel: arrow keys" tabindex="0" title="Drag the bar up or down"></div>
       <div class="dock-bar">
         <button class="dock-toggle" id="drawerTab" type="button" aria-expanded="false" aria-controls="drawerBody" title="Show or hide plans"><span class="chev" id="drawerArrow" aria-hidden="true"></span><span class="dock-title">Plans</span><span class="cnt" id="planCount"></span></button>
@@ -2238,6 +2236,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
         </div>
         <p id="planEmpty" class="hint" hidden>No saved plans yet. Choose New, then Plan: click the leg you leave on, and take the way on at each place.</p>
         <p id="planHint" class="hint dock-hint" hidden>Click a plan to see its itinerary in the details panel.</p>
+      </div>
       </div>
     </section>
     </div>
@@ -3303,13 +3302,19 @@ function renderGraph() {
     if (lo === Infinity) { lo = todayMs(); hi = lo + 24 * H; } // nothing timed yet: today
     tmin = floorHour(lo) - H; tmax = floorHour(hi) + 2 * H;
     // auto-fit keeps a smaller margin after the last hour, just room for the end labels, so the timeline fills the frame
-    const right = autoFitOn() ? 130 : LAY.right;
+    // after the last hour there is room for the widest plan tag that can end there
+    let tagW = 0;
+    plist.forEach(pi => { if (pi.legs.length) tagW = Math.max(tagW, tw(`${S.picked === pi.id ? '★ ' : ''}${pi.name}${UI.costs ? ' · ' + money(pi.cost) : ''}`, F.badge) + 22); });
+    const right = Math.max(autoFitOn() ? 130 : LAY.right, tagW + 48);
     pph = autoFitOn() ? Math.max(3, Math.min(60, Math.floor((frameW(sc) - left - right) / Math.max(1, (tmax - tmin) / H)))) : (S.pph || 14);
     if (autoFitOn()) { const z = $('#zoom'); if (z) z.value = pph; } // the slider shows the fitted zoom
     X = t => left + (t - tmin) / H * pph;
     width = Math.ceil(X(tmax) + right);
   }
   width = Math.max(width, frameW(sc));
+  // day and night run all the way to the right edge, not only to the last hour with a leg
+  const tEnd = tmax;
+  if (timeOn) tmax = Math.max(tmax, tmin + (width - left) / pph * H);
   const height = phone ? y + 16 : Math.max(y + 16, (sc.clientHeight || 0) - 4);
   svg.setAttribute('width', width); svg.setAttribute('height', height);
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
@@ -3333,7 +3338,7 @@ function renderGraph() {
   Object.assign(corner.style, { width: `${pw}px`, height: `${hh}px`, marginBottom: `-${hh}px`, display: hh ? '' : 'none' });
   // the corner over the place names says when the timeline is: its month and year, and the days it spans
   if (hh) {
-    const a = new Date(tmin + H), b = new Date(tmax - 2 * H), d0 = new Date(a), d1 = new Date(b);
+    const a = new Date(tmin + H), b = new Date(tEnd - 2 * H), d0 = new Date(a), d1 = new Date(b); // the legs' days, not the sky drawn after them
     d0.setHours(0, 0, 0, 0); d1.setHours(0, 0, 0, 0);
     const days = Math.round((d1 - d0) / (24 * H)) + 1, ya = a.getFullYear(), yb = b.getFullYear();
     // the month in full when it fits beside the names, else short
