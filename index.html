@@ -1758,7 +1758,7 @@ html.glass .modal{-webkit-backdrop-filter:none;backdrop-filter:none}
 .gwrap.swap{animation:wmFade .3s ease}
 /* the details panel opens and closes by its width, and keeps its content still while it moves */
 @media (min-width:901px){
-  .side{flex:0 0 clamp(300px,var(--side-w,min(25%,460px)),45vw) !important;min-width:0 !important;max-width:45vw !important;animation:none !important;position:relative;
+  .side{flex:0 0 clamp(300px,var(--side-w,min(25%,460px)),25vw) !important;min-width:0 !important;max-width:max(300px,25vw) !important;animation:none !important;position:relative;
     transition:flex-basis .34s var(--ease-out),opacity .24s ease,border-color .34s,visibility 0s}
   .side > :not(.side-split){min-width:var(--side-px,300px)}
   .main.side-hidden .side{display:flex !important;flex-basis:0 !important;opacity:0;visibility:hidden;border-color:transparent !important;
@@ -2666,7 +2666,7 @@ function syncFitBtn() {
   b.setAttribute('aria-label', 'Auto-fit');
   b.title = on ? 'Auto-fit is on: the timeline always fits the window. Click to turn it off, or move the zoom.' : 'Auto-fit: fit the timeline to the window, and keep it fitted';
 }
-// The details panel's width you dragged it to (it never goes past 45% of the window).
+// The details panel's width you dragged it to (it never goes past 25% of the window).
 function applySideW() {
   const sd = $('#side'); if (!sd) return;
   if (UI.sideW) { sd.style.setProperty('--side-w', UI.sideW + 'px'); sd.style.setProperty('--side-px', UI.sideW + 'px'); }
@@ -4928,10 +4928,11 @@ function setSide(open) {
   renderGraph();
   clearTimeout(setSide._t); setSide._t = setTimeout(renderGraph, 360); // and once more when it has finished moving
 }
-// The plans panel is a sheet: drag its bar up (to at most 65% of the window) or down to close it.
-const DOCK_MAX = .65;
+// The plans panel is a sheet: drag its bar up (to at most 35% of the window's height) or down to close it.
+const DOCK_MAX = .35;
 function dockLimits() {
-  const bar = ($('.dock-bar') && $('.dock-bar').offsetHeight) || 44, col = $('.maincol') ? $('.maincol').clientHeight : innerHeight;
+  // everything of the panel that is not its body (the bar and its border), so the whole panel stays within the limit
+  const d = $('#drawer'), b = $('#drawerBody'), bar = (d && b ? d.offsetHeight - b.offsetHeight : 0) || ($('.dock-bar') && $('.dock-bar').offsetHeight) || 44, col = $('.maincol') ? $('.maincol').clientHeight : innerHeight;
   return { min: 110, max: Math.max(140, Math.min(innerHeight * DOCK_MAX - bar, col - bar - 110)) };
 }
 function setDockH(px) {
@@ -5263,9 +5264,9 @@ function bind() {
   $('#sideOpen').addEventListener('click', () => setSide(true));
   $('#drawerTab').addEventListener('click', () => { const bar = $('.dock-bar'); if (bar.dataset.dragged) { delete bar.dataset.dragged; return; } setDrawer(!UI.drawer); });
   $('#drawerClose').addEventListener('click', () => setDrawer(false));
-  // drag the details panel's left edge (or use the arrow keys on it): from 300px up to 45% of the window
+  // drag the details panel's left edge (or use the arrow keys on it): from 300px up to 25% of the window
   const sideSplit = $('#sideSplit'), sideEl = $('#side');
-  const setSideW = w => { UI.sideW = Math.round(Math.max(300, Math.min(Math.max(300, Math.floor(innerWidth * .45)), w))); applySideW(); };
+  const setSideW = w => { UI.sideW = Math.round(Math.max(300, Math.min(Math.max(300, Math.floor(innerWidth * .25)), w))); applySideW(); };
   sideSplit.addEventListener('pointerdown', e => {
     if (e.button !== 0) return;
     e.preventDefault();
