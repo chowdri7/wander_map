@@ -941,6 +941,7 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 [data-ico="file"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z%22/%3E%3Cpath d=%22M14 3v5h5M9 13h6M9 17h4%22/%3E%3C/svg%3E")}
 [data-ico="open"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M15 3h6v6%22/%3E%3Cpath d=%22M10 14 21 3%22/%3E%3Cpath d=%22M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6%22/%3E%3C/svg%3E")}
 [data-ico="clock"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%229%22/%3E%3Cpath d=%22M12 7v5l3 2%22/%3E%3C/svg%3E")}
+[data-ico="kbd"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%222%22 y=%225%22 width=%2220%22 height=%2214%22 rx=%222.5%22/%3E%3Cpath d=%22M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M10 13h4M8 16h8%22/%3E%3C/svg%3E")}
 [data-ico="dots"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%225%22 cy=%2212%22 r=%221%22/%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%221%22/%3E%3Ccircle cx=%2219%22 cy=%2212%22 r=%221%22/%3E%3C/svg%3E")}
 [data-ico="key"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223.5%22 y=%224%22 width=%227%22 height=%227%22 rx=%221.5%22/%3E%3Crect x=%2213.5%22 y=%224%22 width=%227%22 height=%227%22 rx=%221.5%22/%3E%3Crect x=%223.5%22 y=%2213%22 width=%227%22 height=%227%22 rx=%221.5%22/%3E%3Cpath d=%22M14 16.5h6.5%22/%3E%3C/svg%3E")}
 [data-ico="close"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M6 6l12 12M18 6L6 18%22/%3E%3C/svg%3E")}
@@ -1359,15 +1360,22 @@ table.itin tr.it-budget td{padding-bottom:9px;font-size:12px}
 .inpre input{flex:1;min-width:0;height:100%;border:0 !important;box-shadow:none !important;background:transparent;padding:0 10px 0 2px}
 .set-foot{margin:8px 2px 0;font-size:12px;color:var(--muted)}
 .set-card .set-keys{display:block}
-.keys-groups{display:grid;gap:10px}
-.keys-card{padding:12px 14px}
-.keys-h{margin:0 0 8px;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-.keys-card .keys{margin:0;grid-template-columns:minmax(120px,max-content) 1fr;gap:9px 18px;align-items:baseline}
-.keys-card .keys dt{display:flex;flex-wrap:wrap;gap:4px;align-items:center;white-space:normal}
-.keys-card .keys dd{line-height:1.4}
-.k-or{font-size:11px;color:var(--muted);padding:0 2px}
-.k-mouse{font-size:12px;font-weight:600;color:var(--ink)}
-@media (max-width:560px){.keys-card .keys{grid-template-columns:1fr;gap:2px 0}.keys-card .keys dd{margin-bottom:8px}}
+/* the shortcuts, a table for each part of the app */
+.keys-dlg{width:min(820px,calc(100vw - 32px)) !important;max-width:none !important}
+#keysBody{display:flex;flex-direction:column;gap:12px}
+.kt-card{flex:none;padding:4px 14px 6px} /* each table keeps its height; the dialog scrolls */
+.kt{width:100%;border-collapse:collapse;font-size:12.5px}
+.kt caption{text-align:left;padding:10px 0 6px;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.kt th{text-align:left;padding:5px 10px 7px 0;font-size:11px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border)}
+.kt td{padding:8px 10px 8px 0;vertical-align:top;line-height:1.4}
+.kt tbody tr + tr td{border-top:1px solid color-mix(in srgb,var(--border) 60%,transparent)}
+.kt .kt-keys{width:34%}
+.kt .kt-keys > *{margin:0 4px 3px 0;vertical-align:middle}
+.kt .kt-do{width:22%;font-weight:600;color:var(--ink)}
+.kt .kt-more{color:var(--ink2)}
+.k-or{display:inline-block;font-size:11px;color:var(--muted)}
+.k-mouse{display:inline-block;font-size:12px;font-weight:600;color:var(--ink)}
+@media (max-width:620px){.kt thead{display:none}.kt tr{display:grid;grid-template-columns:1fr;padding:6px 0}.kt td{padding:2px 0;width:auto !important;border:0 !important}.kt tbody tr + tr{border-top:1px solid var(--border)}}
 .set-keys .keys{margin:10px 0 2px;grid-template-columns:max-content 1fr;gap:8px 18px}
 .keys dt{display:flex;gap:4px;align-items:center}
 .keys dd{color:var(--ink2)}
@@ -2215,7 +2223,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
 <body>
 <div class="app">
   <header class="topbar">
-  <div class="brand"><img class="brand-mark" alt="" width="28" height="28"><h1 title="Add places, join them with legs, then build and save named plans.">Wander Map</h1><div class="menu trip-menu" id="tripMenu"><button class="btn trip-btn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" title="Your trips: open another, or add one"><span class="trip-lab">Trip</span><b id="tripName"></b><span class="caret" aria-hidden="true"></span></button><div class="menu-pop" role="menu" hidden></div></div></div>
+  <div class="brand"><img class="brand-mark" alt="" width="28" height="28"><h1>Wander Map</h1><div class="menu trip-menu" id="tripMenu"><button class="btn trip-btn" type="button" data-menu-btn aria-haspopup="menu" aria-expanded="false" title="Your trips: open another, or add one"><span class="trip-lab">Trip</span><b id="tripName"></b><span class="caret" aria-hidden="true"></span></button><div class="menu-pop" role="menu" hidden></div></div></div>
   <div class="toolbar" id="toolbar" role="toolbar" aria-label="Planner tools">
     <span class="spacer"></span>
     <div class="tgroup" id="editTools">
@@ -2232,11 +2240,12 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
     </div>
     <span class="tb-sep vsep"></span>
     <button id="themeBtn" class="btn icon" type="button" data-ico="moon" aria-pressed="false" aria-label="Dark mode" title="Switch to dark mode">Theme</button>
-    <button id="settingsBtn" class="btn icon" type="button" data-ico="gear" aria-haspopup="dialog" aria-controls="settings" title="Settings: theme, sky, currency, budget, your data and the tour">Settings</button>
+    <button id="settingsBtn" class="btn icon" type="button" data-ico="gear" aria-haspopup="dialog" aria-controls="settings" title="Settings">Settings</button>
     <div class="modeseg" id="modeSeg" role="group" aria-label="Mode">
-      <button id="modeEdit" type="button" data-ico="edit" aria-pressed="true" aria-label="Edit" title="Edit: add and change places, legs and plans">Edit</button>
-      <button id="modeView" type="button" data-ico="eye" aria-pressed="false" aria-label="View only" title="View only: look at everything without changing anything">View</button>
+      <button id="modeEdit" type="button" data-ico="edit" aria-pressed="true" aria-label="Edit" title="Edit">Edit</button>
+      <button id="modeView" type="button" data-ico="eye" aria-pressed="false" aria-label="View only" title="View only">View</button>
     </div>
+    <button id="keysBtn" class="btn icon" type="button" data-ico="kbd" aria-haspopup="dialog" aria-controls="keysDlg" title="Shortcuts (?)">Shortcuts</button>
     <div class="menu" id="helpMenu"><button id="helpBtn" class="btn icon" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="help" title="How it works">Help</button><div class="menu-pop right helppop" role="dialog" aria-label="How it works" hidden></div></div>
     <button id="importBtn" class="btn phone-import" type="button" data-ico="up" title="Import plans from a file">Import</button>
     <input id="importFile" type="file" accept="application/json,.json" hidden>
@@ -2251,8 +2260,8 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
           <button id="costBtn" class="btn small" type="button" data-ico="coin" aria-pressed="false" title="Show the cost of each leg on the timeline">Costs: off</button>
           <span class="zoomgrp"><span class="tb-label">Zoom</span><input id="zoom" type="range" min="3" max="60" step="1" aria-label="Zoom timeline"></span>
           <button id="fit" class="btn small icon" type="button" data-ico="fit" title="Fit the whole timeline on screen">Fit</button>
-          <div class="menu" id="dayMenu"><button class="btn small" id="dayBtn" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="cal" title="Choose the day the timeline shows">Day</button><div class="menu-pop right daypop" role="dialog" aria-label="The day the timeline shows" hidden><div class="dp-head">Day on the timeline</div><span id="dayBox"></span><div class="dp-btns"><button type="button" class="btn small" id="dayToday">Today</button><button type="button" class="btn small" id="dayAuto" title="The timeline starts at your first leg, or today when there are none">From the first leg</button></div><p class="dp-note">With no legs yet the timeline shows today. A day you choose is added to the timeline and kept with this trip, so you can start planning right there.</p></div></div>
-          <button id="arrangeBtn" class="btn small" type="button" data-ico="move" aria-pressed="false" aria-label="Arrange" title="Arrange: drag a place name up or down, a leg sideways to move its times, or a leg’s end dot to another time or place (hold Shift for 5-minute steps). Off, nothing moves when you scroll or click.">Arrange</button>
+          <div class="menu" id="dayMenu"><button class="btn small" id="dayBtn" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="cal" title="Choose the day the timeline shows">Day</button><div class="menu-pop right daypop" role="dialog" aria-label="The day the timeline shows" hidden><div class="dp-head">Day on the timeline</div><span id="dayBox"></span><div class="dp-btns"><button type="button" class="btn small" id="dayToday">Today</button><button type="button" class="btn small" id="dayAuto" title="Start at the first leg">From the first leg</button></div><p class="dp-note">With no legs yet the timeline shows today. A day you choose is added to the timeline and kept with this trip, so you can start planning right there.</p></div></div>
+          <button id="arrangeBtn" class="btn small" type="button" data-ico="move" aria-pressed="false" aria-label="Arrange" title="Arrange: drag places and legs">Arrange</button>
           <div class="menu" id="keyMenu"><button class="btn small" type="button" data-menu-btn aria-haspopup="dialog" aria-expanded="false" data-ico="key" title="What the colours and lines mean">Key</button><div class="menu-pop right keypop" role="dialog" aria-label="Colour key" hidden><div class="legend" id="legend"></div></div></div>
         </div>
       </div>
@@ -2348,7 +2357,7 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
     </section>
     </div>
     <aside class="side" id="side" aria-label="Details panel">
-      <div class="side-split" id="sideSplit" role="separator" aria-orientation="vertical" aria-label="Resize the details panel: arrow keys" tabindex="0" title="Drag to make the panel wider or narrower. Double-click for the usual width."></div>
+      <div class="side-split" id="sideSplit" role="separator" aria-orientation="vertical" aria-label="Resize the details panel: arrow keys" tabindex="0" title="Drag to resize · double-click to reset"></div>
       <div class="side-head"><span class="side-title" id="sideTitle">Details</span><button class="btn icon" type="button" id="sideHide" data-ico="close" title="Close (Esc)" aria-label="Close the details panel">Close</button></div>
       <div id="builder" hidden></div>
       <div id="inspector"></div>
@@ -2417,13 +2426,20 @@ html.glass .trip-btn{background:var(--g-inner);border-color:var(--g-edge);box-sh
         <div class="set-card">
           <div class="set-row"><div class="set-lab"><b>Guided tour</b><small>A one-minute walk through a sample trip</small></div>
             <div class="set-ctl"><button type="button" class="btn small" id="setTour" data-ico="compass">Start</button></div></div>
+          <div class="set-row"><div class="set-lab"><b>Keyboard and mouse shortcuts</b><small>Also the keyboard icon at the top, or the ? key</small></div>
+            <div class="set-ctl"><button type="button" class="btn small" id="setKeysOpen" data-ico="kbd">Show</button></div></div>
         </div>
       </section>
-      <section class="set-sect" aria-labelledby="setK">
-        <h3 id="setK">Keyboard and mouse shortcuts</h3>
-        <div id="setKeys" class="keys-groups"></div>
-      </section>
     </div>
+  </div>
+</div>
+<div class="modal" id="keysDlg" role="dialog" aria-modal="true" aria-labelledby="keysTitle" hidden>
+  <div class="modal-card keys-dlg">
+    <div class="modal-head">
+      <div><h2 id="keysTitle">Shortcuts</h2><p class="modal-sub" id="keysSub">Keyboard and mouse</p></div>
+      <button class="icon-btn" type="button" id="keysClose" title="Close" aria-label="Close shortcuts">×</button>
+    </div>
+    <div class="modal-body" id="keysBody"></div>
   </div>
 </div>
 <div id="toast" class="toast" role="status" hidden></div>
@@ -3488,7 +3504,7 @@ function syncFitBtn() {
   const on = autoFitOn();
   b.setAttribute('aria-pressed', String(on));
   b.setAttribute('aria-label', 'Auto-fit');
-  b.title = on ? 'Auto-fit is on: the timeline always fits the window. Click to turn it off, or move the zoom.' : 'Auto-fit: fit the timeline to the window, and keep it fitted';
+  b.title = on ? 'Auto-fit on · click to turn off' : 'Fit to the window';
 }
 // The details panel's width you dragged it to (it never goes past 25% of the window).
 function applySideW() {
@@ -3624,7 +3640,7 @@ function renderGraph() {
     txt(g, lx, r.y + 4, clip(nodeName(r.id), F.root, left - lx - 16), 'rowlbl');
     const nLegs = legsFrom(r.id).length + legsTo(r.id).length, np = meets[r.id] ? meets[r.id].size : 0;
     txt(g, lx, r.y + 19, np > 1 ? `${np} plans meet here` : `${nLegs} leg${nLegs === 1 ? '' : 's'}`, 'rowsub');
-    el('title', null, g).textContent = canEdit() ? `${nodeName(r.id)}: click to edit, add legs from or to here` : `${nodeName(r.id)}: click for details`;
+    el('title', null, g).textContent = nodeName(r.id);
   });
   if (!timeOn) { placePin(); applyHighlight(); return; }
 
@@ -3692,7 +3708,7 @@ function renderGraph() {
       el('line', { x1: x0, x2: x1, y1: yy, y2: yy, class: 'dwell' }, g);
       const wi = waitInfo(pi.p, b);
       el('line', { x1: x0, x2: x1, y1: yy, y2: yy, class: 'waithit' }, g);
-      el('title', null, g).textContent = `${wi.label} at ${nodeName(S.legs[b].from)}, ${fmtDur(wi.ms)} (${pi.name})${wi.custom || !canEdit() ? '' : '. Click to rename this wait.'}`;
+      el('title', null, g).textContent = `${wi.label} at ${nodeName(S.legs[b].from)} · ${fmtDur(wi.ms)}`;
       dwellJobs.push({ x0, x1, y: rowY[S.legs[b].from], ms: tb.dep - ta.arr, plan: pi.id, leg: b, lab: wi.label });
     }
   });
@@ -3717,7 +3733,7 @@ function renderGraph() {
       k.station = nl > 1;
       if (k.station) {
         const st = el('rect', { x: k.x0 - 11, y: r.y - 11, width: k.x1 - k.x0 + 22, height: 22, rx: 11, class: 'station', 'data-node': r.id }, gSt);
-        el('title', null, st).textContent = `${nodeName(r.id)}: ${nl} legs meet here. ${canEdit() ? 'Click to edit the place.' : 'Click for details.'}`;
+        el('title', null, st).textContent = `${nodeName(r.id)}: ${nl} legs meet here`;
         boxes.push([k.x0 - 11, r.y - 11, k.x1 + 11, r.y + 11]);
       } else boxes.push([k.x0 - 8, r.y - 8, k.x1 + 8, r.y + 8]);
       k.items.forEach(q => {
@@ -3755,7 +3771,7 @@ function renderGraph() {
     g.style.setProperty('--c', legColor(q.leg));
     if (Math.abs(pos[1] - r.y) > 24 || pos[0] !== q.x) el('line', { x1: q.x, y1: r.y + (q.arr ? -5 : 5), x2: pos[0], y2: pos[1] + (q.arr ? 3 : -10), class: 'tmlead' }, g);
     txt(g, pos[0], pos[1], s, 'tl halo');
-    el('title', null, g).textContent = `${q.arr ? 'Arrives at' : 'Leaves'} ${nodeName(r.id)}: ${fmtDT(q.arr ? t.arrSched : t.dep)}${q.arr && t.buf ? ` (latest ${fmtDT(t.arr)} with the buffer)` : ''}\n${legTitle(q.leg)}`;
+    el('title', null, g).textContent = `${q.arr ? 'Arrives at' : 'Leaves'} ${nodeName(r.id)}: ${fmtDT(q.arr ? t.arrSched : t.dep)}${q.arr && t.buf ? ` (latest ${fmtDT(t.arr)})` : ''}`;
   }); }));
 
   // travel time of every leg, at the middle of its line (waiting time is shown on the row, as before)
@@ -3777,7 +3793,7 @@ function renderGraph() {
     g.style.setProperty('--c', j.c);
     el('rect', { x: pos[0] - w / 2, y: pos[1] - 8, width: w, height: 16, rx: 8 }, g);
     txt(g, pos[0], pos[1] + 3.8, s, 'durtxt');
-    el('title', null, g).textContent = `Travel time ${dur}${t.buf ? ` + ${fmtDur(t.buf)} buffer` : ''}\n${legTitle(j.id)}`;
+    el('title', null, g).textContent = `Travel time ${dur}${t.buf ? ` + ${fmtDur(t.buf)} buffer` : ''}`;
   }
 
   // plan badges at the end of each saved plan; where more than three end at the same spot, the chosen (★) and
@@ -3813,7 +3829,7 @@ function renderGraph() {
     if (dy) el('path', { d: `M${x + 6} ${yy} C${bx - 6} ${yy} ${bx - 10} ${yy + dy} ${bx} ${yy + dy}`, class: 'leader' }, g);
     el('rect', { x: bx, y: yy + dy - 12, width: w, height: 24, rx: 12 }, g);
     txt(g, bx + 11, yy + dy + 4.5, s, 'bt');
-    el('title', null, g).textContent = many ? `${ids.map(id => PLBY[id].name).join(', ')}. Click to see them all in Plans.` : `${pi.name}: ${pi.route} · ${money(pi.cost)}. Click to show this plan.`;
+    el('title', null, g).textContent = many ? `${ids.length} plans: ${ids.slice(0, 3).map(id => PLBY[id].name).join(', ')}${ids.length > 3 ? '…' : ''}` : `${pi.name} · ${money(pi.cost)}`;
   });
 
   // fare of each leg, only when "Costs" is switched on
@@ -4245,8 +4261,8 @@ function branchTree(ids, parentArr, depth, path, next, go) {
         if (open) { navOpen.add(key); subBox = branchTree(kids, T[x].arr, depth + 1, key, next, go); r.after(subBox); } else { navOpen.delete(key); if (subBox) subBox.remove(); subBox = null; }
       });
       r.append(tg);
-    } else if (depth >= 5 && next(x).length) r.append(h('span', { class: 'jn-end', title: `More legs leave ${nodeName(S.legs[x].to)} after this one. Choose this leg to see them.`, text: 'more' })); // the tree stops unfolding here, but the journey goes on
-    else r.append(h('span', { class: 'jn-end', title: `No leg leaves ${nodeName(S.legs[x].to)} after this one`, text: 'end' }));
+    } else if (depth >= 5 && next(x).length) r.append(h('span', { class: 'jn-end', title: `More legs go on from ${nodeName(S.legs[x].to)}`, text: 'more' })); // the tree stops unfolding here, but the journey goes on
+    else r.append(h('span', { class: 'jn-end', title: `Nothing goes on from ${nodeName(S.legs[x].to)}`, text: 'end' }));
     box.append(r);
     if (kids.length && navOpen.has(key)) { subBox = branchTree(kids, T[x].arr, depth + 1, key, next, go); box.append(subBox); }
   });
@@ -4291,7 +4307,7 @@ function drawNav() {
     const n = el('g', { class: 'nnum', 'data-leg': id }, g);
     el('circle', { cx, cy, r: 9.5 }, n);
     txt(n, cx, cy + 4, String(k + 1), 'nnumtxt');
-    el('title', null, n).textContent = `Way on ${k + 1}: ${legLabel(id)}. Click to go there.`;
+    el('title', null, n).textContent = `Way on ${k + 1}: ${legLabel(id)}`;
   });
 }
 // Pinned (the default), the place names follow the sideways scroll so they never leave the view.
@@ -4318,15 +4334,14 @@ function togglePin() {
   toast(pinOn() ? 'Place names pinned: they stay in view when you scroll sideways' : 'Place names unpinned: they scroll with the timeline');
 }
 function legTitle(id) {
+  // a few short lines: the leg, how and when, the fare and its plans, and its first problem if it has one
   const l = S.legs[id], t = T[id], m = MODE[l.mode] || MODE.other;
-  const lines = [legLabel(id), `${m.tag}${l.info ? ': ' + l.info : ''}`];
-  lines.push(`${t.noDep ? 'leave time not set' : fmtDT(t.dep)} → ${t.noArr ? 'arrive time not set' : fmtDT(t.arrSched)}${!t.noDep && !t.noArr ? ` (${fmtDur(t.arrSched - t.dep)})` : ''}`);
-  if (t.buf) lines.push(`+${fmtDur(t.buf)} buffer, latest arrival ${fmtDT(t.arr)}`);
-  if (l.cost !== '') lines.push(`${money(l.cost)} per head`);
-  const ps = LEGPLANS[id];
-  if (ps && ps.length) lines.push('In: ' + ps.map(p => S.plans[p].name).join(', '));
-  t.problems.forEach(w => lines.push('⚠ ' + w.msg));
-  lines.push(canEdit() ? 'Click to edit' : 'Click for details');
+  const when = `${t.noDep ? 'no leave time' : fmtDT(t.dep)} → ${t.noArr ? 'no arrive time' : fmtDT(t.arrSched)}${!t.noDep && !t.noArr ? ` (${fmtDur(t.arrSched - t.dep)})` : ''}`;
+  const ps = LEGPLANS[id] || [];
+  const lines = [legLabel(id), `${m.tag} · ${when}${t.buf ? ` +${fmtDur(t.buf)}` : ''}`];
+  const meta = [l.cost !== '' ? `${money(l.cost)} per head` : null, ps.length === 1 ? `in ${S.plans[ps[0]].name}` : ps.length ? `in ${ps.length} plans` : null].filter(Boolean).join(' · ');
+  if (meta) lines.push(meta);
+  if (t.problems.length) lines.push('⚠ ' + t.problems[0].msg + (t.problems.length > 1 ? ` (+${t.problems.length - 1} more)` : ''));
   return lines.join('\n');
 }
 
@@ -4453,7 +4468,7 @@ function setFoot(primary, more, danger) {
 function budgetMeter(cost, budget) {
   if (!(budget > 0)) return null;
   const over = cost > budget, pct = Math.min(100, Math.max(0, cost / budget * 100));
-  return h('span', { class: 'bmeter' + (over ? ' over' : ''), title: `${money(cost)} of a ${money(budget)} budget per head (${Math.round(cost / budget * 100)}%)` },
+  return h('span', { class: 'bmeter' + (over ? ' over' : ''), title: `${money(cost)} of ${money(budget)} (${Math.round(cost / budget * 100)}%)` },
     h('span', { class: 'bm-bar', 'aria-hidden': 'true' }, h('i', { style: `width:${pct.toFixed(1)}%` })),
     h('span', { class: 'bm-txt', text: over ? `${money(cost - budget)} over budget` : `${money(budget - cost)} left` }));
 }
@@ -4528,7 +4543,7 @@ function fgroup(title, ...kids) { return h('section', { class: 'fgroup' }, h('h4
 function nodeInspector(box, n) {
   const ed = editFor('node', n.id);
   const i = S.order.indexOf(n.id), cnt = legsFrom(n.id).length + legsTo(n.id).length;
-  box.append(inspHead(nodeName(n.id), 'var(--ink)', null, headActs(headBtn('Add leg from here', () => newLeg({ from: n.id }), 'leg', 'Add a leg that leaves this place'), [
+  box.append(inspHead(nodeName(n.id), 'var(--ink)', null, headActs(headBtn('Add leg from here', () => newLeg({ from: n.id }), 'leg', 'New leg from here'), [
     { label: 'Add leg into here', sub: 'A leg that arrives at this place', ico: 'leg', run: () => newLeg({ to: n.id }) },
     { label: 'Make a plan from here', sub: 'Start a plan at this place', ico: 'plan', run: () => startBuilder(null, n.id) },
     { label: pinOn() ? 'Unpin the place names' : 'Pin the place names', sub: pinOn() ? 'Let them scroll with the timeline' : 'Keep them in view when you scroll sideways', ico: 'pin', run: togglePin },
@@ -4658,7 +4673,7 @@ function nodeSelect(side, val) {
 function legInspector(box, l) {
   const ed = editFor('leg', l.id);
   box.append(inspHead('Leg', legColor(l.id), null, headActs(
-    headBtn(l.to ? `Add leg from ${nodeName(l.to)}` : 'Add the next leg', () => newLeg({ from: l.to, mode: l.mode, after: T[l.id] ? T[l.id].arr : null }), 'leg', l.to ? `Add a leg that leaves ${nodeName(l.to)}, where this one arrives` : 'Add the next leg', !l.to), [
+    headBtn(l.to ? `Add leg from ${nodeName(l.to)}` : 'Add the next leg', () => newLeg({ from: l.to, mode: l.mode, after: T[l.id] ? T[l.id].arr : null }), 'leg', 'Next leg', !l.to), [
     { label: l.from ? `Add leg into ${nodeName(l.from)}` : 'Add a leg before this one', sub: 'A leg that arrives where this one leaves', ico: 'leg', disabled: !l.from, run: () => newLeg({ to: l.from, mode: l.mode }) },
     { label: 'Return leg', sub: 'The same trip back the other way', ico: 'undo', disabled: !(l.from && l.to), run: () => newLeg({ from: l.to, to: l.from, mode: l.mode }) },
     { label: 'Alternative leg', sub: 'Another way between the same two places', ico: 'leg', run: () => newLeg({ from: l.from, to: l.to, mode: l.mode, dep: l.dep, arr: l.arr }) },
@@ -5005,14 +5020,14 @@ function refreshEditUI() {
 // Save and Discard stay in the bar at the bottom, so they are always where you look for them: greyed out until
 // something has changed.
 function idleFoot() {
-  setFoot(icoBtn('Save changes', saveEdit, 'primary', 'check', 'Nothing has changed yet', true), [], btn('Discard', discardEdit, '', 'Nothing to discard', true));
+  setFoot(icoBtn('Save changes', saveEdit, 'primary', 'check', 'Nothing to save', true), [], btn('Discard', discardEdit, '', 'Nothing to discard', true));
 }
 function syncEditFoot(force) {
   if (!edit) return;
   const dirty = editDirty();
   if (!force && dirty === edit.footDirty) return;
   edit.footDirty = dirty;
-  if (dirty) setFoot(icoBtn('Save changes', saveEdit, 'primary', 'check', 'Save your changes (Ctrl+S)'), [], btn('Discard', discardEdit, '', 'Go back to the saved version'));
+  if (dirty) setFoot(icoBtn('Save changes', saveEdit, 'primary', 'check', 'Save (Ctrl+S)'), [], btn('Discard', discardEdit, '', 'Back to the saved version'));
   else if (edit.normalFoot) edit.normalFoot();
   const bar = $('#heldBar');
   if (bar) { bar.hidden = !dirty; bar.textContent = 'Unsaved changes. Save them, or discard to go back to what was saved.'; }
@@ -5454,6 +5469,10 @@ function renderBuilder() {
   box.append(h('div', { class: 'insp-head' },
     h('span', { class: 'key-dot', style: '--c:var(--accent)' }),
     h('div', null, h('h2', { text: B.editing ? `Edit ${S.plans[B.editing].name}` : 'Make a plan' }), h('p', { class: 'crumb', text: BSTEP[ph] })),
+    headActs(null, [
+      ph === 'done' ? { label: 'Change the route', sub: 'Go on from where it ends, or step back', ico: 'leg', run: () => { B.finished = false; renderBuilder(); applyHighlight(); } } : null,
+      ph !== 'start' ? { label: 'Take back the last step', sub: 'Back one leg (←)', ico: 'prev', disabled: !B.chosen.length, run: stepBack } : null,
+    ]),
     h('button', { class: 'icon-btn', type: 'button', title: 'Close', 'aria-label': 'Close the plan maker', text: '×', onclick: () => closeBuilder() })));
   const nm = h('input', { type: 'text', 'data-pf': 'name', id: 'bName', placeholder: 'e.g. Weekend by train', maxlength: '80', required: true, 'aria-required': 'true', autocomplete: 'off' });
   nm.value = B.name;
@@ -5478,7 +5497,7 @@ function routeCard(ph) {
   card.append(h('div', { class: 'jn-head' }, h('h4', { text: 'Route' }),
     icoBtn('Back', stepBack, 'small', 'prev', 'Take back the last step (←)', ph === 'start'),
     ph === 'done' ? icoBtn('Change', () => { B.finished = false; renderBuilder(); applyHighlight(); }, 'small', 'edit', 'Go on with the route')
-      : icoBtn('Next', builderNext, 'small ico-after', 'next', 'Take the only way on, or finish when there is none (→)', ph === 'start' || (!opts.length && !B.chosen.length))));
+      : icoBtn('Next', builderNext, 'small ico-after', 'next', 'Next step (→)', ph === 'start' || (!opts.length && !B.chosen.length))));
   if (ph === 'start') {
     card.append(h('div', { class: 'jn-cur jn-ask' }, h('span', { class: 'jn-here', 'aria-hidden': 'true' }),
       h('span', { class: 'jn-txt' }, h('b', { text: 'Click the leg you leave on' }), h('small', { text: 'in the timeline, or the name of the place you start from' }))));
@@ -5550,11 +5569,10 @@ function costSection() {
 // Save and the other plan maker buttons, kept in view at the bottom of the panel.
 function builderFoot(ph) {
   if (!B) return;
-  const cancel = btn('Cancel', () => closeBuilder(), '', 'Close the plan maker without saving');
-  if (ph === 'done') setFoot(icoBtn(B.editing ? 'Save changes' : 'Save plan', savePlan, 'primary', 'plan'), [
-    { label: 'Change the route', sub: 'Go on from where it ends, or step back', ico: 'leg', run: () => { B.finished = false; renderBuilder(); applyHighlight(); } },
-  ], cancel);
-  else if (ph === 'route') setFoot(icoBtn(`Finish at ${nodeName(builderHere())}`, finishRoute, 'primary', 'check', 'End the route here, then check the costs', !B.chosen.length), [], cancel);
+  // the bar below has only Save (or the step that leads to it) and Cancel; everything else is under More at the top
+  const cancel = btn('Cancel', () => closeBuilder(), '', 'Close without saving');
+  if (ph === 'done') setFoot(icoBtn(B.editing ? 'Save changes' : 'Save plan', savePlan, 'primary', 'plan', 'Save (Ctrl+S)'), [], cancel);
+  else if (ph === 'route') setFoot(icoBtn(`Finish at ${nodeName(builderHere())}`, finishRoute, 'primary', 'check', 'End the route here', !B.chosen.length), [], cancel);
   else setFoot(null, [], cancel);
 }
 // One line above the timeline saying what to click.
@@ -5593,7 +5611,7 @@ function drawGuide() {
       const g = el('g', { class: 'gnum', 'data-leg': id }, nums);
       el('circle', { cx, cy, r: 10 }, g);
       txt(g, cx, cy + 4, String(k + 1), 'gnumtxt');
-      el('title', null, g).textContent = `Way on ${k + 1}: ${legLabel(id)}. Click to take it.`;
+      el('title', null, g).textContent = `Way on ${k + 1}: ${legLabel(id)}`;
     });
   }
   const flags = el('g', { class: 'guide' }, svg), font = `700 10px ${FONT}`;
@@ -6062,12 +6080,12 @@ function renderViewTabs() {
   if (!viewOnly) $('#graphTitle').textContent = viewPlan && PLBY[viewPlan] ? 'Plan view' : 'Places and legs';
   const tab = (id, label, color) => {
     const b = h('button', { class: 'vtab', type: 'button', role: 'tab', 'data-plan': id || null, 'aria-selected': String((viewPlan || null) === id),
-      title: id ? (canEdit() ? 'Show only this plan. Double-click to rename.' : 'Show only this plan') : 'Show every place and leg', onclick: () => { setView(id); const t = $('#viewTabs [aria-selected="true"]'); if (t && (!document.activeElement || document.activeElement === document.body)) t.focus({ preventScroll: true }); } },
+      title: id ? (canEdit() ? 'This plan only · double-click to rename' : 'This plan only') : 'Every place and leg', onclick: () => { setView(id); const t = $('#viewTabs [aria-selected="true"]'); if (t && (!document.activeElement || document.activeElement === document.body)) t.focus({ preventScroll: true }); } },
       color ? h('span', { class: 'key', style: `--c:${color}` }) : null, label);
     if (id && canEdit()) b.addEventListener('dblclick', () => { setView(id); startRename(id, 'side'); });
     return b;
   };
-  if (!viewOnly) box.append(tab(null, 'All places and legs'));
+  if (!viewOnly) box.append(tab(null, 'Whole trip'));
   PL.forEach(p => box.append(tab(p.id, p.name, p.color)));
   placeTabInd();
   syncTabScroll();
@@ -6113,14 +6131,14 @@ function trimmedText(text, cls) {
 // A plan's buttons, beside its name like a place's and a leg's: Edit, then More with the rest and Delete last.
 function planActs(p) {
   const items = [
-    viewPlan === p.id ? { label: 'Show every place and leg', sub: 'Leave this plan’s view', ico: 'eye', run: () => setView(null) }
+    viewPlan === p.id ? { label: 'Show the whole trip', sub: 'Every place and leg', ico: 'eye', run: () => setView(null) }
                       : { label: 'Show on the timeline', sub: 'Only this plan', ico: 'eye', run: () => setView(p.id) },
     { label: 'Copy as text', sub: 'To paste into a message', ico: 'copy', run: () => copyText(planText(p)) },
   ];
   if (!canEdit()) return headActs(null, items);
   items.push({ label: 'Duplicate plan', sub: 'A copy to change without losing this one', ico: 'dup', run: () => duplicatePlan(p.id) }, '-',
     { label: 'Delete plan', sub: 'You can undo it (Del)', ico: 'trash', danger: true, run: () => delPlan(p.id) });
-  return headActs(headBtn('Edit plan', () => startBuilder(p.id), 'edit', 'Change this plan’s route and costs'), items);
+  return headActs(headBtn('Edit plan', () => startBuilder(p.id), 'edit', 'Edit route and costs'), items);
 }
 // A plan in the details panel: its key figures, then every leg and wait in order, day by day, with
 // this plan's other costs and the total. Click a leg for its details; Rename names a wait.
@@ -6190,7 +6208,7 @@ function planRemarks(p) {
   ta.value = cur;
   const fit = () => { ta.style.height = 'auto'; ta.style.height = Math.min(320, ta.scrollHeight + 2) + 'px'; };
   const saveBtn = icoBtn('Save remarks', () => keep(), 'primary', 'check', 'Nothing has changed yet', true);
-  const syncSave = () => { const d = ta.value.trim() !== String((S.plans[p.id] || {}).remarks || '').trim(); saveBtn.disabled = !d; saveBtn.title = d ? 'Save the remarks (they are also kept when you click outside the box)' : 'Nothing has changed yet'; };
+  const syncSave = () => { const d = ta.value.trim() !== String((S.plans[p.id] || {}).remarks || '').trim(); saveBtn.disabled = !d; saveBtn.title = d ? 'Save (Ctrl+S)' : 'Nothing to save'; };
   ta.addEventListener('input', () => { fit(); syncSave(); });
   // the bar at the bottom has Save, as it does for a place or a leg
   setTimeout(() => { if (ta.isConnected) { setFoot(saveBtn, [], null); syncSave(); } }, 0);
@@ -6491,7 +6509,7 @@ function syncToolbar() {
     bc.textContent = bv ? `Budget ${money(bv)} per head` : 'Set a budget'; bc.classList.toggle('none', !bv);
     // view only: the budget is shown when there is one, but nothing offers to set or change it
     bc.hidden = !bv && !canEdit();
-    bc.title = canEdit() ? 'Change the budget and currency in Settings' : 'The budget per head for every plan';
+    bc.title = canEdit() ? 'Budget · change it in Settings' : 'Budget per head';
   }
 }
 function refreshRest() { renderPlans(); renderNow(); syncToolbar(); $('#planCount').textContent = PL.length ? String(PL.length) : ''; save(); }
@@ -6582,7 +6600,7 @@ function syncPickBar() {
   b.replaceChildren(...[
     h('span', { class: 'pb-count', text: `${what} selected` }),
     h('span', { class: 'pb-hint', text: nl > 1 ? 'Drag any of them, or inside the frame, to move them together. Arrow keys nudge.' : nn > 1 ? 'Drag one to move them together. ↑ and ↓ nudge.' : 'Shift-click, or drag a box, to add more' }),
-    nl ? icoBtn('Duplicate', () => duplicateLegs([...pickLegs]), 'small', 'dup', 'A copy of each a little later, in no plan (Ctrl+D)') : null,
+    nl ? icoBtn('Duplicate', () => duplicateLegs([...pickLegs]), 'small', 'dup', 'Duplicate (Ctrl+D)') : null,
     nl ? icoBtn('Delete', () => delLegs([...pickLegs]), 'small danger', 'trash', 'Delete the selected legs (you can undo)') : null,
     icoBtn('Clear', () => clearPick(), 'small icon', 'close', 'Clear the selection (Esc)')].filter(Boolean));
 }
@@ -7039,7 +7057,7 @@ function syncDayBtn() {
   const shown = t != null ? t : first;
   b.textContent = dayLbl(shown);
   b.setAttribute('aria-label', `Day: ${dayLbl(shown)}`);
-  b.title = t != null ? `Day: the timeline shows ${fmtDay(t)}. Choose another day` : `Day: the timeline starts ${dayLbl(shown)}. Choose a day to show`;
+  b.title = t != null ? `Day: ${fmtDay(t)}` : `Day: from the first leg (${dayLbl(shown)})`;
   b.classList.toggle('on', t != null);
   if (i && document.activeElement !== i) i.value = isoToDMY(toLocal(shown).slice(0, 10));
   const c = $('#dayAuto'); if (c) c.disabled = t == null;
@@ -7239,7 +7257,7 @@ function planCtx(id) {
   const ed = canEdit() && !B;
   return [
     { head: p.name },
-    viewPlan === id ? { label: 'Show every place and leg', ico: 'eye', run: () => setView(null) } : { label: 'Show on the timeline', ico: 'eye', run: () => setView(id) },
+    viewPlan === id ? { label: 'Show the whole trip', ico: 'eye', run: () => setView(null) } : { label: 'Show on the timeline', ico: 'eye', run: () => setView(id) },
     { label: 'Open itinerary', ico: 'list', run: () => togglePlan(id, true) },
     { label: 'Copy as text', ico: 'copy', run: () => copyText(planText(p)) },
     ed ? '-' : null,
@@ -7427,7 +7445,7 @@ function bind() {
       $('#vtAll .menu-pop').replaceChildren(...ids.map(id => {
         const p = id && PLBY[id], cur = (viewPlan || null) === id;
         return h('button', { type: 'button', role: 'menuitem', 'aria-current': cur ? 'true' : null, onclick: () => setView(id) },
-          h('span', { class: 'key', style: p ? `--c:${p.color}` : null }), p ? p.name : 'All places and legs');
+          h('span', { class: 'key', style: p ? `--c:${p.color}` : null }), p ? p.name : 'Whole trip');
       }));
     });
     // the strip narrows when the details panel opens for the plan just chosen: its tab stays in view
@@ -7930,6 +7948,8 @@ function bind() {
   document.addEventListener('keydown', e => {
     if (drag && e.key === 'Escape') { e.preventDefault(); dropDrag(false); return; } // Esc puts a drag back
     if ($('#tripDlg')) { if (e.key === 'Escape') { e.preventDefault(); closeTripDlg(); } return; } // while the trip dialog is open, keys stay with it
+    if (!$('#keysDlg').hidden) { if (e.key === 'Escape') { e.preventDefault(); closeKeys(); } return; } // and the shortcuts
+    if (e.key === '?' && !e.ctrlKey && !e.metaKey && !e.altKey && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) && $('#settings').hidden) { e.preventDefault(); openKeys(); return; }
     if (!$('#settings').hidden) { if (e.key === 'Escape') { e.preventDefault(); closeSettings(); } else if ((e.ctrlKey || e.metaKey) && (e.key || '').toLowerCase() === 's') e.preventDefault(); return; } // while Settings is open, keys stay with it
     if (TOUR && !TOUR.explore && $('#tour')) {
       if (e.key === 'Escape' && !document.querySelector('.menu.open')) { e.preventDefault(); endTour(); return; } // an open menu closes first
@@ -8010,93 +8030,115 @@ function bind() {
     else if ((e.key === 'Delete' || e.key === 'Backspace') && !inField && sel && sel.k !== 'wait' && canEdit() && !B) { e.preventDefault(); if (sel.k === 'node') delNode(sel.id); else delLeg(sel.id); }
     else if ((e.key === 'Delete' || e.key === 'Backspace') && !inField && !sel && !draft && !B && canEdit() && S.plans[focusPlan || viewPlan]) { e.preventDefault(); delPlan(focusPlan || viewPlan); }
   });
-  renderShortcuts();
+  $('#keysBtn').addEventListener('click', openKeys);
+  $('#keysClose').addEventListener('click', closeKeys);
+  $('#keysDlg').addEventListener('click', e => { if (e.target === $('#keysDlg')) closeKeys(); });
+  $('#setKeysOpen').addEventListener('click', openKeys);
   window.addEventListener('resize', () => { clearTimeout(bind._rt); bind._rt = setTimeout(() => { if (UI.dockH) fitDockH(); if (VIEWQ && VIEWQ.matches !== viewOnly) { applyViewOnly(); renderAll(); } else renderGraph(); }, 150); });
 }
 
 /* ---------- every shortcut, listed in Settings ----------
    Keys are drawn as keys; a mouse action is in words. Kept here, beside the code that handles them. */
 function shortcutGroups() {
-  const m = MAC ? '⌘' : 'Ctrl', add = MAC ? 'Shift-click or ⌘-click' : 'Shift-click or Ctrl-click';
+  const m = MAC ? '⌘' : 'Ctrl', click = MAC ? '⌘-click' : 'Ctrl-click';
   return [
     ['Anywhere', [
-      [[[m, 'Z']], 'Undo'],
-      [[[m, 'Shift', 'Z'], [m, 'Y']], 'Redo'],
-      [[[m, 'S']], 'Save: a new place or leg, your changes, a plan’s remarks, or the plan you are making (at its last step)'],
-      [[['Enter']], 'Save the form you are typing in (in a note, ' + m + '+Enter)'],
-      [[['Esc']], 'Cancel what you are making or changing (Undo brings it back); then close the panel, Arrange, a menu or Plans'],
-      [[['Delete'], ['Backspace']], 'Delete the selected place or leg, or the plan in view (you can undo)'],
-      [[['F2']], 'Rename the selected place, waiting time, or the plan in view'],
+      [[[m, 'Z']], 'Undo', 'Takes back the last change: a move, a delete, an edit or a saved plan.'],
+      [[[m, 'Shift', 'Z'], [m, 'Y']], 'Redo', 'Puts back what Undo took back.'],
+      [[[m, 'S']], 'Save', 'Saves what is open: a new place or leg, your changes, a plan’s remarks, or a plan at its last step.'],
+      [[['Enter']], 'Save the form', `While you type in a field. In a note, ${m}+Enter, as Enter starts a new line.`],
+      [[['Esc']], 'Cancel, then close', 'First drops what you are making or changing (Undo brings it back), then closes the panel, a menu, Arrange or Plans.'],
+      [[['Delete'], ['Backspace']], 'Delete', 'The selected place or leg, or the plan in view. You can undo it.'],
+      [[['F2']], 'Rename', 'The selected place, waiting time, or the plan in view.'],
+      [[['?']], 'Shortcuts', 'Opens this list.'],
     ]],
     ['On the timeline', [
-      [['Move the pointer'], 'A card shows where every plan is at that moment'],
-      [['Click'], 'Pin that card (click again to let it go)'],
-      [[[m, 'wheel']], 'Zoom (or pinch on a touchpad)'],
-      [[['+'], ['−']], 'Zoom in or out while the pointer is over it'],
-      [[['0']], 'Fit the whole trip again'],
-      [[['Home'], ['End']], 'Go to the start or the end'],
-      [['Drag empty space'], 'Scroll it, as on a map (the middle button drags from anywhere)'],
-      [['Double-click a row'], 'A new leg from that place, at that time'],
-      [['Double-click a name'], 'Rename that place'],
-      [['Right-click'], 'What you can do with what is under the pointer'],
+      [['Move the pointer'], 'Moment card', 'Shows where every plan is at that moment.'],
+      [['Click'], 'Pin the card', 'It stays while you look around. Click again to let it go.'],
+      [[[m, 'wheel']], 'Zoom', 'Or pinch on a touchpad. Only the timeline zooms, never the page.'],
+      [[['+'], ['−']], 'Zoom in or out', 'While the pointer is over the timeline.'],
+      [[['0']], 'Fit', 'The whole trip in the window again.'],
+      [[['Home'], ['End']], 'Start or end', 'Scrolls to the first or the last hour.'],
+      [['Drag empty space'], 'Scroll', 'As on a map. The middle mouse button drags from anywhere.'],
+      [['Double-click a row'], 'New leg', 'From that place, at the time you clicked.'],
+      [['Double-click a name'], 'Rename a place', 'Opens it with the name ready to change.'],
+      [['Right-click'], 'Menu', 'What you can do with what is under the pointer.'],
     ]],
     ['A selected leg', [
-      [[['←'], ['→']], 'The previous or next leg along the way'],
-      [[['1', '–', '9']], 'Take that numbered way on'],
-      [[[m, 'C'], [m, 'V']], 'Copy the selected legs; paste them a little later, in no plan'],
-      [[[m, 'D']], 'Duplicate the selected legs'],
+      [[['←'], ['→']], 'Previous or next leg', 'Along the way you came, or the way on.'],
+      [[['1', '–', '9']], 'Take a way on', 'When several legs go on, each has a number.'],
+      [[[m, 'C'], [m, 'V']], 'Copy, paste', 'The copies land a little later, in no plan, ready to drag.'],
+      [[[m, 'D']], 'Duplicate', 'Copy and paste in one go.'],
     ]],
     ['Arrange (the arrows icon)', [
-      [['Drag a place name'], 'Move its row up or down'],
-      [['Drag a leg'], 'Move its times; drag an end dot to another time or place'],
-      [['Drag from a place’s line'], 'Drop on another place to add a leg'],
-      [[['Shift']], 'Hold while dragging for 5-minute steps'],
-      [['Drag across empty space'], 'Select several legs and places'],
-      [[add], 'Add one to the selection, or take it out'],
-      [[[m, 'A']], 'Select every leg'],
-      [[['←'], ['→']], 'Move the selected legs 15 minutes (with Shift, an hour)'],
-      [[['↑'], ['↓']], 'Move the selected places up or down'],
-      [[['Space']], 'Hold and drag to scroll'],
-      [[['Esc']], 'Clear the selection, then turn Arrange off'],
+      [['Drag a place name'], 'Move a row', 'Up or down.'],
+      [['Drag a leg'], 'Move its times', 'Drag an end dot to change one end, or move it to another place.'],
+      [['Drag from a place’s line'], 'New leg', 'Drop it on another place.'],
+      [[['Shift']], '5-minute steps', 'Hold it while you drag, for exact times.'],
+      [['Drag across empty space'], 'Select several', 'Every leg and place inside the box.'],
+      [['Shift-click', click], 'Add or remove one', 'From the selection.'],
+      [[[m, 'A']], 'Select every leg', ''],
+      [[['←'], ['→']], 'Move the selection in time', '15 minutes, or an hour with Shift.'],
+      [[['↑'], ['↓']], 'Move selected places', 'Up or down a row.'],
+      [[['Space']], 'Scroll', 'Hold it and drag anywhere.'],
+      [[['Esc']], 'Clear, then stop', 'First clears the selection, then turns Arrange off.'],
     ]],
     ['Making a plan', [
-      [[['←'], ['→']], 'A step back, or on'],
-      [[['1', '–', '9']], 'Take that numbered way on'],
-      [[[m, 'S']], 'Save the plan, at its last step'],
-      [[['Esc']], 'Stop making it (Undo brings it back)'],
+      [[['←'], ['→']], 'A step back, or on', ''],
+      [[['1', '–', '9']], 'Take a way on', 'By its number.'],
+      [[[m, 'S']], 'Save the plan', 'At its last step.'],
+      [[['Esc']], 'Stop', 'Nothing is saved. Undo brings it back.'],
     ]],
     ['Plans', [
-      [['Double-click a tab'], 'Rename that plan'],
-      [['Click its name'], 'Rename the plan in the details panel'],
-      [['Wheel over the tabs'], 'Scroll through them'],
+      [['Double-click a tab'], 'Rename the plan', ''],
+      [['Click its name'], 'Rename the plan', 'In the details panel.'],
+      [['Wheel over the tabs'], 'Scroll the tabs', 'When there are more than fit.'],
     ]],
     ['Menus, calendar and clock', [
-      [[['↑'], ['↓']], 'Move through a menu, or the hours and minutes of the clock'],
-      [[['←'], ['→'], ['↑'], ['↓']], 'In the calendar, a day or a week'],
-      [[['Page Up'], ['Page Down']], 'In the calendar, a month'],
-      [[['Esc']], 'Close it'],
+      [[['↑'], ['↓']], 'Move', 'Through a menu, or the clock’s hours and minutes.'],
+      [[['←'], ['→'], ['↑'], ['↓']], 'Days', 'In the calendar: a day, or a week.'],
+      [[['Page Up'], ['Page Down']], 'Months', 'In the calendar.'],
+      [[['Esc']], 'Close', ''],
     ]],
     ['The tour', [
-      [[['←'], ['→']], 'The step before or after'],
-      [[['Esc']], 'End it'],
+      [[['←'], ['→']], 'Step before or after', ''],
+      [[['Esc']], 'End the tour', ''],
     ]],
   ];
 }
-// one shortcut: its keys (several ways are joined by "or"; a key between dashes is a range) or the mouse action
+// one shortcut's keys: several ways joined by "or", a range as "1 to 9", a mouse action in words
 function keysCell(ways) {
-  const dt = h('dt');
+  const td = h('td', { class: 'kt-keys' });
   ways.forEach((w, i) => {
-    if (i) dt.append(h('span', { class: 'k-or', text: 'or' }));
-    if (typeof w === 'string') { dt.append(h('span', { class: 'k-mouse', text: w })); return; }
-    w.forEach(k => dt.append(k === '–' ? h('span', { class: 'k-or', text: 'to' }) : k === 'wheel' ? h('span', { class: 'k-mouse', text: '+ wheel' }) : h('kbd', { text: k })));
+    if (i) td.append(h('span', { class: 'k-or', text: 'or' }));
+    if (typeof w === 'string') { td.append(h('span', { class: 'k-mouse', text: w })); return; }
+    w.forEach(k => td.append(k === '–' ? h('span', { class: 'k-or', text: 'to' }) : k === 'wheel' ? h('span', { class: 'k-mouse', text: '+ wheel' }) : h('kbd', { text: k })));
   });
-  return dt;
+  return td;
 }
 function renderShortcuts() {
-  const box = $('#setKeys'); if (!box) return;
-  box.replaceChildren(...shortcutGroups().map(([title, rows]) => h('div', { class: 'set-card keys-card' },
-    h('h4', { class: 'keys-h', text: title }),
-    h('dl', { class: 'keys' }, ...rows.flatMap(([ways, what]) => [keysCell(ways), h('dd', { text: what })])))));
+  const box = $('#keysBody'); if (!box) return;
+  box.replaceChildren(...shortcutGroups().map(([title, rows]) => h('section', { class: 'set-card kt-card' },
+    h('table', { class: 'kt' },
+      h('caption', { text: title }),
+      h('thead', null, h('tr', null, h('th', { scope: 'col', text: 'Shortcut' }), h('th', { scope: 'col', text: 'Does' }), h('th', { scope: 'col', text: 'Good to know' }))),
+      h('tbody', null, ...rows.map(([ways, what, more]) => h('tr', null, keysCell(ways), h('td', { class: 'kt-do', text: what }), h('td', { class: 'kt-more', text: more || '' }))))))));
+}
+let keysOpener = null;
+function openKeys() {
+  if (!$('#keysDlg').hidden) return;
+  closeMenus(); closeSettings();
+  keysOpener = document.activeElement;
+  renderShortcuts();
+  $('#keysDlg').hidden = false;
+  document.body.classList.add('modal-open');
+  setTimeout(() => { const c = $('#keysClose'); if (c) c.focus(); }, 20);
+}
+function closeKeys() {
+  if ($('#keysDlg').hidden) return;
+  $('#keysDlg').hidden = true;
+  document.body.classList.remove('modal-open');
+  if (keysOpener && keysOpener.isConnected) keysOpener.focus({ preventScroll: true });
 }
 
 /* ---------- the guided tour, on a sample trip ---------- */
@@ -8113,6 +8155,7 @@ const TOUR_STEPS = [
   { target: () => $('.dock-bar'), title: 'Compare plans', body: 'Pull this bar up to compare your plans. Click one to read its itinerary and costs in the details panel.', before: () => { if (UI.drawer) setDrawer(false); } },
   { target: () => $('#createGroup'), title: 'Add, and make plans', body: 'Choose New, beside Undo and Redo at the top, to add a place, a leg or a plan. For a plan, click the leg you leave on, then take the way on at each place until you get there.' },
   { target: () => $('#modeSeg'), title: 'Edit, or just view', body: 'Switch to View to look at everything without changing anything.' },
+  { target: () => $('#keysBtn'), title: 'Shortcuts', body: 'The keyboard icon (or the ? key) lists every keyboard and mouse shortcut, with what each one does.' },
   { target: () => $('#settingsBtn'), title: 'Settings', body: 'The theme, the sky, your currency and budget, and Export and Import to keep a copy or move your plans to another device.' },
   { title: 'You’re ready', body: 'Try the sample for yourself, or go back to your own plans. You can take it again any time from Settings.', last: true },
 ];
