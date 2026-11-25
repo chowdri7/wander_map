@@ -260,6 +260,20 @@ table.plans tbody tr:hover{background:var(--surface2)}
 table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 3px 0 0 var(--accent)}
 .pname{display:inline-flex;align-items:baseline;gap:8px;font-weight:600;white-space:nowrap}
 td.route{color:var(--ink2);min-width:200px}
+td.route .rt-legs{list-style:none;margin:0;padding:0;display:grid;gap:3px}
+td.route .rt-legs li{display:flex;align-items:baseline;gap:8px;min-width:0;max-width:340px}
+td.route .rt-mode{flex:none;min-width:40px;font-size:10.5px;font-weight:600;letter-spacing:.03em;color:color-mix(in srgb,var(--c) 70%,var(--ink))}
+td.route .rt-txt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td.route .rt-legs.open li{max-width:none}
+td.route .rt-legs.open .rt-txt{white-space:normal;overflow:visible}
+td.route .rt-more{margin-top:5px;padding:0;border:0;background:none;color:var(--accent);font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+td.route .rt-more:hover{text-decoration:underline}
+td.route .rt-more:focus-visible{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:2px;border-radius:4px}
+/* a link field with its Open button beside it */
+.fld > span.linkrow{display:flex;gap:6px;align-items:center;min-width:0;font-size:inherit;font-weight:inherit;letter-spacing:normal;text-transform:none;color:inherit;margin:0}
+.linkrow input{flex:1;min-width:0}
+.linkrow .btn{flex:none}
+.ro-link{display:block;color:var(--accent);word-break:break-all;font-size:13px}
 .nowrap{white-space:nowrap}
 .star{border:0;background:transparent;font-size:18px;line-height:1;cursor:pointer;color:var(--muted);padding:0 2px}
 .star[aria-pressed="true"]{color:var(--ink)}
@@ -898,6 +912,7 @@ table.plans tbody tr.focus{background:var(--surface2);box-shadow:inset 2px 0 0 v
 [data-ico="pin"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M9 4h6l-1.2 6 3.2 3.2V15H7v-1.8L10.2 10z%22/%3E%3Cpath d=%22M12 15v5%22/%3E%3C/svg%3E")}
 [data-ico="edit"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z%22/%3E%3Cpath d=%22M14.5 7.5l3 3%22/%3E%3C/svg%3E")}
 [data-ico="file"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z%22/%3E%3Cpath d=%22M14 3v5h5M9 13h6M9 17h4%22/%3E%3C/svg%3E")}
+[data-ico="open"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M15 3h6v6%22/%3E%3Cpath d=%22M10 14 21 3%22/%3E%3Cpath d=%22M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6%22/%3E%3C/svg%3E")}
 [data-ico="dots"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%225%22 cy=%2212%22 r=%221%22/%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%221%22/%3E%3Ccircle cx=%2219%22 cy=%2212%22 r=%221%22/%3E%3C/svg%3E")}
 [data-ico="key"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223.5%22 y=%224%22 width=%227%22 height=%227%22 rx=%221.5%22/%3E%3Crect x=%2213.5%22 y=%224%22 width=%227%22 height=%227%22 rx=%221.5%22/%3E%3Crect x=%223.5%22 y=%2213%22 width=%227%22 height=%227%22 rx=%221.5%22/%3E%3Cpath d=%22M14 16.5h6.5%22/%3E%3C/svg%3E")}
 [data-ico="close"]{--ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M6 6l12 12M18 6L6 18%22/%3E%3C/svg%3E")}
@@ -2384,7 +2399,7 @@ const MONS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oc
 const MONTHS_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const BUFS = [0, 15, 30, 60, 120, 180];
 const SORTS = ['made', 'cost', 'costDesc', 'start', 'end', 'dur'];
-const LEGF = { from: '', to: '', mode: 'flight', info: '', cost: '', dep: '', arr: '', buf: '' };
+const LEGF = { from: '', to: '', mode: 'flight', info: '', cost: '', dep: '', arr: '', buf: '', link: '' };
 
 /* ---------- state ---------- */
 let S = null;                       // saved: nodes, legs, plans (of the trip that is open)
@@ -2611,6 +2626,32 @@ function extraProblem(x) {
 }
 // Editing is off on phones and in view-only mode.
 function canEdit() { return !viewOnly && !UI.view; }
+// A link kept with a place or a leg for your own records (a booking, a ticket, a map). It is never in the itinerary.
+function cleanLink(v) { return typeof v === 'string' ? v.trim().slice(0, 2000) : ''; }
+// the web address a link opens: one without http(s):// gets https://, and other kinds (mailto:, javascript:…) are never opened
+function webLink(raw) {
+  const v = String(raw || '').trim(); if (!v || /\s/.test(v)) return null;
+  if (/^https?:\/\/[^/\s]+/i.test(v)) return v;
+  if (/^[a-z][a-z0-9+.-]*:/i.test(v) && !/^[^:]+:\d+(\/|$)/.test(v)) return null;
+  return /^[^\s/.]+(\.[^\s/.]+)+(:\d+)?(\/.*)?$/.test(v) ? 'https://' + v : null;
+}
+function openLink(raw) {
+  const u = webLink(raw);
+  if (!u) { toast('That is not a web link. It should look like https://… or example.com/…'); return; }
+  window.open(u, '_blank', 'noopener,noreferrer');
+}
+function linkField(o) {
+  const i = input(o, 'link', 'text', { id: 'fLink', inputmode: 'url', autocomplete: 'off', spellcheck: 'false', maxlength: '2000', placeholder: 'Optional: a booking, ticket or map link' });
+  const go = h('button', { type: 'button', class: 'btn small', 'data-ico': 'open', title: 'Open the link in a new tab', onclick: e => { e.preventDefault(); openLink(i.value); } }, 'Open');
+  const sync = () => { go.disabled = !webLink(i.value); };
+  i.addEventListener('input', sync); sync();
+  return fld('Link', h('span', { class: 'linkrow' }, i, go), 'Just for your records: it is not in the itinerary or in Copy as text.');
+}
+// in View mode, a saved link is something to open, not to edit
+function linkView(raw) {
+  const u = webLink(raw); if (!u) return null;
+  return h('div', { class: 'sect' }, h('h3', { text: 'Link' }), h('a', { class: 'ro-link', href: u, target: '_blank', rel: 'noopener noreferrer', text: String(raw).trim() }));
+}
 function fld(label, input, hint) { return h('label', { class: 'fld' }, h('span', { text: label }), input, hint ? h('small', { text: hint }) : null); }
 
 /* ---------- state lifecycle ---------- */
@@ -2671,6 +2712,7 @@ function normalize(d) {
   for (const id in d.nodes) {
     const n = d.nodes[id]; if (!n || typeof n !== 'object') continue;
     out.nodes[id] = { id, name: String(n.name ?? ''), note: String(n.note ?? '') };
+    if (cleanLink(n.link)) out.nodes[id].link = cleanLink(n.link);
     if (n.scope === 'local') out.nodes[id].scope = 'local'; // kept to the open trip; otherwise it is in every trip
     if (typeof n.img === 'string' && (/^data:image\/(png|jpeg|webp|gif);base64,/.test(n.img) || /^https?:\/\/\S+$/i.test(n.img))) out.nodes[id].img = n.img;
   }
@@ -2789,6 +2831,7 @@ function loadSaved() {
 function tripId() { let id; do { id = 't' + Math.random().toString(36).slice(2, 9); } while (LIB && LIB.trips[id]); return id; }
 function cleanPlace(id, n) {
   const o = { id, name: String(n.name ?? ''), note: String(n.note ?? '') };
+  if (cleanLink(n.link)) o.link = cleanLink(n.link);
   if (typeof n.img === 'string' && (/^data:image\/(png|jpeg|webp|gif);base64,/.test(n.img) || /^https?:\/\/\S+$/i.test(n.img))) o.img = n.img;
   return o;
 }
@@ -4310,27 +4353,10 @@ function nodeInspector(box, n) {
   const ed = editFor('node', n.id);
   box.append(inspHead(nodeName(n.id), 'var(--ink)'));
   box.append(h('p', { class: 'heldnote', id: 'liveHeld', role: 'status', hidden: true }));
-  const pick = h('input', { type: 'file', accept: 'image/*', hidden: true, id: 'nodeImgFile' });
-  pick.addEventListener('change', () => { const f = pick.files && pick.files[0]; pick.value = ''; if (f) setNodeImage(n.id, f); });
-  const zone = n.img
-    ? h('div', { class: 'nimg' },
-        h('img', { src: n.img, alt: `Picture of ${nodeName(n.id)}` }),
-        h('div', { class: 'nimg-btns' },
-          btn('Change image', () => pick.click(), 'small'),
-          btn('Remove image', () => { checkpoint(); delete S.nodes[n.id].img; renderAll(); toast('Image removed', true); }, 'small danger')))
-    : h('button', { class: 'nimg-add', type: 'button', onclick: () => pick.click() },
-        h('b', { text: '+ Add an image' }), h('span', { text: 'Click to choose a file, drop one here, or paste a link below.' }));
-  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('over'); });
-  zone.addEventListener('dragleave', () => zone.classList.remove('over'));
-  zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('over'); const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) setNodeImage(n.id, f); });
-  const link = h('input', { type: 'url', id: 'imgUrl', placeholder: 'Or paste an image link: https://…', autocomplete: 'off', 'aria-label': 'Image link' });
-  const go = () => setNodeImageUrl(n.id, link.value);
-  link.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); go(); } });
   const place = fgroup('Place'); placeFields(place, ed.obj); box.append(place);
   if (!TOUR) box.append(fgroup('Trips', scopeRow(n.scope !== 'local', on => setPlaceScope(n.id, on))));
-  box.append(fgroup('Image', pick, zone,
-    h('div', { class: 'nimg-link' }, link, btn('Load', go, 'small')),
-    h('p', { class: 'nimg-msg', id: 'imgMsg', text: n.img && /^https?:/i.test(n.img) ? 'This image loads from its link each time, so it needs an internet connection.' : '' })));
+  box.append(imageGroup(n.img, nodeName(n.id), (src, msg) => storeNodeImage(n.id, src, msg),
+    () => { checkpoint(); delete S.nodes[n.id].img; renderAll(); toast('Image removed', true); }));
   box.append(fgroup('Legs here', legList('Leaving', legsFrom(n.id), 'to'), legList('Arriving', legsTo(n.id), 'from')));
   const i = S.order.indexOf(n.id), cnt = legsFrom(n.id).length + legsTo(n.id).length;
   ed.normalFoot = () => setFoot(icoBtn('Add leg from here', () => newLeg({ from: n.id }), 'primary', 'leg', 'A leg that leaves this place'), [
@@ -4347,6 +4373,7 @@ function placeFields(box, o) {
   box.append(fld('Name', input(o, 'name', 'text', { placeholder: 'e.g. City Airport', id: 'fName', autocomplete: 'off', maxlength: '80', required: true }), 'Every leg in or out of this place meets here.'));
   box.append(h('div', { id: 'liveDup' }));
   box.append(fld('Note', input(o, 'note', 'textarea', { placeholder: 'Optional' })));
+  box.append(linkField(o));
 }
 function waitInspector(box, p, legId) {
   const w = waitInfo(p, legId), pi = PLBY[p.id], ed = editFor('wait', legId, p.id);
@@ -4395,29 +4422,52 @@ function storeNodeImage(id, src, msg) {
   toast(`Image added to ${nodeName(id)}`, true);
 }
 function imgMsg(text, bad) { const m = $('#imgMsg'); if (m) { m.textContent = text; m.classList.toggle('bad', !!bad); } }
-function setNodeImage(id, file) {
+// A picture from a file or a link, shrunk to keep; `take(src, msg)` keeps it (on a saved place, or on a new one).
+function readImageFile(file, take) {
   if (!/^image\//.test(file.type)) { toast('That file is not an image'); return; }
   const url = URL.createObjectURL(file), img = new Image();
-  img.onload = () => { URL.revokeObjectURL(url); try { storeNodeImage(id, shrinkImage(img)); } catch (e) { toast('Could not read that image'); } };
+  img.onload = () => { URL.revokeObjectURL(url); let data = null; try { data = shrinkImage(img); } catch (e) { toast('Could not read that image'); return; } take(data); };
   img.onerror = () => { URL.revokeObjectURL(url); toast('Could not read that image'); };
   img.src = url;
 }
 // From a link: keep a small copy when the site allows it, otherwise show the picture straight from the link.
-function setNodeImageUrl(id, raw) {
+function readImageUrl(raw, take) {
   const url = String(raw || '').trim();
   if (!/^https?:\/\/\S+$/i.test(url)) { imgMsg('Paste a full link that starts with https:// or http://', true); return; }
   imgMsg('Loading the image…');
   const direct = () => {
     const im = new Image();
-    im.onload = () => storeNodeImage(id, url, 'This image loads from its link each time, so it needs an internet connection. To keep a copy, save the image and choose the file instead.');
+    im.onload = () => take(url, 'This image loads from its link each time, so it needs an internet connection. To keep a copy, save the image and choose the file instead.');
     im.onerror = () => imgMsg('No image could be loaded from that link. Check that it opens an image (it often ends in .jpg, .png or .webp).', true);
     im.src = url;
   };
   const img = new Image();
   img.crossOrigin = 'anonymous';
-  img.onload = () => { let data = null; try { data = shrinkImage(img); } catch (e) { /* site does not allow a copy */ } if (data) storeNodeImage(id, data, 'Saved a copy of the image from the link.'); else direct(); };
+  img.onload = () => { let data = null; try { data = shrinkImage(img); } catch (e) { /* site does not allow a copy */ } if (data) take(data, 'Saved a copy of the image from the link.'); else direct(); };
   img.onerror = direct;
   img.src = url;
+}
+function setNodeImage(id, file) { readImageFile(file, src => storeNodeImage(id, src)); }
+function setNodeImageUrl(id, raw) { readImageUrl(raw, (src, msg) => storeNodeImage(id, src, msg)); }
+// The Image group of a place's details: choose a file, drop one, or paste a link; change or remove the one it has.
+function imageGroup(src, name, take, drop) {
+  const pick = h('input', { type: 'file', accept: 'image/*', hidden: true, id: 'nodeImgFile' });
+  pick.addEventListener('change', () => { const f = pick.files && pick.files[0]; pick.value = ''; if (f) readImageFile(f, take); });
+  const zone = src
+    ? h('div', { class: 'nimg' },
+        h('img', { src, alt: name ? `Picture of ${name}` : 'Picture of the new place' }),
+        h('div', { class: 'nimg-btns' }, btn('Change image', () => pick.click(), 'small'), btn('Remove image', drop, 'small danger')))
+    : h('button', { class: 'nimg-add', type: 'button', onclick: () => pick.click() },
+        h('b', { text: '+ Add an image' }), h('span', { text: 'Click to choose a file, drop one here, or paste a link below.' }));
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+  zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('over'); const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) readImageFile(f, take); });
+  const link = h('input', { type: 'url', id: 'imgUrl', placeholder: 'Or paste an image link: https://…', autocomplete: 'off', 'aria-label': 'Image link' });
+  const go = () => readImageUrl(link.value, take);
+  link.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); go(); } });
+  return fgroup('Image', pick, zone,
+    h('div', { class: 'nimg-link' }, link, btn('Load', go, 'small')),
+    h('p', { class: 'nimg-msg', id: 'imgMsg', text: src && /^https?:/i.test(src) ? 'This image loads from its link each time, so it needs an internet connection.' : '' }));
 }
 function nodeSelect(side, val) {
   const s = h('select', { 'data-end': side, id: side === 'from' ? 'fFrom' : 'fTo' });
@@ -4465,7 +4515,8 @@ function legFields(box, o, isDraft) {
     h('div', { class: 'row2' },
       fld('How', sel_),
       fld(`Fare per head (${curSym()})`, input(o, 'cost', 'number', { min: '0', step: '1', inputmode: 'numeric', placeholder: 'e.g. 120', required: true }))),
-    fld('Details', input(o, 'info', 'text', { placeholder: 'Optional: airline, flight no., bus operator…', maxlength: '120' })));
+    fld('Details', input(o, 'info', 'text', { placeholder: 'Optional: airline, flight no., bus operator…', maxlength: '120' })),
+    linkField(o));
   const chips = h('div', { class: 'chips', role: 'group', 'aria-label': 'Buffer' });
   BUFS.forEach(b => chips.append(h('button', {
     type: 'button', class: 'chip', 'data-b': String(b), 'aria-pressed': String((+o.buf || 0) === b),
@@ -4602,7 +4653,7 @@ function applyEdit(k, id, cand, changed) {
 }
 
 /* ---------- editing a saved place, leg or wait: nothing changes until you press Save ---------- */
-const EDIT_F = { node: ['name', 'note'], leg: ['from', 'to', 'mode', 'cost', 'info', 'dep', 'arr', 'buf'], wait: ['label'] };
+const EDIT_F = { node: ['name', 'note', 'link'], leg: ['from', 'to', 'mode', 'cost', 'info', 'dep', 'arr', 'buf', 'link'], wait: ['label'] };
 function pickF(o, fs) { const r = {}; fs.forEach(f => { if (f in o) r[f] = o[f]; }); return r; }
 function editFor(k, id, plan) {
   if (!edit || edit.k !== k || edit.id !== id || (k === 'wait' && edit.plan !== plan)) {
@@ -4677,7 +4728,7 @@ function saveEdit() {
   }
   Object.assign(edit.obj, pickF(formValues(), EDIT_F[k]));
   // text is kept without spaces at either end, the same as for new places and legs
-  ['name', 'note', 'info'].forEach(f => { if (f in edit.obj) edit.obj[f] = String(edit.obj[f] ?? '').trim(); });
+  ['name', 'note', 'info', 'link'].forEach(f => { if (f in edit.obj) edit.obj[f] = String(edit.obj[f] ?? '').trim(); });
   const base = k === 'node' ? S.nodes[id] : S.legs[id]; if (!base) { edit = null; renderInspector(); return; }
   const cand = Object.assign({}, base, edit.obj), probs = k === 'node' ? placeProblems(cand, id) : legProblems(cand, id);
   if (probs.length) {
@@ -4727,7 +4778,19 @@ function cancelDraft() { draft = null; renderInspector(); renderGraph(); }
 function draftInspector(box) {
   const d = draft, isLeg = d.k === 'leg';
   box.append(inspHead(isLeg ? 'New leg' : 'New place', isLeg ? (MODE[d.obj.mode] || MODE.other).color : 'var(--ink)', cancelDraft));
-  if (isLeg) legFields(box, d.obj, true); else { placeFields(box, d.obj); if (!TOUR) box.append(fgroup('Trips', scopeRow(d.obj.scope !== 'local', on => { if (on) delete d.obj.scope; else d.obj.scope = 'local'; draftInspectorScope(on); showDraft(); }))); }
+  if (isLeg) legFields(box, d.obj, true);
+  else {
+    const place = fgroup('Place'); placeFields(place, d.obj); box.append(place); // the same groups as a saved place
+    if (!TOUR) box.append(fgroup('Trips', scopeRow(d.obj.scope !== 'local', on => { if (on) delete d.obj.scope; else d.obj.scope = 'local'; draftInspectorScope(on); showDraft(); })));
+    // the picture can be added before the place is saved, the same way as on a saved place
+    const keep = (src, msg) => {
+      if (draft !== d) return;
+      Object.assign(d.obj, formValues()); d.obj.img = src;
+      renderInspector();
+      imgMsg(msg || ''); toast('Image added to the new place');
+    };
+    box.append(imageGroup(d.obj.img, String(d.obj.name || '').trim(), keep, () => { if (draft !== d) return; Object.assign(d.obj, formValues()); delete d.obj.img; renderInspector(); }));
+  }
   box.append(h('p', { class: 'need', id: 'draftNeed', 'aria-live': 'polite' }));
   const cr = $('#liveCrumb'); if (cr) cr.textContent = d.plan && S.plans[d.plan] ? `Not saved yet · joins “${S.plans[d.plan].name}” when the route connects` : 'Not saved yet';
   setFoot(icoBtn(isLeg ? 'Save leg' : 'Save place', saveDraft, 'primary', isLeg ? 'leg' : 'place'), [], btn('Cancel', cancelDraft, '', 'Drop this new ' + (isLeg ? 'leg' : 'place')));
@@ -4768,10 +4831,12 @@ function saveDraft() {
   if (d.k === 'node') {
     id = addNode(d.obj.name.trim());
     S.nodes[id].note = String(d.obj.note || '').trim();
+    if (cleanLink(d.obj.link)) S.nodes[id].link = cleanLink(d.obj.link);
+    if (d.obj.img) S.nodes[id].img = d.obj.img;
     if (d.obj.scope === 'local') S.nodes[id].scope = 'local';
   } else {
     const o = d.obj;
-    id = addLeg({ from: o.from, to: o.to, mode: o.mode, info: String(o.info || '').trim(), cost: +o.cost, dep: o.dep, arr: o.arr, buf: o.buf === '' ? '' : +o.buf });
+    id = addLeg({ from: o.from, to: o.to, mode: o.mode, info: String(o.info || '').trim(), cost: +o.cost, dep: o.dep, arr: o.arr, buf: o.buf === '' ? '' : +o.buf, link: cleanLink(o.link) });
     setFare(id, +o.cost); // one fare per trip: other legs with the same places, transport and times share it
     if (d.plan && S.plans[d.plan]) S.plans[d.plan].pending = (S.plans[d.plan].pending || []).concat(id);
   }
@@ -4820,6 +4885,7 @@ function nodeView(box, n) {
   box.append(inspHead(nodeName(n.id), 'var(--ink)'));
   if (n.img) box.append(h('div', { class: 'nimg' }, h('img', { src: n.img, alt: `Picture of ${nodeName(n.id)}` })));
   if (String(n.note || '').trim()) box.append(h('div', { class: 'sect' }, h('h3', { text: 'Note' }), h('p', { class: 'ro-text', text: n.note.trim() })));
+  const lk = linkView(n.link); if (lk) box.append(lk);
   box.append(legList(`Legs leaving ${nodeName(n.id)}`, legsFrom(n.id), 'to'));
   box.append(legList(`Legs arriving at ${nodeName(n.id)}`, legsTo(n.id), 'from'));
 }
@@ -4835,6 +4901,7 @@ function legView(box, l) {
     ...row('Travel time', t.timed ? fmtDur(t.arrSched - t.dep) : '—'),
     ...(t.buf ? row('Buffer', `+${fmtDur(t.buf)}, latest arrival ${fmtDT(t.arr)}`) : []),
     ...row('Fare per head', l.cost === '' ? '—' : money(l.cost))));
+  const lk = linkView(l.link); if (lk) box.append(lk);
   const ps = LEGPLANS[l.id] || [];
   box.append(h('div', { class: 'sect' }, h('h3', { text: `In saved plans (${ps.length})` }),
     ps.length ? h('div', { class: 'chips' }, ...ps.map(pid => h('button', { type: 'button', class: 'chip', text: S.plans[pid].name, onclick: () => togglePlan(pid, true) })))
@@ -5319,6 +5386,36 @@ function savePlan() {
 }
 
 /* ---------- saved plans ---------- */
+// The route in the plans list, one leg to a line. Past three legs, or with a line too long to fit, it is trimmed;
+// a click on it shows the whole route (and another click trims it again) without opening the plan.
+const ROUTE_SHOW = 3, routeOpen = new Set();
+function routeCell(p) {
+  const td = h('td', { class: 'route' });
+  const legs = p.legs.filter(id => S.legs[id]);
+  if (!legs.length) { td.textContent = p.route; return td; }
+  const fill = () => {
+    const open = routeOpen.has(p.id), more = legs.length - ROUTE_SHOW;
+    const list = h('ol', { class: 'rt-legs' + (open ? ' open' : '') });
+    (open || more <= 0 ? legs : legs.slice(0, ROUTE_SHOW)).forEach(id => {
+      const m = MODE[S.legs[id].mode] || MODE.other;
+      list.append(h('li', { title: `${m.label}: ${legLabel(id)}` }, h('span', { class: 'rt-mode', style: `--c:${m.color}`, text: m.tag }), h('span', { class: 'rt-txt', text: legLabel(id) })));
+    });
+    td.replaceChildren(list);
+    if (more > 0) td.append(h('button', { type: 'button', class: 'rt-more', 'aria-expanded': String(open), text: open ? 'Show less' : `+ ${more} more leg${more > 1 ? 's' : ''}` }));
+    else if (open) td.append(h('button', { type: 'button', class: 'rt-more', 'aria-expanded': 'true', text: 'Show less' }));
+  };
+  fill();
+  td.addEventListener('click', e => {
+    const open = routeOpen.has(p.id);
+    const cut = legs.length > ROUTE_SHOW || [...td.querySelectorAll('.rt-txt')].some(x => x.scrollWidth > x.clientWidth + 1);
+    if (!open && !cut) return; // nothing hidden: the click opens the plan, as anywhere on its row
+    e.stopPropagation();
+    if (open) routeOpen.delete(p.id); else routeOpen.add(p.id);
+    fill();
+    const b = td.querySelector('.rt-more'); if (b && e.target.closest('.rt-more')) b.focus();
+  });
+  return td;
+}
 function renderPlans() {
   const tb = $('#plansBody'); tb.replaceChildren();
   const plans = PL.slice();
@@ -5345,7 +5442,7 @@ function renderPlans() {
     tr.append(
       h('td', null, star),
       h('td', null, h('span', { class: 'pname' }, h('span', { class: 'key', style: `--c:${p.color}` }), p.name), p.warn ? h('div', { class: 'st bad', text: '⚠ check this plan' }) : null),
-      h('td', { class: 'route', text: p.route }),
+      routeCell(p),
       h('td', { class: 'nowrap', text: fmtDT(p.start) }),
       h('td', { class: 'nowrap', text: fmtDT(p.end) }),
       h('td', { class: 'nowrap', text: fmtDur(p.dur) }),
@@ -5408,6 +5505,9 @@ function delPlan(id) {
   delete S.plans[id];
   S.planOrder.splice(S.planOrder.indexOf(id), 1);
   if (focusPlan === id) focusPlan = null;
+  if (viewPlan === id) viewPlan = null; // its tab goes, and the timeline shows every place and leg again
+  if (hoverPlan === id) hoverPlan = null;
+  dropScrub();
   renderAll();
   toast(`Deleted plan “${p.name}”`, true);
 }
@@ -5540,6 +5640,9 @@ function moveRow(id, dir) {
   [S.order[i], S.order[j]] = [S.order[j], S.order[i]];
   renderAll();
 }
+// A place, leg or plan just deleted from the keyboard or a menu: the moment card by the pointer was about what is now
+// gone from under it, so it steps aside until the pointer moves again (a card you pinned stays).
+function dropScrub() { if (scrubT != null && !pinned) scrubT = null; }
 function delNode(id) {
   if (!S.nodes[id]) return;
   if (S.nodes[id].scope !== 'local') { const used = tripsUsing(id); if (used.length) { toast(`${nodeName(id)} is in every trip and ${listJoin(used.map(x => `“${x}”`))} ${used.length > 1 ? 'use' : 'uses'} it, so it cannot be deleted here. Delete its legs there first.`); return; } }
@@ -5550,7 +5653,7 @@ function delNode(id) {
   gone.forEach(l => delete S.legs[l]);
   delete S.nodes[id];
   S.order.splice(S.order.indexOf(id), 1);
-  sel = null;
+  sel = null; dropScrub();
   renderAll();
   toast(`Deleted ${name}${gone.length ? ` and ${gone.length} leg${gone.length > 1 ? 's' : ''}` : ''}`, true);
 }
@@ -5561,6 +5664,7 @@ function delLeg(id) {
   const n = (LEGPLANS[id] || []).length, from = S.legs[id].from;
   delete S.legs[id];
   sel = from && S.nodes[from] ? { k: 'node', id: from } : null;
+  dropScrub();
   renderAll();
   toast(n ? `Deleted the leg. ${n} saved plan${n > 1 ? 's' : ''} used it and now need${n > 1 ? '' : 's'} editing.` : 'Deleted the leg', true);
 }
@@ -5695,6 +5799,20 @@ function renderPlanBar() {
     h('span', { class: 'muted', text: `${fmtDT(p.start)} → ${fmtDT(p.end)} · ${fmtDur(p.dur)}` }),
     planActions(p, 'bar'));
 }
+// A plan's buttons, in the panel's bar at the bottom like a place's and a leg's: the main action on the left, the
+// rest under More, and Delete set apart on the right.
+function planFoot(p) {
+  const shown = viewPlan === p.id;
+  const items = [
+    shown ? { label: 'Show every place and leg', sub: 'Leave this plan’s view', ico: 'eye', run: () => setView(null) }
+          : { label: 'Show on the timeline', sub: 'Only this plan', ico: 'eye', run: () => setView(p.id) },
+    { label: 'Copy as text', sub: 'To paste into a message', ico: 'copy', run: () => copyText(planText(p)) },
+  ];
+  if (!canEdit()) { setFoot(null, items, null); return; }
+  items.push({ label: 'Duplicate plan', sub: 'A copy to change without losing this one', ico: 'dup', run: () => duplicatePlan(p.id) });
+  setFoot(icoBtn('Edit plan', () => startBuilder(p.id), 'primary', 'edit', 'Change this plan’s route and costs'), items,
+    icoBtn('Delete', () => delPlan(p.id), 'danger', 'trash', `Delete the plan “${p.name}” (you can undo)`));
+}
 // A plan in the details panel: its key figures, then every leg and wait in order, day by day, with
 // this plan's other costs and the total. Click a leg for its details; Rename names a wait.
 function planPanel(p) {
@@ -5706,7 +5824,8 @@ function planPanel(p) {
   box.append(h('div', { class: 'insp-head pp-head' },
     h('span', { class: 'key-dot', style: `--c:${p.color}` }),
     h('div', { class: 'pp-titles' }, h('h2', null, renaming && renaming.id === p.id && renaming.where === 'side' ? nameEditor(p.id) : nameTitle(p, 'side'))),
-    planActions(p, 'side'), close));
+    close));
+  planFoot(p);
   if (p.issues.length) box.append(h('div', { class: 'warnbox' }, ...p.issues.map(x => h('p', { text: '⚠ ' + x }))));
   const stat = (label, value, sub) => h('div', { class: 'it-stat' }, h('span', { class: 'it-lab', text: label }), h('b', { class: 'it-val', text: value }),
     sub == null ? null : typeof sub === 'string' ? h('small', { text: sub }) : sub);
@@ -6494,6 +6613,7 @@ function delLegs(ids) {
   const plans = new Set(ids.flatMap(id => LEGPLANS[id] || []));
   ids.forEach(id => { delete S.legs[id]; pickLegs.delete(id); });
   if (sel && sel.k === 'leg' && !S.legs[sel.id]) sel = null;
+  dropScrub();
   renderAll();
   toast(`Deleted ${ids.length} legs${plans.size ? `. ${plans.size} saved plan${plans.size > 1 ? 's' : ''} used them and now need${plans.size > 1 ? '' : 's'} editing.` : ''}`, true);
 }
@@ -7534,6 +7654,7 @@ function bind() {
     else if (e.key === 'Escape' && !inField && focusPlan && !B) { focusPlan = null; renderPlans(); applyHighlight(); renderInspector(); }
     else if (e.key === 'Escape' && !inField && UI.drawer) setDrawer(false);
     else if ((e.key === 'Delete' || e.key === 'Backspace') && !inField && sel && sel.k !== 'wait' && canEdit() && !B) { e.preventDefault(); if (sel.k === 'node') delNode(sel.id); else delLeg(sel.id); }
+    else if ((e.key === 'Delete' || e.key === 'Backspace') && !inField && !sel && !draft && !B && canEdit() && S.plans[focusPlan || viewPlan]) { e.preventDefault(); delPlan(focusPlan || viewPlan); }
   });
   window.addEventListener('resize', () => { clearTimeout(bind._rt); bind._rt = setTimeout(() => { if (UI.dockH) fitDockH(); if (VIEWQ && VIEWQ.matches !== viewOnly) { applyViewOnly(); renderAll(); } else renderGraph(); }, 150); });
 }
